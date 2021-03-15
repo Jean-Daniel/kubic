@@ -75,6 +75,10 @@ KEYWORDS = {
 }
 
 
+def naive_camel_to_snake(name: str) -> str:
+    return ''.join('_' + i.lower() if i.isupper() else i for i in name).lstrip('_')
+
+
 @cache
 def camel_to_snake(name: str):
     # cilium node for instance uses '-' in vars
@@ -519,15 +523,24 @@ def print_type(ty: ResourceType, stream: TextIO):
 
     # write fields mapping
     fields = {}
+    revfields = {}
     for prop in ty.properties:
         snake = prop.snake_name
         if prop.name != snake_to_camel(snake):
             fields[snake] = prop.name
+        if naive_camel_to_snake(prop.name) != snake:
+            revfields[prop.name] = snake
 
     if fields:
         stream.write("    _field_names_ = {\n")
         for snake, camel in fields.items():
             stream.write(f'        "{snake}": "{camel}",\n')
+        stream.write("    }\n")
+
+    if revfields:
+        stream.write("    _revfield_names_ = {\n")
+        for camel, snake in revfields.items():
+            stream.write(f'        "{camel}": "{snake}",\n')
         stream.write("    }\n")
 
     stream.write("\n")

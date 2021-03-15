@@ -19,6 +19,16 @@ class BaseType(K8SResource):
     spec: SubType
 
 
+class SpecialProperty(K8SResource):
+    from_: str
+    load_urls: str
+
+    _revfield_names_ = {
+        "from": "from_",
+        "loadURLs": "load_urls"
+    }
+
+
 class ResourceTest(unittest.TestCase):
 
     def test_get(self):
@@ -53,6 +63,13 @@ class ResourceTest(unittest.TestCase):
         self.assertTrue(len(obj.spec.leaves) == 1)
         self.assertIsInstance(obj.spec.leaves[0], LeaveType)
         self.assertEquals(obj.spec.leaves[0].value, "hello")
+
+    def test_merge(self):
+        sp = SpecialProperty()
+        sp.merge({"from": "value"})
+        self.assertEqual(sp.from_, "value")
+        sp.merge({"loadURLs": "urls"})
+        self.assertEqual(sp.load_urls, "urls")
 
     def test_from_dict(self):
         obj = BaseType.from_dict({

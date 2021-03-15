@@ -7,10 +7,16 @@ class _K8SResourceMeta(type):
     def __new__(mcs, clsname, superclasses, attributedict):
         # merge fields from all parent classes
         fields = attributedict.get("_field_names_") or {}
+        revfields = attributedict.get("_revfield_names_") or {}
         for parent in superclasses:
             if hasattr(parent, "_field_names_"):
                 fields.update(getattr(parent, "_field_names_"))
+            if hasattr(parent, "_revfield_names_"):
+                fields.update(getattr(parent, "_field_names_"))
+
         attributedict["_field_names_"] = fields
+        attributedict["_revfield_names_"] = revfields
+
         cls = type.__new__(mcs, clsname, superclasses, attributedict)
         cls._hints_ = typing.get_type_hints(cls)
         return cls
@@ -22,6 +28,11 @@ def snake_to_camel(name: str) -> str:
     # We capitalize the first letter of each component except the first one
     # with the 'title' method and join them together.
     return components[0] + "".join(x.title() for x in components[1:])
+
+
+# naive implementation that miss lots of edge cases
+def camel_to_snake(name: str) -> str:
+    return "".join("_" + i.lower() if i.isupper() else i for i in name).lstrip("_")
 
 
 R = typing.TypeVar("R", bound="K8SResource")
@@ -86,7 +97,7 @@ def _create_generic_type(hint):
     if origin is list:
         if hint.__args__:
             param = hint.__args__[0]
-            if issubclass(param, K8SResource):
+            if not hasattr(param, "__origin__") and issubclass(param, K8SResource):
                 return _TypedList(param)
         return list()
 
@@ -156,30 +167,47 @@ class K8SResource(dict, metaclass=_K8SResourceMeta):
         camel_name = self._field_names_.get(item) or snake_to_camel(item)
         del self[camel_name]
 
+    @classmethod
+    def _item_hint(cls, key: str):
+        hint = cls._hints_.get(key)
+        if not hint:
+            # if not -> raise an attribute error
+            cls._attribute_error(key)
+        return hint
+
     def merge(self, values: dict):
         if not values:
             return self
         for key, value in values.items():
-            factory = self._item_hint(key)
-            try:
+            # Dict accepts keys in both python syntax and using the kubernetes case
+            # it also accepts keyword properties with or without the trailing '_'.
+            factory = self._hints_.get(key)
+            if factory is None:
+                snake_name = self._revfield_names_.get(key) or camel_to_snake(key)
+                factory = self._hints_.get(snake_name)
+                if factory:
+                    key = snake_name
+                else:
+                    self._attribute_error(key)
+
+            if not hasattr(factory, "__origin__"):
                 if issubclass(factory, K8SResource):
                     # merge recursively
                     getattr(self, key).merge(value)
                     continue
-            except TypeError:
-                pass
+                elif issubclass(factory, dict):
+                    # merge recursively
+                    getattr(self, key).update(value)
+                    continue
+            # else set the value
             setattr(self, key, value)
         return self
 
     @classmethod
-    def _item_hint(cls, key: str):
-        try:
-            return cls._hints_[key]
-        except KeyError:
-            # if not -> raise an attribute error
-            raise AttributeError(
-                f"{cls.__name__} does not has attribute {key}. Available attributes are: {', '.join(cls._hints_.keys())}"
-            )
+    def _attribute_error(cls, attr: str):
+        raise AttributeError(
+            f"{cls.__name__} does not has attribute {attr}. Available attributes are: {', '.join(cls._hints_.keys())}"
+        )
 
     @classmethod
     def from_dict(cls, values: dict):
