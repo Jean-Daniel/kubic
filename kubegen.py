@@ -64,16 +64,21 @@ def snake_to_camel(name: str) -> str:
 
 
 # used to fix camel_to_snake edge cases (URLs -> _url_s for instance)
-PLURALS = {"URLs": "_urls", "WWNs": "_wwns"}
+PLURALS = {
+    "URLs": "_urls",
+    "WWNs": "_wwns",
+    "CIDRs": "_cidrs"
+}
 
 KEYWORDS = {
-    "def", "class", "from", "import", "except"
+    "if", "for", "def", "class", "from", "import", "except", "break", "continue"
 }
 
 
 @cache
 def camel_to_snake(name: str):
-    snake = name
+    # cilium node for instance uses '-' in vars
+    snake = name.replace("-", "_")
     # edge cases
     for orig, replace in PLURALS.items():
         snake = snake.replace(orig, replace)
@@ -87,7 +92,7 @@ def camel_to_snake(name: str):
 
 
 ACRONYMES = {
-    "tls"
+    "tls", "ipam"
 }
 
 
@@ -207,6 +212,8 @@ class ApiImporter:
         self.index = {}
         self.ambiguous = defaultdict(list)
 
+        self.imports = set()
+
         for key in self.components.keys():
             short = shortkey(key)
             if short in self.index:
@@ -278,8 +285,8 @@ class ApiImporter:
             ty = prop.base_type
             dep = src.pop(str(ty), None)
             if dep:
-                dest[str(ty)] = dep
                 self.get_dependencies(prop.type, src, dest)
+                dest[str(ty)] = dep
 
     def _import_type(self, fqn: str, schema: dict, anonymous: bool = False) -> TypeDef:
         ty = self.resources.get(fqn) if not anonymous else None
@@ -294,6 +301,8 @@ class ApiImporter:
         self.stack.pop()
 
         if anonymous:
+            # name may have been updated by generator
+            fqn = ty.name
             if fqn in self.anonymous:
                 existing = self.resources[fqn]
                 if fqn not in self.conflicts:
@@ -322,8 +331,10 @@ class ApiImporter:
 
         # In practice, controller accept numbers for Quantity
         if name == "Quantity" and 'str' == typename:
+            self.imports.add("Union")
             typename = 'Union[str, int]'
 
+        self.imports.add("TypeAlias")
         return TypeAlias(name, typename)
 
     def _parse_resource(self, name: str, schema: dict, anonymous: bool) -> ResourceType:
@@ -336,7 +347,7 @@ class ApiImporter:
                 root = simplename(self.stack[0])
                 name = root + name
                 pass
-            obj = AnonymousType(name, self.stack[-2])
+            obj = AnonymousType(name, simplename(self.stack[-2]))
         else:
             obj = ResourceType(name)
 
@@ -379,6 +390,7 @@ class ApiImporter:
                 return self._import_type(type_name(prop_name), schema, anonymous=True)
 
             if "additionalProperties" in schema:
+                self.imports.add("Dict")
                 return DictType(self._get_type(schema["additionalProperties"], prop_name))
             return "object"
 
@@ -391,6 +403,7 @@ class ApiImporter:
         if ty == "string":
             fmt = schema.get("format")
             if fmt == "int-or-string":
+                self.imports.add("Union")
                 return "Union[int, str]"
             if fmt == "byte":
                 return self._import_type("Base64", {"type": "string"})
@@ -416,6 +429,7 @@ class ApiImporter:
         if ty == "array":
             details = schema.get("items")
             if details:
+                self.imports.add("List")
                 return ListType(self._get_type(details, prop_name))
             return "list"
 
@@ -431,12 +445,34 @@ class ApiImporter:
         #     return f"Union[{', '.join(types)}]"
 
         if schema.get("x-kubernetes-preserve-unknown-fields", False):
+            self.imports.add("Any")
             return "Any"
 
         if schema.get("x-kubernetes-int-or-string", False):
             return self._import_type("io.k8s.apimachinery.pkg.util.intstr.IntOrString", {"type": "string", "format": "int-or-string"})
 
         raise NotImplementedError(f"type not supported: {schema}")
+
+    def print_api(self, output: str):
+        if output == "-":
+            stream = sys.stdout
+        else:
+            stream = open(output, 'w')
+        try:
+            if self.imports:
+                stream.write("from typing import ")
+                stream.write(", ".join(sorted(self.imports)))
+                stream.write("\n\n")
+            stream.write("from .base import K8SApiResource, K8SResource\n\n\n")
+
+            for ty in self.types:
+                if isinstance(ty, ResourceType):
+                    print_type(ty, stream)
+                else:
+                    print_type_alias(ty, stream)
+        finally:
+            if stream is not sys.stdout:
+                stream.close()
 
 
 def print_type_alias(ty: TypeAlias, stream: TextIO):
@@ -450,9 +486,9 @@ def print_type(ty: ResourceType, stream: TextIO):
     stream.write("class ")
     stream.write(ty.name)
     if isinstance(ty, ApiResourceType):
-        stream.write("(ApiResource)")
+        stream.write("(K8SApiResource)")
     else:
-        stream.write("(Resource)")
+        stream.write("(K8SResource)")
     stream.write(":\n")
     stream.write("    __slots__ = ()\n")
 
@@ -522,25 +558,6 @@ def print_type(ty: ResourceType, stream: TextIO):
     stream.write("\n\n")
 
 
-def print_api(types: Iterable[TypeDef], output: str):
-    if output == "-":
-        stream = sys.stdout
-    else:
-        stream = open(output, 'w')
-    try:
-        stream.write("from typing import Any, List, Dict, Union, TypeAlias\n\n")
-        stream.write("from .base import Resource, ApiResource\n\n\n")
-
-        for ty in types:
-            if isinstance(ty, ResourceType):
-                print_type(ty, stream)
-            else:
-                print_type_alias(ty, stream)
-    finally:
-        if stream is not sys.stdout:
-            stream.close()
-
-
 def import_k8s_api(args):
     # import kubernetes types
     schema = ApiImporter(os.path.join(SCHEMA_DIR, "1.20.json"))
@@ -570,7 +587,7 @@ def import_k8s_api(args):
     schema.import_type("io.k8s.api.networking.v1.Ingress")
     schema.import_type("io.k8s.api.networking.v1.IngressClass")
 
-    print_api(schema.types, args.output)
+    schema.print_api(args.output)
 
 
 def import_crd_file(path: str, output: str):
@@ -608,7 +625,7 @@ def import_crd_file(path: str, output: str):
     importer = ApiImporter(schema)
     importer.import_crd()
 
-    print_api(importer.types, output)
+    importer.print_api(output)
 
 
 def import_crd(schema_dir: str, crd: str, output: str):

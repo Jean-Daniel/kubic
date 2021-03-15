@@ -2,7 +2,7 @@ import typing
 from functools import cache
 
 
-class ResourceMeta(type):
+class _K8SResourceMeta(type):
     def __new__(mcs, clsname, superclasses, attributedict):
         # merge fields from all parent classes
         fields = attributedict.get("_field_names_") or {}
@@ -23,7 +23,7 @@ def snake_to_camel(name: str) -> str:
     return components[0] + "".join(x.title() for x in components[1:])
 
 
-class Resource(dict, metaclass=ResourceMeta):
+class K8SResource(dict, metaclass=_K8SResourceMeta):
     __slots__ = ()
     _field_names_ = {}
 
@@ -53,7 +53,7 @@ class Resource(dict, metaclass=ResourceMeta):
                     )
                 elif hasattr(hint, "__origin__"):
                     value = hint.__origin__()
-                elif issubclass(hint, Resource):
+                elif issubclass(hint, K8SResource):
                     value = hint()
 
                 if value is not None:
@@ -71,7 +71,7 @@ class Resource(dict, metaclass=ResourceMeta):
 
         try:
             # convert dict into object automatically
-            if issubclass(factory, Resource) and not isinstance(value, factory):
+            if issubclass(factory, K8SResource) and not isinstance(value, factory):
                 value = factory.from_dict(value)
         except TypeError:
             pass
@@ -92,7 +92,7 @@ class Resource(dict, metaclass=ResourceMeta):
         for key, value in values.items():
             factory = self._item_hint(key)
             try:
-                if issubclass(factory, Resource):
+                if issubclass(factory, K8SResource):
                     value = factory.from_dict(value)
             except TypeError:
                 pass
@@ -105,7 +105,9 @@ class Resource(dict, metaclass=ResourceMeta):
             return cls._hints_[key]
         except KeyError:
             # if not -> raise an attribute error
-            raise AttributeError(f"{cls.__name__} does not has attribute {key}. Available attributes are: {', '.join(cls._hints_.keys())}")
+            raise AttributeError(
+                f"{cls.__name__} does not has attribute {key}. Available attributes are: {', '.join(cls._hints_.keys())}"
+            )
 
     @classmethod
     def from_dict(cls, values: dict):
@@ -115,11 +117,11 @@ class Resource(dict, metaclass=ResourceMeta):
         return cls().merge(values)
 
 
-class ApiResource(Resource):
+class K8SApiResource(K8SResource):
     __slots__ = ()
 
     def __init__(
-            self, version: str, kind: str, name: str, namespace: str = None, **kwargs
+        self, version: str, kind: str, name: str, namespace: str = None, **kwargs
     ):
         super().__init__(**kwargs)
         self["apiVersion"] = version

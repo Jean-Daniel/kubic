@@ -7,3 +7,4 @@ for crd in (kubectl get crds -o name);
   python3 kubegen.py -o k8s/{$name}.py $crd
 end
 
+black k8s
