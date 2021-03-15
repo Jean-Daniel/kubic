@@ -392,7 +392,10 @@ class ApiImporter:
             if "additionalProperties" in schema:
                 self.imports.add("Dict")
                 return DictType(self._get_type(schema["additionalProperties"], prop_name))
-            return "object"
+
+            self.imports.add("Dict")
+            self.imports.add("Any")
+            return DictType("Any")
 
         if ty == "integer":
             return "int"
