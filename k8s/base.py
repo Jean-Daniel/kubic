@@ -35,7 +35,7 @@ class Resource(dict, metaclass=ResourceMeta):
 
     def __getattr__(self, item):
         # check if this is a managed field.
-        factory = self._item_hint(item)
+        hint = self._item_hint(item)
 
         # convert the python field name into kubernetes name
         camel_name = self._field_names_.get(item) or snake_to_camel(item)
@@ -44,15 +44,20 @@ class Resource(dict, metaclass=ResourceMeta):
         value = self.get(camel_name)
         if value is None:
             # if not value found -> try to create one using default type constructor
+            # Do it only for List, Dict and Resources
             try:
                 # generic aliases -> __origin__ is list, dict, …
-                if hasattr(factory, "__origin__"):
-                    factory = factory.__origin__
-                elif repr(factory).startswith("typing.Union"):
+                if repr(hint).startswith("typing.Union"):
                     raise ValueError(
                         f"field {item} is an union and must be set before use."
                     )
-                self[camel_name] = value = factory()
+                elif hasattr(hint, "__origin__"):
+                    value = hint.__origin__()
+                elif issubclass(hint, Resource):
+                    value = hint()
+
+                if value is not None:
+                    self[camel_name] = value
             except TypeError as e:
                 # the constructor has required parameters
                 raise ValueError(

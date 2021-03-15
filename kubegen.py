@@ -433,6 +433,9 @@ class ApiImporter:
         if schema.get("x-kubernetes-preserve-unknown-fields", False):
             return "Any"
 
+        if schema.get("x-kubernetes-int-or-string", False):
+            return self._import_type("io.k8s.apimachinery.pkg.util.intstr.IntOrString", {"type": "string", "format": "int-or-string"})
+
         raise NotImplementedError(f"type not supported: {schema}")
 
 
