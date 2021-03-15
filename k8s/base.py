@@ -1,5 +1,6 @@
 import typing
 from functools import cache
+from typing import Union, Iterable
 
 
 class _K8SResourceMeta(type):
@@ -23,6 +24,77 @@ def snake_to_camel(name: str) -> str:
     return components[0] + "".join(x.title() for x in components[1:])
 
 
+R = typing.TypeVar("R", bound="K8SResource")
+
+
+class _TypedList(list):
+    def __init__(self, ty: typing.Type[R], values: Iterable = None):
+        super().__init__()
+        self.type: typing.Type[R] = ty
+        if values:
+            self.extend(values)
+
+    def _cast(self, obj):
+        if isinstance(obj, self.type):
+            return obj
+        return self.type().merge(obj)
+
+    def append(self, obj):
+        super().append(self._cast(obj))
+
+    def insert(self, index: int, obj):
+        super().insert(index, self._cast(obj))
+
+    def extend(self, values: typing.Iterable):
+        if not values:
+            return
+        if isinstance(values, _TypedList) and values.type == self.type:
+            super().extend(values)
+        else:
+            for item in values:
+                self.append(item)
+
+    def __setitem__(self, key, value):
+        self.insert(key, value)
+
+    def __add__(self, other: list):
+        result = _TypedList(self.type)
+        result.extend(self)
+        result.extend(other)
+        return result
+
+    def __iadd__(self, other):
+        # convenient method to add a single item
+        if isinstance(other, self.type):
+            super().append(other)
+        elif isinstance(other, dict):
+            self.append(other)
+        else:
+            for item in other:
+                self.append(item)
+        return self
+
+
+UNDEFINED_VALUE = "!__undefined__!"
+
+
+def _create_generic_type(hint):
+    origin = hint.__origin__
+    if origin is Union:
+        return None
+
+    if origin is list:
+        if hint.__args__:
+            param = hint.__args__[0]
+            if issubclass(param, K8SResource):
+                return _TypedList(param)
+        return list()
+
+    if origin is dict:
+        # assumes all parameters are base types
+        return dict()
+
+
 class K8SResource(dict, metaclass=_K8SResourceMeta):
     __slots__ = ()
     _field_names_ = {}
@@ -36,48 +108,46 @@ class K8SResource(dict, metaclass=_K8SResourceMeta):
     def __getattr__(self, item):
         # check if this is a managed field.
         hint = self._item_hint(item)
-
         # convert the python field name into kubernetes name
         camel_name = self._field_names_.get(item) or snake_to_camel(item)
-
         # fetch the stored value
-        value = self.get(camel_name)
-        if value is None:
-            # if not value found -> try to create one using default type constructor
-            # Do it only for List, Dict and Resources
-            try:
-                # generic aliases -> __origin__ is list, dict, …
-                if repr(hint).startswith("typing.Union"):
-                    raise ValueError(
-                        f"field {item} is an union and must be set before use."
-                    )
-                elif hasattr(hint, "__origin__"):
-                    value = hint.__origin__()
-                elif issubclass(hint, K8SResource):
-                    value = hint()
+        value = self.get(camel_name, UNDEFINED_VALUE)
+        # value explicitly set to None should always return None
+        if value is not UNDEFINED_VALUE:
+            return value
 
-                if value is not None:
-                    self[camel_name] = value
-            except TypeError as e:
-                # the constructor has required parameters
-                raise ValueError(
-                    f"field {item} has required parameter and must be set before use."
-                ) from e
+        value = None
+        # Handle generic types
+        origin = getattr(hint, "__origin__", None)
+        if origin:
+            value = _create_generic_type(hint)
+            if value is not None:
+                self[camel_name] = value
+            return value
+
+        # handle resource instances
+        if issubclass(hint, K8SResource):
+            self[camel_name] = value = hint()
 
         return value
 
     def __setattr__(self, key, value):
-        factory = self._item_hint(key)  # check key validity
+        hint = self._item_hint(key)  # check key validity
 
-        try:
-            # convert dict into object automatically
-            if issubclass(factory, K8SResource) and not isinstance(value, factory):
-                value = factory.from_dict(value)
-        except TypeError:
+        origin = getattr(hint, "__origin__", None)
+        if origin:
+            if (origin is list) and hint.__args__:
+                param = hint.__args__[0]
+                if issubclass(param, K8SResource):
+                    value = _TypedList(param, value)
+        elif issubclass(hint, K8SResource) and not isinstance(value, hint):
+            # assume this is a dict and convert it into object
+            value = hint.from_dict(value)
+        else:
+            # TODO: check base type ?
             pass
 
         camel_name = self._field_names_.get(key) or snake_to_camel(key)
-        # TODO: type check ?
         self[camel_name] = value
 
     def __delattr__(self, item):
@@ -88,12 +158,14 @@ class K8SResource(dict, metaclass=_K8SResourceMeta):
 
     def merge(self, values: dict):
         if not values:
-            return
+            return self
         for key, value in values.items():
             factory = self._item_hint(key)
             try:
                 if issubclass(factory, K8SResource):
-                    value = factory.from_dict(value)
+                    # merge recursively
+                    getattr(self, key).merge(value)
+                    continue
             except TypeError:
                 pass
             setattr(self, key, value)
@@ -119,6 +191,9 @@ class K8SResource(dict, metaclass=_K8SResourceMeta):
 
 class K8SApiResource(K8SResource):
     __slots__ = ()
+
+    api_version: str
+    kind: str
 
     def __init__(
         self, version: str, kind: str, name: str, namespace: str = None, **kwargs
