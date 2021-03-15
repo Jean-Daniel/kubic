@@ -244,7 +244,19 @@ class ApiImporter:
     def import_crd(self) -> ResourceType:
         assert len(self.components) == 1, "CRD must contains a single item"
         for ty, schema in self.components.items():
-            self._import_type(ty, schema)
+            crd = self._import_type(ty, schema)
+            assert isinstance(crd, ApiResourceType) and crd.properties
+            for idx, prop in enumerate(crd.properties):
+                if prop.name == "metadata":
+                    break
+            else:
+                idx = -1
+            meta = Property("metadata", "api.ObjectMeta", False)
+            if idx >= 0:
+                crd.properties[idx] = meta
+            else:
+                crd.properties.append(meta)
+
         self.resolve_conflicts()
 
     def resolve_conflicts(self):
@@ -334,7 +346,8 @@ class ApiImporter:
             self.imports.add("Union")
             typename = 'Union[str, int]'
 
-        self.imports.add("TypeAlias")
+        if sys.version_info >= (3, 10):
+            self.imports.add("TypeAlias")
         return TypeAlias(name, typename)
 
     def _parse_resource(self, name: str, schema: dict, anonymous: bool) -> ResourceType:
@@ -361,7 +374,7 @@ class ApiImporter:
                 continue
 
             # skip prepopulated values
-            if prop == "apiVersion" or prop == "kind" and gvk is not None:
+            if (prop == "apiVersion" or prop == "kind") and gvk is not None:
                 continue
 
             obj.properties.append(
@@ -456,7 +469,7 @@ class ApiImporter:
 
         raise NotImplementedError(f"type not supported: {schema}")
 
-    def print_api(self, output: str):
+    def print_api(self, output: str, crd: bool = False):
         if output == "-":
             stream = sys.stdout
         else:
@@ -466,7 +479,10 @@ class ApiImporter:
                 stream.write("from typing import ")
                 stream.write(", ".join(sorted(self.imports)))
                 stream.write("\n\n")
-            stream.write("from .base import K8SApiResource, K8SResource\n\n\n")
+            stream.write("from .base import K8SApiResource, K8SResource\n")
+            if crd:
+                stream.write("from . import api\n")
+            stream.write("\n\n")
 
             for ty in self.types:
                 if isinstance(ty, ResourceType):
@@ -480,7 +496,10 @@ class ApiImporter:
 
 def print_type_alias(ty: TypeAlias, stream: TextIO):
     stream.write(ty.name)
-    stream.write(": TypeAlias = ")
+    if sys.version_info >= (3, 10):
+        stream.write(": TypeAlias = ")
+    else:
+        stream.write(" = ")
     stream.write(str(ty.type))
     stream.write("\n\n")
 
@@ -568,6 +587,7 @@ def import_k8s_api(args):
     schema.import_type("Namespace")
     schema.import_type("io.k8s.api.rbac.v1.Role")
     schema.import_type("io.k8s.api.rbac.v1.RoleBinding")
+    schema.import_type("io.k8s.api.rbac.v1.ClusterRole")
     schema.import_type("io.k8s.api.rbac.v1.ClusterRoleBinding")
 
     schema.import_type("ConfigMap")
@@ -584,6 +604,8 @@ def import_k8s_api(args):
     schema.import_type("PodSecurityPolicy")
     schema.import_type("PodDisruptionBudget")
     schema.import_type("io.k8s.api.autoscaling.v1.HorizontalPodAutoscaler")
+    schema.import_type("io.k8s.api.autoscaling.v1.CrossVersionObjectReference")
+    schema.import_type("io.k8s.api.admissionregistration.v1.MutatingWebhookConfiguration")
 
     schema.import_type("Service")
     schema.import_type("ServiceAccount")
@@ -601,12 +623,16 @@ def import_crd_file(path: str, output: str):
     kind = spec["names"]["kind"]
     group = spec["group"]
     # default to using the storage version, ignoring other versions
+    vers = {}
     if "versions" in spec:
         vers = next(vers for vers in spec["versions"] if vers["storage"])
         version_name = vers["name"]
-        openapi = vers["schema"]["openAPIV3Schema"]
     else:
         version_name = spec["version"]
+
+    if "schema" in vers:
+        openapi = vers["schema"]["openAPIV3Schema"]
+    else:
         openapi = spec["validation"]["openAPIV3Schema"]
 
     if "x-kubernetes-group-version-kind" not in openapi:
@@ -628,7 +654,7 @@ def import_crd_file(path: str, output: str):
     importer = ApiImporter(schema)
     importer.import_crd()
 
-    importer.print_api(output)
+    importer.print_api(output, crd=True)
 
 
 def import_crd(schema_dir: str, crd: str, output: str):
