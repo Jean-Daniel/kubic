@@ -1,0 +1,4 @@
+"verticalpodautoscalers.autoscaling.k8s.io":
+  "autoscaling.k8s.io.VerticalPodAutoscaler":
+    Spec:
+      targetRef: "api.CrossVersionObjectReference"

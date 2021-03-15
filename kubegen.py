@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -6,6 +7,7 @@ import sys
 from collections import defaultdict
 from functools import cache
 from typing import NamedTuple, List, TextIO, Union, Iterable, Dict, Set, Any
+from urllib.request import urlretrieve
 
 import yaml
 from yaml import CSafeLoader
@@ -197,7 +199,7 @@ class ApiResourceType(ResourceType):
         super().__init__(name)
         self.version = version
         self.kind = kind
-        self.group = group or "core"
+        self.group = group
         self.scoped = scoped
 
 
@@ -244,65 +246,6 @@ class ApiImporter:
         if ty.lower() in self.ambiguous:
             raise ValueError(f"ambiguous short key {ty}: {fqn}, {', '.join(self.ambiguous[ty.lower()])}")
         return self._import_type(fqn, self.components[fqn])
-
-    def import_crd(self) -> ResourceType:
-        assert len(self.components) == 1, "CRD must contains a single item"
-        for ty, schema in self.components.items():
-            crd = self._import_type(ty, schema)
-            assert isinstance(crd, ApiResourceType) and crd.properties
-            for idx, prop in enumerate(crd.properties):
-                if prop.name == "metadata":
-                    break
-            else:
-                idx = -1
-            meta = Property("metadata", "api.ObjectMeta", False)
-            if idx >= 0:
-                crd.properties[idx] = meta
-            else:
-                crd.properties.append(meta)
-
-        self.resolve_conflicts()
-
-    def resolve_conflicts(self):
-        has_conflict = False
-        for name, items in self.conflicts.items():
-            base = items[0]
-            for duplicated in items[1:]:
-                if duplicated != base:
-                    has_conflict = True
-                    # remove base resource
-                    del self.resources[name]
-                    # Mark all items as conflicting and fix the output type list
-                    for item in items:
-                        item.name = item.class_name + item.name
-                        existing = self.resources.get(item.name)
-                        if existing and existing != item:
-                            raise ValueError(f"{item.name} still conflicting")
-                        self.resources[item.name] = item
-
-                    # We are done for this conflict
-                    break
-
-        if has_conflict:
-            # We have to resort types
-            types = {}
-            while self.resources:
-                name, item = next(iter(self.resources.items()))
-                del self.resources[name]
-                self.get_dependencies(item, self.resources, types)
-                types[name] = item
-
-            self.resources = types
-
-    def get_dependencies(self, ty: Any, src, dest):
-        if not isinstance(ty, ResourceType):
-            return
-        for prop in ty.properties:
-            ty = prop.base_type
-            dep = src.pop(str(ty), None)
-            if dep:
-                self.get_dependencies(prop.type, src, dest)
-                dest[str(ty)] = dep
 
     def _import_type(self, fqn: str, schema: dict, anonymous: bool = False) -> TypeDef:
         ty = self.resources.get(fqn) if not anonymous else None
@@ -498,6 +441,90 @@ class ApiImporter:
                 stream.close()
 
 
+class CRDImporter(ApiImporter):
+
+    def __init__(self, schema: dict, annotations: dict = None):
+        super().__init__(schema)
+
+        self.annotations = annotations
+        self.overwrite = [annotations]
+
+    def _import_type(self, fqn: str, schema: dict, anonymous: bool = False) -> TypeDef:
+        # root type -> patch metadata
+        if not self.stack:
+            schema["properties"]["metadata"] = {
+                "$ref": "api.ObjectMeta"
+            }
+
+        if self.overwrite[-1]:
+            self.overwrite.append(self.overwrite[-1].get(fqn))
+        else:
+            self.overwrite.append(None)
+        ty = super()._import_type(fqn, schema, anonymous)
+        self.overwrite.pop()
+        return ty
+
+    def _get_type(self, schema: dict, prop_name: str) -> Any:
+        ref = schema.get("$ref")
+        if ref:
+            return ref
+
+        if self.overwrite[-1]:
+            overwrite = self.overwrite[-1].get(prop_name)
+            if overwrite:
+                return overwrite
+        return super()._get_type(schema, prop_name)
+
+    def import_crd(self) -> ResourceType:
+        assert len(self.components) == 1, "CRD must contains a single item"
+        for ty, schema in self.components.items():
+            crd = self._import_type(ty, schema)
+            assert isinstance(crd, ApiResourceType) and crd.properties
+
+        self.resolve_conflicts()
+
+    def resolve_conflicts(self):
+        has_conflict = False
+        for name, items in self.conflicts.items():
+            base = items[0]
+            for duplicated in items[1:]:
+                if duplicated != base:
+                    has_conflict = True
+                    # remove base resource
+                    del self.resources[name]
+                    # Mark all items as conflicting and fix the output type list
+                    for item in items:
+                        item.name = item.class_name + item.name
+                        existing = self.resources.get(item.name)
+                        if existing and existing != item:
+                            raise ValueError(f"{item.name} still conflicting")
+                        self.resources[item.name] = item
+
+                    # We are done for this conflict
+                    break
+
+        if has_conflict:
+            # We have to resort types
+            types = {}
+            while self.resources:
+                name, item = next(iter(self.resources.items()))
+                del self.resources[name]
+                self.get_dependencies(item, self.resources, types)
+                types[name] = item
+
+            self.resources = types
+
+    def get_dependencies(self, ty: Any, src, dest):
+        if not isinstance(ty, ResourceType):
+            return
+        for prop in ty.properties:
+            ty = prop.base_type
+            dep = src.pop(str(ty), None)
+            if dep:
+                self.get_dependencies(prop.type, src, dest)
+                dest[str(ty)] = dep
+
+
 def print_type_alias(ty: TypeAlias, stream: TextIO):
     stream.write(ty.name)
     if sys.version_info >= (3, 10):
@@ -571,7 +598,10 @@ def print_type(ty: ResourceType, stream: TextIO):
     stream.write("):\n")
     stream.write("        super().__init__(")
     if isinstance(ty, ApiResourceType):
-        stream.write(f'"{ty.version}"')
+        stream.write('"')
+        if ty.group:
+            stream.write(f'{ty.group}/')
+        stream.write(f'{ty.version}"')
         stream.write(", ")
         stream.write(f'"{ty.kind}"')
         stream.write(", name")
@@ -595,7 +625,18 @@ def print_type(ty: ResourceType, stream: TextIO):
 
 def import_k8s_api(args):
     # import kubernetes types
-    schema = ApiImporter(os.path.join(SCHEMA_DIR, "1.20.json"))
+    file = os.path.join(SCHEMA_DIR, "1.20.json")
+    if not os.path.exists(file):
+        tmp, headers = urlretrieve("https://github.com/kubernetes/kubernetes/raw/release-1.20/api/openapi-spec/swagger.json")
+        with open(tmp, "rb") as f:
+            data = json.load(f)
+        data.pop("paths", None)
+        data.pop("security", None)
+        data.pop("securityDefinitions", None)
+        with open(file, "w")as f:
+            json.dump(data, f, indent='  ', sort_keys=True)
+
+    schema = ApiImporter(file)
 
     schema.import_type("Namespace")
     schema.import_type("io.k8s.api.rbac.v1.Role")
@@ -628,7 +669,7 @@ def import_k8s_api(args):
     schema.print_api(args.output)
 
 
-def import_crd_file(path: str, output: str):
+def import_crd_file(path: str, annotations: str, output: str):
     with open(path, "rb") as f:
         crd = yaml.load(f, CSafeLoader)
 
@@ -664,25 +705,34 @@ def import_crd_file(path: str, output: str):
         }
     }
 
-    importer = ApiImporter(schema)
+    with open(annotations, "rb") as f:
+        annotations = yaml.load(f, CSafeLoader).get(crd['metadata']['name'])
+
+    importer = CRDImporter(schema, annotations)
     importer.import_crd()
 
     importer.print_api(output, crd=True)
 
 
-def import_crd(schema_dir: str, crd: str, output: str):
+def import_crd(schema_dir: str, crd: str, annotations: str, output: str):
     filename, ext = os.path.splitext(crd)
     if ext.lower() in (".yml", ".yaml", ".json"):
-        return import_crd_file(crd, output)
+        return import_crd_file(crd, annotations, output)
 
     cached = os.path.join(schema_dir, crd + ".json")
     if os.path.exists(cached):
-        return import_crd_file(cached, output)
+        return import_crd_file(cached, annotations, output)
+
+    content = subprocess.run(["kubectl", "get", f"crds/{crd}", "-o", "json"], check=True, capture_output=True).stdout
+    schema = yaml.load(content, CSafeLoader)
+    schema.pop('status', None)
+    schema['metadata'].pop("annotations", None)
+    schema['metadata'].pop("managedFields", None)
 
     with open(cached, "w") as f:
-        subprocess.run(["kubectl", "get", f"crds/{crd}", "-o", "json"], check=True, stdout=f)
+        json.dump(schema, f, indent='  ')
 
-    return import_crd_file(cached, output)
+    return import_crd_file(cached, annotations, output)
 
 
 def main():
@@ -693,7 +743,7 @@ def main():
     args = parser.parse_args()
 
     if args.crd:
-        import_crd(SCHEMA_DIR, args.crd, args.output)
+        import_crd(SCHEMA_DIR, args.crd, os.path.join(SCHEMA_DIR, 'annotations.yaml'), args.output)
     else:
         import_k8s_api(args)
 
