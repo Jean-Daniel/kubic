@@ -1,23 +1,59 @@
 import argparse
-import json
 import os
 import re
-import shutil
 import subprocess
 import sys
-import tempfile
 from collections import defaultdict
 from functools import cache
-from typing import NamedTuple, List, TextIO
+from typing import NamedTuple, List, TextIO, Union, Iterable, Dict, Set, Any
 
 import yaml
-from yaml import CSafeDumper, CSafeLoader
+from yaml import CSafeLoader
 
 SCHEMA_DIR = os.path.join(os.path.dirname(__file__), "schemas")
 
+CLUSTER_OBJECTS = {
+    "ComponentStatus",
+    "Namespace",
+    "Node",
+    "PersistentVolume",
+    "MutatingWebhookConfiguration",
+    "ValidatingWebhookConfiguration",
+    "CustomResourceDefinition",
+    "APIService",
+    "TokenReview",
+    "SelfSubjectAccessReview",
+    "SelfSubjectRulesReview",
+    "SubjectAccessReview",
+    "ClusterIssuer",
+    "CertificateSigningRequest",
+    "CiliumClusterwideNetworkPolicy",
+    "CiliumExternalWorkload",
+    "CiliumIdentity",
+    "CiliumNode",
+    "FlowSchema",
+    "PriorityLevelConfiguration",
+    "NodeMetrics",
+    "IngressClass",
+    "RuntimeClass",
+    "ObjectBucket",
+    "PodSecurityPolicy",
+    "ClusterRoleBinding",
+    "ClusterRole",
+    "PriorityClass",
+    "CSIDriver",
+    "CSINode",
+    "StorageClass",
+    "VolumeAttachment"
+}
+
+
+def simplename(key: str) -> str:
+    return key.rsplit(".", maxsplit=1)[1] if "." in key else key
+
 
 def shortkey(key: str):
-    return key.rsplit(".", maxsplit=1)[1].lower()
+    return simplename(key).lower()
 
 
 def snake_to_camel(name: str) -> str:
@@ -28,42 +64,102 @@ def snake_to_camel(name: str) -> str:
 
 
 # used to fix camel_to_snake edge cases (URLs -> _url_s for instance)
-ACRONYMES = {"URLs": "_urls", "WWNs": "_wwns"}
+PLURALS = {"URLs": "_urls", "WWNs": "_wwns"}
+
+KEYWORDS = {
+    "def", "class", "from", "import", "except"
+}
 
 
 @cache
 def camel_to_snake(name: str):
     snake = name
     # edge cases
-    for orig, replace in ACRONYMES.items():
+    for orig, replace in PLURALS.items():
         snake = snake.replace(orig, replace)
 
     snake = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", snake)
     snake = re.sub("([a-z0-9])([A-Z])", r"\1_\2", snake).lower()
+    # avoid conflict with keywords
+    if snake in KEYWORDS:
+        snake += "_"
     return snake
 
 
+ACRONYMES = {
+    "tls"
+}
+
+
 def type_name(name: str):
-    if name.endswith("s"):
+    # assuming 2 and 3 letters words are acronyms
+    if len(name) <= 3:
+        return name.upper()
+
+    # egress for instance
+    if name.endswith("s") and not name.endswith("ss"):
         name = name.removesuffix("s")
-    if name.startswith("tls"):
-        return "TLS" + name[3:]
+
+    for ac in ACRONYMES:
+        if name.startswith(ac):
+            return ac.upper() + name[len(ac):]
     return name[0].upper() + name[1:]
+
+
+class ListType(NamedTuple):
+    value_type: Any
+
+    def __str__(self):
+        return f'List[{str(self.value_type)}]'
+
+
+class DictType(NamedTuple):
+    value_type: Any
+
+    def __str__(self):
+        return f'Dict[str, {str(self.value_type)}]'
+
+
+class TypeDef:
+    def __init__(self, name: str):
+        self.name = name
+
+    def __str__(self):
+        return self.name
+
+
+class TypeAlias(TypeDef):
+    def __init__(self, name: str, ty: Any):
+        super().__init__(name)
+        self.type = ty
+
+    def __eq__(self, other):
+        return self.name == other.name and self.type == other.type
 
 
 class Property(NamedTuple):
     name: str
-    type: str
+    type: Any
     required: bool
+
+    @property
+    def base_type(self) -> Any:
+        if isinstance(self.type, (ListType, DictType)):
+            return self.type.value_type
+        return self.type
+
+    @property
+    def type_name(self) -> str:
+        return str(self.type)
 
     @property
     def snake_name(self):
         return camel_to_snake(self.name)
 
 
-class Object:
+class ResourceType(TypeDef):
     def __init__(self, name: str):
-        self.name = name
+        super().__init__(name)
         self.properties: List[Property] = []
 
     def __eq__(self, other):
@@ -81,68 +177,173 @@ class Object:
         return (prop for prop in self.properties if not prop.required)
 
 
-class ApiResource(Object):
-    def __init__(self, name: str, version: str, kind: str, scoped: bool = True):
+class AnonymousType(ResourceType):
+    def __init__(self, name: str, class_name: str):
+        super().__init__(name)
+        self.class_name = class_name
+
+
+class ApiResourceType(ResourceType):
+    def __init__(self, name: str, group: str, version: str, kind: str, scoped: bool = True):
         super().__init__(name)
         self.version = version
         self.kind = kind
+        self.group = group or "core"
         self.scoped = scoped
 
 
-class Schema:
-    def __init__(self, path: str):
-        if path:
-            with open(path) as f:
-                self.schema = json.load(f)["definitions"]
-        else:
-            self.schema = {}
+class ApiImporter:
+    def __init__(self, schema: Union[str, dict]):
+        if isinstance(schema, str):
+            with open(schema) as f:
+                schema = yaml.load(f, CSafeLoader)
 
+        if "definitions" in schema:
+            self.components = schema["definitions"]
+        else:
+            self.components = schema["components"]["schemas"]
+
+        # short name to fqn map
         self.index = {}
         self.ambiguous = defaultdict(list)
-        for key in self.schema.keys():
+
+        for key in self.components.keys():
             short = shortkey(key)
             if short in self.index:
                 self.ambiguous[short].append(key)
             else:
                 self.index[short] = key
 
-        self.prefix = ""
-        self.stack = set()
-        self.requested = {}
+        # generated resources
+        self.resources: Dict[str, TypeDef] = {}
+        self.stack: List[str] = []  # loop detection
 
-    def request_type(self, ty: str, schema: dict = None) -> Object:
-        key = self.index.get(ty.lower(), ty)
-        if key == ty and not schema and key not in self.schema:
-            raise ValueError(f"unknown type {key} requested")
+        self.conflicts: Dict[str, List[AnonymousType]] = {}
+        self.anonymous: Set[str] = set()
+
+    @property
+    def types(self) -> Iterable[TypeDef]:
+        return self.resources.values()
+
+    def import_type(self, ty: str) -> TypeDef:
+        fqn = self.index.get(ty.lower(), ty)
+        if fqn == ty and fqn not in self.components:
+            raise ValueError(f"unknown type {fqn} requested")
 
         if ty.lower() in self.ambiguous:
-            print(
-                f"ambiguous short key {ty}: using {key} (other: {', '.join(self.ambiguous[ty.lower()])})"
-            )
+            raise ValueError(f"ambiguous short key {ty}: {fqn}, {', '.join(self.ambiguous[ty.lower()])}")
+        return self._import_type(fqn, self.components[fqn])
 
-        if key in self.requested:
-            assert key not in self.stack, "circular dependency -> need forward declaration"
-            return self.requested[key]
+    def import_crd(self) -> ResourceType:
+        assert len(self.components) == 1, "CRD must contains a single item"
+        for ty, schema in self.components.items():
+            self._import_type(ty, schema)
+        self.resolve_conflicts()
 
-        if not schema:
-            schema = self.schema[key]
+    def resolve_conflicts(self):
+        has_conflict = False
+        for name, items in self.conflicts.items():
+            base = items[0]
+            for duplicated in items[1:]:
+                if duplicated != base:
+                    has_conflict = True
+                    # remove base resource
+                    del self.resources[name]
+                    # Mark all items as conflicting and fix the output type list
+                    for item in items:
+                        item.name = item.class_name + item.name
+                        existing = self.resources.get(item.name)
+                        if existing and existing != item:
+                            raise ValueError(f"{item.name} still conflicting")
+                        self.resources[item.name] = item
 
-        self.stack.add(key)
-        name = key.rsplit(".", 1)[1] if "." in key else key
-        self.requested[key] = ty = self.parse(name, schema)
-        self.stack.remove(key)
+                    # We are done for this conflict
+                    break
+
+        if has_conflict:
+            # We have to resort types
+            types = {}
+            while self.resources:
+                name, item = next(iter(self.resources.items()))
+                del self.resources[name]
+                self.get_dependencies(item, self.resources, types)
+                types[name] = item
+
+            self.resources = types
+
+    def get_dependencies(self, ty: Any, src, dest):
+        if not isinstance(ty, ResourceType):
+            return
+        for prop in ty.properties:
+            ty = prop.base_type
+            dep = src.pop(str(ty), None)
+            if dep:
+                dest[str(ty)] = dep
+                self.get_dependencies(prop.type, src, dest)
+
+    def _import_type(self, fqn: str, schema: dict, anonymous: bool = False) -> TypeDef:
+        ty = self.resources.get(fqn) if not anonymous else None
+        if ty:
+            assert fqn not in self.stack, "circular dependency -> need forward declaration"
+            return ty
+
+        name = simplename(fqn)
+
+        self.stack.append(fqn)
+        ty = self._parse_type(name, schema, anonymous)
+        self.stack.pop()
+
+        if anonymous:
+            if fqn in self.anonymous:
+                existing = self.resources[fqn]
+                if fqn not in self.conflicts:
+                    self.conflicts[fqn] = [existing, ty]
+                else:
+                    self.conflicts[fqn].append(ty)
+
+                # if ty != existing:
+                #    raise ValueError(f"{fqn} types conflicts: {ty.class_name} and {existing.class_name}")
+                return ty
+
+            self.anonymous.add(fqn)
+
+        self.resources[fqn] = ty
         return ty
 
-    def parse(self, name, schema) -> Object:
+    # Create a (api)resource and populate its properties
+    def _parse_type(self, name: str, schema: dict, anonymous: bool) -> TypeDef:
+        assert "$ref" not in schema
+
+        if schema['type'] == "object" and "properties" in schema:
+            return self._parse_resource(name, schema, anonymous)
+
+        # anonymous alias are not possible, so prop_name should not be relevant here
+        typename = self._get_type(schema, "")
+
+        # In practice, controller accept numbers for Quantity
+        if name == "Quantity" and 'str' == typename:
+            typename = 'Union[str, int]'
+
+        return TypeAlias(name, typename)
+
+    def _parse_resource(self, name: str, schema: dict, anonymous: bool) -> ResourceType:
         gvk = schema.get("x-kubernetes-group-version-kind")
         if gvk:
-            obj = ApiResource(name, gvk[0]["version"], gvk[0]["kind"], schema.get("x-scoped", True))
+            obj = ApiResourceType(name, gvk[0]["group"], gvk[0]["version"], gvk[0]["kind"], schema.get("x-scoped", name not in CLUSTER_OBJECTS))
+        elif anonymous:
+            if len(self.stack) == 2:
+                # child of root element -> use qualified name by default ?
+                root = simplename(self.stack[0])
+                name = root + name
+                pass
+            obj = AnonymousType(name, self.stack[-2])
         else:
-            obj = Object(name)
+            obj = ResourceType(name)
 
         # parse properties
         required = schema.get("required", [])
         assert "properties" in schema, f"{name} does not have properties"
+
         for prop, value in schema["properties"].items():
             # for REST API only
             if prop == "status":
@@ -153,41 +354,32 @@ class Schema:
                 continue
 
             obj.properties.append(
-                Property(prop, self.get_type(value, name, prop), prop in required)
+                Property(prop, self._get_type(value, prop), prop in required)
             )
-
+        obj.properties.sort()
         return obj
 
-    def get_type(self, schema: dict, class_name: str, prop_name: str, ref_name: str = None):
+    def _get_type(self, schema: dict, prop_name: str) -> Any:
         ref = schema.get("$ref")
         if ref:
+            # for ref -> import type recursively
             ref = ref.removeprefix("#/definitions/")
-            return self.get_type(self.schema[ref], class_name, prop_name, ref)
+            return self._import_type(ref, self.components[ref])
 
         ty = schema.get("type")
-        if isinstance(ty, list):
-            assert ty[1] == 'null'
-            ty = ty[0]
+        if ty:
+            return self._get_base_type(ty, schema, prop_name)
 
+        return self._get_complex_type(ty, schema, prop_name)
+
+    def _get_base_type(self, ty, schema: dict, prop_name: str) -> Any:
         if ty == "object":
-            # if no propoerties, this is just an alias for generic object
+            # if no properties, this is just an alias for generic object
             if "properties" in schema:
-                if ref_name:
-                    # parse dependency
-                    typename = ref_name.rsplit(".", 1)[1]
-                    self.request_type(ref_name)
-                else:
-                    if not self.prefix:
-                        raise ValueError(f"anonymous type for property {prop_name} but no prefix set")
-                    typename = self.prefix + type_name(prop_name)
-                    if typename in self.requested:
-                        typename = class_name + type_name(prop_name)
-                    if typename in self.requested:
-                        raise ValueError(f"generated name conflict: {typename}")
-                    self.request_type(typename, schema)
-                return typename
+                return self._import_type(type_name(prop_name), schema, anonymous=True)
+
             if "additionalProperties" in schema:
-                return f'Dict[str, {self.get_type(schema["additionalProperties"], class_name, prop_name)}]'
+                return DictType(self._get_type(schema["additionalProperties"], prop_name))
             return "object"
 
         if ty == "integer":
@@ -197,42 +389,72 @@ class Schema:
             return "bool"
 
         if ty == "string":
-            return "bytes" if schema.get("format") == "bytes" else "str"
+            fmt = schema.get("format")
+            if fmt == "int-or-string":
+                return "Union[int, str]"
+            if fmt == "byte":
+                return self._import_type("Base64", {"type": "string"})
+            if fmt == "date-time":
+                # in API, only Time uses date-time format.
+                if self.stack[-1] == "io.k8s.apimachinery.pkg.apis.meta.v1.Time":
+                    return "str"
+                # but keep a fallback for CRDs
+                return self._import_type("io.k8s.apimachinery.pkg.apis.meta.v1.Time", {"type": "string"})
+            # cilium cluster wide network policy
+            if fmt == "idn-hostname":
+                return self._import_type("IDNHostname", {"type": "string"})
+            assert not fmt, f"string format {fmt} not supported"
+            return "str"
 
         if ty == "number":
-            return "float" if schema.get("format") == "double" else "int"
+            fmt = schema.get("format")
+            if fmt == "double":
+                return "float"
+            assert not fmt, f"number format {fmt} not supported"
+            return "int"
 
         if ty == "array":
             details = schema.get("items")
             if details:
-                return f"List[{self.get_type(details, class_name, prop_name)}]"
+                return ListType(self._get_type(details, prop_name))
             return "list"
 
-        if ty:
-            assert isinstance(ty, str), f"unsupported type: {ty}"
-            return ty
+        raise NotImplementedError(f"{ty} base type not supported")
 
-        union = schema.get("oneOf")
-        if not union:
-            union = schema.get("anyOf")
-        if union:
-            types = [self.get_type(item, prop_name) for item in union]
-            return f"Union[{', '.join(types)}]"
+    def _get_complex_type(self, ty, schema: dict, prop_name: str) -> Any:
+        # union = schema.get("oneOf")
+        # if not union:
+        #     union = schema.get("anyOf")
+        #
+        # if union:
+        #     types = [self._get_type_name(item, prop_name) for item in union]
+        #     return f"Union[{', '.join(types)}]"
 
         if schema.get("x-kubernetes-preserve-unknown-fields", False):
             return "Any"
-        assert False, f"type not supported: {schema}"
+
+        raise NotImplementedError(f"type not supported: {schema}")
 
 
-def print_type(ty: Object, stream: TextIO):
+def print_type_alias(ty: TypeAlias, stream: TextIO):
+    stream.write(ty.name)
+    stream.write(": TypeAlias = ")
+    stream.write(str(ty.type))
+    stream.write("\n\n")
+
+
+def print_type(ty: ResourceType, stream: TextIO):
     stream.write("class ")
     stream.write(ty.name)
-    if isinstance(ty, ApiResource):
+    if isinstance(ty, ApiResourceType):
         stream.write("(ApiResource)")
     else:
         stream.write("(Resource)")
     stream.write(":\n")
     stream.write("    __slots__ = ()\n")
+
+    if isinstance(ty, ApiResourceType):
+        stream.write(f'\n    _group_ = "{ty.group}"\n')
 
     # write fields mapping
     fields = {}
@@ -244,7 +466,7 @@ def print_type(ty: Object, stream: TextIO):
     if fields:
         stream.write("    _field_names_ = {\n")
         for snake, camel in fields.items():
-            stream.write(f'      "{snake}": "{camel}",\n')
+            stream.write(f'        "{snake}": "{camel}",\n')
         stream.write("    }\n")
 
     stream.write("\n")
@@ -252,7 +474,7 @@ def print_type(ty: Object, stream: TextIO):
         stream.write("    ")
         stream.write(prop.snake_name)
         stream.write(": ")
-        stream.write(prop.type)
+        stream.write(prop.type_name)
         stream.write("\n")
 
     required = [prop.snake_name for prop in ty.required_properties]
@@ -262,7 +484,7 @@ def print_type(ty: Object, stream: TextIO):
         stream.write('"]\n')
 
     stream.write("\n    def __init__(self")
-    if isinstance(ty, ApiResource):
+    if isinstance(ty, ApiResourceType):
         stream.write(", name: str")
         if ty.scoped:
             stream.write(", namespace: str = None")
@@ -270,11 +492,11 @@ def print_type(ty: Object, stream: TextIO):
         stream.write(", ")
         stream.write(prop.snake_name)
         stream.write(": ")
-        stream.write(prop.type)
+        stream.write(prop.type_name)
         stream.write(" = None")
     stream.write("):\n")
     stream.write("        super().__init__(")
-    if isinstance(ty, ApiResource):
+    if isinstance(ty, ApiResourceType):
         stream.write(f'"{ty.version}"')
         stream.write(", ")
         stream.write(f'"{ty.kind}"')
@@ -297,17 +519,20 @@ def print_type(ty: Object, stream: TextIO):
     stream.write("\n\n")
 
 
-def print_api(types: List, output: str):
+def print_api(types: Iterable[TypeDef], output: str):
     if output == "-":
         stream = sys.stdout
     else:
         stream = open(output, 'w')
     try:
-        stream.write("from typing import Any, List, Dict, Union\n\n")
+        stream.write("from typing import Any, List, Dict, Union, TypeAlias\n\n")
         stream.write("from .base import Resource, ApiResource\n\n\n")
 
         for ty in types:
-            print_type(ty, stream)
+            if isinstance(ty, ResourceType):
+                print_type(ty, stream)
+            else:
+                print_type_alias(ty, stream)
     finally:
         if stream is not sys.stdout:
             stream.close()
@@ -315,44 +540,40 @@ def print_api(types: List, output: str):
 
 def import_k8s_api(args):
     # import kubernetes types
-    schema = Schema(os.path.join(SCHEMA_DIR, "_definitions.json"))
+    schema = ApiImporter(os.path.join(SCHEMA_DIR, "1.20.json"))
 
-    schema.request_type("Namespace")
-    schema.request_type("io.k8s.api.rbac.v1.Role")
-    schema.request_type("io.k8s.api.rbac.v1.RoleBinding")
-    schema.request_type("io.k8s.api.rbac.v1.ClusterRoleBinding")
+    schema.import_type("Namespace")
+    schema.import_type("io.k8s.api.rbac.v1.Role")
+    schema.import_type("io.k8s.api.rbac.v1.RoleBinding")
+    schema.import_type("io.k8s.api.rbac.v1.ClusterRoleBinding")
 
-    schema.request_type("ConfigMap")
-    schema.request_type("Secret")
+    schema.import_type("ConfigMap")
+    schema.import_type("Secret")
 
-    schema.request_type("Deployment")
-    schema.request_type("StatefulSet")
-    schema.request_type("Job")
-    schema.request_type("io.k8s.api.batch.v1beta1.CronJob")
-    schema.request_type("PodDisruptionBudget")
-    schema.request_type("HorizontalPodAutoscaler")
+    schema.import_type("Deployment")
+    schema.import_type("StatefulSet")
+    schema.import_type("DaemonSet")
+    schema.import_type("Job")
+    schema.import_type("io.k8s.api.batch.v1beta1.CronJob")
+    schema.import_type("NetworkPolicy")
+    schema.import_type("ResourceQuota")
+    schema.import_type("PersistentVolume")
+    schema.import_type("PodSecurityPolicy")
+    schema.import_type("PodDisruptionBudget")
+    schema.import_type("io.k8s.api.autoscaling.v1.HorizontalPodAutoscaler")
 
-    schema.request_type("Service")
-    schema.request_type("ServiceAccount")
-    schema.request_type("io.k8s.api.networking.v1.Ingress")
-    schema.request_type("io.k8s.api.networking.v1.IngressClass")
+    schema.import_type("Service")
+    schema.import_type("ServiceAccount")
+    schema.import_type("io.k8s.api.networking.v1.Ingress")
+    schema.import_type("io.k8s.api.networking.v1.IngressClass")
 
     print_api(schema.types, args.output)
 
 
-def import_single(path: str, output: str):
+def import_crd_file(path: str, output: str):
     with open(path, "rb") as f:
-        spec = yaml.load(f, CSafeLoader)
-    schema = Schema("")
-    gvk = spec["x-kubernetes-group-version-kind"][0]
-    schema.prefix = gvk['kind']
-    typename = f"{gvk['group']}.{gvk['kind']}"
-    schema.request_type(typename, spec)
+        crd = yaml.load(f, CSafeLoader)
 
-    print_api(schema.types, output)
-
-
-def import_crd_object(crd: dict, output: str):
     spec = crd["spec"]
     kind = spec["names"]["kind"]
     group = spec["group"]
@@ -380,47 +601,37 @@ def import_crd_object(crd: dict, output: str):
             }
         }
     }
-    tmpdir = tempfile.mkdtemp()
-    try:
-        fd, tmp = tempfile.mkstemp("_schema.yml", dir=tmpdir)
-        tmpfile = os.path.join(tmpdir, tmp)
-        with os.fdopen(fd, "w") as f:
-            yaml.dump(schema, f, CSafeDumper)
-        subprocess.run(["openapi2jsonschema", "--kubernetes", tmpfile], check=True, cwd=tmpdir)
-        json_schema = os.path.join(tmpdir, "schemas", kind.lower() + ".json")
-        os.rename(json_schema, output)
-    finally:
-        shutil.rmtree(tmpdir)
+
+    importer = ApiImporter(schema)
+    importer.import_crd()
+
+    print_api(importer.types, output)
 
 
 def import_crd(schema_dir: str, crd: str, output: str):
     filename, ext = os.path.splitext(crd)
     if ext.lower() in (".yml", ".yaml", ".json"):
-        with open(crd, "rb") as f:
-            spec = yaml.load(f, yaml.CSafeLoader)
-        cached = os.path.join(schema_dir, filename + ".json")
-        import_crd_object(spec, cached)
-        return import_single(cached, output)
+        return import_crd_file(crd, output)
 
     cached = os.path.join(schema_dir, crd + ".json")
     if os.path.exists(cached):
-        return import_single(cached, output)
+        return import_crd_file(cached, output)
 
-    spec = subprocess.run(["kubectl", "get", f"crds/{crd}", "-o", "json"], capture_output=True).stdout
-    import_crd_object(yaml.load(spec, yaml.CSafeLoader), cached)
-    return import_single(cached, output)
+    with open(cached, "w") as f:
+        subprocess.run(["kubectl", "get", f"crds/{crd}", "-o", "json"], check=True, stdout=f)
+
+    return import_crd_file(cached, output)
 
 
 def main():
     parser = argparse.ArgumentParser("pykapi", description="Generate python API for Kubernetes Objects")
     parser.add_argument("-o", "--output", type=str, default='-')
-    parser.add_argument("crds", nargs="*", type=str)
+    parser.add_argument("crd", nargs="?", type=str)
 
     args = parser.parse_args()
 
-    if args.crds:
-        for crd in args.crds:
-            import_crd(SCHEMA_DIR, crd, args.output)
+    if args.crd:
+        import_crd(SCHEMA_DIR, args.crd, args.output)
     else:
         import_k8s_api(args)
 
