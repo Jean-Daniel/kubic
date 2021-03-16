@@ -434,11 +434,15 @@ class BaseImporter:
                 stream.write("from typing import ")
                 stream.write(", ".join(sorted(self.imports)))
                 stream.write("\n\n")
-            stream.write(
-                f"from .base import {BASE_OBJECT_TYPE}, {RESOURCE_OBJECT_TYPE}\n"
-            )
             if crd:
-                stream.write("from . import api\n")
+                stream.write(
+                    f"from ..base import {BASE_OBJECT_TYPE}, {RESOURCE_OBJECT_TYPE}\n"
+                )
+                stream.write("from .. import api\n")
+            else:
+                stream.write(
+                    f"from .base import {BASE_OBJECT_TYPE}, {RESOURCE_OBJECT_TYPE}\n"
+                )
             stream.write("\n\n")
 
             for ty in self.types:
@@ -794,19 +798,20 @@ def main():
         "pykapi", description="Generate python API for Kubernetes Objects"
     )
     parser.add_argument("-o", "--output", type=str, default="-")
+    parser.add_argument("-s", "--schemas", type=str, default=SCHEMA_DIR)
     parser.add_argument("crd", nargs="?", type=str)
 
     args = parser.parse_args()
 
     if args.crd:
         import_crd(
-            SCHEMA_DIR,
+            args.schemas,
             args.crd,
-            os.path.join(SCHEMA_DIR, "annotations.yaml"),
+            os.path.join(args.schemas, "annotations.yaml"),
             args.output,
         )
     else:
-        import_k8s_api(args, os.path.join(SCHEMA_DIR, "annotations.yaml"))
+        import_k8s_api(args, os.path.join(args.schemas, "annotations.yaml"))
 
 
 if __name__ == "__main__":

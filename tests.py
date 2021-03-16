@@ -6,20 +6,28 @@ from k8s.base import KubernetesObject
 
 
 class LeaveType(KubernetesObject):
+    __slots__ = ()
+
     value: Union[str, int]
 
 
 class SubType(KubernetesObject):
+    __slots__ = ()
+
     value: str
     leave: LeaveType
     leaves: List[LeaveType]
 
 
 class BaseType(KubernetesObject):
+    __slots__ = ()
+
     spec: SubType
 
 
 class SpecialProperty(KubernetesObject):
+    __slots__ = ()
+
     from_: str
     load_urls: str
     my_property: int
@@ -35,6 +43,22 @@ class SpecialProperty(KubernetesObject):
 
 
 class ResourceTest(unittest.TestCase):
+
+    def test_dir(self):
+        obj = SpecialProperty()
+
+        props = dir(obj)
+        for prop in ("from_", "load_urls", "my_property"):
+            self.assertIn(prop, props)
+
+    def test_slots(self):
+        obj = SpecialProperty()
+
+        # assert does not raise on access internal property
+        hints = obj.__annotations__
+        with self.assertRaises(AttributeError):
+            # make sure base class are properly defined to avoid creation of __dict__ (using __slots__)
+            hints = obj.__dict__
 
     def test_get(self):
         obj = BaseType()

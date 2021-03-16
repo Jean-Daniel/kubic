@@ -2,8 +2,15 @@ import typing
 from functools import cache
 from typing import Union, Iterable
 
+__all__ = [
+    'KubernetesObject',
+    'KubernetesApiResource'
+]
+
 
 class _K8SResourceMeta(type):
+    __slots__ = ()
+
     def __new__(mcs, clsname, superclasses, attributedict):
         # merge fields from all parent classes
         fields = attributedict.get("_field_names_") or {}
@@ -39,6 +46,8 @@ R = typing.TypeVar("R", bound="K8SResource")
 
 
 class _TypedList(list):
+    __slots__ = ("type",)
+
     def __init__(self, ty: typing.Type[R], values: Iterable = None):
         super().__init__()
         self.type: typing.Type[R] = ty
@@ -167,6 +176,9 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         camel_name = self._field_names_.get(item) or snake_to_camel(item)
         del self[camel_name]
 
+    def __dir__(self):
+        return dir(type(self)) + list(self._hints_.keys())
+
     @classmethod
     def _item_hint(cls, key: str):
         hint = cls._hints_.get(key)
@@ -224,7 +236,7 @@ class KubernetesApiResource(KubernetesObject):
     kind: str
 
     def __init__(
-        self, version: str, kind: str, name: str, namespace: str = None, **kwargs
+            self, version: str, kind: str, name: str, namespace: str = None, **kwargs
     ):
         super().__init__(**kwargs)
         self["apiVersion"] = version
