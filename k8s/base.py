@@ -97,7 +97,7 @@ def _create_generic_type(hint):
     if origin is list:
         if hint.__args__:
             param = hint.__args__[0]
-            if not hasattr(param, "__origin__") and issubclass(param, K8SResource):
+            if not hasattr(param, "__origin__") and issubclass(param, KubernetesObject):
                 return _TypedList(param)
         return list()
 
@@ -106,7 +106,7 @@ def _create_generic_type(hint):
         return dict()
 
 
-class K8SResource(dict, metaclass=_K8SResourceMeta):
+class KubernetesObject(dict, metaclass=_K8SResourceMeta):
     __slots__ = ()
     _field_names_ = {}
 
@@ -137,7 +137,7 @@ class K8SResource(dict, metaclass=_K8SResourceMeta):
             return value
 
         # handle resource instances
-        if issubclass(hint, K8SResource):
+        if issubclass(hint, KubernetesObject):
             self[camel_name] = value = hint()
 
         return value
@@ -149,9 +149,9 @@ class K8SResource(dict, metaclass=_K8SResourceMeta):
         if origin:
             if (origin is list) and hint.__args__:
                 param = hint.__args__[0]
-                if issubclass(param, K8SResource):
+                if issubclass(param, KubernetesObject):
                     value = _TypedList(param, value)
-        elif issubclass(hint, K8SResource) and not isinstance(value, hint):
+        elif issubclass(hint, KubernetesObject) and not isinstance(value, hint):
             # assume this is a dict and convert it into object
             value = hint.from_dict(value)
         else:
@@ -191,7 +191,7 @@ class K8SResource(dict, metaclass=_K8SResourceMeta):
                     self._attribute_error(key)
 
             if not hasattr(factory, "__origin__"):
-                if issubclass(factory, K8SResource):
+                if issubclass(factory, KubernetesObject):
                     # merge recursively
                     getattr(self, key).merge(value)
                     continue
@@ -217,7 +217,7 @@ class K8SResource(dict, metaclass=_K8SResourceMeta):
         return cls().merge(values)
 
 
-class K8SApiResource(K8SResource):
+class KubernetesApiResource(KubernetesObject):
     __slots__ = ()
 
     api_version: str
