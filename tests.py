@@ -2,7 +2,7 @@ import unittest
 from collections.abc import MutableSequence
 from typing import List, Union
 
-from k8s.base import KubernetesObject
+from kubic.base import KubernetesObject
 
 
 class LeaveType(KubernetesObject):
@@ -96,12 +96,22 @@ class ResourceTest(unittest.TestCase):
         self.assertIsInstance(obj.spec.leaves[0], LeaveType)
         self.assertEqual(obj.spec.leaves[0].value, "hello")
 
-    def test_merge(self):
+    def test_update(self):
+        obj = BaseType()
+        # merge supports using camelCase key name (and keyword without trailing '_')
+        obj |= {"spec": {"value": "hello"}}
+        self.assertEqual(obj.spec.value, "hello")
+
+        obj.spec.update(leave={"value": "world"}, leaves=[{"value": 42}])
+        self.assertEqual(obj.spec.leave.value, "world")
+        self.assertEqual(obj.spec.leaves[0].value, 42)
+
+    def test_update_camel(self):
         sp = SpecialProperty()
         # merge supports using camelCase key name (and keyword without trailing '_')
-        sp.merge({"from": "value"})
+        sp.update({"from": "value"})
         self.assertEqual(sp.from_, "value")
-        sp.merge({"loadURLs": "urls", "myProperty": 25})
+        sp.update({"loadURLs": "urls", "myProperty": 25})
         self.assertEqual(sp.load_urls, "urls")
         self.assertEqual(sp.my_property, 25)
 
@@ -135,4 +145,4 @@ class ResourceTest(unittest.TestCase):
             base.spec.unknown = ""
 
         with self.assertRaises(AttributeError):
-            base.merge({"unknown": "foo"})
+            base.update({"unknown": "foo"})

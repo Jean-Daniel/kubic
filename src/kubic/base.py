@@ -57,7 +57,7 @@ class _TypedList(list):
     def _cast(self, obj):
         if isinstance(obj, self.type):
             return obj
-        return self.type().merge(obj)
+        return self.type().update(obj)
 
     def append(self, obj):
         super().append(self._cast(obj))
@@ -187,32 +187,53 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
             cls._attribute_error(key)
         return hint
 
-    def merge(self, values: dict):
-        if not values:
-            return self
-        for key, value in values.items():
-            # Dict accepts keys in both python syntax and using the kubernetes case
-            # it also accepts keyword properties with or without the trailing '_'.
-            factory = self._hints_.get(key)
-            if factory is None:
-                snake_name = self._revfield_names_.get(key) or camel_to_snake(key)
-                factory = self._hints_.get(snake_name)
-                if factory:
-                    key = snake_name
-                else:
-                    self._attribute_error(key)
+    def _update(self, key, value):
+        # Dict accepts keys in both python syntax and using the kubernetes case
+        # it also accepts keyword properties with or without the trailing '_'.
+        factory = self._hints_.get(key)
+        if factory is None:
+            snake_name = self._revfield_names_.get(key) or camel_to_snake(key)
+            factory = self._hints_.get(snake_name)
+            if factory:
+                key = snake_name
+            else:
+                self._attribute_error(key)
 
-            if not hasattr(factory, "__origin__"):
-                if issubclass(factory, KubernetesObject):
-                    # merge recursively
-                    getattr(self, key).merge(value)
-                    continue
-                elif issubclass(factory, dict):
-                    # merge recursively
-                    getattr(self, key).update(value)
-                    continue
-            # else set the value
-            setattr(self, key, value)
+        if not hasattr(factory, "__origin__"):
+            if issubclass(factory, KubernetesObject):
+                # merge recursively
+                getattr(self, key).update(value)
+                return
+            elif issubclass(factory, dict):
+                # merge recursively
+                getattr(self, key).update(value)
+                return
+        # else set the value
+        setattr(self, key, value)
+
+    def update(self, values: dict = None, **kwargs):
+        if values:
+            # assume iterable of pairs if not a dict
+            items = values.items() if isinstance(values, typing.Mapping) else values
+            for key, value in items:
+                self._update(key, value)
+
+        if kwargs:
+            for key, value in kwargs.items():
+                self._update(key, value)
+
+        return self
+
+    def __or__(self, other):
+        # copy self, bypassing type checking
+        copy = type(self)()
+        dict.update(copy, self)
+        # merge with other
+        copy.update(other)
+        return copy
+
+    def __ior__(self, other):
+        self.update(other)
         return self
 
     @classmethod
@@ -226,7 +247,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         if values is None:
             return None
 
-        return cls().merge(values)
+        return cls().update(values)
 
 
 class KubernetesApiResource(KubernetesObject):
