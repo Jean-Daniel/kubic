@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Dict, List, Union
 
 from .base import KubernetesObject, KubernetesApiResource
 
@@ -6,40 +6,13 @@ from .base import KubernetesObject, KubernetesApiResource
 Time = str
 
 
-FieldsV1 = Dict[str, Any]
-
-
-class ManagedFieldsEntry(KubernetesObject):
-    __slots__ = ()
-
-    api_version: str
-    fields_type: str
-    fields_v1: FieldsV1
-    manager: str
-    operation: str
-    time: Time
-
-    def __init__(
-        self,
-        api_version: str = None,
-        fields_type: str = None,
-        fields_v1: FieldsV1 = None,
-        manager: str = None,
-        operation: str = None,
-        time: Time = None,
-    ):
-        super().__init__(
-            api_version=api_version,
-            fields_type=fields_type,
-            fields_v1=fields_v1,
-            manager=manager,
-            operation=operation,
-            time=time,
-        )
-
-
 class OwnerReference(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "io.k8s.apimachinery.pkg.apis.meta"
+    _version_ = "v1"
+
+    _required_ = ["api_version", "kind", "name", "uid"]
 
     api_version: str
     block_owner_deletion: bool
@@ -47,8 +20,6 @@ class OwnerReference(KubernetesObject):
     kind: str
     name: str
     uid: str
-
-    _required_ = ["api_version", "kind", "name", "uid"]
 
     def __init__(
         self,
@@ -72,6 +43,9 @@ class OwnerReference(KubernetesObject):
 class ObjectMeta(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "io.k8s.apimachinery.pkg.apis.meta"
+    _version_ = "v1"
+
     annotations: Dict[str, str]
     cluster_name: str
     creation_timestamp: Time
@@ -81,7 +55,6 @@ class ObjectMeta(KubernetesObject):
     generate_name: str
     generation: int
     labels: Dict[str, str]
-    managed_fields: List[ManagedFieldsEntry]
     name: str
     namespace: str
     owner_references: List[OwnerReference]
@@ -100,7 +73,6 @@ class ObjectMeta(KubernetesObject):
         generate_name: str = None,
         generation: int = None,
         labels: Dict[str, str] = None,
-        managed_fields: List[ManagedFieldsEntry] = None,
         name: str = None,
         namespace: str = None,
         owner_references: List[OwnerReference] = None,
@@ -118,7 +90,6 @@ class ObjectMeta(KubernetesObject):
             generate_name=generate_name,
             generation=generation,
             labels=labels,
-            managed_fields=managed_fields,
             name=name,
             namespace=namespace,
             owner_references=owner_references,
@@ -131,6 +102,9 @@ class ObjectMeta(KubernetesObject):
 class NamespaceSpec(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     finalizers: List[str]
 
     def __init__(self, finalizers: List[str] = None):
@@ -141,6 +115,7 @@ class Namespace(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = ""
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: NamespaceSpec
@@ -153,6 +128,12 @@ class Namespace(KubernetesApiResource):
 
 class PolicyRule(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "rbac.authorization.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["verbs"]
+
     _field_names_ = {
         "non_resource_urls": "nonResourceURLs",
     }
@@ -165,8 +146,6 @@ class PolicyRule(KubernetesObject):
     resource_names: List[str]
     resources: List[str]
     verbs: List[str]
-
-    _required_ = ["verbs"]
 
     def __init__(
         self,
@@ -189,6 +168,7 @@ class Role(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "rbac.authorization.k8s.io"
+    _version_ = "v1"
 
     metadata: ObjectMeta
     rules: List[PolicyRule]
@@ -213,11 +193,14 @@ class Role(KubernetesApiResource):
 class RoleRef(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "rbac.authorization.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["api_group", "kind", "name"]
+
     api_group: str
     kind: str
     name: str
-
-    _required_ = ["api_group", "kind", "name"]
 
     def __init__(self, api_group: str = None, kind: str = None, name: str = None):
         super().__init__(api_group=api_group, kind=kind, name=name)
@@ -226,12 +209,15 @@ class RoleRef(KubernetesObject):
 class Subject(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "rbac.authorization.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["kind", "name"]
+
     api_group: str
     kind: str
     name: str
     namespace: str
-
-    _required_ = ["kind", "name"]
 
     def __init__(
         self,
@@ -247,12 +233,13 @@ class RoleBinding(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "rbac.authorization.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["role_ref"]
 
     metadata: ObjectMeta
     role_ref: RoleRef
     subjects: List[Subject]
-
-    _required_ = ["role_ref"]
 
     def __init__(
         self,
@@ -276,11 +263,14 @@ class RoleBinding(KubernetesApiResource):
 class LabelSelectorRequirement(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "io.k8s.apimachinery.pkg.apis.meta"
+    _version_ = "v1"
+
+    _required_ = ["key", "operator"]
+
     key: str
     operator: str
     values: List[str]
-
-    _required_ = ["key", "operator"]
 
     def __init__(self, key: str = None, operator: str = None, values: List[str] = None):
         super().__init__(key=key, operator=operator, values=values)
@@ -288,6 +278,9 @@ class LabelSelectorRequirement(KubernetesObject):
 
 class LabelSelector(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "io.k8s.apimachinery.pkg.apis.meta"
+    _version_ = "v1"
 
     match_expressions: List[LabelSelectorRequirement]
     match_labels: Dict[str, str]
@@ -303,6 +296,9 @@ class LabelSelector(KubernetesObject):
 class AggregationRule(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "rbac.authorization.k8s.io"
+    _version_ = "v1"
+
     cluster_role_selectors: List[LabelSelector]
 
     def __init__(self, cluster_role_selectors: List[LabelSelector] = None):
@@ -313,6 +309,7 @@ class ClusterRole(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "rbac.authorization.k8s.io"
+    _version_ = "v1"
 
     aggregation_rule: AggregationRule
     metadata: ObjectMeta
@@ -340,12 +337,13 @@ class ClusterRoleBinding(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "rbac.authorization.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["role_ref"]
 
     metadata: ObjectMeta
     role_ref: RoleRef
     subjects: List[Subject]
-
-    _required_ = ["role_ref"]
 
     def __init__(
         self,
@@ -372,6 +370,7 @@ class ConfigMap(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = ""
+    _version_ = "v1"
 
     binary_data: Dict[str, Base64]
     data: Dict[str, str]
@@ -403,6 +402,7 @@ class Secret(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = ""
+    _version_ = "v1"
 
     data: Dict[str, Base64]
     immutable: bool
@@ -439,6 +439,9 @@ IntOrString = Union[int, str]
 class RollingUpdateDeployment(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "apps"
+    _version_ = "v1"
+
     max_surge: IntOrString
     max_unavailable: IntOrString
 
@@ -450,6 +453,9 @@ class RollingUpdateDeployment(KubernetesObject):
 
 class DeploymentStrategy(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "apps"
+    _version_ = "v1"
 
     rolling_update: RollingUpdateDeployment
     type: str
@@ -463,11 +469,14 @@ class DeploymentStrategy(KubernetesObject):
 class NodeSelectorRequirement(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["key", "operator"]
+
     key: str
     operator: str
     values: List[str]
-
-    _required_ = ["key", "operator"]
 
     def __init__(self, key: str = None, operator: str = None, values: List[str] = None):
         super().__init__(key=key, operator=operator, values=values)
@@ -475,6 +484,9 @@ class NodeSelectorRequirement(KubernetesObject):
 
 class NodeSelectorTerm(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     match_expressions: List[NodeSelectorRequirement]
     match_fields: List[NodeSelectorRequirement]
@@ -490,10 +502,13 @@ class NodeSelectorTerm(KubernetesObject):
 class PreferredSchedulingTerm(KubernetesObject):
     __slots__ = ()
 
-    preference: NodeSelectorTerm
-    weight: int
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["preference", "weight"]
+
+    preference: NodeSelectorTerm
+    weight: int
 
     def __init__(self, preference: NodeSelectorTerm = None, weight: int = None):
         super().__init__(preference=preference, weight=weight)
@@ -502,9 +517,12 @@ class PreferredSchedulingTerm(KubernetesObject):
 class NodeSelector(KubernetesObject):
     __slots__ = ()
 
-    node_selector_terms: List[NodeSelectorTerm]
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["node_selector_terms"]
+
+    node_selector_terms: List[NodeSelectorTerm]
 
     def __init__(self, node_selector_terms: List[NodeSelectorTerm] = None):
         super().__init__(node_selector_terms=node_selector_terms)
@@ -512,6 +530,9 @@ class NodeSelector(KubernetesObject):
 
 class NodeAffinity(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     preferred_during_scheduling_ignored_during_execution: List[PreferredSchedulingTerm]
     required_during_scheduling_ignored_during_execution: NodeSelector
@@ -532,11 +553,14 @@ class NodeAffinity(KubernetesObject):
 class PodAffinityTerm(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["topology_key"]
+
     label_selector: LabelSelector
     namespaces: List[str]
     topology_key: str
-
-    _required_ = ["topology_key"]
 
     def __init__(
         self,
@@ -554,10 +578,13 @@ class PodAffinityTerm(KubernetesObject):
 class WeightedPodAffinityTerm(KubernetesObject):
     __slots__ = ()
 
-    pod_affinity_term: PodAffinityTerm
-    weight: int
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["pod_affinity_term", "weight"]
+
+    pod_affinity_term: PodAffinityTerm
+    weight: int
 
     def __init__(self, pod_affinity_term: PodAffinityTerm = None, weight: int = None):
         super().__init__(pod_affinity_term=pod_affinity_term, weight=weight)
@@ -565,6 +592,9 @@ class WeightedPodAffinityTerm(KubernetesObject):
 
 class PodAffinity(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     preferred_during_scheduling_ignored_during_execution: List[WeightedPodAffinityTerm]
     required_during_scheduling_ignored_during_execution: List[PodAffinityTerm]
@@ -587,6 +617,9 @@ class PodAffinity(KubernetesObject):
 class PodAntiAffinity(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     preferred_during_scheduling_ignored_during_execution: List[WeightedPodAffinityTerm]
     required_during_scheduling_ignored_during_execution: List[PodAffinityTerm]
 
@@ -608,6 +641,9 @@ class PodAntiAffinity(KubernetesObject):
 class Affinity(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     node_affinity: NodeAffinity
     pod_affinity: PodAffinity
     pod_anti_affinity: PodAntiAffinity
@@ -628,11 +664,14 @@ class Affinity(KubernetesObject):
 class ConfigMapKeySelector(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["key"]
+
     key: str
     name: str
     optional: bool
-
-    _required_ = ["key"]
 
     def __init__(self, key: str = None, name: str = None, optional: bool = None):
         super().__init__(key=key, name=name, optional=optional)
@@ -641,10 +680,13 @@ class ConfigMapKeySelector(KubernetesObject):
 class ObjectFieldSelector(KubernetesObject):
     __slots__ = ()
 
-    api_version: str
-    field_path: str
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["field_path"]
+
+    api_version: str
+    field_path: str
 
     def __init__(self, api_version: str = None, field_path: str = None):
         super().__init__(api_version=api_version, field_path=field_path)
@@ -656,11 +698,14 @@ Quantity = Union[str, int, float]
 class ResourceFieldSelector(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["resource"]
+
     container_name: str
     divisor: Quantity
     resource: str
-
-    _required_ = ["resource"]
 
     def __init__(
         self, container_name: str = None, divisor: Quantity = None, resource: str = None
@@ -673,11 +718,14 @@ class ResourceFieldSelector(KubernetesObject):
 class SecretKeySelector(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["key"]
+
     key: str
     name: str
     optional: bool
-
-    _required_ = ["key"]
 
     def __init__(self, key: str = None, name: str = None, optional: bool = None):
         super().__init__(key=key, name=name, optional=optional)
@@ -685,6 +733,9 @@ class SecretKeySelector(KubernetesObject):
 
 class EnvVarSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     config_map_key_ref: ConfigMapKeySelector
     field_ref: ObjectFieldSelector
@@ -709,11 +760,14 @@ class EnvVarSource(KubernetesObject):
 class EnvVar(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["name"]
+
     name: str
     value: str
     value_from: EnvVarSource
-
-    _required_ = ["name"]
 
     def __init__(
         self, name: str = None, value: str = None, value_from: EnvVarSource = None
@@ -723,6 +777,9 @@ class EnvVar(KubernetesObject):
 
 class ConfigMapEnvSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     name: str
     optional: bool
@@ -734,6 +791,9 @@ class ConfigMapEnvSource(KubernetesObject):
 class SecretEnvSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     name: str
     optional: bool
 
@@ -743,6 +803,9 @@ class SecretEnvSource(KubernetesObject):
 
 class EnvFromSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     config_map_ref: ConfigMapEnvSource
     prefix: str
@@ -762,6 +825,9 @@ class EnvFromSource(KubernetesObject):
 class ExecAction(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     command: List[str]
 
     def __init__(self, command: List[str] = None):
@@ -771,10 +837,13 @@ class ExecAction(KubernetesObject):
 class HTTPHeader(KubernetesObject):
     __slots__ = ()
 
-    name: str
-    value: str
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["name", "value"]
+
+    name: str
+    value: str
 
     def __init__(self, name: str = None, value: str = None):
         super().__init__(name=name, value=value)
@@ -783,13 +852,16 @@ class HTTPHeader(KubernetesObject):
 class HTTPGetAction(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["port"]
+
     host: str
     http_headers: List[HTTPHeader]
     path: str
     port: IntOrString
     scheme: str
-
-    _required_ = ["port"]
 
     def __init__(
         self,
@@ -807,10 +879,13 @@ class HTTPGetAction(KubernetesObject):
 class TCPSocketAction(KubernetesObject):
     __slots__ = ()
 
-    host: str
-    port: IntOrString
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["port"]
+
+    host: str
+    port: IntOrString
 
     def __init__(self, host: str = None, port: IntOrString = None):
         super().__init__(host=host, port=port)
@@ -818,6 +893,9 @@ class TCPSocketAction(KubernetesObject):
 
 class Handler(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     exec: ExecAction
     http_get: HTTPGetAction
@@ -835,6 +913,9 @@ class Handler(KubernetesObject):
 class Lifecycle(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     post_start: Handler
     pre_stop: Handler
 
@@ -844,6 +925,9 @@ class Lifecycle(KubernetesObject):
 
 class Probe(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     exec: ExecAction
     failure_threshold: int
@@ -879,6 +963,12 @@ class Probe(KubernetesObject):
 
 class ContainerPort(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["container_port"]
+
     _field_names_ = {
         "host_ip": "hostIP",
     }
@@ -891,8 +981,6 @@ class ContainerPort(KubernetesObject):
     host_port: int
     name: str
     protocol: str
-
-    _required_ = ["container_port"]
 
     def __init__(
         self,
@@ -914,6 +1002,9 @@ class ContainerPort(KubernetesObject):
 class ResourceRequirements(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     limits: Dict[str, Quantity]
     requests: Dict[str, Quantity]
 
@@ -926,6 +1017,9 @@ class ResourceRequirements(KubernetesObject):
 class Capabilities(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     add: List[str]
     drop: List[str]
 
@@ -935,6 +1029,9 @@ class Capabilities(KubernetesObject):
 
 class SELinuxOptions(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     level: str
     role: str
@@ -950,10 +1047,13 @@ class SELinuxOptions(KubernetesObject):
 class SeccompProfile(KubernetesObject):
     __slots__ = ()
 
-    localhost_profile: str
-    type: str
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["type"]
+
+    localhost_profile: str
+    type: str
 
     def __init__(self, localhost_profile: str = None, type: str = None):
         super().__init__(localhost_profile=localhost_profile, type=type)
@@ -961,6 +1061,9 @@ class SeccompProfile(KubernetesObject):
 
 class WindowsSecurityContextOptions(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     gmsa_credential_spec: str
     gmsa_credential_spec_name: str
@@ -981,6 +1084,9 @@ class WindowsSecurityContextOptions(KubernetesObject):
 
 class SecurityContext(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     allow_privilege_escalation: bool
     capabilities: Capabilities
@@ -1026,10 +1132,13 @@ class SecurityContext(KubernetesObject):
 class VolumeDevice(KubernetesObject):
     __slots__ = ()
 
-    device_path: str
-    name: str
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["device_path", "name"]
+
+    device_path: str
+    name: str
 
     def __init__(self, device_path: str = None, name: str = None):
         super().__init__(device_path=device_path, name=name)
@@ -1038,14 +1147,17 @@ class VolumeDevice(KubernetesObject):
 class VolumeMount(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["mount_path", "name"]
+
     mount_path: str
     mount_propagation: str
     name: str
     read_only: bool
     sub_path: str
     sub_path_expr: str
-
-    _required_ = ["mount_path", "name"]
 
     def __init__(
         self,
@@ -1069,6 +1181,11 @@ class VolumeMount(KubernetesObject):
 class Container(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["name"]
+
     args: List[str]
     command: List[str]
     env: List[EnvVar]
@@ -1091,8 +1208,6 @@ class Container(KubernetesObject):
     volume_devices: List[VolumeDevice]
     volume_mounts: List[VolumeMount]
     working_dir: str
-
-    _required_ = ["name"]
 
     def __init__(
         self,
@@ -1148,6 +1263,9 @@ class Container(KubernetesObject):
 class PodDNSConfigOption(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     name: str
     value: str
 
@@ -1157,6 +1275,9 @@ class PodDNSConfigOption(KubernetesObject):
 
 class PodDNSConfig(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     nameservers: List[str]
     options: List[PodDNSConfigOption]
@@ -1173,6 +1294,11 @@ class PodDNSConfig(KubernetesObject):
 
 class EphemeralContainer(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["name"]
 
     args: List[str]
     command: List[str]
@@ -1197,8 +1323,6 @@ class EphemeralContainer(KubernetesObject):
     volume_devices: List[VolumeDevice]
     volume_mounts: List[VolumeMount]
     working_dir: str
-
-    _required_ = ["name"]
 
     def __init__(
         self,
@@ -1256,6 +1380,9 @@ class EphemeralContainer(KubernetesObject):
 class HostAlias(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     hostnames: List[str]
     ip: str
 
@@ -1266,6 +1393,9 @@ class HostAlias(KubernetesObject):
 class LocalObjectReference(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     name: str
 
     def __init__(self, name: str = None):
@@ -1275,9 +1405,12 @@ class LocalObjectReference(KubernetesObject):
 class PodReadinessGate(KubernetesObject):
     __slots__ = ()
 
-    condition_type: str
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["condition_type"]
+
+    condition_type: str
 
     def __init__(self, condition_type: str = None):
         super().__init__(condition_type=condition_type)
@@ -1286,10 +1419,13 @@ class PodReadinessGate(KubernetesObject):
 class Sysctl(KubernetesObject):
     __slots__ = ()
 
-    name: str
-    value: str
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["name", "value"]
+
+    name: str
+    value: str
 
     def __init__(self, name: str = None, value: str = None):
         super().__init__(name=name, value=value)
@@ -1297,6 +1433,9 @@ class Sysctl(KubernetesObject):
 
 class PodSecurityContext(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     fs_group: int
     fs_group_change_policy: str
@@ -1339,6 +1478,9 @@ class PodSecurityContext(KubernetesObject):
 class Toleration(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     effect: str
     key: str
     operator: str
@@ -1365,12 +1507,15 @@ class Toleration(KubernetesObject):
 class TopologySpreadConstraint(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["max_skew", "topology_key", "when_unsatisfiable"]
+
     label_selector: LabelSelector
     max_skew: int
     topology_key: str
     when_unsatisfiable: str
-
-    _required_ = ["max_skew", "topology_key", "when_unsatisfiable"]
 
     def __init__(
         self,
@@ -1389,6 +1534,12 @@ class TopologySpreadConstraint(KubernetesObject):
 
 class AWSElasticBlockStoreVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["volume_id"]
+
     _field_names_ = {
         "volume_id": "volumeID",
     }
@@ -1400,8 +1551,6 @@ class AWSElasticBlockStoreVolumeSource(KubernetesObject):
     partition: int
     read_only: bool
     volume_id: str
-
-    _required_ = ["volume_id"]
 
     def __init__(
         self,
@@ -1420,6 +1569,12 @@ class AWSElasticBlockStoreVolumeSource(KubernetesObject):
 
 class AzureDiskVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["disk_name", "disk_uri"]
+
     _field_names_ = {
         "disk_uri": "diskURI",
     }
@@ -1433,8 +1588,6 @@ class AzureDiskVolumeSource(KubernetesObject):
     fs_type: str
     kind: str
     read_only: bool
-
-    _required_ = ["disk_name", "disk_uri"]
 
     def __init__(
         self,
@@ -1458,11 +1611,14 @@ class AzureDiskVolumeSource(KubernetesObject):
 class AzureFileVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["secret_name", "share_name"]
+
     read_only: bool
     secret_name: str
     share_name: str
-
-    _required_ = ["secret_name", "share_name"]
 
     def __init__(
         self, read_only: bool = None, secret_name: str = None, share_name: str = None
@@ -1475,14 +1631,17 @@ class AzureFileVolumeSource(KubernetesObject):
 class CephFSVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["monitors"]
+
     monitors: List[str]
     path: str
     read_only: bool
     secret_file: str
     secret_ref: LocalObjectReference
     user: str
-
-    _required_ = ["monitors"]
 
     def __init__(
         self,
@@ -1505,6 +1664,12 @@ class CephFSVolumeSource(KubernetesObject):
 
 class CinderVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["volume_id"]
+
     _field_names_ = {
         "volume_id": "volumeID",
     }
@@ -1516,8 +1681,6 @@ class CinderVolumeSource(KubernetesObject):
     read_only: bool
     secret_ref: LocalObjectReference
     volume_id: str
-
-    _required_ = ["volume_id"]
 
     def __init__(
         self,
@@ -1537,11 +1700,14 @@ class CinderVolumeSource(KubernetesObject):
 class KeyToPath(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["key", "path"]
+
     key: str
     mode: int
     path: str
-
-    _required_ = ["key", "path"]
 
     def __init__(self, key: str = None, mode: int = None, path: str = None):
         super().__init__(key=key, mode=mode, path=path)
@@ -1549,6 +1715,9 @@ class KeyToPath(KubernetesObject):
 
 class ConfigMapVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     default_mode: int
     items: List[KeyToPath]
@@ -1570,13 +1739,16 @@ class ConfigMapVolumeSource(KubernetesObject):
 class CSIVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["driver"]
+
     driver: str
     fs_type: str
     node_publish_secret_ref: LocalObjectReference
     read_only: bool
     volume_attributes: Dict[str, str]
-
-    _required_ = ["driver"]
 
     def __init__(
         self,
@@ -1598,12 +1770,15 @@ class CSIVolumeSource(KubernetesObject):
 class DownwardAPIVolumeFile(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["path"]
+
     field_ref: ObjectFieldSelector
     mode: int
     path: str
     resource_field_ref: ResourceFieldSelector
-
-    _required_ = ["path"]
 
     def __init__(
         self,
@@ -1623,6 +1798,9 @@ class DownwardAPIVolumeFile(KubernetesObject):
 class DownwardAPIVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     default_mode: int
     items: List[DownwardAPIVolumeFile]
 
@@ -1635,6 +1813,9 @@ class DownwardAPIVolumeSource(KubernetesObject):
 class EmptyDirVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     medium: str
     size_limit: Quantity
 
@@ -1645,11 +1826,14 @@ class EmptyDirVolumeSource(KubernetesObject):
 class TypedLocalObjectReference(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["kind", "name"]
+
     api_group: str
     kind: str
     name: str
-
-    _required_ = ["kind", "name"]
 
     def __init__(self, api_group: str = None, kind: str = None, name: str = None):
         super().__init__(api_group=api_group, kind=kind, name=name)
@@ -1657,6 +1841,9 @@ class TypedLocalObjectReference(KubernetesObject):
 
 class PersistentVolumeClaimSpec(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     access_modes: List[str]
     data_source: TypedLocalObjectReference
@@ -1690,10 +1877,13 @@ class PersistentVolumeClaimSpec(KubernetesObject):
 class PersistentVolumeClaimTemplate(KubernetesObject):
     __slots__ = ()
 
-    metadata: ObjectMeta
-    spec: PersistentVolumeClaimSpec
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["spec"]
+
+    metadata: ObjectMeta
+    spec: PersistentVolumeClaimSpec
 
     def __init__(
         self, metadata: ObjectMeta = None, spec: PersistentVolumeClaimSpec = None
@@ -1703,6 +1893,9 @@ class PersistentVolumeClaimTemplate(KubernetesObject):
 
 class EphemeralVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     read_only: bool
     volume_claim_template: PersistentVolumeClaimTemplate
@@ -1719,6 +1912,10 @@ class EphemeralVolumeSource(KubernetesObject):
 
 class FCVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
     _field_names_ = {
         "target_wwns": "targetWWNs",
     }
@@ -1752,13 +1949,16 @@ class FCVolumeSource(KubernetesObject):
 class FlexVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["driver"]
+
     driver: str
     fs_type: str
     options: Dict[str, str]
     read_only: bool
     secret_ref: LocalObjectReference
-
-    _required_ = ["driver"]
 
     def __init__(
         self,
@@ -1779,6 +1979,10 @@ class FlexVolumeSource(KubernetesObject):
 
 class FlockerVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
     _field_names_ = {
         "dataset_uuid": "datasetUUID",
     }
@@ -1796,12 +2000,15 @@ class FlockerVolumeSource(KubernetesObject):
 class GCEPersistentDiskVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["pd_name"]
+
     fs_type: str
     partition: int
     pd_name: str
     read_only: bool
-
-    _required_ = ["pd_name"]
 
     def __init__(
         self,
@@ -1818,11 +2025,14 @@ class GCEPersistentDiskVolumeSource(KubernetesObject):
 class GitRepoVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["repository"]
+
     directory: str
     repository: str
     revision: str
-
-    _required_ = ["repository"]
 
     def __init__(
         self, directory: str = None, repository: str = None, revision: str = None
@@ -1833,11 +2043,14 @@ class GitRepoVolumeSource(KubernetesObject):
 class GlusterfsVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["endpoints", "path"]
+
     endpoints: str
     path: str
     read_only: bool
-
-    _required_ = ["endpoints", "path"]
 
     def __init__(self, endpoints: str = None, path: str = None, read_only: bool = None):
         super().__init__(endpoints=endpoints, path=path, read_only=read_only)
@@ -1846,10 +2059,13 @@ class GlusterfsVolumeSource(KubernetesObject):
 class HostPathVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    path: str
-    type: str
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["path"]
+
+    path: str
+    type: str
 
     def __init__(self, path: str = None, type: str = None):
         super().__init__(path=path, type=type)
@@ -1857,6 +2073,11 @@ class HostPathVolumeSource(KubernetesObject):
 
 class ISCSIVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["iqn", "lun", "target_portal"]
 
     chap_auth_discovery: bool
     chap_auth_session: bool
@@ -1869,8 +2090,6 @@ class ISCSIVolumeSource(KubernetesObject):
     read_only: bool
     secret_ref: LocalObjectReference
     target_portal: str
-
-    _required_ = ["iqn", "lun", "target_portal"]
 
     def __init__(
         self,
@@ -1904,11 +2123,14 @@ class ISCSIVolumeSource(KubernetesObject):
 class NFSVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["path", "server"]
+
     path: str
     read_only: bool
     server: str
-
-    _required_ = ["path", "server"]
 
     def __init__(self, path: str = None, read_only: bool = None, server: str = None):
         super().__init__(path=path, read_only=read_only, server=server)
@@ -1917,10 +2139,13 @@ class NFSVolumeSource(KubernetesObject):
 class PersistentVolumeClaimVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    claim_name: str
-    read_only: bool
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["claim_name"]
+
+    claim_name: str
+    read_only: bool
 
     def __init__(self, claim_name: str = None, read_only: bool = None):
         super().__init__(claim_name=claim_name, read_only=read_only)
@@ -1928,6 +2153,12 @@ class PersistentVolumeClaimVolumeSource(KubernetesObject):
 
 class PhotonPersistentDiskVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["pd_id"]
+
     _field_names_ = {
         "pd_id": "pdID",
     }
@@ -1938,14 +2169,18 @@ class PhotonPersistentDiskVolumeSource(KubernetesObject):
     fs_type: str
     pd_id: str
 
-    _required_ = ["pd_id"]
-
     def __init__(self, fs_type: str = None, pd_id: str = None):
         super().__init__(fs_type=fs_type, pd_id=pd_id)
 
 
 class PortworxVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["volume_id"]
+
     _field_names_ = {
         "volume_id": "volumeID",
     }
@@ -1957,8 +2192,6 @@ class PortworxVolumeSource(KubernetesObject):
     read_only: bool
     volume_id: str
 
-    _required_ = ["volume_id"]
-
     def __init__(
         self, fs_type: str = None, read_only: bool = None, volume_id: str = None
     ):
@@ -1967,6 +2200,9 @@ class PortworxVolumeSource(KubernetesObject):
 
 class ConfigMapProjection(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     items: List[KeyToPath]
     name: str
@@ -1981,6 +2217,9 @@ class ConfigMapProjection(KubernetesObject):
 class DownwardAPIProjection(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     items: List[DownwardAPIVolumeFile]
 
     def __init__(self, items: List[DownwardAPIVolumeFile] = None):
@@ -1989,6 +2228,9 @@ class DownwardAPIProjection(KubernetesObject):
 
 class SecretProjection(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     items: List[KeyToPath]
     name: str
@@ -2003,11 +2245,14 @@ class SecretProjection(KubernetesObject):
 class ServiceAccountTokenProjection(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["path"]
+
     audience: str
     expiration_seconds: int
     path: str
-
-    _required_ = ["path"]
 
     def __init__(
         self, audience: str = None, expiration_seconds: int = None, path: str = None
@@ -2019,6 +2264,10 @@ class ServiceAccountTokenProjection(KubernetesObject):
 
 class VolumeProjection(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
     _field_names_ = {
         "downward_api": "downwardAPI",
     }
@@ -2049,6 +2298,9 @@ class VolumeProjection(KubernetesObject):
 class ProjectedVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     default_mode: int
     sources: List[VolumeProjection]
 
@@ -2061,14 +2313,17 @@ class ProjectedVolumeSource(KubernetesObject):
 class QuobyteVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["registry", "volume"]
+
     group: str
     read_only: bool
     registry: str
     tenant: str
     user: str
     volume: str
-
-    _required_ = ["registry", "volume"]
 
     def __init__(
         self,
@@ -2092,6 +2347,11 @@ class QuobyteVolumeSource(KubernetesObject):
 class RBDVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["image", "monitors"]
+
     fs_type: str
     image: str
     keyring: str
@@ -2100,8 +2360,6 @@ class RBDVolumeSource(KubernetesObject):
     read_only: bool
     secret_ref: LocalObjectReference
     user: str
-
-    _required_ = ["image", "monitors"]
 
     def __init__(
         self,
@@ -2129,6 +2387,11 @@ class RBDVolumeSource(KubernetesObject):
 class ScaleIOVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["gateway", "secret_ref", "system"]
+
     fs_type: str
     gateway: str
     protection_domain: str
@@ -2139,8 +2402,6 @@ class ScaleIOVolumeSource(KubernetesObject):
     storage_pool: str
     system: str
     volume_name: str
-
-    _required_ = ["gateway", "secret_ref", "system"]
 
     def __init__(
         self,
@@ -2172,6 +2433,9 @@ class ScaleIOVolumeSource(KubernetesObject):
 class SecretVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     default_mode: int
     items: List[KeyToPath]
     optional: bool
@@ -2194,6 +2458,9 @@ class SecretVolumeSource(KubernetesObject):
 
 class StorageOSVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     fs_type: str
     read_only: bool
@@ -2220,6 +2487,12 @@ class StorageOSVolumeSource(KubernetesObject):
 
 class VsphereVirtualDiskVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["volume_path"]
+
     _field_names_ = {
         "storage_policy_id": "storagePolicyID",
     }
@@ -2231,8 +2504,6 @@ class VsphereVirtualDiskVolumeSource(KubernetesObject):
     storage_policy_id: str
     storage_policy_name: str
     volume_path: str
-
-    _required_ = ["volume_path"]
 
     def __init__(
         self,
@@ -2251,6 +2522,12 @@ class VsphereVirtualDiskVolumeSource(KubernetesObject):
 
 class Volume(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["name"]
+
     _field_names_ = {
         "downward_api": "downwardAPI",
         "scale_io": "scaleIO",
@@ -2290,8 +2567,6 @@ class Volume(KubernetesObject):
     secret: SecretVolumeSource
     storageos: StorageOSVolumeSource
     vsphere_volume: VsphereVirtualDiskVolumeSource
-
-    _required_ = ["name"]
 
     def __init__(
         self,
@@ -2362,6 +2637,12 @@ class Volume(KubernetesObject):
 
 class PodSpec(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["containers"]
+
     _field_names_ = {
         "host_ipc": "hostIPC",
         "host_pid": "hostPID",
@@ -2408,8 +2689,6 @@ class PodSpec(KubernetesObject):
     tolerations: List[Toleration]
     topology_spread_constraints: List[TopologySpreadConstraint]
     volumes: List[Volume]
-
-    _required_ = ["containers"]
 
     def __init__(
         self,
@@ -2491,6 +2770,9 @@ class PodSpec(KubernetesObject):
 class PodTemplateSpec(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     metadata: ObjectMeta
     spec: PodSpec
 
@@ -2501,6 +2783,11 @@ class PodTemplateSpec(KubernetesObject):
 class DeploymentSpec(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "apps"
+    _version_ = "v1"
+
+    _required_ = ["selector", "template"]
+
     min_ready_seconds: int
     paused: bool
     progress_deadline_seconds: int
@@ -2509,8 +2796,6 @@ class DeploymentSpec(KubernetesObject):
     selector: LabelSelector
     strategy: DeploymentStrategy
     template: PodTemplateSpec
-
-    _required_ = ["selector", "template"]
 
     def __init__(
         self,
@@ -2539,6 +2824,7 @@ class Deployment(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "apps"
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: DeploymentSpec
@@ -2558,6 +2844,9 @@ class Deployment(KubernetesApiResource):
 class RollingUpdateStatefulSetStrategy(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "apps"
+    _version_ = "v1"
+
     partition: int
 
     def __init__(self, partition: int = None):
@@ -2566,6 +2855,9 @@ class RollingUpdateStatefulSetStrategy(KubernetesObject):
 
 class StatefulSetUpdateStrategy(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "apps"
+    _version_ = "v1"
 
     rolling_update: RollingUpdateStatefulSetStrategy
     type: str
@@ -2580,6 +2872,7 @@ class PersistentVolumeClaim(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = ""
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: PersistentVolumeClaimSpec
@@ -2599,6 +2892,11 @@ class PersistentVolumeClaim(KubernetesApiResource):
 class StatefulSetSpec(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "apps"
+    _version_ = "v1"
+
+    _required_ = ["selector", "service_name", "template"]
+
     pod_management_policy: str
     replicas: int
     revision_history_limit: int
@@ -2607,8 +2905,6 @@ class StatefulSetSpec(KubernetesObject):
     template: PodTemplateSpec
     update_strategy: StatefulSetUpdateStrategy
     volume_claim_templates: List[PersistentVolumeClaim]
-
-    _required_ = ["selector", "service_name", "template"]
 
     def __init__(
         self,
@@ -2637,6 +2933,7 @@ class StatefulSet(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "apps"
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: StatefulSetSpec
@@ -2656,6 +2953,9 @@ class StatefulSet(KubernetesApiResource):
 class RollingUpdateDaemonSet(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "apps"
+    _version_ = "v1"
+
     max_unavailable: IntOrString
 
     def __init__(self, max_unavailable: IntOrString = None):
@@ -2664,6 +2964,9 @@ class RollingUpdateDaemonSet(KubernetesObject):
 
 class DaemonSetUpdateStrategy(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "apps"
+    _version_ = "v1"
 
     rolling_update: RollingUpdateDaemonSet
     type: str
@@ -2675,13 +2978,16 @@ class DaemonSetUpdateStrategy(KubernetesObject):
 class DaemonSetSpec(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "apps"
+    _version_ = "v1"
+
+    _required_ = ["selector", "template"]
+
     min_ready_seconds: int
     revision_history_limit: int
     selector: LabelSelector
     template: PodTemplateSpec
     update_strategy: DaemonSetUpdateStrategy
-
-    _required_ = ["selector", "template"]
 
     def __init__(
         self,
@@ -2704,6 +3010,7 @@ class DaemonSet(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "apps"
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: DaemonSetSpec
@@ -2723,6 +3030,11 @@ class DaemonSet(KubernetesApiResource):
 class JobSpec(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "batch"
+    _version_ = "v1"
+
+    _required_ = ["template"]
+
     active_deadline_seconds: int
     backoff_limit: int
     completions: int
@@ -2731,8 +3043,6 @@ class JobSpec(KubernetesObject):
     selector: LabelSelector
     template: PodTemplateSpec
     ttl_seconds_after_finished: int
-
-    _required_ = ["template"]
 
     def __init__(
         self,
@@ -2761,6 +3071,7 @@ class Job(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "batch"
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: JobSpec
@@ -2780,6 +3091,9 @@ class Job(KubernetesApiResource):
 class JobTemplateSpec(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "batch"
+    _version_ = "v1beta1"
+
     metadata: ObjectMeta
     spec: JobSpec
 
@@ -2790,6 +3104,11 @@ class JobTemplateSpec(KubernetesObject):
 class CronJobSpec(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "batch"
+    _version_ = "v1beta1"
+
+    _required_ = ["job_template", "schedule"]
+
     concurrency_policy: str
     failed_jobs_history_limit: int
     job_template: JobTemplateSpec
@@ -2797,8 +3116,6 @@ class CronJobSpec(KubernetesObject):
     starting_deadline_seconds: int
     successful_jobs_history_limit: int
     suspend: bool
-
-    _required_ = ["job_template", "schedule"]
 
     def __init__(
         self,
@@ -2825,6 +3142,7 @@ class CronJob(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "batch"
+    _version_ = "v1beta1"
 
     metadata: ObjectMeta
     spec: CronJobSpec
@@ -2844,6 +3162,9 @@ class CronJob(KubernetesApiResource):
 class NetworkPolicyPort(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
+
     port: IntOrString
     protocol: str
 
@@ -2853,6 +3174,12 @@ class NetworkPolicyPort(KubernetesObject):
 
 class IPBlock(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["cidr"]
+
     _revfield_names_ = {
         "except": "except_",
     }
@@ -2860,14 +3187,15 @@ class IPBlock(KubernetesObject):
     cidr: str
     except_: List[str]
 
-    _required_ = ["cidr"]
-
     def __init__(self, cidr: str = None, except_: List[str] = None):
         super().__init__(cidr=cidr, except_=except_)
 
 
 class NetworkPolicyPeer(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
 
     ip_block: IPBlock
     namespace_selector: LabelSelector
@@ -2889,6 +3217,9 @@ class NetworkPolicyPeer(KubernetesObject):
 class NetworkPolicyEgressRule(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
+
     ports: List[NetworkPolicyPort]
     to: List[NetworkPolicyPeer]
 
@@ -2900,6 +3231,10 @@ class NetworkPolicyEgressRule(KubernetesObject):
 
 class NetworkPolicyIngressRule(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
+
     _revfield_names_ = {
         "from": "from_",
     }
@@ -2918,12 +3253,15 @@ class NetworkPolicyIngressRule(KubernetesObject):
 class NetworkPolicySpec(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["pod_selector"]
+
     egress: List[NetworkPolicyEgressRule]
     ingress: List[NetworkPolicyIngressRule]
     pod_selector: LabelSelector
     policy_types: List[str]
-
-    _required_ = ["pod_selector"]
 
     def __init__(
         self,
@@ -2944,6 +3282,7 @@ class NetworkPolicy(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "networking.k8s.io"
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: NetworkPolicySpec
@@ -2968,11 +3307,14 @@ class NetworkPolicy(KubernetesApiResource):
 class ScopedResourceSelectorRequirement(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["operator", "scope_name"]
+
     operator: str
     scope_name: str
     values: List[str]
-
-    _required_ = ["operator", "scope_name"]
 
     def __init__(
         self, operator: str = None, scope_name: str = None, values: List[str] = None
@@ -2982,6 +3324,9 @@ class ScopedResourceSelectorRequirement(KubernetesObject):
 
 class ScopeSelector(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     match_expressions: List[ScopedResourceSelectorRequirement]
 
@@ -2993,6 +3338,9 @@ class ScopeSelector(KubernetesObject):
 
 class ResourceQuotaSpec(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     hard: Dict[str, Quantity]
     scope_selector: ScopeSelector
@@ -3011,6 +3359,7 @@ class ResourceQuota(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = ""
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: ResourceQuotaSpec
@@ -3030,12 +3379,15 @@ class ResourceQuota(KubernetesApiResource):
 class AzureFilePersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["secret_name", "share_name"]
+
     read_only: bool
     secret_name: str
     secret_namespace: str
     share_name: str
-
-    _required_ = ["secret_name", "share_name"]
 
     def __init__(
         self,
@@ -3055,6 +3407,9 @@ class AzureFilePersistentVolumeSource(KubernetesObject):
 class SecretReference(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     name: str
     namespace: str
 
@@ -3065,14 +3420,17 @@ class SecretReference(KubernetesObject):
 class CephFSPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["monitors"]
+
     monitors: List[str]
     path: str
     read_only: bool
     secret_file: str
     secret_ref: SecretReference
     user: str
-
-    _required_ = ["monitors"]
 
     def __init__(
         self,
@@ -3095,6 +3453,12 @@ class CephFSPersistentVolumeSource(KubernetesObject):
 
 class CinderPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["volume_id"]
+
     _field_names_ = {
         "volume_id": "volumeID",
     }
@@ -3106,8 +3470,6 @@ class CinderPersistentVolumeSource(KubernetesObject):
     read_only: bool
     secret_ref: SecretReference
     volume_id: str
-
-    _required_ = ["volume_id"]
 
     def __init__(
         self,
@@ -3126,6 +3488,9 @@ class CinderPersistentVolumeSource(KubernetesObject):
 
 class ObjectReference(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     api_version: str
     field_path: str
@@ -3159,6 +3524,11 @@ class ObjectReference(KubernetesObject):
 class CSIPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["driver", "volume_handle"]
+
     controller_expand_secret_ref: SecretReference
     controller_publish_secret_ref: SecretReference
     driver: str
@@ -3168,8 +3538,6 @@ class CSIPersistentVolumeSource(KubernetesObject):
     read_only: bool
     volume_attributes: Dict[str, str]
     volume_handle: str
-
-    _required_ = ["driver", "volume_handle"]
 
     def __init__(
         self,
@@ -3199,13 +3567,16 @@ class CSIPersistentVolumeSource(KubernetesObject):
 class FlexPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["driver"]
+
     driver: str
     fs_type: str
     options: Dict[str, str]
     read_only: bool
     secret_ref: SecretReference
-
-    _required_ = ["driver"]
 
     def __init__(
         self,
@@ -3227,12 +3598,15 @@ class FlexPersistentVolumeSource(KubernetesObject):
 class GlusterfsPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["endpoints", "path"]
+
     endpoints: str
     endpoints_namespace: str
     path: str
     read_only: bool
-
-    _required_ = ["endpoints", "path"]
 
     def __init__(
         self,
@@ -3252,6 +3626,11 @@ class GlusterfsPersistentVolumeSource(KubernetesObject):
 class ISCSIPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["iqn", "lun", "target_portal"]
+
     chap_auth_discovery: bool
     chap_auth_session: bool
     fs_type: str
@@ -3263,8 +3642,6 @@ class ISCSIPersistentVolumeSource(KubernetesObject):
     read_only: bool
     secret_ref: SecretReference
     target_portal: str
-
-    _required_ = ["iqn", "lun", "target_portal"]
 
     def __init__(
         self,
@@ -3298,10 +3675,13 @@ class ISCSIPersistentVolumeSource(KubernetesObject):
 class LocalVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    fs_type: str
-    path: str
+    _group_ = ""
+    _version_ = "v1"
 
     _required_ = ["path"]
+
+    fs_type: str
+    path: str
 
     def __init__(self, fs_type: str = None, path: str = None):
         super().__init__(fs_type=fs_type, path=path)
@@ -3309,6 +3689,9 @@ class LocalVolumeSource(KubernetesObject):
 
 class VolumeNodeAffinity(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
 
     required: NodeSelector
 
@@ -3319,6 +3702,11 @@ class VolumeNodeAffinity(KubernetesObject):
 class RBDPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["image", "monitors"]
+
     fs_type: str
     image: str
     keyring: str
@@ -3327,8 +3715,6 @@ class RBDPersistentVolumeSource(KubernetesObject):
     read_only: bool
     secret_ref: SecretReference
     user: str
-
-    _required_ = ["image", "monitors"]
 
     def __init__(
         self,
@@ -3356,6 +3742,11 @@ class RBDPersistentVolumeSource(KubernetesObject):
 class ScaleIOPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["gateway", "secret_ref", "system"]
+
     fs_type: str
     gateway: str
     protection_domain: str
@@ -3366,8 +3757,6 @@ class ScaleIOPersistentVolumeSource(KubernetesObject):
     storage_pool: str
     system: str
     volume_name: str
-
-    _required_ = ["gateway", "secret_ref", "system"]
 
     def __init__(
         self,
@@ -3399,6 +3788,9 @@ class ScaleIOPersistentVolumeSource(KubernetesObject):
 class StorageOSPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     fs_type: str
     read_only: bool
     secret_ref: ObjectReference
@@ -3424,6 +3816,10 @@ class StorageOSPersistentVolumeSource(KubernetesObject):
 
 class PersistentVolumeSpec(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
     _field_names_ = {
         "scale_io": "scaleIO",
     }
@@ -3533,6 +3929,7 @@ class PersistentVolume(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = ""
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: PersistentVolumeSpec
@@ -3548,9 +3945,12 @@ class PersistentVolume(KubernetesApiResource):
 class AllowedCSIDriver(KubernetesObject):
     __slots__ = ()
 
-    name: str
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     _required_ = ["name"]
+
+    name: str
 
     def __init__(self, name: str = None):
         super().__init__(name=name)
@@ -3559,9 +3959,12 @@ class AllowedCSIDriver(KubernetesObject):
 class AllowedFlexVolume(KubernetesObject):
     __slots__ = ()
 
-    driver: str
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     _required_ = ["driver"]
+
+    driver: str
 
     def __init__(self, driver: str = None):
         super().__init__(driver=driver)
@@ -3569,6 +3972,9 @@ class AllowedFlexVolume(KubernetesObject):
 
 class AllowedHostPath(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     path_prefix: str
     read_only: bool
@@ -3580,10 +3986,13 @@ class AllowedHostPath(KubernetesObject):
 class IDRange(KubernetesObject):
     __slots__ = ()
 
-    max: int
-    min: int
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     _required_ = ["max", "min"]
+
+    max: int
+    min: int
 
     def __init__(self, max: int = None, min: int = None):
         super().__init__(max=max, min=min)
@@ -3591,6 +4000,9 @@ class IDRange(KubernetesObject):
 
 class FSGroupStrategyOptions(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     ranges: List[IDRange]
     rule: str
@@ -3602,10 +4014,13 @@ class FSGroupStrategyOptions(KubernetesObject):
 class HostPortRange(KubernetesObject):
     __slots__ = ()
 
-    max: int
-    min: int
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     _required_ = ["max", "min"]
+
+    max: int
+    min: int
 
     def __init__(self, max: int = None, min: int = None):
         super().__init__(max=max, min=min)
@@ -3614,10 +4029,13 @@ class HostPortRange(KubernetesObject):
 class RunAsGroupStrategyOptions(KubernetesObject):
     __slots__ = ()
 
-    ranges: List[IDRange]
-    rule: str
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     _required_ = ["rule"]
+
+    ranges: List[IDRange]
+    rule: str
 
     def __init__(self, ranges: List[IDRange] = None, rule: str = None):
         super().__init__(ranges=ranges, rule=rule)
@@ -3626,10 +4044,13 @@ class RunAsGroupStrategyOptions(KubernetesObject):
 class RunAsUserStrategyOptions(KubernetesObject):
     __slots__ = ()
 
-    ranges: List[IDRange]
-    rule: str
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     _required_ = ["rule"]
+
+    ranges: List[IDRange]
+    rule: str
 
     def __init__(self, ranges: List[IDRange] = None, rule: str = None):
         super().__init__(ranges=ranges, rule=rule)
@@ -3638,10 +4059,13 @@ class RunAsUserStrategyOptions(KubernetesObject):
 class RuntimeClassStrategyOptions(KubernetesObject):
     __slots__ = ()
 
-    allowed_runtime_class_names: List[str]
-    default_runtime_class_name: str
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     _required_ = ["allowed_runtime_class_names"]
+
+    allowed_runtime_class_names: List[str]
+    default_runtime_class_name: str
 
     def __init__(
         self,
@@ -3657,10 +4081,13 @@ class RuntimeClassStrategyOptions(KubernetesObject):
 class SELinuxStrategyOptions(KubernetesObject):
     __slots__ = ()
 
-    rule: str
-    se_linux_options: SELinuxOptions
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     _required_ = ["rule"]
+
+    rule: str
+    se_linux_options: SELinuxOptions
 
     def __init__(self, rule: str = None, se_linux_options: SELinuxOptions = None):
         super().__init__(rule=rule, se_linux_options=se_linux_options)
@@ -3668,6 +4095,9 @@ class SELinuxStrategyOptions(KubernetesObject):
 
 class SupplementalGroupsStrategyOptions(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     ranges: List[IDRange]
     rule: str
@@ -3678,6 +4108,12 @@ class SupplementalGroupsStrategyOptions(KubernetesObject):
 
 class PodSecurityPolicySpec(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "policy"
+    _version_ = "v1beta1"
+
+    _required_ = ["fs_group", "run_as_user", "se_linux", "supplemental_groups"]
+
     _field_names_ = {
         "allowed_csi_drivers": "allowedCSIDrivers",
         "host_ipc": "hostIPC",
@@ -3713,8 +4149,6 @@ class PodSecurityPolicySpec(KubernetesObject):
     se_linux: SELinuxStrategyOptions
     supplemental_groups: SupplementalGroupsStrategyOptions
     volumes: List[str]
-
-    _required_ = ["fs_group", "run_as_user", "se_linux", "supplemental_groups"]
 
     def __init__(
         self,
@@ -3775,6 +4209,7 @@ class PodSecurityPolicy(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "policy"
+    _version_ = "v1beta1"
 
     metadata: ObjectMeta
     spec: PodSecurityPolicySpec
@@ -3794,6 +4229,9 @@ class PodSecurityPolicy(KubernetesApiResource):
 
 class PodDisruptionBudgetSpec(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "policy"
+    _version_ = "v1beta1"
 
     max_unavailable: IntOrString
     min_available: IntOrString
@@ -3816,6 +4254,7 @@ class PodDisruptionBudget(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "policy"
+    _version_ = "v1beta1"
 
     metadata: ObjectMeta
     spec: PodDisruptionBudgetSpec
@@ -3840,11 +4279,14 @@ class PodDisruptionBudget(KubernetesApiResource):
 class CrossVersionObjectReference(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "autoscaling"
+    _version_ = "v1"
+
+    _required_ = ["kind", "name"]
+
     api_version: str
     kind: str
     name: str
-
-    _required_ = ["kind", "name"]
 
     def __init__(self, api_version: str = None, kind: str = None, name: str = None):
         super().__init__(api_version=api_version, kind=kind, name=name)
@@ -3852,6 +4294,12 @@ class CrossVersionObjectReference(KubernetesObject):
 
 class HorizontalPodAutoscalerSpec(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "autoscaling"
+    _version_ = "v1"
+
+    _required_ = ["max_replicas", "scale_target_ref"]
+
     _field_names_ = {
         "target_cpu_utilization_percentage": "targetCPUUtilizationPercentage",
     }
@@ -3863,8 +4311,6 @@ class HorizontalPodAutoscalerSpec(KubernetesObject):
     min_replicas: int
     scale_target_ref: CrossVersionObjectReference
     target_cpu_utilization_percentage: int
-
-    _required_ = ["max_replicas", "scale_target_ref"]
 
     def __init__(
         self,
@@ -3885,6 +4331,7 @@ class HorizontalPodAutoscaler(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "autoscaling"
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: HorizontalPodAutoscalerSpec
@@ -3909,12 +4356,15 @@ class HorizontalPodAutoscaler(KubernetesApiResource):
 class ServiceReference(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "admissionregistration.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["name", "namespace"]
+
     name: str
     namespace: str
     path: str
     port: int
-
-    _required_ = ["name", "namespace"]
 
     def __init__(
         self,
@@ -3928,6 +4378,9 @@ class ServiceReference(KubernetesObject):
 
 class WebhookClientConfig(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "admissionregistration.k8s.io"
+    _version_ = "v1"
 
     ca_bundle: Base64
     service: ServiceReference
@@ -3944,6 +4397,9 @@ class WebhookClientConfig(KubernetesObject):
 
 class RuleWithOperations(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "admissionregistration.k8s.io"
+    _version_ = "v1"
 
     api_groups: List[str]
     api_versions: List[str]
@@ -3971,6 +4427,11 @@ class RuleWithOperations(KubernetesObject):
 class MutatingWebhook(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "admissionregistration.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["admission_review_versions", "client_config", "name", "side_effects"]
+
     admission_review_versions: List[str]
     client_config: WebhookClientConfig
     failure_policy: str
@@ -3982,8 +4443,6 @@ class MutatingWebhook(KubernetesObject):
     rules: List[RuleWithOperations]
     side_effects: str
     timeout_seconds: int
-
-    _required_ = ["admission_review_versions", "client_config", "name", "side_effects"]
 
     def __init__(
         self,
@@ -4018,6 +4477,7 @@ class MutatingWebhookConfiguration(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "admissionregistration.k8s.io"
+    _version_ = "v1"
 
     metadata: ObjectMeta
     webhooks: List[MutatingWebhook]
@@ -4041,14 +4501,17 @@ class MutatingWebhookConfiguration(KubernetesApiResource):
 class ServicePort(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
+    _required_ = ["port"]
+
     app_protocol: str
     name: str
     node_port: int
     port: int
     protocol: str
     target_port: IntOrString
-
-    _required_ = ["port"]
 
     def __init__(
         self,
@@ -4072,6 +4535,9 @@ class ServicePort(KubernetesObject):
 class ClientIPConfig(KubernetesObject):
     __slots__ = ()
 
+    _group_ = ""
+    _version_ = "v1"
+
     timeout_seconds: int
 
     def __init__(self, timeout_seconds: int = None):
@@ -4080,6 +4546,10 @@ class ClientIPConfig(KubernetesObject):
 
 class SessionAffinityConfig(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
     _field_names_ = {
         "client_ip": "clientIP",
     }
@@ -4095,6 +4565,10 @@ class SessionAffinityConfig(KubernetesObject):
 
 class ServiceSpec(KubernetesObject):
     __slots__ = ()
+
+    _group_ = ""
+    _version_ = "v1"
+
     _field_names_ = {
         "cluster_ip": "clusterIP",
         "load_balancer_ip": "loadBalancerIP",
@@ -4170,6 +4644,7 @@ class Service(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = ""
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: ServiceSpec
@@ -4188,6 +4663,7 @@ class ServiceAccount(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = ""
+    _version_ = "v1"
 
     automount_service_account_token: bool
     image_pull_secrets: List[LocalObjectReference]
@@ -4218,6 +4694,9 @@ class ServiceAccount(KubernetesApiResource):
 class ServiceBackendPort(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
+
     name: str
     number: int
 
@@ -4228,10 +4707,13 @@ class ServiceBackendPort(KubernetesObject):
 class IngressServiceBackend(KubernetesObject):
     __slots__ = ()
 
-    name: str
-    port: ServiceBackendPort
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
 
     _required_ = ["name"]
+
+    name: str
+    port: ServiceBackendPort
 
     def __init__(self, name: str = None, port: ServiceBackendPort = None):
         super().__init__(name=name, port=port)
@@ -4239,6 +4721,9 @@ class IngressServiceBackend(KubernetesObject):
 
 class IngressBackend(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
 
     resource: TypedLocalObjectReference
     service: IngressServiceBackend
@@ -4254,11 +4739,14 @@ class IngressBackend(KubernetesObject):
 class HTTPIngressPath(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["backend"]
+
     backend: IngressBackend
     path: str
     path_type: str
-
-    _required_ = ["backend"]
 
     def __init__(
         self, backend: IngressBackend = None, path: str = None, path_type: str = None
@@ -4269,9 +4757,12 @@ class HTTPIngressPath(KubernetesObject):
 class HTTPIngressRuleValue(KubernetesObject):
     __slots__ = ()
 
-    paths: List[HTTPIngressPath]
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
 
     _required_ = ["paths"]
+
+    paths: List[HTTPIngressPath]
 
     def __init__(self, paths: List[HTTPIngressPath] = None):
         super().__init__(paths=paths)
@@ -4279,6 +4770,9 @@ class HTTPIngressRuleValue(KubernetesObject):
 
 class IngressRule(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
 
     host: str
     http: HTTPIngressRuleValue
@@ -4290,6 +4784,9 @@ class IngressRule(KubernetesObject):
 class IngressTLS(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
+
     hosts: List[str]
     secret_name: str
 
@@ -4299,6 +4796,9 @@ class IngressTLS(KubernetesObject):
 
 class IngressSpec(KubernetesObject):
     __slots__ = ()
+
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
 
     default_backend: IngressBackend
     ingress_class_name: str
@@ -4324,6 +4824,7 @@ class Ingress(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "networking.k8s.io"
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: IngressSpec
@@ -4348,6 +4849,9 @@ class Ingress(KubernetesApiResource):
 class IngressClassSpec(KubernetesObject):
     __slots__ = ()
 
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
+
     controller: str
     parameters: TypedLocalObjectReference
 
@@ -4361,6 +4865,7 @@ class IngressClass(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "networking.k8s.io"
+    _version_ = "v1"
 
     metadata: ObjectMeta
     spec: IngressClassSpec

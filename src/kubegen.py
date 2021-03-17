@@ -105,7 +105,7 @@ def camel_to_snake(name: str):
 ACRONYMES = {"tls", "ipam"}
 
 
-def type_name(name: str):
+def type_name_from_property_name(name: str):
     # assuming 2 and 3 letters words are acronyms
     if len(name) <= 3:
         return name.upper()
@@ -134,21 +134,16 @@ class DictType(NamedTuple):
         return f"Dict[str, {str(self.value_type)}]"
 
 
-class TypeDef:
-    def __init__(self, name: str):
-        self.name = name
-
-    def __str__(self):
-        return self.name
-
-
-class TypeAlias(TypeDef):
+class TypeAlias:
     def __init__(self, name: str, ty: Any):
-        super().__init__(name)
+        self.name = name
         self.type = ty
 
     def __eq__(self, other):
         return self.name == other.name and self.type == other.type
+
+    def __str__(self):
+        return self.name
 
 
 class Property(NamedTuple):
@@ -171,16 +166,40 @@ class Property(NamedTuple):
         return camel_to_snake(self.name)
 
 
-class ResourceType(TypeDef):
-    def __init__(self, name: str):
-        super().__init__(name)
+GROUP_MAPPING = {
+    "io.k8s.api.core": "",
+    "io.k8s.api.networking": "networking.k8s.io",
+    "io.k8s.api.rbac": "rbac.authorization.k8s.io",
+    "io.k8s.api.admissionregistration": "admissionregistration.k8s.io",
+}
+
+
+class QualifiedName(NamedTuple):
+    name: str
+    group: str
+    version: str
+
+    def __str__(self):
+        return self.name
+
+    @classmethod
+    def from_string(cls, name):
+        parts = name.rsplit(".", maxsplit=2)
+        if len(parts) == 3:
+            group = GROUP_MAPPING.get(parts[0])
+            if group is None:
+                group = parts[0].removeprefix("io.k8s.api.")
+            return QualifiedName(parts[2], group, parts[1])
+
+        return QualifiedName(name, "", "")
+
+
+class ObjectType:
+    def __init__(self):
         self.properties: List[Property] = []
 
     def __eq__(self, other):
-        return self.name == other.name and self.properties == other.properties
-
-    def __repr__(self):
-        return f"{self.name}: {self.properties}"
+        return self.properties == other.properties
 
     @property
     def required_properties(self):
@@ -191,22 +210,54 @@ class ResourceType(TypeDef):
         return (prop for prop in self.properties if not prop.required)
 
 
-class AnonymousType(ResourceType):
-    def __init__(self, name: str, class_name: str):
-        super().__init__(name)
-        self.class_name = class_name
+class ResourceType(ObjectType):
+    def __init__(self, fqn: QualifiedName):
+        super().__init__()
+        self.fqn = fqn
+
+    @property
+    def name(self):
+        return self.fqn.name
+
+    @property
+    def group(self):
+        return self.fqn.group
+
+    @property
+    def version(self):
+        return self.fqn.version
+
+    def __eq__(self, other):
+        return self.name == other.name and super().__eq__(other)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"{self.name}: {self.properties}"
 
 
 class ApiResourceType(ResourceType):
-    def __init__(
-        self, name: str, group: str, version: str, kind: str, scoped: bool = True
-    ):
+    def __init__(self, name: QualifiedName, scoped: bool):
         super().__init__(name)
-        self.version = version
-        self.kind = kind
-        self.group = group
         self.scoped = scoped
 
+    @property
+    def kind(self):
+        return self.fqn.name
+
+
+class AnonymousType(ObjectType):
+    def __init__(self, name: str, class_name: str):
+        super().__init__()
+        self.name = name
+        self.class_name = class_name
+
+    def __eq__(self, other):
+        return self.name == other.name and super().__eq__(other)
+
+
+TypeDef = Union[TypeAlias, ResourceType, ApiResourceType, AnonymousType]
 
 BASE_OBJECT_TYPE = "KubernetesObject"
 RESOURCE_OBJECT_TYPE = "KubernetesApiResource"
@@ -241,10 +292,10 @@ class BaseImporter:
         if ty:
             assert (
                 fqn not in self.stack
-            ), "circular dependency -> need forward declaration"
+            ), "circular dependency -> needs forward declaration"
             return ty
 
-        name = simplename(fqn)
+        name = QualifiedName.from_string(fqn)
 
         self.stack.append(fqn)
         ty = self._parse_type(name, schema, anonymous)
@@ -252,78 +303,84 @@ class BaseImporter:
 
         if anonymous:
             # name may have been updated by generator
-            fqn = ty.name
-            if fqn in self.anonymous:
-                existing = self.resources[fqn]
-                if fqn not in self.conflicts:
-                    self.conflicts[fqn] = [existing, ty]
+            type_name = str(ty.name)
+            if type_name in self.anonymous:
+                existing = self.resources[type_name]
+                if type_name not in self.conflicts:
+                    self.conflicts[type_name] = [existing, ty]
                 else:
-                    self.conflicts[fqn].append(ty)
+                    self.conflicts[type_name].append(ty)
 
                 # if ty != existing:
                 #    raise ValueError(f"{fqn} types conflicts: {ty.class_name} and {existing.class_name}")
                 return ty
 
-            self.anonymous.add(fqn)
+            self.anonymous.add(type_name)
 
         self.resources[fqn] = ty
         return ty
 
     # Create a (api)resource and populate its properties
-    def _parse_type(self, name: str, schema: dict, anonymous: bool) -> TypeDef:
+    def _parse_type(self, fqn: QualifiedName, schema: dict, anonymous: bool) -> TypeDef:
         assert "$ref" not in schema
 
         if schema["type"] == "object" and "properties" in schema:
-            return self._parse_resource(name, schema, anonymous)
+            return self._parse_resource(fqn, schema, anonymous)
 
         # anonymous alias are not possible, so prop_name should not be relevant here
         typename = self._get_type(schema, "")
 
         # In practice, controller accept numbers for Quantity
-        if name == "Quantity" and "str" == typename:
+        if fqn.name == "Quantity" and "str" == typename:
             self.imports.add("Union")
             typename = "Union[str, int, float]"
 
         if sys.version_info >= (3, 10):
             self.imports.add("TypeAlias")
-        return TypeAlias(name, typename)
+        return TypeAlias(fqn.name, typename)
 
-    def _parse_resource(self, name: str, schema: dict, anonymous: bool) -> ResourceType:
+    def _parse_resource(
+        self, fqn: QualifiedName, schema: dict, anonymous: bool
+    ) -> ResourceType:
         gvk = schema.get("x-kubernetes-group-version-kind")
         if gvk:
+            assert (
+                fqn.name == gvk[0]["kind"]
+            ), f"extract kind {fqn.name} does not match type declared kind {gvk[0]['kind']}"
+            assert (
+                fqn.group == gvk[0]["group"]
+            ), f"extract group {fqn.group} does not match type declared group {gvk[0]['group']}"
+            assert (
+                fqn.version == gvk[0]["version"]
+            ), f"extract version {fqn.version} does not match type declared version {gvk[0]['version']}"
             obj = ApiResourceType(
-                name,
-                gvk[0]["group"],
-                gvk[0]["version"],
-                gvk[0]["kind"],
-                schema.get("x-scoped", name not in CLUSTER_OBJECTS),
+                fqn, schema.get("x-scoped", fqn.name not in CLUSTER_OBJECTS)
             )
         elif anonymous:
             if len(self.stack) == 2:
                 # child of root element -> use qualified name by default ?
                 root = simplename(self.stack[0])
-                name = root + name
-                pass
-            obj = AnonymousType(name, simplename(self.stack[-2]))
+                name = root + fqn.name
+            obj = AnonymousType(fqn.name, simplename(self.stack[-2]))
         else:
-            obj = ResourceType(name)
+            obj = ResourceType(fqn)
 
         # parse properties
         required = schema.get("required", [])
-        assert "properties" in schema, f"{name} does not have properties"
+        assert "properties" in schema, f"{fqn.name} does not have properties"
 
         for prop, value in schema["properties"].items():
             # for REST API only
-            if prop == "status":
+            if gvk and prop == "status":
                 continue
 
             # skip prepopulated values
             if (prop == "apiVersion" or prop == "kind") and gvk is not None:
                 continue
 
-            obj.properties.append(
-                Property(prop, self._get_type(value, prop), prop in required)
-            )
+            prop_type = self._get_type(value, prop)
+            if prop_type:
+                obj.properties.append(Property(prop, prop_type, prop in required))
         obj.properties.sort()
         return obj
 
@@ -346,7 +403,9 @@ class BaseImporter:
         if ty == "object":
             # if no properties, this is just an alias for generic object
             if "properties" in schema:
-                return self._import_type(type_name(prop_name), schema, anonymous=True)
+                return self._import_type(
+                    type_name_from_property_name(prop_name), schema, anonymous=True
+                )
 
             if "additionalProperties" in schema:
                 self.imports.add("Dict")
@@ -476,8 +535,15 @@ def print_type(ty: ResourceType, stream: TextIO):
     stream.write(":\n")
     stream.write("    __slots__ = ()\n")
 
-    if isinstance(ty, ApiResourceType):
+    if isinstance(ty, ResourceType):
         stream.write(f'\n    _group_ = "{ty.group}"\n')
+        stream.write(f'    _version_ = "{ty.version}"\n')
+
+    required = [prop.snake_name for prop in ty.required_properties]
+    if required:
+        stream.write('\n    _required_ = ["')
+        stream.write('", "'.join(required))
+        stream.write('"]\n')
 
     # write fields mapping
     fields = {}
@@ -490,12 +556,14 @@ def print_type(ty: ResourceType, stream: TextIO):
             revfields[prop.name] = snake
 
     if fields:
-        stream.write("    _field_names_ = {\n")
+        stream.write("\n    _field_names_ = {\n")
         for snake, camel in fields.items():
             stream.write(f'        "{snake}": "{camel}",\n')
         stream.write("    }\n")
 
     if revfields:
+        if not fields:
+            stream.write("\n")
         stream.write("    _revfield_names_ = {\n")
         for camel, snake in revfields.items():
             stream.write(f'        "{camel}": "{snake}",\n')
@@ -508,12 +576,6 @@ def print_type(ty: ResourceType, stream: TextIO):
         stream.write(": ")
         stream.write(prop.type_name)
         stream.write("\n")
-
-    required = [prop.snake_name for prop in ty.required_properties]
-    if required:
-        stream.write('\n    _required_ = ["')
-        stream.write('", "'.join(required))
-        stream.write('"]\n')
 
     stream.write("\n    def __init__(self")
     if isinstance(ty, ApiResourceType):
@@ -589,7 +651,10 @@ class ApiImporter(BaseImporter):
         if not generic_param:
             overwrite = self.annotations.get(fqn)
             if overwrite:
-                schema = overwrite.get(prop_name) or schema
+                schema = overwrite.get(prop_name, schema)
+                # empty schema means skip this property.
+                if not schema:
+                    return None
 
         return super()._get_type(schema, prop_name, generic_param)
 
@@ -679,7 +744,7 @@ class CRDImporter(BaseImporter):
 
 def import_k8s_api(args, annotations):
     # import kubernetes types
-    file = os.path.join(SCHEMA_DIR, "1.20.json")
+    file = os.path.join(args.schemas, "1.20.json")
     if not os.path.exists(file):
         tmp, headers = urlretrieve(
             "https://github.com/kubernetes/kubernetes/raw/release-1.20/api/openapi-spec/swagger.json"
@@ -742,9 +807,9 @@ def import_crd_file(path: str, annotations: str, output: str):
     vers = {}
     if "versions" in spec:
         vers = next(vers for vers in spec["versions"] if vers["storage"])
-        version_name = vers["name"]
+        version = vers["name"]
     else:
-        version_name = spec["version"]
+        version = spec["version"]
 
     if "schema" in vers:
         openapi = vers["schema"]["openAPIV3Schema"]
@@ -753,12 +818,12 @@ def import_crd_file(path: str, annotations: str, output: str):
 
     if "x-kubernetes-group-version-kind" not in openapi:
         openapi["x-kubernetes-group-version-kind"] = [
-            {"group": group, "kind": kind, "version": version_name}
+            {"group": group, "kind": kind, "version": version}
         ]
     openapi["x-scoped"] = spec.get("scope") == "Namespaced"
     schema = {
         "openapi": "3.0.2",
-        "components": {"schemas": {f"{group}.{kind}": openapi}},
+        "components": {"schemas": {f"{group}.{version}.{kind}": openapi}},
     }
 
     with open(annotations, "rb") as f:

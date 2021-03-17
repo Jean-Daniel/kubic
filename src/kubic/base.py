@@ -2,10 +2,7 @@ import typing
 from functools import cache
 from typing import Union, Iterable
 
-__all__ = [
-    'KubernetesObject',
-    'KubernetesApiResource'
-]
+__all__ = ["KubernetesObject", "KubernetesApiResource"]
 
 
 class _K8SResourceMeta(type):
@@ -257,7 +254,7 @@ class KubernetesApiResource(KubernetesObject):
     kind: str
 
     def __init__(
-            self, version: str, kind: str, name: str, namespace: str = None, **kwargs
+        self, version: str, kind: str, name: str, namespace: str = None, **kwargs
     ):
         super().__init__(**kwargs)
         self["apiVersion"] = version

@@ -2,3 +2,6 @@
   "autoscaling.k8s.io.VerticalPodAutoscaler":
     Spec:
       targetRef: "api.CrossVersionObjectReference"
+
+"io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta":
+  managedFields:

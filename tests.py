@@ -105,6 +105,7 @@ class ResourceTest(unittest.TestCase):
         obj.spec.update(leave={"value": "world"}, leaves=[{"value": 42}])
         self.assertEqual(obj.spec.leave.value, "world")
         self.assertEqual(obj.spec.leaves[0].value, 42)
+        self.assertEqual(obj, obj.update({}))
 
     def test_update_camel(self):
         sp = SpecialProperty()
