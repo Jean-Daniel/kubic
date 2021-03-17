@@ -12,9 +12,8 @@ set CRDS certificates.cert-manager.io \
 
 
 for crd in $CRDS;
-  set name (string split --max 1 '.' $crd)[1]
   echo "  Processing $crd"
-  python3 src/kubegen.py --schemas ./schemas -o src/kubic/crds/{$name}.py $crd
+  python3 src/kubegen.py --schemas ./schemas -o src/kubic/crds/ $crd
 end
 
 # for crd in (kubectl get crds -o name);

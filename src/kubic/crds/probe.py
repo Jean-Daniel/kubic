@@ -1,17 +1,17 @@
 from typing import Dict, List
 
-from .. import api
 from ..base import KubernetesObject, KubernetesApiResource
+from .. import api
 
 
 class Prober(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["url"]
+
     path: str
     scheme: str
     url: str
-
-    _required_ = ["url"]
 
     def __init__(self, path: str = None, scheme: str = None, url: str = None):
         super().__init__(path=path, scheme=scheme, url=url)
@@ -62,11 +62,11 @@ class RelabelingConfig(KubernetesObject):
 class MatchExpression(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["key", "operator"]
+
     key: str
     operator: str
     values: List[str]
-
-    _required_ = ["key", "operator"]
 
     def __init__(self, key: str = None, operator: str = None, values: List[str] = None):
         super().__init__(key=key, operator=operator, values=values)
@@ -126,7 +126,7 @@ class Target(KubernetesObject):
         super().__init__(ingress=ingress, static_config=static_config)
 
 
-class ProbeSpec(KubernetesObject):
+class Spec(KubernetesObject):
     __slots__ = ()
 
     interval: str
@@ -159,18 +159,19 @@ class Probe(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "monitoring.coreos.com"
-
-    metadata: api.ObjectMeta
-    spec: ProbeSpec
+    _version_ = "v1"
 
     _required_ = ["spec"]
+
+    metadata: api.ObjectMeta
+    spec: Spec
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
         metadata: api.ObjectMeta = None,
-        spec: ProbeSpec = None,
+        spec: Spec = None,
     ):
         super().__init__(
             "monitoring.coreos.com/v1",
@@ -180,3 +181,6 @@ class Probe(KubernetesApiResource):
             metadata=metadata,
             spec=spec,
         )
+
+
+New = Probe

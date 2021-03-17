@@ -256,6 +256,9 @@ class AnonymousType(ObjectType):
     def __eq__(self, other):
         return self.name == other.name and super().__eq__(other)
 
+    def __str__(self):
+        return self.name
+
 
 TypeDef = Union[TypeAlias, ResourceType, ApiResourceType, AnonymousType]
 
@@ -303,19 +306,19 @@ class BaseImporter:
 
         if anonymous:
             # name may have been updated by generator
-            type_name = str(ty.name)
-            if type_name in self.anonymous:
-                existing = self.resources[type_name]
-                if type_name not in self.conflicts:
-                    self.conflicts[type_name] = [existing, ty]
+            fqn = str(ty.name)
+            if fqn in self.anonymous:
+                existing = self.resources[fqn]
+                if fqn not in self.conflicts:
+                    self.conflicts[fqn] = [existing, ty]
                 else:
-                    self.conflicts[type_name].append(ty)
+                    self.conflicts[fqn].append(ty)
 
                 # if ty != existing:
                 #    raise ValueError(f"{fqn} types conflicts: {ty.class_name} and {existing.class_name}")
                 return ty
 
-            self.anonymous.add(type_name)
+            self.anonymous.add(fqn)
 
         self.resources[fqn] = ty
         return ty
@@ -357,10 +360,6 @@ class BaseImporter:
                 fqn, schema.get("x-scoped", fqn.name not in CLUSTER_OBJECTS)
             )
         elif anonymous:
-            if len(self.stack) == 2:
-                # child of root element -> use qualified name by default ?
-                root = simplename(self.stack[0])
-                name = root + fqn.name
             obj = AnonymousType(fqn.name, simplename(self.stack[-2]))
         else:
             obj = ResourceType(fqn)
@@ -483,36 +482,33 @@ class BaseImporter:
 
         raise NotImplementedError(f"type not supported: {schema}")
 
-    def print_api(self, output: str, crd: bool = False):
+    def print_api(self, output: str):
         if output == "-":
             stream = sys.stdout
         else:
             stream = open(output, "w")
         try:
-            if self.imports:
-                stream.write("from typing import ")
-                stream.write(", ".join(sorted(self.imports)))
-                stream.write("\n\n")
-            if crd:
-                stream.write(
-                    f"from ..base import {BASE_OBJECT_TYPE}, {RESOURCE_OBJECT_TYPE}\n"
-                )
-                stream.write("from .. import api\n")
-            else:
-                stream.write(
-                    f"from .base import {BASE_OBJECT_TYPE}, {RESOURCE_OBJECT_TYPE}\n"
-                )
+            self.print_imports(stream)
             stream.write("\n\n")
 
-            for ty in self.types:
-                if isinstance(ty, ResourceType):
-                    print_type(ty, stream)
-                else:
-                    print_type_alias(ty, stream)
-                stream.write("\n")
+            self.print_types(stream)
         finally:
             if stream is not sys.stdout:
                 stream.close()
+
+    def print_imports(self, stream):
+        if self.imports:
+            stream.write("from typing import ")
+            stream.write(", ".join(sorted(self.imports)))
+            stream.write("\n\n")
+
+    def print_types(self, stream):
+        for ty in self.types:
+            if isinstance(ty, (ResourceType, AnonymousType)):
+                print_type(ty, stream)
+            else:
+                print_type_alias(ty, stream)
+            stream.write("\n")
 
 
 def print_type_alias(ty: TypeAlias, stream: TextIO):
@@ -658,6 +654,10 @@ class ApiImporter(BaseImporter):
 
         return super()._get_type(schema, prop_name, generic_param)
 
+    def print_imports(self, stream):
+        super().print_imports(stream)
+        stream.write(f"from .base import {BASE_OBJECT_TYPE}, {RESOURCE_OBJECT_TYPE}\n")
+
 
 class CRDImporter(BaseImporter):
     def __init__(self, schema: dict, annotations: dict = None):
@@ -665,6 +665,7 @@ class CRDImporter(BaseImporter):
 
         self.annotations = annotations
         self.overwrite = [annotations]
+        self.filename = None
 
     def _import_type(self, fqn: str, schema: dict, anonymous: bool = False) -> TypeDef:
         # root type -> patch metadata
@@ -696,7 +697,10 @@ class CRDImporter(BaseImporter):
         assert len(self.components) == 1, "CRD must contains a single item"
         for ty, schema in self.components.items():
             crd = self._import_type(ty, schema)
+            self.filename = camel_to_snake(crd.name)
             assert isinstance(crd, ApiResourceType) and crd.properties
+            # convenient alias to be able to use module.New() instead of module_name.ModuleName()
+            self.resources["_root_"] = TypeAlias("New", crd)
 
         self.resolve_conflicts()
 
@@ -732,7 +736,7 @@ class CRDImporter(BaseImporter):
             self.resources = types
 
     def get_dependencies(self, ty: Any, src, dest):
-        if not isinstance(ty, ResourceType):
+        if not isinstance(ty, (ResourceType, AnonymousType)):
             return
         for prop in ty.properties:
             ty = prop.base_type
@@ -740,6 +744,18 @@ class CRDImporter(BaseImporter):
             if dep:
                 self.get_dependencies(prop.type, src, dest)
                 dest[str(ty)] = dep
+
+    def print_api(self, output: str):
+        # automatically generate crd name if output is a dir
+        if output != "-" and os.path.isdir(output):
+            output = os.path.join(output, f"{self.filename}.py")
+
+        super().print_api(output)
+
+    def print_imports(self, stream):
+        super().print_imports(stream)
+        stream.write(f"from ..base import {BASE_OBJECT_TYPE}, {RESOURCE_OBJECT_TYPE}\n")
+        stream.write("from .. import api\n")
 
 
 def import_k8s_api(args, annotations):
@@ -832,7 +848,7 @@ def import_crd_file(path: str, annotations: str, output: str):
     importer = CRDImporter(schema, annotations)
     importer.import_crd()
 
-    importer.print_api(output, crd=True)
+    importer.print_api(output)
 
 
 def import_crd(schema_dir: str, crd: str, annotations: str, output: str):

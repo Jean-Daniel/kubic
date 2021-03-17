@@ -1,13 +1,17 @@
 from typing import Dict, List, Union
 
-from .. import api
 from ..base import KubernetesObject, KubernetesApiResource
+from .. import api
+
 
 IntOrString = Union[int, str]
 
 
 class Rule(KubernetesObject):
     __slots__ = ()
+
+    _required_ = ["expr"]
+
     _revfield_names_ = {
         "for": "for_",
     }
@@ -18,8 +22,6 @@ class Rule(KubernetesObject):
     for_: str
     labels: Dict[str, str]
     record: str
-
-    _required_ = ["expr"]
 
     def __init__(
         self,
@@ -42,6 +44,9 @@ class Rule(KubernetesObject):
 
 class Group(KubernetesObject):
     __slots__ = ()
+
+    _required_ = ["name", "rules"]
+
     _field_names_ = {
         "partial_response_strategy": "partial_response_strategy",
     }
@@ -50,8 +55,6 @@ class Group(KubernetesObject):
     name: str
     partial_response_strategy: str
     rules: List[Rule]
-
-    _required_ = ["name", "rules"]
 
     def __init__(
         self,
@@ -68,7 +71,7 @@ class Group(KubernetesObject):
         )
 
 
-class PrometheusRuleSpec(KubernetesObject):
+class Spec(KubernetesObject):
     __slots__ = ()
 
     groups: List[Group]
@@ -81,18 +84,19 @@ class PrometheusRule(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "monitoring.coreos.com"
-
-    metadata: api.ObjectMeta
-    spec: PrometheusRuleSpec
+    _version_ = "v1"
 
     _required_ = ["spec"]
+
+    metadata: api.ObjectMeta
+    spec: Spec
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
         metadata: api.ObjectMeta = None,
-        spec: PrometheusRuleSpec = None,
+        spec: Spec = None,
     ):
         super().__init__(
             "monitoring.coreos.com/v1",
@@ -102,3 +106,6 @@ class PrometheusRule(KubernetesApiResource):
             metadata=metadata,
             spec=spec,
         )
+
+
+New = PrometheusRule

@@ -1,17 +1,27 @@
 from typing import Dict, List, Union
 
-from .. import api
 from ..base import KubernetesObject, KubernetesApiResource
+from .. import api
+
+
+class NamespaceSelector(KubernetesObject):
+    __slots__ = ()
+
+    any: bool
+    match_names: List[str]
+
+    def __init__(self, any: bool = None, match_names: List[str] = None):
+        super().__init__(any=any, match_names=match_names)
 
 
 class Password(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["key"]
+
     key: str
     name: str
     optional: bool
-
-    _required_ = ["key"]
 
     def __init__(self, key: str = None, name: str = None, optional: bool = None):
         super().__init__(key=key, name=name, optional=optional)
@@ -20,11 +30,11 @@ class Password(KubernetesObject):
 class Username(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["key"]
+
     key: str
     name: str
     optional: bool
-
-    _required_ = ["key"]
 
     def __init__(self, key: str = None, name: str = None, optional: bool = None):
         super().__init__(key=key, name=name, optional=optional)
@@ -43,11 +53,11 @@ class BasicAuth(KubernetesObject):
 class BearerTokenSecret(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["key"]
+
     key: str
     name: str
     optional: bool
-
-    _required_ = ["key"]
 
     def __init__(self, key: str = None, name: str = None, optional: bool = None):
         super().__init__(key=key, name=name, optional=optional)
@@ -123,11 +133,11 @@ IntOrString = Union[int, str]
 class ConfigMap(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["key"]
+
     key: str
     name: str
     optional: bool
-
-    _required_ = ["key"]
 
     def __init__(self, key: str = None, name: str = None, optional: bool = None):
         super().__init__(key=key, name=name, optional=optional)
@@ -136,11 +146,11 @@ class ConfigMap(KubernetesObject):
 class Secret(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["key"]
+
     key: str
     name: str
     optional: bool
-
-    _required_ = ["key"]
 
     def __init__(self, key: str = None, name: str = None, optional: bool = None):
         super().__init__(key=key, name=name, optional=optional)
@@ -169,11 +179,11 @@ class Cert(KubernetesObject):
 class KeySecret(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["key"]
+
     key: str
     name: str
     optional: bool
-
-    _required_ = ["key"]
 
     def __init__(self, key: str = None, name: str = None, optional: bool = None):
         super().__init__(key=key, name=name, optional=optional)
@@ -183,42 +193,32 @@ class TLSConfig(KubernetesObject):
     __slots__ = ()
 
     ca: CA
-    ca_file: str
     cert: Cert
-    cert_file: str
     insecure_skip_verify: bool
-    key_file: str
     key_secret: KeySecret
     server_name: str
 
     def __init__(
         self,
         ca: CA = None,
-        ca_file: str = None,
         cert: Cert = None,
-        cert_file: str = None,
         insecure_skip_verify: bool = None,
-        key_file: str = None,
         key_secret: KeySecret = None,
         server_name: str = None,
     ):
         super().__init__(
             ca=ca,
-            ca_file=ca_file,
             cert=cert,
-            cert_file=cert_file,
             insecure_skip_verify=insecure_skip_verify,
-            key_file=key_file,
             key_secret=key_secret,
             server_name=server_name,
         )
 
 
-class Endpoint(KubernetesObject):
+class PodMetricsEndpoint(KubernetesObject):
     __slots__ = ()
 
     basic_auth: BasicAuth
-    bearer_token_file: str
     bearer_token_secret: BearerTokenSecret
     honor_labels: bool
     honor_timestamps: bool
@@ -237,7 +237,6 @@ class Endpoint(KubernetesObject):
     def __init__(
         self,
         basic_auth: BasicAuth = None,
-        bearer_token_file: str = None,
         bearer_token_secret: BearerTokenSecret = None,
         honor_labels: bool = None,
         honor_timestamps: bool = None,
@@ -255,7 +254,6 @@ class Endpoint(KubernetesObject):
     ):
         super().__init__(
             basic_auth=basic_auth,
-            bearer_token_file=bearer_token_file,
             bearer_token_secret=bearer_token_secret,
             honor_labels=honor_labels,
             honor_timestamps=honor_timestamps,
@@ -273,24 +271,14 @@ class Endpoint(KubernetesObject):
         )
 
 
-class NamespaceSelector(KubernetesObject):
-    __slots__ = ()
-
-    any: bool
-    match_names: List[str]
-
-    def __init__(self, any: bool = None, match_names: List[str] = None):
-        super().__init__(any=any, match_names=match_names)
-
-
 class MatchExpression(KubernetesObject):
     __slots__ = ()
+
+    _required_ = ["key", "operator"]
 
     key: str
     operator: str
     values: List[str]
-
-    _required_ = ["key", "operator"]
 
     def __init__(self, key: str = None, operator: str = None, values: List[str] = None):
         super().__init__(key=key, operator=operator, values=values)
@@ -310,65 +298,66 @@ class Selector(KubernetesObject):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
 
-class ServiceMonitorSpec(KubernetesObject):
+class Spec(KubernetesObject):
     __slots__ = ()
 
-    endpoints: List[Endpoint]
+    _required_ = ["pod_metrics_endpoints", "selector"]
+
     job_label: str
     namespace_selector: NamespaceSelector
+    pod_metrics_endpoints: List[PodMetricsEndpoint]
     pod_target_labels: List[str]
     sample_limit: int
     selector: Selector
-    target_labels: List[str]
     target_limit: int
-
-    _required_ = ["endpoints", "selector"]
 
     def __init__(
         self,
-        endpoints: List[Endpoint] = None,
         job_label: str = None,
         namespace_selector: NamespaceSelector = None,
+        pod_metrics_endpoints: List[PodMetricsEndpoint] = None,
         pod_target_labels: List[str] = None,
         sample_limit: int = None,
         selector: Selector = None,
-        target_labels: List[str] = None,
         target_limit: int = None,
     ):
         super().__init__(
-            endpoints=endpoints,
             job_label=job_label,
             namespace_selector=namespace_selector,
+            pod_metrics_endpoints=pod_metrics_endpoints,
             pod_target_labels=pod_target_labels,
             sample_limit=sample_limit,
             selector=selector,
-            target_labels=target_labels,
             target_limit=target_limit,
         )
 
 
-class ServiceMonitor(KubernetesApiResource):
+class PodMonitor(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "monitoring.coreos.com"
-
-    metadata: api.ObjectMeta
-    spec: ServiceMonitorSpec
+    _version_ = "v1"
 
     _required_ = ["spec"]
+
+    metadata: api.ObjectMeta
+    spec: Spec
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
         metadata: api.ObjectMeta = None,
-        spec: ServiceMonitorSpec = None,
+        spec: Spec = None,
     ):
         super().__init__(
             "monitoring.coreos.com/v1",
-            "ServiceMonitor",
+            "PodMonitor",
             name,
             namespace,
             metadata=metadata,
             spec=spec,
         )
+
+
+New = PodMonitor

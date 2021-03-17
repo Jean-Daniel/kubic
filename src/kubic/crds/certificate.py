@@ -1,17 +1,17 @@
 from typing import List
 
-from .. import api
 from ..base import KubernetesObject, KubernetesApiResource
+from .. import api
 
 
 class IssuerRef(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["name"]
+
     group: str
     kind: str
     name: str
-
-    _required_ = ["name"]
 
     def __init__(self, group: str = None, kind: str = None, name: str = None):
         super().__init__(group=group, kind=kind, name=name)
@@ -20,10 +20,10 @@ class IssuerRef(KubernetesObject):
 class PasswordSecretRef(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["name"]
+
     key: str
     name: str
-
-    _required_ = ["name"]
 
     def __init__(self, key: str = None, name: str = None):
         super().__init__(key=key, name=name)
@@ -32,10 +32,10 @@ class PasswordSecretRef(KubernetesObject):
 class JKS(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["create", "password_secret_ref"]
+
     create: bool
     password_secret_ref: PasswordSecretRef
-
-    _required_ = ["create", "password_secret_ref"]
 
     def __init__(
         self, create: bool = None, password_secret_ref: PasswordSecretRef = None
@@ -46,10 +46,10 @@ class JKS(KubernetesObject):
 class Pkcs12(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["create", "password_secret_ref"]
+
     create: bool
     password_secret_ref: PasswordSecretRef
-
-    _required_ = ["create", "password_secret_ref"]
 
     def __init__(
         self, create: bool = None, password_secret_ref: PasswordSecretRef = None
@@ -125,8 +125,11 @@ class Subject(KubernetesObject):
         )
 
 
-class CertificateSpec(KubernetesObject):
+class Spec(KubernetesObject):
     __slots__ = ()
+
+    _required_ = ["issuer_ref", "secret_name"]
+
     _field_names_ = {
         "is_ca": "isCA",
     }
@@ -149,8 +152,6 @@ class CertificateSpec(KubernetesObject):
     subject: Subject
     uris: List[str]
     usages: List[str]
-
-    _required_ = ["issuer_ref", "secret_name"]
 
     def __init__(
         self,
@@ -193,18 +194,19 @@ class Certificate(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "cert-manager.io"
-
-    metadata: api.ObjectMeta
-    spec: CertificateSpec
+    _version_ = "v1"
 
     _required_ = ["spec"]
+
+    metadata: api.ObjectMeta
+    spec: Spec
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
         metadata: api.ObjectMeta = None,
-        spec: CertificateSpec = None,
+        spec: Spec = None,
     ):
         super().__init__(
             "cert-manager.io/v1",
@@ -214,3 +216,6 @@ class Certificate(KubernetesApiResource):
             metadata=metadata,
             spec=spec,
         )
+
+
+New = Certificate

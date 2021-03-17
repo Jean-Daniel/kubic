@@ -1,13 +1,14 @@
 from typing import Any, Dict
 
+from ..base import KubernetesObject, KubernetesApiResource
 from .. import api
-from ..base import KubernetesApiResource
 
 
 class SealedSecret(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "bitnami.com"
+    _version_ = "v1alpha1"
 
     metadata: api.ObjectMeta
     spec: Dict[str, Any]
@@ -27,3 +28,6 @@ class SealedSecret(KubernetesApiResource):
             metadata=metadata,
             spec=spec,
         )
+
+
+New = SealedSecret

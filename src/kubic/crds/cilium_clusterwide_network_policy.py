@@ -1,19 +1,20 @@
 from typing import Dict, List
 
-from .. import api
 from ..base import KubernetesObject, KubernetesApiResource
+from .. import api
 
 
 class ToCIDRSet(KubernetesObject):
     __slots__ = ()
+
+    _required_ = ["cidr"]
+
     _revfield_names_ = {
         "except": "except_",
     }
 
     cidr: str
     except_: List[str]
-
-    _required_ = ["cidr"]
 
     def __init__(self, cidr: str = None, except_: List[str] = None):
         super().__init__(cidr=cidr, except_=except_)
@@ -22,11 +23,11 @@ class ToCIDRSet(KubernetesObject):
 class MatchExpression(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["key", "operator"]
+
     key: str
     operator: str
     values: List[str]
-
-    _required_ = ["key", "operator"]
 
     def __init__(self, key: str = None, operator: str = None, values: List[str] = None):
         super().__init__(key=key, operator=operator, values=values)
@@ -91,10 +92,10 @@ class ToGroup(KubernetesObject):
 class Secret(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["name"]
+
     name: str
     namespace: str
-
-    _required_ = ["name"]
 
     def __init__(self, name: str = None, namespace: str = None):
         super().__init__(name=name, namespace=namespace)
@@ -102,6 +103,9 @@ class Secret(KubernetesObject):
 
 class OriginatingTLS(KubernetesObject):
     __slots__ = ()
+
+    _required_ = ["secret"]
+
     _field_names_ = {
         "trusted_ca": "trustedCA",
     }
@@ -113,8 +117,6 @@ class OriginatingTLS(KubernetesObject):
     private_key: str
     secret: Secret
     trusted_ca: str
-
-    _required_ = ["secret"]
 
     def __init__(
         self,
@@ -134,10 +136,10 @@ class OriginatingTLS(KubernetesObject):
 class Port(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["port"]
+
     port: str
     protocol: str
-
-    _required_ = ["port"]
 
     def __init__(self, port: str = None, protocol: str = None):
         super().__init__(port=port, protocol=protocol)
@@ -156,12 +158,12 @@ class DNS(KubernetesObject):
 class HeaderMatche(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["name"]
+
     mismatch: str
     name: str
     secret: Secret
     value: str
-
-    _required_ = ["name"]
 
     def __init__(
         self,
@@ -204,6 +206,7 @@ class Http(KubernetesObject):
 
 class Kafka(KubernetesObject):
     __slots__ = ()
+
     _field_names_ = {
         "client_id": "clientID",
     }
@@ -256,6 +259,9 @@ class Rule(KubernetesObject):
 
 class TerminatingTLS(KubernetesObject):
     __slots__ = ()
+
+    _required_ = ["secret"]
+
     _field_names_ = {
         "trusted_ca": "trustedCA",
     }
@@ -267,8 +273,6 @@ class TerminatingTLS(KubernetesObject):
     private_key: str
     secret: Secret
     trusted_ca: str
-
-    _required_ = ["secret"]
 
     def __init__(
         self,
@@ -326,10 +330,10 @@ class Selector(KubernetesObject):
 class K8sServiceSelector(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["selector"]
+
     namespace: str
     selector: Selector
-
-    _required_ = ["selector"]
 
     def __init__(self, namespace: str = None, selector: Selector = None):
         super().__init__(namespace=namespace, selector=selector)
@@ -353,6 +357,7 @@ class ToService(KubernetesObject):
 
 class EgressToPort(KubernetesObject):
     __slots__ = ()
+
     _field_names_ = {
         "originating_tls": "originatingTLS",
         "terminating_tls": "terminatingTLS",
@@ -384,6 +389,7 @@ class EgressToPort(KubernetesObject):
 
 class Egress(KubernetesObject):
     __slots__ = ()
+
     _field_names_ = {
         "to_cidr": "toCIDR",
         "to_cidr_set": "toCIDRSet",
@@ -441,6 +447,7 @@ class EgressDenyToPort(KubernetesObject):
 
 class EgressDeny(KubernetesObject):
     __slots__ = ()
+
     _field_names_ = {
         "to_cidr": "toCIDR",
         "to_cidr_set": "toCIDRSet",
@@ -498,14 +505,15 @@ class EndpointSelector(KubernetesObject):
 
 class FromCIDRSet(KubernetesObject):
     __slots__ = ()
+
+    _required_ = ["cidr"]
+
     _revfield_names_ = {
         "except": "except_",
     }
 
     cidr: str
     except_: List[str]
-
-    _required_ = ["cidr"]
 
     def __init__(self, cidr: str = None, except_: List[str] = None):
         super().__init__(cidr=cidr, except_=except_)
@@ -541,6 +549,7 @@ class FromRequire(KubernetesObject):
 
 class IngressToPort(KubernetesObject):
     __slots__ = ()
+
     _field_names_ = {
         "originating_tls": "originatingTLS",
         "terminating_tls": "terminatingTLS",
@@ -572,6 +581,7 @@ class IngressToPort(KubernetesObject):
 
 class Ingress(KubernetesObject):
     __slots__ = ()
+
     _field_names_ = {
         "from_cidr": "fromCIDR",
         "from_cidr_set": "fromCIDRSet",
@@ -618,6 +628,7 @@ class IngressDenyToPort(KubernetesObject):
 
 class IngressDeny(KubernetesObject):
     __slots__ = ()
+
     _field_names_ = {
         "from_cidr": "fromCIDR",
         "from_cidr_set": "fromCIDRSet",
@@ -656,11 +667,11 @@ class IngressDeny(KubernetesObject):
 class Label(KubernetesObject):
     __slots__ = ()
 
+    _required_ = ["key"]
+
     key: str
     source: str
     value: str
-
-    _required_ = ["key"]
 
     def __init__(self, key: str = None, source: str = None, value: str = None):
         super().__init__(key=key, source=source, value=value)
@@ -680,7 +691,7 @@ class NodeSelector(KubernetesObject):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
 
-class CiliumNetworkPolicySpec(KubernetesObject):
+class Spec(KubernetesObject):
     __slots__ = ()
 
     description: str
@@ -715,31 +726,34 @@ class CiliumNetworkPolicySpec(KubernetesObject):
         )
 
 
-class CiliumNetworkPolicy(KubernetesApiResource):
+class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "cilium.io"
-
-    metadata: api.ObjectMeta
-    spec: CiliumNetworkPolicySpec
-    specs: List[CiliumNetworkPolicySpec]
+    _version_ = "v2"
 
     _required_ = ["metadata"]
+
+    metadata: api.ObjectMeta
+    spec: Spec
+    specs: List[Spec]
 
     def __init__(
         self,
         name: str,
-        namespace: str = None,
         metadata: api.ObjectMeta = None,
-        spec: CiliumNetworkPolicySpec = None,
-        specs: List[CiliumNetworkPolicySpec] = None,
+        spec: Spec = None,
+        specs: List[Spec] = None,
     ):
         super().__init__(
             "cilium.io/v2",
-            "CiliumNetworkPolicy",
+            "CiliumClusterwideNetworkPolicy",
             name,
-            namespace,
+            "",
             metadata=metadata,
             spec=spec,
             specs=specs,
         )
+
+
+New = CiliumClusterwideNetworkPolicy
