@@ -67,7 +67,8 @@ def import_k8s_api(args, annotations):
     for group in groups:
         output = args.output
         if output != "-":
-            output = os.path.join(args.output, f"{group.name}.py")
+            module = group.name.removesuffix(".k8s.io").replace(".", "_")
+            output = os.path.join(args.output, f"{module}.py")
         printer.print_group(group, output)
 
 

@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from . import KubernetesApiResource
+from . import KubernetesObject, KubernetesApiResource
 from . import core, meta
 
 
