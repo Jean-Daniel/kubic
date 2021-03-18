@@ -3,7 +3,7 @@ from typing import Optional, NamedTuple, TextIO
 from pykapi.k8s import QualifiedName
 from pykapi.parser import Parser, ApiGroup
 from pykapi.printer import TypePrinter
-from pykapi.types import ApiResourceType, ObjectType, AnonymousType, Type, TypeAlias
+from pykapi.types import ApiResourceType, ObjectType, AnonymousType, Type, TypeAlias, ApiType
 
 
 class CRDParser(Parser):
@@ -37,16 +37,14 @@ class CRDParser(Parser):
         return self.group
 
     def import_property(
-            self, obj_type: ObjectType, prop_name: str, schema: dict
+        self, obj_type: ObjectType, prop_name: str, schema: dict
     ) -> Type:
         # API Importer only
         ref = schema.get("!ref")
         if ref:
             # for ref -> import type recursively
             fqn = QualifiedName.parse(ref)
-            group = self.group_for_type(obj_type.fqn)
-            group.import_type(fqn)
-            return f"{fqn.group}.{fqn.name}"
+            return ApiType(fqn)
         return super().import_property(obj_type, prop_name, schema)
 
 
@@ -66,7 +64,7 @@ class CRDPrinter(TypePrinter):
     def print_types(self, group: ApiGroup, stream: TextIO):
         super().print_types(group, stream)
         self.print_type_alias(
-            TypeAlias(QualifiedName("New", "", ""), self.crd.type), stream
+            group, TypeAlias(QualifiedName("New", "", ""), self.crd.type), stream
         )
 
 

@@ -10,11 +10,8 @@ from .parser import ApiGroup
 from .types import (
     ObjectType,
     TypeAlias,
-    ApiResourceType,
+    ApiResourceType, qualified_name,
 )
-
-BASE_OBJECT_TYPE = "KubernetesObject"
-RESOURCE_OBJECT_TYPE = "KubernetesApiResource"
 
 
 class TypePrinter:
@@ -42,9 +39,10 @@ class TypePrinter:
             stream.write(", ".join(sorted(group.typing)))
             stream.write("\n\n")
 
-        stream.write(
-            f"from {self.api_module} import {BASE_OBJECT_TYPE}, {RESOURCE_OBJECT_TYPE}\n"
-        )
+        if group.base_types:
+            stream.write(f"from {self.api_module} import ")
+            stream.write(", ".join(sorted(group.base_types)))
+            stream.write("\n")
 
         if group.refs:
             stream.write(f"from {self.api_module} import ")
@@ -54,29 +52,26 @@ class TypePrinter:
     def print_types(self, group: ApiGroup, stream: TextIO):
         for ty in group.types:
             if isinstance(ty, TypeAlias):
-                self.print_type_alias(ty, stream)
+                self.print_type_alias(group, ty, stream)
             else:
                 assert isinstance(ty, ObjectType)
                 self.print_type(group, ty, stream)
             stream.write("\n")
 
     @staticmethod
-    def print_type_alias(ty: TypeAlias, stream: TextIO):
+    def print_type_alias(group: ApiGroup, ty: TypeAlias, stream: TextIO):
         stream.write(ty.name)
         if sys.version_info >= (3, 10):
             stream.write(": TypeAlias = ")
         else:
             stream.write(" = ")
-        stream.write(str(ty.type))
+        stream.write(qualified_name(ty.type, group.name))
         stream.write("\n\n")
 
     def print_type(self, group: ApiGroup, ty: ObjectType, stream: TextIO):
         stream.write("class ")
         stream.write(ty.name)
-        if isinstance(ty, ApiResourceType):
-            stream.write(f"({RESOURCE_OBJECT_TYPE})")
-        else:
-            stream.write(f"({BASE_OBJECT_TYPE})")
+        stream.write(f"({ty.kubic_type})")
         stream.write(":\n")
         stream.write("    __slots__ = ()\n")
 
@@ -120,7 +115,7 @@ class TypePrinter:
             stream.write("    ")
             stream.write(prop.snake_name)
             stream.write(": ")
-            stream.write(prop.type_name(group.name))
+            stream.write(qualified_name(prop.type, group.name))
             stream.write("\n")
 
         stream.write("\n    def __init__(self")
@@ -132,7 +127,7 @@ class TypePrinter:
             stream.write(", ")
             stream.write(prop.snake_name)
             stream.write(": ")
-            stream.write(prop.type_name(group.name))
+            stream.write(qualified_name(prop.type, group.name))
             stream.write(" = None")
         stream.write("):\n")
         stream.write("        super().__init__(")

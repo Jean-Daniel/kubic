@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from .. import KubernetesObject, KubernetesApiResource
+from .. import KubernetesApiResource, KubernetesObject
 from .. import meta
 
 
@@ -63,12 +63,12 @@ class Selector(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str]
+    match_labels: Dict[str, str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str] = None,
+        match_labels: Dict[str, str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -109,10 +109,10 @@ class Prober(KubernetesObject):
 class StaticConfig(KubernetesObject):
     __slots__ = ()
 
-    labels: Dict[str]
+    labels: Dict[str, str]
     static: List[str]
 
-    def __init__(self, labels: Dict[str] = None, static: List[str] = None):
+    def __init__(self, labels: Dict[str, str] = None, static: List[str] = None):
         super().__init__(labels=labels, static=static)
 
 

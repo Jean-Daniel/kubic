@@ -26,12 +26,12 @@ class LabelSelector(KubernetesObject):
     _version_ = "v1"
 
     match_expressions: List[LabelSelectorRequirement]
-    match_labels: Dict[str]
+    match_labels: Dict[str, str]
 
     def __init__(
         self,
         match_expressions: List[LabelSelectorRequirement] = None,
-        match_labels: Dict[str] = None,
+        match_labels: Dict[str, str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -79,7 +79,7 @@ class ObjectMeta(KubernetesObject):
     _group_ = "meta"
     _version_ = "v1"
 
-    annotations: Dict[str]
+    annotations: Dict[str, str]
     cluster_name: str
     creation_timestamp: Time
     deletion_grace_period_seconds: int
@@ -87,7 +87,7 @@ class ObjectMeta(KubernetesObject):
     finalizers: List[str]
     generate_name: str
     generation: int
-    labels: Dict[str]
+    labels: Dict[str, str]
     name: str
     namespace: str
     owner_references: List[OwnerReference]
@@ -97,7 +97,7 @@ class ObjectMeta(KubernetesObject):
 
     def __init__(
         self,
-        annotations: Dict[str] = None,
+        annotations: Dict[str, str] = None,
         cluster_name: str = None,
         creation_timestamp: Time = None,
         deletion_grace_period_seconds: int = None,
@@ -105,7 +105,7 @@ class ObjectMeta(KubernetesObject):
         finalizers: List[str] = None,
         generate_name: str = None,
         generation: int = None,
-        labels: Dict[str] = None,
+        labels: Dict[str, str] = None,
         name: str = None,
         namespace: str = None,
         owner_references: List[OwnerReference] = None,

@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from .. import KubernetesObject, KubernetesApiResource
+from .. import KubernetesApiResource, KubernetesObject
 from .. import core, meta
 
 
@@ -234,7 +234,7 @@ class PodMetricsEndpoint(KubernetesObject):
     honor_timestamps: bool
     interval: str
     metric_relabelings: List[MetricRelabeling]
-    params: Dict[List[str]]
+    params: Dict[str, List[str]]
     path: str
     port: str
     proxy_url: str
@@ -252,7 +252,7 @@ class PodMetricsEndpoint(KubernetesObject):
         honor_timestamps: bool = None,
         interval: str = None,
         metric_relabelings: List[MetricRelabeling] = None,
-        params: Dict[List[str]] = None,
+        params: Dict[str, List[str]] = None,
         path: str = None,
         port: str = None,
         proxy_url: str = None,
@@ -285,12 +285,12 @@ class Selector(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str]
+    match_labels: Dict[str, str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str] = None,
+        match_labels: Dict[str, str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 

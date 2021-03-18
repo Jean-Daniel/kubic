@@ -1,6 +1,6 @@
 from typing import Dict, List, Union
 
-from . import KubernetesObject, KubernetesApiResource
+from . import KubernetesApiResource, KubernetesObject
 from . import meta
 
 
@@ -354,7 +354,7 @@ class CSIPersistentVolumeSource(KubernetesObject):
     node_publish_secret_ref: SecretReference
     node_stage_secret_ref: SecretReference
     read_only: bool
-    volume_attributes: Dict[str]
+    volume_attributes: Dict[str, str]
     volume_handle: str
 
     def __init__(
@@ -366,7 +366,7 @@ class CSIPersistentVolumeSource(KubernetesObject):
         node_publish_secret_ref: SecretReference = None,
         node_stage_secret_ref: SecretReference = None,
         read_only: bool = None,
-        volume_attributes: Dict[str] = None,
+        volume_attributes: Dict[str, str] = None,
         volume_handle: str = None,
     ):
         super().__init__(
@@ -406,7 +406,7 @@ class CSIVolumeSource(KubernetesObject):
     fs_type: str
     node_publish_secret_ref: LocalObjectReference
     read_only: bool
-    volume_attributes: Dict[str]
+    volume_attributes: Dict[str, str]
 
     def __init__(
         self,
@@ -414,7 +414,7 @@ class CSIVolumeSource(KubernetesObject):
         fs_type: str = None,
         node_publish_secret_ref: LocalObjectReference = None,
         read_only: bool = None,
-        volume_attributes: Dict[str] = None,
+        volume_attributes: Dict[str, str] = None,
     ):
         super().__init__(
             driver=driver,
@@ -594,8 +594,8 @@ class ConfigMap(KubernetesApiResource):
     _group_ = "core"
     _version_ = "v1"
 
-    binary_data: Dict[Base64]
-    data: Dict[str]
+    binary_data: Dict[str, Base64]
+    data: Dict[str, str]
     immutable: bool
     metadata: meta.ObjectMeta
 
@@ -603,8 +603,8 @@ class ConfigMap(KubernetesApiResource):
         self,
         name: str,
         namespace: str = None,
-        binary_data: Dict[Base64] = None,
-        data: Dict[str] = None,
+        binary_data: Dict[str, Base64] = None,
+        data: Dict[str, str] = None,
         immutable: bool = None,
         metadata: meta.ObjectMeta = None,
     ):
@@ -719,7 +719,7 @@ class ObjectFieldSelector(KubernetesObject):
         super().__init__(api_version=api_version, field_path=field_path)
 
 
-Quantity = str
+Quantity = Union[str, int, float]
 
 
 class ResourceFieldSelector(KubernetesObject):
@@ -1022,10 +1022,12 @@ class ResourceRequirements(KubernetesObject):
     _group_ = "core"
     _version_ = "v1"
 
-    limits: Dict[Quantity]
-    requests: Dict[Quantity]
+    limits: Dict[str, Quantity]
+    requests: Dict[str, Quantity]
 
-    def __init__(self, limits: Dict[Quantity] = None, requests: Dict[Quantity] = None):
+    def __init__(
+        self, limits: Dict[str, Quantity] = None, requests: Dict[str, Quantity] = None
+    ):
         super().__init__(limits=limits, requests=requests)
 
 
@@ -1548,7 +1550,7 @@ class FlexPersistentVolumeSource(KubernetesObject):
 
     driver: str
     fs_type: str
-    options: Dict[str]
+    options: Dict[str, str]
     read_only: bool
     secret_ref: SecretReference
 
@@ -1556,7 +1558,7 @@ class FlexPersistentVolumeSource(KubernetesObject):
         self,
         driver: str = None,
         fs_type: str = None,
-        options: Dict[str] = None,
+        options: Dict[str, str] = None,
         read_only: bool = None,
         secret_ref: SecretReference = None,
     ):
@@ -1579,7 +1581,7 @@ class FlexVolumeSource(KubernetesObject):
 
     driver: str
     fs_type: str
-    options: Dict[str]
+    options: Dict[str, str]
     read_only: bool
     secret_ref: LocalObjectReference
 
@@ -1587,7 +1589,7 @@ class FlexVolumeSource(KubernetesObject):
         self,
         driver: str = None,
         fs_type: str = None,
-        options: Dict[str] = None,
+        options: Dict[str, str] = None,
         read_only: bool = None,
         secret_ref: LocalObjectReference = None,
     ):
@@ -2189,7 +2191,7 @@ class PersistentVolumeSpec(KubernetesObject):
     aws_elastic_block_store: AWSElasticBlockStoreVolumeSource
     azure_disk: AzureDiskVolumeSource
     azure_file: AzureFilePersistentVolumeSource
-    capacity: Dict[Quantity]
+    capacity: Dict[str, Quantity]
     cephfs: CephFSPersistentVolumeSource
     cinder: CinderPersistentVolumeSource
     claim_ref: ObjectReference
@@ -2222,7 +2224,7 @@ class PersistentVolumeSpec(KubernetesObject):
         aws_elastic_block_store: AWSElasticBlockStoreVolumeSource = None,
         azure_disk: AzureDiskVolumeSource = None,
         azure_file: AzureFilePersistentVolumeSource = None,
-        capacity: Dict[Quantity] = None,
+        capacity: Dict[str, Quantity] = None,
         cephfs: CephFSPersistentVolumeSource = None,
         cinder: CinderPersistentVolumeSource = None,
         claim_ref: ObjectReference = None,
@@ -2881,8 +2883,8 @@ class PodSpec(KubernetesObject):
     image_pull_secrets: List[LocalObjectReference]
     init_containers: List[Container]
     node_name: str
-    node_selector: Dict[str]
-    overhead: Dict[Quantity]
+    node_selector: Dict[str, str]
+    overhead: Dict[str, Quantity]
     preemption_policy: str
     priority: int
     priority_class_name: str
@@ -2919,8 +2921,8 @@ class PodSpec(KubernetesObject):
         image_pull_secrets: List[LocalObjectReference] = None,
         init_containers: List[Container] = None,
         node_name: str = None,
-        node_selector: Dict[str] = None,
-        overhead: Dict[Quantity] = None,
+        node_selector: Dict[str, str] = None,
+        overhead: Dict[str, Quantity] = None,
         preemption_policy: str = None,
         priority: int = None,
         priority_class_name: str = None,
@@ -3029,13 +3031,13 @@ class ResourceQuotaSpec(KubernetesObject):
     _group_ = "core"
     _version_ = "v1"
 
-    hard: Dict[Quantity]
+    hard: Dict[str, Quantity]
     scope_selector: ScopeSelector
     scopes: List[str]
 
     def __init__(
         self,
-        hard: Dict[Quantity] = None,
+        hard: Dict[str, Quantity] = None,
         scope_selector: ScopeSelector = None,
         scopes: List[str] = None,
     ):
@@ -3069,20 +3071,20 @@ class Secret(KubernetesApiResource):
     _group_ = "core"
     _version_ = "v1"
 
-    data: Dict[Base64]
+    data: Dict[str, Base64]
     immutable: bool
     metadata: meta.ObjectMeta
-    string_data: Dict[str]
+    string_data: Dict[str, str]
     type: str
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
-        data: Dict[Base64] = None,
+        data: Dict[str, Base64] = None,
         immutable: bool = None,
         metadata: meta.ObjectMeta = None,
-        string_data: Dict[str] = None,
+        string_data: Dict[str, str] = None,
         type: str = None,
     ):
         super().__init__(
@@ -3179,7 +3181,7 @@ class ServiceSpec(KubernetesObject):
     load_balancer_source_ranges: List[str]
     ports: List[ServicePort]
     publish_not_ready_addresses: bool
-    selector: Dict[str]
+    selector: Dict[str, str]
     session_affinity: str
     session_affinity_config: SessionAffinityConfig
     topology_keys: List[str]
@@ -3200,7 +3202,7 @@ class ServiceSpec(KubernetesObject):
         load_balancer_source_ranges: List[str] = None,
         ports: List[ServicePort] = None,
         publish_not_ready_addresses: bool = None,
-        selector: Dict[str] = None,
+        selector: Dict[str, str] = None,
         session_affinity: str = None,
         session_affinity_config: SessionAffinityConfig = None,
         topology_keys: List[str] = None,

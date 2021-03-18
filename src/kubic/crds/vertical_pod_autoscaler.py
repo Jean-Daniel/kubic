@@ -1,15 +1,15 @@
 from typing import Any, Dict, List
 
-from .. import KubernetesObject, KubernetesApiResource
+from .. import KubernetesApiResource, KubernetesObject
 from .. import autoscaling, meta
 
 
 class ResourcePolicy(KubernetesObject):
     __slots__ = ()
 
-    container_policies: List[Dict[Any]]
+    container_policies: List[Dict[str, Any]]
 
-    def __init__(self, container_policies: List[Dict[Any]] = None):
+    def __init__(self, container_policies: List[Dict[str, Any]] = None):
         super().__init__(container_policies=container_policies)
 
 

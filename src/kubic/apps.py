@@ -1,6 +1,6 @@
 from typing import List
 
-from . import KubernetesObject, KubernetesApiResource
+from . import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 

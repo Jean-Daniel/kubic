@@ -10,9 +10,9 @@ from pykapi.parser import (
     IntOrStringType,
     Base64Type,
     TimeType,
-    IDNHostname,
+    IDNHostname, QuantityType,
 )
-from pykapi.types import Type, ApiType, TypeAlias, ApiResourceType, ObjectType
+from pykapi.types import Type, ApiType, TypeAlias, ApiResourceType, ObjectType, GenericType
 
 
 def simplename(key: str) -> str:
@@ -39,8 +39,8 @@ class ApiParser(Parser):
             self.components = schema["components"]["schemas"]
 
         # short name to fqn map
-        self.index = {}
-        self.ambiguous = defaultdict(list)
+        self.index: Dict[str, str] = {}
+        self.ambiguous: Dict[str, List[str]] = defaultdict(list)
         for key in self.components.keys():
             short = shortkey(key)
             if short in self.index:
@@ -64,17 +64,21 @@ class ApiParser(Parser):
             f"{obj_type.group}.{obj_type.version}.{obj_type.name}"
         )
 
-    def import_types(self, names: Iterable[str]):
+    def import_types(self, names: Iterable[str]) -> List[ApiGroup]:
         # register builtin types
-        for t in (IntOrStringType, Base64Type, TimeType, IDNHostname):
+        for t in (IntOrStringType, QuantityType, Base64Type, TimeType, IDNHostname):
             self.group_for_type(t).add(t)
-            if t == IntOrStringType:
-                self.group_for_type(t).import_typing("Union")
+
+        if not names:
+            names = self.components.keys()
 
         for name in names:
             ref = self.index.get(name.lower(), name)
             if ref == name and ref not in self.components:
                 raise ValueError(f"unknown type {ref} requested")
+
+            if ref.startswith("io.k8s.apiextensions-apiserver.pkg.apis.apiextensions"):
+                continue
 
             if name.lower() in self.ambiguous:
                 raise ValueError(
@@ -89,14 +93,14 @@ class ApiParser(Parser):
         for group in self._groups.values():
             group.finalize()
 
+        return list(self._groups.values())
+
     def import_property(self, obj_type: ApiType, prop_name: str, schema: dict) -> Type:
         # API Importer only
         ref = schema.get("$ref")
         if ref:
             # for ref -> import type recursively
             ty = self.import_ref(ref.removeprefix("#/definitions/"))
-            # register dependency
-            self.group_for_type(obj_type.fqn).import_type(ty)
             return ty
 
         return super().import_property(obj_type, prop_name, schema)
@@ -112,20 +116,24 @@ class ApiParser(Parser):
         schema = self.components[ref]
 
         assert "$ref" not in schema
-
+        assert "type" in schema, f"unsupported type {schema}"
         if schema["type"] == "object" and "properties" in schema:
             # Create ObjectType or ApiResourceType
 
             gvk = schema.get("x-kubernetes-group-version-kind")
             if gvk:
+                # dirty schema fixup
                 assert (
-                        fqn.name == gvk[0]["kind"]
+                    fqn.name == gvk[0]["kind"]
                 ), f"extract kind {fqn.name} does not match type declared kind {gvk[0]['kind']}"
+                group = gvk[0]["group"]
+                if not group and fqn.group in ("core", "meta"):
+                    group = fqn.group
                 assert fqn.group == (
-                        gvk[0]["group"] or "core"
-                ), f"extract group {fqn.group} does not match type declared group {gvk[0]['group']}"
+                    group
+                ), f"extract group '{fqn.group}' does not match type declared group '{gvk[0]['group']}': {ref}"
                 assert (
-                        fqn.version == gvk[0]["version"]
+                    fqn.version == gvk[0]["version"]
                 ), f"extract version {fqn.version} does not match type declared version {gvk[0]['version']}"
                 typedecl = ApiResourceType(
                     fqn, schema.get("x-scoped", fqn.name not in CLUSTER_OBJECTS)
@@ -154,8 +162,7 @@ class ApiParser(Parser):
 
 
 def import_api_types(
-        schema: Union[str, dict], annotations: dict, *names: str
+    schema: Union[str, dict], annotations: dict, *names
 ) -> List[ApiGroup]:
     parser = ApiParser(schema, annotations)
-    parser.import_types(names)
-    return list(parser.groups)
+    return parser.import_types(names)

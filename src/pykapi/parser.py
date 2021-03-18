@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Iterable, Tuple, Optional, Dict, Set, Union
+from typing import List, Iterable, Tuple, Optional, Dict, Set
 
 from .k8s import QualifiedName, type_name_from_property_name
 from .types import (
@@ -15,8 +15,12 @@ from .types import (
 
 TimeType = TypeAlias(QualifiedName("Time", "meta", "v1"), "str")
 
+QuantityType = TypeAlias(
+    QualifiedName("Quantity", "core", "v1"), GenericType("Union", ["str", "int", "float"])
+)
+
 IntOrStringType = TypeAlias(
-    QualifiedName("IntOrString", "core", "v1"), "Union[str, int]"
+    QualifiedName("IntOrString", "core", "v1"), GenericType("Union", ["str", "int"])
 )
 IDNHostname = TypeAlias(QualifiedName("IDNHostname", "core", "v1"), "str")
 Base64Type = TypeAlias(QualifiedName("Base64", "core", "v1"), "str")
@@ -33,8 +37,9 @@ class ApiGroup:
         self._anonymous: Dict[str, List[AnonymousType]] = defaultdict(list)
 
         # imports
-        self._typing: Set[str] = set()
         self._refs: Set[str] = set()
+        self._typing: Set[str] = set()
+        self._base_types: Set[str] = set()
 
     def __repr__(self):
         return f"ApiGroup {{ name: {self.name}, {len(self._types)} types: }}"
@@ -49,19 +54,16 @@ class ApiGroup:
             self._types[api_type.name] = api_type
 
     @property
-    def refs(self) -> Iterable[str]:
-        return self._refs
-
-    def import_type(self, api_type: Union[ApiType, QualifiedName]):
-        if api_type.group != self.name:
-            self._refs.add(api_type.group)
-
-    @property
     def typing(self) -> Iterable[str]:
         return self._typing
 
-    def import_typing(self, symbol: str):
-        self._typing.add(symbol)
+    @property
+    def base_types(self) -> Iterable[str]:
+        return self._base_types
+
+    @property
+    def refs(self) -> Iterable[str]:
+        return self._refs
 
     def finalize(self):
         for name, items in self._anonymous.items():
@@ -100,42 +102,75 @@ class ApiGroup:
                 continue
             dones.add(ty.name)
 
-            if isinstance(ty, ObjectType):
-                # insert all dependencies
-                dependencies = self._fetch_dependencies(ty, dones)
-                dependencies.extend(types)
-                types = dependencies
-            else:
-                types.insert(0, ty)
+            self.add_imports_for_type(ty)
+            # insert all dependencies
+            dependencies = self._fetch_dependencies(ty, dones)
+            dependencies.extend(types)
+            types = dependencies
 
         self.types = reversed(types)
 
-    def _fetch_dependencies(self, ty: ObjectType, dones: set) -> List[ApiType]:
+    def add_imports_for_type(self, ty):
+        if isinstance(ty, GenericType):
+            self._typing.add(ty.base_type)
+        elif isinstance(ty, ApiType):
+            if isinstance(ty, ObjectType):
+                self._base_types.add(ty.kubic_type)
+            if ty.group and ty.group != self.name:
+                self._refs.add(ty.group)
+        else:
+            if ty == "Any":
+                self._typing.add("Any")
+
+    def __contains__(self, item: ApiType):
+        if item.group and item.group != self.name:
+            return False
+
+        member = self._types.get(item.name)
+        return member and member == item
+
+    def _fetch_generic_params(self, ty: GenericType, into: list):
+        self.add_imports_for_type(ty)
+        for param in ty.parameters:
+            if isinstance(param, GenericType):
+                self._fetch_generic_params(param, into)
+            else:
+                into.append(param)
+
+    def _fetch_dependencies(self, ty: ApiType, dones: set) -> List[ApiType]:
+        dependencies = []
+        if isinstance(ty, ObjectType):
+            properties = (prop.type for prop in ty.properties)
+        else:
+            assert isinstance(ty, TypeAlias)
+            properties = [ty.type]
+
+        for prop_type in properties:
+            if isinstance(prop_type, GenericType):
+                self._fetch_generic_params(prop_type, dependencies)
+                dependencies.extend(prop_type.parameters)
+            else:
+                dependencies.append(prop_type)
+
         types = []
-        for prop in ty.properties:
-            dependency = prop.type
-            if isinstance(dependency, GenericType):
-                dependency = dependency.value_type
+        for dependency in dependencies:
+            self.add_imports_for_type(dependency)
+
             if not isinstance(dependency, ApiType):
                 continue
 
             # if type is not part of the group -> skip it (external type like IntOrString)
-            member = self._types.get(dependency.name)
-            if not member or member != dependency:
+            if dependency not in self:
                 continue
 
             if dependency.name in dones:
                 continue
             dones.add(dependency.name)
 
-            if isinstance(dependency, ObjectType):
-                subtypes = self._fetch_dependencies(dependency, dones)
-                # prepend subtypes to types
-                subtypes.extend(types)
-                types = subtypes
-            else:
-                # prepend dependency
-                types.insert(0, dependency)
+            subtypes = self._fetch_dependencies(dependency, dones)
+            # prepend subtypes to types
+            subtypes.extend(types)
+            types = subtypes
 
         types.insert(0, ty)
         return types
@@ -214,19 +249,18 @@ class Parser:
                 self._register_type(ty, schema)
                 return ty
 
-            group = self.group_for_type(obj_type.fqn)
             if "additionalProperties" in schema:
-                group.import_typing("Dict")
                 return GenericType(
                     "Dict",
-                    self.import_property(
-                        obj_type, prop_name, schema["additionalProperties"]
+                    (
+                        "str",
+                        self.import_property(
+                            obj_type, prop_name, schema["additionalProperties"]
+                        ),
                     ),
                 )
 
-            group.import_typing("Dict")
-            group.import_typing("Any")
-            return GenericType("Dict", "Any")
+            return GenericType("Dict", ("str", "Any"))
 
         if prop_type == "integer":
             return "int"
@@ -237,17 +271,13 @@ class Parser:
         if prop_type == "string":
             fmt = schema.get("format")
             if fmt == "int-or-string":
-                self.group_for_type(obj_type.fqn).import_typing("Union")
-                return "Union[int, str]"
+                return GenericType("Union", ('int', 'str'))
             if fmt == "byte":
-                self.group_for_type(obj_type.fqn).import_type(Base64Type)
                 return Base64Type
             if fmt == "date-time":
-                self.group_for_type(obj_type.fqn).import_type(TimeType)
                 return TimeType
             # cilium cluster wide network policy
             if fmt == "idn-hostname":
-                self.group_for_type(obj_type.fqn).import_type(IDNHostname)
                 return IDNHostname
 
             assert not fmt, f"string format {fmt} not supported"
@@ -263,9 +293,8 @@ class Parser:
         if prop_type == "array":
             details = schema.get("items")
             if details:
-                self.group_for_type(obj_type.fqn).import_typing("List")
                 return GenericType(
-                    "List", self.import_property(obj_type, prop_name, details)
+                    "List", (self.import_property(obj_type, prop_name, details),)
                 )
             return "list"
 
@@ -279,13 +308,10 @@ class Parser:
         # if union:
         #     types = [self._get_type_name(item, prop_name) for item in union]
         #     return f"Union[{', '.join(types)}]"
-        group = self.group_for_type(obj_type.fqn)
         if schema.get("x-kubernetes-preserve-unknown-fields", False):
-            group.import_typing("Any")
             return "Any"
 
         if schema.get("x-kubernetes-int-or-string", False):
-            group.import_type(IntOrStringType)
             return IntOrStringType
 
         raise NotImplementedError(f"type not supported: {schema}")

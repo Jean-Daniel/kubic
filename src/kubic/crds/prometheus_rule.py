@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from .. import KubernetesObject, KubernetesApiResource
+from .. import KubernetesApiResource, KubernetesObject
 from .. import core, meta
 
 
@@ -14,19 +14,19 @@ class Rule(KubernetesObject):
     }
 
     alert: str
-    annotations: Dict[str]
+    annotations: Dict[str, str]
     expr: core.IntOrString
     for_: str
-    labels: Dict[str]
+    labels: Dict[str, str]
     record: str
 
     def __init__(
         self,
         alert: str = None,
-        annotations: Dict[str] = None,
+        annotations: Dict[str, str] = None,
         expr: core.IntOrString = None,
         for_: str = None,
-        labels: Dict[str] = None,
+        labels: Dict[str, str] = None,
         record: str = None,
     ):
         super().__init__(

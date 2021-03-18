@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from .. import KubernetesObject, KubernetesApiResource
+from .. import KubernetesApiResource
 from .. import meta
 
 
@@ -11,14 +11,14 @@ class SealedSecret(KubernetesApiResource):
     _version_ = "v1alpha1"
 
     metadata: meta.ObjectMeta
-    spec: Dict[Any]
+    spec: Dict[str, Any]
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
         metadata: meta.ObjectMeta = None,
-        spec: Dict[Any] = None,
+        spec: Dict[str, Any] = None,
     ):
         super().__init__(
             "bitnami.com/v1alpha1",

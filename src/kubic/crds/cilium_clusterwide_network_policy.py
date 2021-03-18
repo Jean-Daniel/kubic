@@ -1,20 +1,20 @@
 from typing import Dict, List
 
-from .. import KubernetesObject, KubernetesApiResource
+from .. import KubernetesApiResource, KubernetesObject
 from .. import core, meta
 
 
 class AWS(KubernetesObject):
     __slots__ = ()
 
-    labels: Dict[str]
+    labels: Dict[str, str]
     region: str
     security_groups_ids: List[str]
     security_groups_names: List[str]
 
     def __init__(
         self,
-        labels: Dict[str] = None,
+        labels: Dict[str, str] = None,
         region: str = None,
         security_groups_ids: List[str] = None,
         security_groups_names: List[str] = None,
@@ -60,12 +60,12 @@ class ToEndpoint(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str]
+    match_labels: Dict[str, str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str] = None,
+        match_labels: Dict[str, str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -240,7 +240,7 @@ class Rule(KubernetesObject):
     dns: List[DNS]
     http: List[Http]
     kafka: List[Kafka]
-    l7: List[Dict[str]]
+    l7: List[Dict[str, str]]
     l7proto: str
 
     def __init__(
@@ -248,7 +248,7 @@ class Rule(KubernetesObject):
         dns: List[DNS] = None,
         http: List[Http] = None,
         kafka: List[Kafka] = None,
-        l7: List[Dict[str]] = None,
+        l7: List[Dict[str, str]] = None,
         l7proto: str = None,
     ):
         super().__init__(dns=dns, http=http, kafka=kafka, l7=l7, l7proto=l7proto)
@@ -322,12 +322,12 @@ class ToRequire(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str]
+    match_labels: Dict[str, str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str] = None,
+        match_labels: Dict[str, str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -346,12 +346,12 @@ class Selector(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str]
+    match_labels: Dict[str, str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str] = None,
+        match_labels: Dict[str, str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -490,12 +490,12 @@ class EndpointSelector(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str]
+    match_labels: Dict[str, str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str] = None,
+        match_labels: Dict[str, str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -520,12 +520,12 @@ class FromEndpoint(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str]
+    match_labels: Dict[str, str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str] = None,
+        match_labels: Dict[str, str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -534,12 +534,12 @@ class FromRequire(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str]
+    match_labels: Dict[str, str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str] = None,
+        match_labels: Dict[str, str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -678,12 +678,12 @@ class NodeSelector(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str]
+    match_labels: Dict[str, str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str] = None,
+        match_labels: Dict[str, str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 

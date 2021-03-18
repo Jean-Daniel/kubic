@@ -49,14 +49,17 @@ def import_k8s_api(args, annotations):
         "Job",
         "io.k8s.api.batch.v1beta1.CronJob",
         "io.k8s.api.storage.v1.StorageClass",
+        "io.k8s.api.storage.v1.VolumeAttachment",
         "NetworkPolicy",
         "ResourceQuota",
         "PersistentVolume",
         "PodSecurityPolicy",
         "PodDisruptionBudget",
+        "io.k8s.api.scheduling.v1.PriorityClass",
         "io.k8s.api.autoscaling.v1.HorizontalPodAutoscaler",
         "io.k8s.api.autoscaling.v1.CrossVersionObjectReference",
         "io.k8s.api.admissionregistration.v1.MutatingWebhookConfiguration",
+        "io.k8s.api.admissionregistration.v1.ValidatingWebhookConfiguration",
         "Service",
         "ServiceAccount",
         "io.k8s.api.networking.v1.Ingress",
@@ -67,7 +70,8 @@ def import_k8s_api(args, annotations):
     for group in groups:
         output = args.output
         if output != "-":
-            module = group.name.removesuffix(".k8s.io").replace(".", "_")
+            # module = group.name.removesuffix(".k8s.io").replace(".", "_")
+            module = group.name.split('.', maxsplit=1)[0]
             output = os.path.join(args.output, f"{module}.py")
         printer.print_group(group, output)
 

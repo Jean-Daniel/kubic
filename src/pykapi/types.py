@@ -1,21 +1,24 @@
-from typing import Union, List, Any, NamedTuple
+from typing import Union, List, Any, NamedTuple, Iterable
 
 from .k8s import QualifiedName, camel_to_snake
 
 
+def qualified_name(ty, group: str) -> str:
+    if hasattr(ty, "qualified_name"):
+        return ty.qualified_name(group)
+    return str(ty)
+
+
 class GenericType(NamedTuple):
     base_type: str
-    value_type: Any
+    parameters: Iterable[Any]
 
     def qualified_name(self, group: str) -> str:
-        if hasattr(self.value_type, "qualified_name"):
-            value = self.value_type.qualified_name(group)
-        else:
-            value = str(self.value_type)
-        return f"{self.base_type}[{value}]"
+        types = (qualified_name(value, group) for value in self.parameters)
+        return f"{self.base_type}[{', '.join(types)}]"
 
     def __str__(self):
-        return f"{self.base_type}[{str(self.value_type)}]"
+        return f"{self.base_type}[{str(self.parameters)}]"
 
     def __repr__(self):
         return str(self)
@@ -67,11 +70,6 @@ class Property(NamedTuple):
     type: "Type"
     required: bool
 
-    def type_name(self, group) -> str:
-        if hasattr(self.type, "qualified_name"):
-            return self.type.qualified_name(group)
-        return str(self.type)
-
     @property
     def snake_name(self):
         return camel_to_snake(self.name)
@@ -86,6 +84,10 @@ class ObjectType(ApiType):
         return self.name == other.name and self.properties == other.properties
 
     @property
+    def kubic_type(self):
+        return "KubernetesObject"
+
+    @property
     def required_properties(self):
         return (prop for prop in self.properties if prop.required)
 
@@ -98,6 +100,10 @@ class ApiResourceType(ObjectType):
     def __init__(self, name: QualifiedName, scoped: bool):
         super().__init__(name)
         self.scoped = scoped
+
+    @property
+    def kubic_type(self):
+        return "KubernetesApiResource"
 
     @property
     def kind(self):
