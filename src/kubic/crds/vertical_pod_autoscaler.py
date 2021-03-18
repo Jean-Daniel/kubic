@@ -1,7 +1,16 @@
 from typing import Any, Dict, List
 
-from ..base import KubernetesObject, KubernetesApiResource
-from .. import api
+from .. import KubernetesObject, KubernetesApiResource
+from .. import autoscaling, meta
+
+
+class ResourcePolicy(KubernetesObject):
+    __slots__ = ()
+
+    container_policies: List[Dict[Any]]
+
+    def __init__(self, container_policies: List[Dict[Any]] = None):
+        super().__init__(container_policies=container_policies)
 
 
 class UpdatePolicy(KubernetesObject):
@@ -13,26 +22,17 @@ class UpdatePolicy(KubernetesObject):
         super().__init__(update_mode=update_mode)
 
 
-class ResourcePolicy(KubernetesObject):
-    __slots__ = ()
-
-    container_policies: List[Dict[str, Any]]
-
-    def __init__(self, container_policies: List[Dict[str, Any]] = None):
-        super().__init__(container_policies=container_policies)
-
-
 class Spec(KubernetesObject):
     __slots__ = ()
 
     resource_policy: ResourcePolicy
-    target_ref: Dict[str, Any]
+    target_ref: autoscaling.CrossVersionObjectReference
     update_policy: UpdatePolicy
 
     def __init__(
         self,
         resource_policy: ResourcePolicy = None,
-        target_ref: Dict[str, Any] = None,
+        target_ref: autoscaling.CrossVersionObjectReference = None,
         update_policy: UpdatePolicy = None,
     ):
         super().__init__(
@@ -48,14 +48,14 @@ class VerticalPodAutoscaler(KubernetesApiResource):
     _group_ = "autoscaling.k8s.io"
     _version_ = "v1beta2"
 
-    metadata: api.ObjectMeta
+    metadata: meta.ObjectMeta
     spec: Spec
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
-        metadata: api.ObjectMeta = None,
+        metadata: meta.ObjectMeta = None,
         spec: Spec = None,
     ):
         super().__init__(

@@ -1,7 +1,30 @@
 from typing import Dict, List
 
-from ..base import KubernetesObject, KubernetesApiResource
-from .. import api
+from .. import KubernetesObject, KubernetesApiResource
+from .. import core, meta
+
+
+class AWS(KubernetesObject):
+    __slots__ = ()
+
+    labels: Dict[str]
+    region: str
+    security_groups_ids: List[str]
+    security_groups_names: List[str]
+
+    def __init__(
+        self,
+        labels: Dict[str] = None,
+        region: str = None,
+        security_groups_ids: List[str] = None,
+        security_groups_names: List[str] = None,
+    ):
+        super().__init__(
+            labels=labels,
+            region=region,
+            security_groups_ids=security_groups_ids,
+            security_groups_names=security_groups_names,
+        )
 
 
 class ToCIDRSet(KubernetesObject):
@@ -37,12 +60,12 @@ class ToEndpoint(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str, str]
+    match_labels: Dict[str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str, str] = None,
+        match_labels: Dict[str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -55,29 +78,6 @@ class ToFQDN(KubernetesObject):
 
     def __init__(self, match_name: str = None, match_pattern: str = None):
         super().__init__(match_name=match_name, match_pattern=match_pattern)
-
-
-class AWS(KubernetesObject):
-    __slots__ = ()
-
-    labels: Dict[str, str]
-    region: str
-    security_groups_ids: List[str]
-    security_groups_names: List[str]
-
-    def __init__(
-        self,
-        labels: Dict[str, str] = None,
-        region: str = None,
-        security_groups_ids: List[str] = None,
-        security_groups_names: List[str] = None,
-    ):
-        super().__init__(
-            labels=labels,
-            region=region,
-            security_groups_ids=security_groups_ids,
-            security_groups_names=security_groups_names,
-        )
 
 
 class ToGroup(KubernetesObject):
@@ -175,15 +175,12 @@ class HeaderMatche(KubernetesObject):
         super().__init__(mismatch=mismatch, name=name, secret=secret, value=value)
 
 
-IDNHostname = str
-
-
 class Http(KubernetesObject):
     __slots__ = ()
 
     header_matches: List[HeaderMatche]
     headers: List[str]
-    host: IDNHostname
+    host: core.IDNHostname
     method: str
     path: str
 
@@ -191,7 +188,7 @@ class Http(KubernetesObject):
         self,
         header_matches: List[HeaderMatche] = None,
         headers: List[str] = None,
-        host: IDNHostname = None,
+        host: core.IDNHostname = None,
         method: str = None,
         path: str = None,
     ):
@@ -243,7 +240,7 @@ class Rule(KubernetesObject):
     dns: List[DNS]
     http: List[Http]
     kafka: List[Kafka]
-    l7: List[Dict[str, str]]
+    l7: List[Dict[str]]
     l7proto: str
 
     def __init__(
@@ -251,7 +248,7 @@ class Rule(KubernetesObject):
         dns: List[DNS] = None,
         http: List[Http] = None,
         kafka: List[Kafka] = None,
-        l7: List[Dict[str, str]] = None,
+        l7: List[Dict[str]] = None,
         l7proto: str = None,
     ):
         super().__init__(dns=dns, http=http, kafka=kafka, l7=l7, l7proto=l7proto)
@@ -289,72 +286,6 @@ class TerminatingTLS(KubernetesObject):
         )
 
 
-class ToRequire(KubernetesObject):
-    __slots__ = ()
-
-    match_expressions: List[MatchExpression]
-    match_labels: Dict[str, str]
-
-    def __init__(
-        self,
-        match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str, str] = None,
-    ):
-        super().__init__(match_expressions=match_expressions, match_labels=match_labels)
-
-
-class K8sService(KubernetesObject):
-    __slots__ = ()
-
-    namespace: str
-    service_name: str
-
-    def __init__(self, namespace: str = None, service_name: str = None):
-        super().__init__(namespace=namespace, service_name=service_name)
-
-
-class Selector(KubernetesObject):
-    __slots__ = ()
-
-    match_expressions: List[MatchExpression]
-    match_labels: Dict[str, str]
-
-    def __init__(
-        self,
-        match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str, str] = None,
-    ):
-        super().__init__(match_expressions=match_expressions, match_labels=match_labels)
-
-
-class K8sServiceSelector(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["selector"]
-
-    namespace: str
-    selector: Selector
-
-    def __init__(self, namespace: str = None, selector: Selector = None):
-        super().__init__(namespace=namespace, selector=selector)
-
-
-class ToService(KubernetesObject):
-    __slots__ = ()
-
-    k8s_service: K8sService
-    k8s_service_selector: K8sServiceSelector
-
-    def __init__(
-        self,
-        k8s_service: K8sService = None,
-        k8s_service_selector: K8sServiceSelector = None,
-    ):
-        super().__init__(
-            k8s_service=k8s_service, k8s_service_selector=k8s_service_selector
-        )
-
-
 class EgressToPort(KubernetesObject):
     __slots__ = ()
 
@@ -384,6 +315,72 @@ class EgressToPort(KubernetesObject):
             ports=ports,
             rules=rules,
             terminating_tls=terminating_tls,
+        )
+
+
+class ToRequire(KubernetesObject):
+    __slots__ = ()
+
+    match_expressions: List[MatchExpression]
+    match_labels: Dict[str]
+
+    def __init__(
+        self,
+        match_expressions: List[MatchExpression] = None,
+        match_labels: Dict[str] = None,
+    ):
+        super().__init__(match_expressions=match_expressions, match_labels=match_labels)
+
+
+class K8sService(KubernetesObject):
+    __slots__ = ()
+
+    namespace: str
+    service_name: str
+
+    def __init__(self, namespace: str = None, service_name: str = None):
+        super().__init__(namespace=namespace, service_name=service_name)
+
+
+class Selector(KubernetesObject):
+    __slots__ = ()
+
+    match_expressions: List[MatchExpression]
+    match_labels: Dict[str]
+
+    def __init__(
+        self,
+        match_expressions: List[MatchExpression] = None,
+        match_labels: Dict[str] = None,
+    ):
+        super().__init__(match_expressions=match_expressions, match_labels=match_labels)
+
+
+class K8sServiceSelector(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["selector"]
+
+    namespace: str
+    selector: Selector
+
+    def __init__(self, namespace: str = None, selector: Selector = None):
+        super().__init__(namespace=namespace, selector=selector)
+
+
+class ToService(KubernetesObject):
+    __slots__ = ()
+
+    k8s_service: K8sService
+    k8s_service_selector: K8sServiceSelector
+
+    def __init__(
+        self,
+        k8s_service: K8sService = None,
+        k8s_service_selector: K8sServiceSelector = None,
+    ):
+        super().__init__(
+            k8s_service=k8s_service, k8s_service_selector=k8s_service_selector
         )
 
 
@@ -493,12 +490,12 @@ class EndpointSelector(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str, str]
+    match_labels: Dict[str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str, str] = None,
+        match_labels: Dict[str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -523,12 +520,12 @@ class FromEndpoint(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str, str]
+    match_labels: Dict[str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str, str] = None,
+        match_labels: Dict[str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -537,12 +534,12 @@ class FromRequire(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str, str]
+    match_labels: Dict[str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str, str] = None,
+        match_labels: Dict[str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -681,12 +678,12 @@ class NodeSelector(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str, str]
+    match_labels: Dict[str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str, str] = None,
+        match_labels: Dict[str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -734,14 +731,14 @@ class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
 
     _required_ = ["metadata"]
 
-    metadata: api.ObjectMeta
+    metadata: meta.ObjectMeta
     spec: Spec
     specs: List[Spec]
 
     def __init__(
         self,
         name: str,
-        metadata: api.ObjectMeta = None,
+        metadata: meta.ObjectMeta = None,
         spec: Spec = None,
         specs: List[Spec] = None,
     ):

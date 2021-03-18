@@ -1,10 +1,7 @@
-from typing import Dict, List, Union
+from typing import Dict, List
 
-from ..base import KubernetesObject, KubernetesApiResource
-from .. import api
-
-
-IntOrString = Union[int, str]
+from .. import KubernetesObject, KubernetesApiResource
+from .. import core, meta
 
 
 class Rule(KubernetesObject):
@@ -17,19 +14,19 @@ class Rule(KubernetesObject):
     }
 
     alert: str
-    annotations: Dict[str, str]
-    expr: IntOrString
+    annotations: Dict[str]
+    expr: core.IntOrString
     for_: str
-    labels: Dict[str, str]
+    labels: Dict[str]
     record: str
 
     def __init__(
         self,
         alert: str = None,
-        annotations: Dict[str, str] = None,
-        expr: IntOrString = None,
+        annotations: Dict[str] = None,
+        expr: core.IntOrString = None,
         for_: str = None,
-        labels: Dict[str, str] = None,
+        labels: Dict[str] = None,
         record: str = None,
     ):
         super().__init__(
@@ -88,14 +85,14 @@ class PrometheusRule(KubernetesApiResource):
 
     _required_ = ["spec"]
 
-    metadata: api.ObjectMeta
+    metadata: meta.ObjectMeta
     spec: Spec
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
-        metadata: api.ObjectMeta = None,
+        metadata: meta.ObjectMeta = None,
         spec: Spec = None,
     ):
         super().__init__(

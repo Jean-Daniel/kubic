@@ -1,20 +1,7 @@
 from typing import Dict, List
 
-from ..base import KubernetesObject, KubernetesApiResource
-from .. import api
-
-
-class Prober(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["url"]
-
-    path: str
-    scheme: str
-    url: str
-
-    def __init__(self, path: str = None, scheme: str = None, url: str = None):
-        super().__init__(path=path, scheme=scheme, url=url)
+from .. import KubernetesObject, KubernetesApiResource
+from .. import meta
 
 
 class NamespaceSelector(KubernetesObject):
@@ -76,12 +63,12 @@ class Selector(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str, str]
+    match_labels: Dict[str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str, str] = None,
+        match_labels: Dict[str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -106,13 +93,26 @@ class Ingress(KubernetesObject):
         )
 
 
+class Prober(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["url"]
+
+    path: str
+    scheme: str
+    url: str
+
+    def __init__(self, path: str = None, scheme: str = None, url: str = None):
+        super().__init__(path=path, scheme=scheme, url=url)
+
+
 class StaticConfig(KubernetesObject):
     __slots__ = ()
 
-    labels: Dict[str, str]
+    labels: Dict[str]
     static: List[str]
 
-    def __init__(self, labels: Dict[str, str] = None, static: List[str] = None):
+    def __init__(self, labels: Dict[str] = None, static: List[str] = None):
         super().__init__(labels=labels, static=static)
 
 
@@ -163,14 +163,14 @@ class Probe(KubernetesApiResource):
 
     _required_ = ["spec"]
 
-    metadata: api.ObjectMeta
+    metadata: meta.ObjectMeta
     spec: Spec
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
-        metadata: api.ObjectMeta = None,
+        metadata: meta.ObjectMeta = None,
         spec: Spec = None,
     ):
         super().__init__(

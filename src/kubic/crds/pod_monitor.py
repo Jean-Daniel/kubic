@@ -1,17 +1,7 @@
-from typing import Dict, List, Union
+from typing import Dict, List
 
-from ..base import KubernetesObject, KubernetesApiResource
-from .. import api
-
-
-class NamespaceSelector(KubernetesObject):
-    __slots__ = ()
-
-    any: bool
-    match_names: List[str]
-
-    def __init__(self, any: bool = None, match_names: List[str] = None):
-        super().__init__(any=any, match_names=match_names)
+from .. import KubernetesObject, KubernetesApiResource
+from .. import core, meta
 
 
 class Password(KubernetesObject):
@@ -61,73 +51,6 @@ class BearerTokenSecret(KubernetesObject):
 
     def __init__(self, key: str = None, name: str = None, optional: bool = None):
         super().__init__(key=key, name=name, optional=optional)
-
-
-class MetricRelabeling(KubernetesObject):
-    __slots__ = ()
-
-    action: str
-    modulus: int
-    regex: str
-    replacement: str
-    separator: str
-    source_labels: List[str]
-    target_label: str
-
-    def __init__(
-        self,
-        action: str = None,
-        modulus: int = None,
-        regex: str = None,
-        replacement: str = None,
-        separator: str = None,
-        source_labels: List[str] = None,
-        target_label: str = None,
-    ):
-        super().__init__(
-            action=action,
-            modulus=modulus,
-            regex=regex,
-            replacement=replacement,
-            separator=separator,
-            source_labels=source_labels,
-            target_label=target_label,
-        )
-
-
-class Relabeling(KubernetesObject):
-    __slots__ = ()
-
-    action: str
-    modulus: int
-    regex: str
-    replacement: str
-    separator: str
-    source_labels: List[str]
-    target_label: str
-
-    def __init__(
-        self,
-        action: str = None,
-        modulus: int = None,
-        regex: str = None,
-        replacement: str = None,
-        separator: str = None,
-        source_labels: List[str] = None,
-        target_label: str = None,
-    ):
-        super().__init__(
-            action=action,
-            modulus=modulus,
-            regex=regex,
-            replacement=replacement,
-            separator=separator,
-            source_labels=source_labels,
-            target_label=target_label,
-        )
-
-
-IntOrString = Union[int, str]
 
 
 class ConfigMap(KubernetesObject):
@@ -189,6 +112,93 @@ class KeySecret(KubernetesObject):
         super().__init__(key=key, name=name, optional=optional)
 
 
+class MatchExpression(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["key", "operator"]
+
+    key: str
+    operator: str
+    values: List[str]
+
+    def __init__(self, key: str = None, operator: str = None, values: List[str] = None):
+        super().__init__(key=key, operator=operator, values=values)
+
+
+class MetricRelabeling(KubernetesObject):
+    __slots__ = ()
+
+    action: str
+    modulus: int
+    regex: str
+    replacement: str
+    separator: str
+    source_labels: List[str]
+    target_label: str
+
+    def __init__(
+        self,
+        action: str = None,
+        modulus: int = None,
+        regex: str = None,
+        replacement: str = None,
+        separator: str = None,
+        source_labels: List[str] = None,
+        target_label: str = None,
+    ):
+        super().__init__(
+            action=action,
+            modulus=modulus,
+            regex=regex,
+            replacement=replacement,
+            separator=separator,
+            source_labels=source_labels,
+            target_label=target_label,
+        )
+
+
+class NamespaceSelector(KubernetesObject):
+    __slots__ = ()
+
+    any: bool
+    match_names: List[str]
+
+    def __init__(self, any: bool = None, match_names: List[str] = None):
+        super().__init__(any=any, match_names=match_names)
+
+
+class Relabeling(KubernetesObject):
+    __slots__ = ()
+
+    action: str
+    modulus: int
+    regex: str
+    replacement: str
+    separator: str
+    source_labels: List[str]
+    target_label: str
+
+    def __init__(
+        self,
+        action: str = None,
+        modulus: int = None,
+        regex: str = None,
+        replacement: str = None,
+        separator: str = None,
+        source_labels: List[str] = None,
+        target_label: str = None,
+    ):
+        super().__init__(
+            action=action,
+            modulus=modulus,
+            regex=regex,
+            replacement=replacement,
+            separator=separator,
+            source_labels=source_labels,
+            target_label=target_label,
+        )
+
+
 class TLSConfig(KubernetesObject):
     __slots__ = ()
 
@@ -224,14 +234,14 @@ class PodMetricsEndpoint(KubernetesObject):
     honor_timestamps: bool
     interval: str
     metric_relabelings: List[MetricRelabeling]
-    params: Dict[str, List[str]]
+    params: Dict[List[str]]
     path: str
     port: str
     proxy_url: str
     relabelings: List[Relabeling]
     scheme: str
     scrape_timeout: str
-    target_port: IntOrString
+    target_port: core.IntOrString
     tls_config: TLSConfig
 
     def __init__(
@@ -242,14 +252,14 @@ class PodMetricsEndpoint(KubernetesObject):
         honor_timestamps: bool = None,
         interval: str = None,
         metric_relabelings: List[MetricRelabeling] = None,
-        params: Dict[str, List[str]] = None,
+        params: Dict[List[str]] = None,
         path: str = None,
         port: str = None,
         proxy_url: str = None,
         relabelings: List[Relabeling] = None,
         scheme: str = None,
         scrape_timeout: str = None,
-        target_port: IntOrString = None,
+        target_port: core.IntOrString = None,
         tls_config: TLSConfig = None,
     ):
         super().__init__(
@@ -271,29 +281,16 @@ class PodMetricsEndpoint(KubernetesObject):
         )
 
 
-class MatchExpression(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key", "operator"]
-
-    key: str
-    operator: str
-    values: List[str]
-
-    def __init__(self, key: str = None, operator: str = None, values: List[str] = None):
-        super().__init__(key=key, operator=operator, values=values)
-
-
 class Selector(KubernetesObject):
     __slots__ = ()
 
     match_expressions: List[MatchExpression]
-    match_labels: Dict[str, str]
+    match_labels: Dict[str]
 
     def __init__(
         self,
         match_expressions: List[MatchExpression] = None,
-        match_labels: Dict[str, str] = None,
+        match_labels: Dict[str] = None,
     ):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
@@ -340,14 +337,14 @@ class PodMonitor(KubernetesApiResource):
 
     _required_ = ["spec"]
 
-    metadata: api.ObjectMeta
+    metadata: meta.ObjectMeta
     spec: Spec
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
-        metadata: api.ObjectMeta = None,
+        metadata: meta.ObjectMeta = None,
         spec: Spec = None,
     ):
         super().__init__(

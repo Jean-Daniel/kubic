@@ -1,7 +1,7 @@
 from typing import List
 
-from ..base import KubernetesObject, KubernetesApiResource
-from .. import api
+from .. import KubernetesObject, KubernetesApiResource
+from .. import meta
 
 
 class IssuerRef(KubernetesObject):
@@ -198,14 +198,14 @@ class Certificate(KubernetesApiResource):
 
     _required_ = ["spec"]
 
-    metadata: api.ObjectMeta
+    metadata: meta.ObjectMeta
     spec: Spec
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
-        metadata: api.ObjectMeta = None,
+        metadata: meta.ObjectMeta = None,
         spec: Spec = None,
     ):
         super().__init__(

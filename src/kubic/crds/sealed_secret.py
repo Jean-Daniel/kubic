@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
-from ..base import KubernetesObject, KubernetesApiResource
-from .. import api
+from .. import KubernetesObject, KubernetesApiResource
+from .. import meta
 
 
 class SealedSecret(KubernetesApiResource):
@@ -10,15 +10,15 @@ class SealedSecret(KubernetesApiResource):
     _group_ = "bitnami.com"
     _version_ = "v1alpha1"
 
-    metadata: api.ObjectMeta
-    spec: Dict[str, Any]
+    metadata: meta.ObjectMeta
+    spec: Dict[Any]
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
-        metadata: api.ObjectMeta = None,
-        spec: Dict[str, Any] = None,
+        metadata: meta.ObjectMeta = None,
+        spec: Dict[Any] = None,
     ):
         super().__init__(
             "bitnami.com/v1alpha1",

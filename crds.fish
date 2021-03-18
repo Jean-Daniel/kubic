@@ -23,4 +23,4 @@ end
 #  python3 kubegen.py -o k8s/{$name}.py $crd
 # end
 
-black src
+black src/kubic
