@@ -14,7 +14,7 @@ class CRDParser(Parser):
 
         # patching root schema
         schema["properties"]["metadata"] = {
-            "!ref": "io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta"
+            "$ref": "io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta"
         }
         self.annotations = annotations
 
@@ -40,7 +40,7 @@ class CRDParser(Parser):
         self, obj_type: ObjectType, prop_name: str, schema: dict
     ) -> Type:
         # API Importer only
-        ref = schema.get("!ref")
+        ref = schema.get("$ref")
         if ref:
             # for ref -> import type recursively
             fqn = QualifiedName.parse(ref)
