@@ -10,7 +10,8 @@ from .parser import ApiGroup
 from .types import (
     ObjectType,
     TypeAlias,
-    ApiResourceType, qualified_name,
+    ApiResourceType,
+    qualified_name,
 )
 
 

@@ -1,9 +1,9 @@
 from typing import Optional, NamedTuple, TextIO
 
-from pykapi.k8s import QualifiedName
-from pykapi.parser import Parser, ApiGroup
-from pykapi.printer import TypePrinter
-from pykapi.types import ApiResourceType, ObjectType, AnonymousType, Type, TypeAlias, ApiType
+from .k8s import QualifiedName
+from .parser import Parser, ApiGroup
+from .printer import TypePrinter
+from .types import ApiResourceType, ObjectType, AnonymousType, Type, TypeAlias, ApiType
 
 
 class CRDParser(Parser):

@@ -16,7 +16,8 @@ from .types import (
 TimeType = TypeAlias(QualifiedName("Time", "meta", "v1"), "str")
 
 QuantityType = TypeAlias(
-    QualifiedName("Quantity", "core", "v1"), GenericType("Union", ["str", "int", "float"])
+    QualifiedName("Quantity", "core", "v1"),
+    GenericType("Union", ["str", "int", "float"]),
 )
 
 IntOrStringType = TypeAlias(
@@ -80,10 +81,10 @@ class ApiGroup:
                             item.parent_name + item.name, item.group, item.version
                         )
                         if (
-                                item.name in self._types and self._types[item.name] != item
+                            item.name in self._types and self._types[item.name] != item
                         ) or (
-                                item.name in self._anonymous
-                                and self._anonymous[item.name] != item
+                            item.name in self._anonymous
+                            and self._anonymous[item.name] != item
                         ):
                             raise ValueError(f"{item.name} still conflicting")
                         self._types[item.name] = item
@@ -235,7 +236,7 @@ class Parser:
         return self.import_complex_property(obj_type, prop_name, schema)
 
     def import_base_property(
-            self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str
+        self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str
     ) -> Type:
         if prop_type == "object":
             # if no properties, this is just an alias for generic object
@@ -271,7 +272,7 @@ class Parser:
         if prop_type == "string":
             fmt = schema.get("format")
             if fmt == "int-or-string":
-                return GenericType("Union", ('int', 'str'))
+                return GenericType("Union", ("int", "str"))
             if fmt == "byte":
                 return Base64Type
             if fmt == "date-time":

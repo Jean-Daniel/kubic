@@ -10,9 +10,10 @@ from pykapi.parser import (
     IntOrStringType,
     Base64Type,
     TimeType,
-    IDNHostname, QuantityType,
+    IDNHostname,
+    QuantityType,
 )
-from pykapi.types import Type, ApiType, TypeAlias, ApiResourceType, ObjectType, GenericType
+from pykapi.types import Type, ApiType, TypeAlias, ApiResourceType, ObjectType
 
 
 def simplename(key: str) -> str:

@@ -1,4 +1,4 @@
-from . import KubernetesApiResource, KubernetesObject
+from . import KubernetesApiResource
 from . import meta
 
 
