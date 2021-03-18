@@ -2,7 +2,7 @@ import unittest
 from collections.abc import MutableSequence
 from typing import List, Union
 
-from kubic.base import KubernetesObject
+from kubic import KubernetesObject
 
 
 class LeaveType(KubernetesObject):
