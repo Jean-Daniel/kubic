@@ -28,6 +28,3 @@ class SealedSecret(KubernetesApiResource):
             metadata=metadata,
             spec=spec,
         )
-
-
-New = SealedSecret

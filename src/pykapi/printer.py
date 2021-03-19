@@ -6,12 +6,13 @@ from kubic import (
     snake_to_camel as naive_snake_to_camel,
     camel_to_snake as naive_camel_to_snake,
 )
+from .k8s import module_for_group
 from .parser import ApiGroup
 from .types import (
     ObjectType,
     TypeAlias,
     ApiResourceType,
-    qualified_name,
+    AnonymousType,
 )
 
 
@@ -47,7 +48,7 @@ class TypePrinter:
 
         if group.refs:
             stream.write(f"from {self.api_module} import ")
-            stream.write(", ".join(sorted(group.refs)))
+            stream.write(", ".join(sorted(module_for_group(g) for g in group.refs)))
             stream.write("\n\n")
 
     def print_types(self, group: ApiGroup, stream: TextIO):
@@ -66,7 +67,7 @@ class TypePrinter:
             stream.write(": TypeAlias = ")
         else:
             stream.write(" = ")
-        stream.write(qualified_name(ty.type, group.name))
+        stream.write(group.qualified_name(ty.type))
         stream.write("\n\n")
 
     def print_type(self, group: ApiGroup, ty: ObjectType, stream: TextIO):
@@ -76,10 +77,11 @@ class TypePrinter:
         stream.write(":\n")
         stream.write("    __slots__ = ()\n")
 
-        if ty.group:
-            stream.write(f'\n    _group_ = "{ty.group}"\n')
-        if ty.version:
-            stream.write(f'    _version_ = "{ty.version}"\n')
+        if not isinstance(ty, AnonymousType):
+            if ty.group:
+                stream.write(f'\n    _group_ = "{ty.group}"\n')
+            if ty.version:
+                stream.write(f'    _version_ = "{ty.version}"\n')
 
         required = [prop.snake_name for prop in ty.required_properties]
         if required:
@@ -116,7 +118,7 @@ class TypePrinter:
             stream.write("    ")
             stream.write(prop.snake_name)
             stream.write(": ")
-            stream.write(qualified_name(prop.type, group.name))
+            stream.write(group.qualified_name(prop.type))
             stream.write("\n")
 
         stream.write("\n    def __init__(self")
@@ -128,7 +130,7 @@ class TypePrinter:
             stream.write(", ")
             stream.write(prop.snake_name)
             stream.write(": ")
-            stream.write(qualified_name(prop.type, group.name))
+            stream.write(group.qualified_name(prop.type))
             stream.write(" = None")
         stream.write("):\n")
         stream.write("        super().__init__(")

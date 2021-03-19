@@ -1,14 +1,10 @@
 #!/usr/local/bin/fish
 
-set CRDS certificates.cert-manager.io \
-        ciliumclusterwidenetworkpolicies.cilium.io \
-        ciliumnetworkpolicies.cilium.io \
-        podmonitors.monitoring.coreos.com \
-        probes.monitoring.coreos.com \
-        prometheusrules.monitoring.coreos.com \
-        sealedsecrets.bitnami.com \
-        servicemonitors.monitoring.coreos.com \
-        verticalpodautoscaler.autoscaling.k8s.io \
+set CRDS sealedsecrets.bitnami.com \
+         verticalpodautoscaler.autoscaling.k8s.io \
+         schemas/cilium.crds.yaml \
+         schemas/cert-manager.crds.yaml \
+         schemas/prometheus-operator.crds.yaml
 
 
 for crd in $CRDS;

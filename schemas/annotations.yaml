@@ -1,7 +1,79 @@
-"verticalpodautoscalers.autoscaling.k8s.io":
-  "VerticalPodAutoscaler":
-    Spec:
-      targetRef: { "$ref": "io.k8s.api.autoscaling.v1.CrossVersionObjectReference" }
-
 "meta.v1.ObjectMeta":
   managedFields:
+
+
+crds:
+  # Map CRD group name
+  groups:
+    "acme.cert-manager.io": "cert-manager.io"
+
+  "cilium.io":
+    Egress:
+      toCIDRSet: "io.k8s.api.networking.v1.IPBlock"
+    EgressDeny:
+      toCIDRSet: "io.k8s.api.networking.v1.IPBlock"
+    Ingress:
+      fromCIDRSet: "io.k8s.api.networking.v1.IPBlock"
+    IngressDeny:
+      fromCIDRSet: "io.k8s.api.networking.v1.IPBlock"
+
+    CiliumNodeStatus:
+      eni:
+        type_name: ENIStatus
+
+  "autoscaling.k8s.io":
+    VerticalPodAutoscalerSpec:
+      targetRef: "io.k8s.api.autoscaling.v1.CrossVersionObjectReference"
+
+  "cert-manager.io":
+    Preference:
+      matchExpressions: "io.k8s.api.core.v1.NodeSelectorRequirement"
+    NodeSelectorTerm:
+      matchExpressions: "io.k8s.api.core.v1.NodeSelectorRequirement"
+    LabelSelector:
+      matchExpressions: "io.k8s.api.core.v1.NodeSelectorRequirement"
+    PodTemplateSpec:
+      affinity: "io.k8s.api.core.v1.Affinity"
+      tolerations: "io.k8s.api.core.v1.Toleration"
+
+  "monitoring.coreos.com":
+    AlertmanagerSpec:
+      affinity: "io.k8s.api.core.v1.Affinity"
+      containers: "io.k8s.api.core.v1.Container"
+      imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
+      initContainers: "io.k8s.api.core.v1.Container"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+      securityContext: "io.k8s.api.core.v1.PodSecurityContext"
+      tolerations: "io.k8s.api.core.v1.Toleration"
+      topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+      volumeMounts: "io.k8s.api.core.v1.VolumeMount"
+      volumes: "io.k8s.api.core.v1.Volume"
+
+    PrometheusSpec:
+      affinity: "io.k8s.api.core.v1.Affinity"
+      containers: "io.k8s.api.core.v1.Container"
+      imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
+      initContainers: "io.k8s.api.core.v1.Container"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+      securityContext: "io.k8s.api.core.v1.PodSecurityContext"
+      tolerations: "io.k8s.api.core.v1.Toleration"
+      topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+      volumes: "io.k8s.api.core.v1.Volume"
+      volumeMounts: "io.k8s.api.core.v1.VolumeMount"
+
+    Storage:
+      emptyDir: "io.k8s.api.core.v1.EmptyDirVolumeSource"
+      volumeClaimTemplate: "io.k8s.api.core.v1.PersistentVolumeClaim"
+
+    Thano:
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+
+    ThanosRulerSpec:
+      affinity: "io.k8s.api.core.v1.Affinity"
+      imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
+      initContainers: "io.k8s.api.core.v1.Container"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+      securityContext: "io.k8s.api.core.v1.PodSecurityContext"
+      tolerations: "io.k8s.api.core.v1.Toleration"
+      topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+      volumes: "io.k8s.api.core.v1.Volume"

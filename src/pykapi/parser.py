@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List, Iterable, Tuple, Optional, Dict, Set
 
-from .k8s import QualifiedName, type_name_from_property_name
+from .k8s import QualifiedName, module_for_group
 from .types import (
     TypeAlias,
     ApiResourceType,
@@ -45,8 +45,26 @@ class ApiGroup:
     def __repr__(self):
         return f"ApiGroup {{ name: {self.name}, {len(self._types)} types: }}"
 
+    def __contains__(self, item: ApiType):
+        if item.group and item.group != self.name:
+            return False
+
+        return item.name in self._types
+
     def get(self, fqn: QualifiedName) -> Optional[ApiType]:
         return self._types.get(fqn.name)
+
+    def qualified_name(self, ty) -> str:
+        if isinstance(ty, ApiType):
+            if ty not in self:
+                return f"{module_for_group(ty.group)}.{ty.name}"
+            return ty.name
+
+        if isinstance(ty, GenericType):
+            types = (self.qualified_name(value) for value in ty.parameters)
+            return f"{ty.base_type}[{', '.join(types)}]"
+
+        return str(ty)
 
     def add(self, api_type: ApiType):
         if isinstance(api_type, AnonymousType):
@@ -78,7 +96,7 @@ class ApiGroup:
                     # Mark all items as conflicting and fix the output type list
                     for item in items:
                         item.fqn = QualifiedName(
-                            item.parent_name + item.name, item.group, item.version
+                            item.fullname, item.group, item.version
                         )
                         if (
                             item.name in self._types and self._types[item.name] != item
@@ -115,20 +133,14 @@ class ApiGroup:
         if isinstance(ty, GenericType):
             self._typing.add(ty.base_type)
         elif isinstance(ty, ApiType):
-            if isinstance(ty, ObjectType):
-                self._base_types.add(ty.kubic_type)
-            if ty.group and ty.group != self.name:
+            if ty in self:
+                if isinstance(ty, ObjectType):
+                    self._base_types.add(ty.kubic_type)
+            elif ty.group:
                 self._refs.add(ty.group)
         else:
             if ty == "Any":
                 self._typing.add("Any")
-
-    def __contains__(self, item: ApiType):
-        if item.group and item.group != self.name:
-            return False
-
-        member = self._types.get(item.name)
-        return member and member == item
 
     def _fetch_generic_params(self, ty: GenericType, into: list):
         self.add_imports_for_type(ty)
@@ -210,19 +222,33 @@ class Parser:
         patch = self.annotations_for_type(obj_type)
         is_api_resource = isinstance(obj_type, ApiResourceType)
         for prop, value in schema["properties"].items():
-            # for REST API only
-            if is_api_resource and prop == "status":
-                continue
-
             # skip prepopulated values
             if is_api_resource and (prop == "apiVersion" or prop == "kind"):
                 continue
 
             if patch:
-                value = patch.get(prop, value)
-                if not value:
+                overwrite = patch.get(prop, value)
+                if not overwrite:
                     continue
 
+                # shortcut as this is the most common case
+                if isinstance(overwrite, str):
+                    if value.get("type") == "array":
+                        overwrite = {"type": "array", "items": {"$ref": overwrite}}
+                    else:
+                        overwrite = {"$ref": overwrite}
+
+                # type override (for anonymous prop only)
+                name = overwrite.pop("type_name", None)
+                if name:
+                    value["_type_name_"] = name
+
+                if overwrite:
+                    # make sure array are replaced by array
+                    assert (
+                        value.get("type") != "array" or overwrite.get("type") == "array"
+                    ), f"{obj_type.name}.{prop}: {value.get('type')} ≠ {overwrite.get('type')}"
+                    value = overwrite
             prop_type = self.import_property(obj_type, prop, value)
             if prop_type:
                 obj_type.properties.append(Property(prop, prop_type, prop in required))
@@ -241,11 +267,10 @@ class Parser:
         if prop_type == "object":
             # if no properties, this is just an alias for generic object
             if "properties" in schema:
-                # this is an anonymous type -> register it for parsing later
                 assert isinstance(obj_type, ObjectType)
-                ty = AnonymousType(
-                    QualifiedName(type_name_from_property_name(prop_name), "", ""),
-                    obj_type,
+                # this is an anonymous type -> register it for parsing later
+                ty = AnonymousType.with_property(
+                    schema.get("_type_name_", prop_name), obj_type
                 )
                 self._register_type(ty, schema)
                 return ty

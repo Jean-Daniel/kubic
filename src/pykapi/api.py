@@ -96,6 +96,12 @@ class ApiParser(Parser):
 
         return list(self._groups.values())
 
+    def import_resource(self, obj_type: ObjectType, schema: dict):
+        if isinstance(obj_type, ApiResourceType):
+            schema["properties"].pop("status", None)
+
+        super().import_resource(obj_type, schema)
+
     def import_property(self, obj_type: ApiType, prop_name: str, schema: dict) -> Type:
         # API Importer only
         ref = schema.get("$ref")

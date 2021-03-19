@@ -22,7 +22,7 @@ class UpdatePolicy(KubernetesObject):
         super().__init__(update_mode=update_mode)
 
 
-class Spec(KubernetesObject):
+class VerticalPodAutoscalerSpec(KubernetesObject):
     __slots__ = ()
 
     resource_policy: ResourcePolicy
@@ -49,14 +49,14 @@ class VerticalPodAutoscaler(KubernetesApiResource):
     _version_ = "v1beta2"
 
     metadata: meta.ObjectMeta
-    spec: Spec
+    spec: VerticalPodAutoscalerSpec
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
         metadata: meta.ObjectMeta = None,
-        spec: Spec = None,
+        spec: VerticalPodAutoscalerSpec = None,
     ):
         super().__init__(
             "autoscaling.k8s.io/v1beta2",
@@ -66,6 +66,3 @@ class VerticalPodAutoscaler(KubernetesApiResource):
             metadata=metadata,
             spec=spec,
         )
-
-
-New = VerticalPodAutoscaler

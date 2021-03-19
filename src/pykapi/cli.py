@@ -2,14 +2,16 @@ import argparse
 import json
 import os
 import subprocess
+from typing import List, NamedTuple
 from urllib.request import urlretrieve
 
 import yaml
 from yaml import CSafeLoader
 
 from .api import import_api_types
-from .crd import CRDPrinter, import_crd
-from .k8s import camel_to_snake, QualifiedName
+from .crd import import_crds
+from .k8s import QualifiedName, module_for_group
+from .parser import ApiGroup
 from .printer import TypePrinter
 
 
@@ -65,75 +67,95 @@ def import_k8s_api(args, annotations):
         "io.k8s.api.networking.v1.IngressClass",
     )
 
-    printer = TypePrinter()
+    print_groups(groups, args.output)
+
+
+def print_groups(groups: List[ApiGroup], output: str, api_module: str = "."):
+    printer = TypePrinter(api_module=api_module)
     for group in groups:
-        output = args.output
-        if output != "-":
+        filename = output
+        if filename != "-":
             # module = group.name.removesuffix(".k8s.io").replace(".", "_")
-            module = group.name.split(".", maxsplit=1)[0]
-            output = os.path.join(args.output, f"{module}.py")
-        printer.print_group(group, output)
+            module = module_for_group(group.name)
+            filename = os.path.join(filename, f"{module}.py")
+        printer.print_group(group, filename)
 
 
-def import_crd_file(path: str, annotations: str, output: str):
-    with open(path, "rb") as f:
-        crd = yaml.load(f, CSafeLoader)
+class CRD(NamedTuple):
+    fqn: QualifiedName
+    schema: dict
 
-    spec = crd["spec"]
-    kind = spec["names"]["kind"]
-    group = spec["group"]
-    # default to using the storage version, ignoring other versions
-    vers = {}
-    if "versions" in spec:
-        vers = next(vers for vers in spec["versions"] if vers["storage"])
-        version = vers["name"]
-    else:
-        version = spec["version"]
 
-    if "schema" in vers:
-        openapi = vers["schema"]["openAPIV3Schema"]
-    else:
-        openapi = spec["validation"]["openAPIV3Schema"]
+def import_crd_files(paths: List[str], annotations: str, output: str):
+    crds = []
 
-    if "x-kubernetes-group-version-kind" not in openapi:
-        openapi["x-kubernetes-group-version-kind"] = [
-            {"group": group, "kind": kind, "version": version}
-        ]
-    openapi["x-scoped"] = spec.get("scope") == "Namespaced"
+    for path in paths:
+        with open(path, "rb") as f:
+            for schema in yaml.load_all(f, CSafeLoader):
+                spec = schema["spec"]
+                kind = spec["names"]["kind"]
+                group = spec["group"]
+                # default to using the storage version, ignoring other versions
+                vers = {}
+                if "versions" in spec:
+                    vers = next(vers for vers in spec["versions"] if vers["storage"])
+                    version = vers["name"]
+                else:
+                    version = spec["version"]
+
+                if "schema" in vers:
+                    openapi = vers["schema"]["openAPIV3Schema"]
+                else:
+                    openapi = spec["validation"]["openAPIV3Schema"]
+
+                if "x-kubernetes-group-version-kind" not in openapi:
+                    openapi["x-kubernetes-group-version-kind"] = [
+                        {"group": group, "kind": kind, "version": version}
+                    ]
+                openapi["x-scoped"] = spec.get("scope") == "Namespaced"
+
+                crds.append(CRD(QualifiedName(kind, group, version), openapi))
 
     with open(annotations, "rb") as f:
-        annotations = yaml.load(f, CSafeLoader).get(crd["metadata"]["name"])
+        annotations = yaml.load(f, CSafeLoader).get("crds")
 
-    crd = import_crd(QualifiedName(kind, group, version), openapi, annotations)
+    groups = import_crds(annotations, *crds)
 
-    # automatically generate filename if output is a dir
-    if output != "-" and os.path.isdir(output):
-        output = os.path.join(output, f"{camel_to_snake(crd.type.name)}.py")
-
-    CRDPrinter(crd).print(output)
+    print_groups(groups, output, api_module="..")
 
 
-def import_custom_resource(schema_dir: str, crd: str, annotations: str, output: str):
-    filename, ext = os.path.splitext(crd)
-    if ext.lower() in (".yml", ".yaml", ".json"):
-        return import_crd_file(crd, annotations, output)
+def import_custom_resources(
+    schema_dir: str, crds: List[str], annotations: str, output: str
+):
+    files = []
+    for crd in crds:
+        filename, ext = os.path.splitext(crd)
+        if ext.lower() in (".yml", ".yaml", ".json"):
+            files.append(crd)
+            continue
 
-    cached = os.path.join(schema_dir, crd + ".json")
-    if os.path.exists(cached):
-        return import_crd_file(cached, annotations, output)
+        cached = os.path.join(schema_dir, crd + ".json")
+        if os.path.exists(cached):
+            files.append(cached)
+            continue
 
-    content = subprocess.run(
-        ["kubectl", "get", f"crds/{crd}", "-o", "json"], check=True, capture_output=True
-    ).stdout
-    schema = yaml.load(content, CSafeLoader)
-    schema.pop("status", None)
-    schema["metadata"].pop("annotations", None)
-    schema["metadata"].pop("managedFields", None)
+        content = subprocess.run(
+            ["kubectl", "get", f"crds/{crd}", "-o", "json"],
+            check=True,
+            capture_output=True,
+        ).stdout
+        schema = yaml.load(content, CSafeLoader)
+        # remove noise from live schema
+        schema.pop("status", None)
+        schema["metadata"].pop("annotations", None)
+        schema["metadata"].pop("managedFields", None)
 
-    with open(cached, "w") as f:
-        json.dump(schema, f, indent="  ")
+        with open(cached, "w") as f:
+            json.dump(schema, f, indent="  ")
 
-    return import_crd_file(cached, annotations, output)
+        files.append(cached)
+
+    import_crd_files(files, annotations, output)
 
 
 SCHEMA_DIR = os.path.join(os.path.dirname(__file__), "schemas")
@@ -145,14 +167,14 @@ def main():
     )
     parser.add_argument("-o", "--output", type=str, default="-")
     parser.add_argument("-s", "--schemas", type=str, default=SCHEMA_DIR)
-    parser.add_argument("crd", nargs="?", type=str)
+    parser.add_argument("crds", nargs="*", type=str)
 
     args = parser.parse_args()
 
-    if args.crd:
-        import_custom_resource(
+    if args.crds:
+        import_custom_resources(
             args.schemas,
-            args.crd,
+            args.crds,
             os.path.join(args.schemas, "annotations.yaml"),
             args.output,
         )

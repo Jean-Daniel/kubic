@@ -1,21 +1,11 @@
 from typing import Union, List, Any, NamedTuple, Iterable
 
-from .k8s import QualifiedName, camel_to_snake
-
-
-def qualified_name(ty, group: str) -> str:
-    if hasattr(ty, "qualified_name"):
-        return ty.qualified_name(group)
-    return str(ty)
+from .k8s import QualifiedName, camel_to_snake, type_name_from_property_name
 
 
 class GenericType(NamedTuple):
     base_type: str
     parameters: Iterable[Any]
-
-    def qualified_name(self, group: str) -> str:
-        types = (qualified_name(value, group) for value in self.parameters)
-        return f"{self.base_type}[{', '.join(types)}]"
 
     def __str__(self):
         return f"{self.base_type}[{str(self.parameters)}]"
@@ -40,11 +30,6 @@ class ApiType:
     @property
     def version(self) -> str:
         return self.fqn.version
-
-    def qualified_name(self, group: str) -> str:
-        if self.group and self.group != group:
-            return f"{self.group}.{self.name}"
-        return self.name
 
     def __eq__(self, other):
         return self.name == other.name
@@ -111,17 +96,34 @@ class ApiResourceType(ObjectType):
 
 
 class AnonymousType(ObjectType):
-    def __init__(self, fqn: QualifiedName, parent: ObjectType):
+    def __init__(self, fqn: QualifiedName, parent: ObjectType, prop_name: str):
         super().__init__(fqn)
         self.parent = parent
-        # freeze parent name
-        self.parent_name: str = self.parent.name
+        self._basename = fqn.name
+        self.prop_name = prop_name
+
+    @property
+    def fullname(self) -> str:
+        if isinstance(self.parent, AnonymousType):
+            return self.parent._basename + self._basename
+        return self.parent.fqn.name + self._basename
 
     def __eq__(self, other):
         return self.name == other.name and super().__eq__(other)
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def with_property(cls, prop_name: str, parent: ObjectType) -> "AnonymousType":
+        base_name = type_name_from_property_name(prop_name)
+        # Spec is a commonly used name.
+        # To avoid having a lot of conflicting Spec types -> use fullname by default.
+        if base_name == "Spec":
+            base_name = parent.name + base_name
+        return AnonymousType(
+            QualifiedName(base_name, parent.group, parent.version), parent, prop_name
+        )
 
 
 Type = Union[str, ApiType, GenericType]

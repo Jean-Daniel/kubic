@@ -94,8 +94,13 @@ class QualifiedName(NamedTuple):
         return QualifiedName(name, "", "")
 
 
+def module_for_group(group) -> str:
+    # return self.group.name.removesuffix(".k8s.io").replace(".", "_")
+    return group.split(".", maxsplit=1)[0].replace("-", "_")
+
+
 # used to fix camel_to_snake edge cases (URLs -> _url_s for instance)
-PLURALS = {"URLs": "_urls", "WWNs": "_wwns", "CIDRs": "_cidrs"}
+PLURALS = {"URLs": "_urls", "WWNs": "_wwns", "CIDRs": "_cidrs", "SMs": "_sms"}
 
 KEYWORDS = {
     "if",
@@ -130,13 +135,20 @@ ACRONYMES = {"tls", "ipam"}
 
 
 def type_name_from_property_name(name: str):
-    # assuming 2 and 3 letters words are acronyms
+    # assuming 2 and 3 letters words are acronyms (do it before remote trailing S)
     if len(name) <= 3:
         return name.upper()
 
     # egress for instance
-    if name.endswith("s") and not name.endswith("ss"):
+    if name.endswith("s") and not name.endswith("ss") and not name.endswith("tatus"):
         name = name.removesuffix("s")
+        # just in case
+        if len(name) <= 3:
+            return name.upper()
+
+    if "-" in name:
+        parts = name.split("-")
+        name = "".join(type_name_from_property_name(p) for p in parts)
 
     for ac in ACRONYMES:
         if name.startswith(ac):
