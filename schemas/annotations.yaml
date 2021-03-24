@@ -35,6 +35,44 @@ crds:
     PodTemplateSpec:
       affinity: "io.k8s.api.core.v1.Affinity"
       tolerations: "io.k8s.api.core.v1.Toleration"
+    IssuerSpecAcme:
+      privateKeySecretRef: SecretRef
+    ClusterIssuerSpecAcme:
+      privateKeySecretRef: SecretRef
+    ExternalAccountBinding:
+      keySecretRef: SecretRef
+    Cloud:
+      apiTokenSecretRef: SecretRef
+    Route53:
+      secretAccessKeySecretRef: SecretRef
+    Dns01:
+      rfc2136: { type_name: RFC2136 }
+    RFC2136:
+      tsigSecretSecretRef: SecretRef
+    Digitalocean:
+      tokenSecretRef: SecretRef
+    Cloudflare:
+      apiKeySecretRef: SecretRef
+      apiTokenSecretRef: SecretRef
+    CloudDNS:
+      serviceAccountSecretRef: SecretRef
+    Keystore:
+      pkcs12: { type_name: PKCS12 }
+    PKCS12:
+      passwordSecretRef: SecretRef
+    JKS:
+      passwordSecretRef: SecretRef
+    AzureDNS:
+      clientSecretSecretRef: SecretRef
+    Auth:
+      tokenSecretRef: SecretRef
+    Akamai:
+      accessTokenSecretRef: SecretRef
+      clientSecretSecretRef: SecretRef
+      clientTokenSecretRef: SecretRef
+    AcmeDNS:
+      accountSecretRef: SecretRef
+
 
   "monitoring.coreos.com":
     AlertmanagerSpec:

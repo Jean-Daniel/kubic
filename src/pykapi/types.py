@@ -41,6 +41,11 @@ class ApiType:
         return f"Type: {self.fqn}"
 
 
+# use distinct class to be able to use isinstance on ref
+class ApiTypeRef(ApiType):
+    pass
+
+
 class TypeAlias(ApiType):
     def __init__(self, fqn: QualifiedName, ty: "Type"):
         super().__init__(fqn)

@@ -10,7 +10,7 @@ from .types import (
     Type,
     AnonymousType,
     GenericType,
-    ApiType,
+    ApiType, ApiTypeRef,
 )
 
 TimeType = TypeAlias(QualifiedName("Time", "meta", "v1"), "str")
@@ -152,10 +152,16 @@ class ApiGroup:
 
     def _fetch_dependencies(self, ty: ApiType, dones: set) -> List[ApiType]:
         dependencies = []
+
+        # resolve internal reference
+        if isinstance(ty, ApiTypeRef):
+            # _fetch_dependencies assumes ty is a type internal to the group
+            ty = self._types[ty.name]
+
         if isinstance(ty, ObjectType):
             properties = (prop.type for prop in ty.properties)
         else:
-            assert isinstance(ty, TypeAlias)
+            assert isinstance(ty, TypeAlias), f"depends on type: {type(ty)}"
             properties = [ty.type]
 
         for prop_type in properties:
@@ -239,9 +245,11 @@ class Parser:
                         overwrite = {"$ref": overwrite}
 
                 # type override (for anonymous prop only)
-                name = overwrite.pop("type_name", None)
+                name = overwrite.get("type_name")
                 if name:
                     value["_type_name_"] = name
+                    if len(overwrite) == 1:
+                        overwrite = None
 
                 if overwrite:
                     # make sure array are replaced by array

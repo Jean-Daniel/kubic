@@ -3,7 +3,7 @@ from typing import Optional, Tuple, List
 
 from .k8s import QualifiedName
 from .parser import Parser, ApiGroup
-from .types import ApiResourceType, ObjectType, AnonymousType, Type, ApiType
+from .types import ApiResourceType, ObjectType, AnonymousType, Type, ApiType, ApiTypeRef
 
 
 class CRDGroup(ApiGroup):
@@ -66,7 +66,7 @@ class CRDParser(Parser):
             # for ref -> import type recursively
             fqn = QualifiedName.parse(ref)
             # ApiType is just a TypeRef
-            return ApiType(fqn)
+            return ApiTypeRef(fqn)
         return super().import_property(obj_type, prop_name, schema)
 
     def import_base_property(
@@ -75,7 +75,7 @@ class CRDParser(Parser):
         # common pattern matching
         if schema.get("type") == "object":
             if is_label_selector(schema):
-                return ApiType(QualifiedName("LabelSelector", "meta", "v1"))
+                return ApiTypeRef(QualifiedName("LabelSelector", "meta", "v1"))
 
         return super().import_base_property(obj_type, prop_name, schema, prop_type)
 

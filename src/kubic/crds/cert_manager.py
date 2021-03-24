@@ -4,19 +4,7 @@ from .. import KubernetesApiResource, KubernetesObject
 from .. import core, meta
 
 
-class AccessTokenSecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
-
-
-class AccountSecretRef(KubernetesObject):
+class SecretRef(KubernetesObject):
     __slots__ = ()
 
     _required_ = ["name"]
@@ -33,35 +21,11 @@ class AcmeDNS(KubernetesObject):
 
     _required_ = ["account_secret_ref", "host"]
 
-    account_secret_ref: AccountSecretRef
+    account_secret_ref: SecretRef
     host: str
 
-    def __init__(self, account_secret_ref: AccountSecretRef = None, host: str = None):
+    def __init__(self, account_secret_ref: SecretRef = None, host: str = None):
         super().__init__(account_secret_ref=account_secret_ref, host=host)
-
-
-class ClientSecretSecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
-
-
-class ClientTokenSecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
 
 
 class Akamai(KubernetesObject):
@@ -74,16 +38,16 @@ class Akamai(KubernetesObject):
         "service_consumer_domain",
     ]
 
-    access_token_secret_ref: AccessTokenSecretRef
-    client_secret_secret_ref: ClientSecretSecretRef
-    client_token_secret_ref: ClientTokenSecretRef
+    access_token_secret_ref: SecretRef
+    client_secret_secret_ref: SecretRef
+    client_token_secret_ref: SecretRef
     service_consumer_domain: str
 
     def __init__(
         self,
-        access_token_secret_ref: AccessTokenSecretRef = None,
-        client_secret_secret_ref: ClientSecretSecretRef = None,
-        client_token_secret_ref: ClientTokenSecretRef = None,
+        access_token_secret_ref: SecretRef = None,
+        client_secret_secret_ref: SecretRef = None,
+        client_token_secret_ref: SecretRef = None,
         service_consumer_domain: str = None,
     ):
         super().__init__(
@@ -92,42 +56,6 @@ class Akamai(KubernetesObject):
             client_token_secret_ref=client_token_secret_ref,
             service_consumer_domain=service_consumer_domain,
         )
-
-
-class ApiKeySecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
-
-
-class ApiTokenSecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
-
-
-class SecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
 
 
 class AppRole(KubernetesObject):
@@ -160,30 +88,18 @@ class Kubernete(KubernetesObject):
         super().__init__(mount_path=mount_path, role=role, secret_ref=secret_ref)
 
 
-class TokenSecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
-
-
 class Auth(KubernetesObject):
     __slots__ = ()
 
     app_role: AppRole
     kubernetes: Kubernete
-    token_secret_ref: TokenSecretRef
+    token_secret_ref: SecretRef
 
     def __init__(
         self,
         app_role: AppRole = None,
         kubernetes: Kubernete = None,
-        token_secret_ref: TokenSecretRef = None,
+        token_secret_ref: SecretRef = None,
     ):
         super().__init__(
             app_role=app_role, kubernetes=kubernetes, token_secret_ref=token_secret_ref
@@ -248,7 +164,7 @@ class AzureDNS(KubernetesObject):
     }
 
     client_id: str
-    client_secret_secret_ref: ClientSecretSecretRef
+    client_secret_secret_ref: SecretRef
     environment: str
     hosted_zone_name: str
     resource_group_name: str
@@ -258,7 +174,7 @@ class AzureDNS(KubernetesObject):
     def __init__(
         self,
         client_id: str = None,
-        client_secret_secret_ref: ClientSecretSecretRef = None,
+        client_secret_secret_ref: SecretRef = None,
         environment: str = None,
         hosted_zone_name: str = None,
         resource_group_name: str = None,
@@ -311,43 +227,27 @@ class IssuerRef(KubernetesObject):
         super().__init__(group=group, kind=kind, name=name)
 
 
-class PasswordSecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
-
-
 class JKS(KubernetesObject):
     __slots__ = ()
 
     _required_ = ["create", "password_secret_ref"]
 
     create: bool
-    password_secret_ref: PasswordSecretRef
+    password_secret_ref: SecretRef
 
-    def __init__(
-        self, create: bool = None, password_secret_ref: PasswordSecretRef = None
-    ):
+    def __init__(self, create: bool = None, password_secret_ref: SecretRef = None):
         super().__init__(create=create, password_secret_ref=password_secret_ref)
 
 
-class Pkcs12(KubernetesObject):
+class PKCS12(KubernetesObject):
     __slots__ = ()
 
     _required_ = ["create", "password_secret_ref"]
 
     create: bool
-    password_secret_ref: PasswordSecretRef
+    password_secret_ref: SecretRef
 
-    def __init__(
-        self, create: bool = None, password_secret_ref: PasswordSecretRef = None
-    ):
+    def __init__(self, create: bool = None, password_secret_ref: SecretRef = None):
         super().__init__(create=create, password_secret_ref=password_secret_ref)
 
 
@@ -355,9 +255,9 @@ class Keystore(KubernetesObject):
     __slots__ = ()
 
     jks: JKS
-    pkcs12: Pkcs12
+    pkcs12: PKCS12
 
-    def __init__(self, jks: JKS = None, pkcs12: Pkcs12 = None):
+    def __init__(self, jks: JKS = None, pkcs12: PKCS12 = None):
         super().__init__(jks=jks, pkcs12=pkcs12)
 
 
@@ -664,18 +564,6 @@ class CertificateRequest(KubernetesApiResource):
         )
 
 
-class ServiceAccountSecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
-
-
 class CloudDNS(KubernetesObject):
     __slots__ = ()
 
@@ -683,13 +571,13 @@ class CloudDNS(KubernetesObject):
 
     hosted_zone_name: str
     project: str
-    service_account_secret_ref: ServiceAccountSecretRef
+    service_account_secret_ref: SecretRef
 
     def __init__(
         self,
         hosted_zone_name: str = None,
         project: str = None,
-        service_account_secret_ref: ServiceAccountSecretRef = None,
+        service_account_secret_ref: SecretRef = None,
     ):
         super().__init__(
             hosted_zone_name=hosted_zone_name,
@@ -701,14 +589,14 @@ class CloudDNS(KubernetesObject):
 class Cloudflare(KubernetesObject):
     __slots__ = ()
 
-    api_key_secret_ref: ApiKeySecretRef
-    api_token_secret_ref: ApiTokenSecretRef
+    api_key_secret_ref: SecretRef
+    api_token_secret_ref: SecretRef
     email: str
 
     def __init__(
         self,
-        api_key_secret_ref: ApiKeySecretRef = None,
-        api_token_secret_ref: ApiTokenSecretRef = None,
+        api_key_secret_ref: SecretRef = None,
+        api_token_secret_ref: SecretRef = None,
         email: str = None,
     ):
         super().__init__(
@@ -723,25 +611,13 @@ class Digitalocean(KubernetesObject):
 
     _required_ = ["token_secret_ref"]
 
-    token_secret_ref: TokenSecretRef
+    token_secret_ref: SecretRef
 
-    def __init__(self, token_secret_ref: TokenSecretRef = None):
+    def __init__(self, token_secret_ref: SecretRef = None):
         super().__init__(token_secret_ref=token_secret_ref)
 
 
-class TsigSecretSecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
-
-
-class Rfc2136(KubernetesObject):
+class RFC2136(KubernetesObject):
     __slots__ = ()
 
     _required_ = ["nameserver"]
@@ -749,14 +625,14 @@ class Rfc2136(KubernetesObject):
     nameserver: str
     tsig_algorithm: str
     tsig_key_name: str
-    tsig_secret_secret_ref: TsigSecretSecretRef
+    tsig_secret_secret_ref: SecretRef
 
     def __init__(
         self,
         nameserver: str = None,
         tsig_algorithm: str = None,
         tsig_key_name: str = None,
-        tsig_secret_secret_ref: TsigSecretSecretRef = None,
+        tsig_secret_secret_ref: SecretRef = None,
     ):
         super().__init__(
             nameserver=nameserver,
@@ -764,18 +640,6 @@ class Rfc2136(KubernetesObject):
             tsig_key_name=tsig_key_name,
             tsig_secret_secret_ref=tsig_secret_secret_ref,
         )
-
-
-class SecretAccessKeySecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
 
 
 class Route53(KubernetesObject):
@@ -796,7 +660,7 @@ class Route53(KubernetesObject):
     hosted_zone_id: str
     region: str
     role: str
-    secret_access_key_secret_ref: SecretAccessKeySecretRef
+    secret_access_key_secret_ref: SecretRef
 
     def __init__(
         self,
@@ -804,7 +668,7 @@ class Route53(KubernetesObject):
         hosted_zone_id: str = None,
         region: str = None,
         role: str = None,
-        secret_access_key_secret_ref: SecretAccessKeySecretRef = None,
+        secret_access_key_secret_ref: SecretRef = None,
     ):
         super().__init__(
             access_key_id=access_key_id,
@@ -851,7 +715,7 @@ class Dns01(KubernetesObject):
     cloudflare: Cloudflare
     cname_strategy: str
     digitalocean: Digitalocean
-    rfc2136: Rfc2136
+    rfc2136: RFC2136
     route53: Route53
     webhook: Webhook
 
@@ -864,7 +728,7 @@ class Dns01(KubernetesObject):
         cloudflare: Cloudflare = None,
         cname_strategy: str = None,
         digitalocean: Digitalocean = None,
-        rfc2136: Rfc2136 = None,
+        rfc2136: RFC2136 = None,
         route53: Route53 = None,
         webhook: Webhook = None,
     ):
@@ -1090,23 +954,11 @@ class Cloud(KubernetesObject):
 
     _required_ = ["api_token_secret_ref"]
 
-    api_token_secret_ref: ApiTokenSecretRef
+    api_token_secret_ref: SecretRef
     url: str
 
-    def __init__(self, api_token_secret_ref: ApiTokenSecretRef = None, url: str = None):
+    def __init__(self, api_token_secret_ref: SecretRef = None, url: str = None):
         super().__init__(api_token_secret_ref=api_token_secret_ref, url=url)
-
-
-class KeySecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
 
 
 class ExternalAccountBinding(KubernetesObject):
@@ -1123,29 +975,17 @@ class ExternalAccountBinding(KubernetesObject):
 
     key_algorithm: str
     key_id: str
-    key_secret_ref: KeySecretRef
+    key_secret_ref: SecretRef
 
     def __init__(
         self,
         key_algorithm: str = None,
         key_id: str = None,
-        key_secret_ref: KeySecretRef = None,
+        key_secret_ref: SecretRef = None,
     ):
         super().__init__(
             key_algorithm=key_algorithm, key_id=key_id, key_secret_ref=key_secret_ref
         )
-
-
-class PrivateKeySecretRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["name"]
-
-    key: str
-    name: str
-
-    def __init__(self, key: str = None, name: str = None):
-        super().__init__(key=key, name=name)
 
 
 class ClusterIssuerSpecAcme(KubernetesObject):
@@ -1165,7 +1005,7 @@ class ClusterIssuerSpecAcme(KubernetesObject):
     enable_duration_feature: bool
     external_account_binding: ExternalAccountBinding
     preferred_chain: str
-    private_key_secret_ref: PrivateKeySecretRef
+    private_key_secret_ref: SecretRef
     server: str
     skip_tls_verify: bool
     solvers: List[Solver]
@@ -1177,7 +1017,7 @@ class ClusterIssuerSpecAcme(KubernetesObject):
         enable_duration_feature: bool = None,
         external_account_binding: ExternalAccountBinding = None,
         preferred_chain: str = None,
-        private_key_secret_ref: PrivateKeySecretRef = None,
+        private_key_secret_ref: SecretRef = None,
         server: str = None,
         skip_tls_verify: bool = None,
         solvers: List[Solver] = None,
@@ -1363,7 +1203,7 @@ class IssuerSpecAcme(KubernetesObject):
     enable_duration_feature: bool
     external_account_binding: ExternalAccountBinding
     preferred_chain: str
-    private_key_secret_ref: PrivateKeySecretRef
+    private_key_secret_ref: SecretRef
     server: str
     skip_tls_verify: bool
     solvers: List[Solver]
@@ -1375,7 +1215,7 @@ class IssuerSpecAcme(KubernetesObject):
         enable_duration_feature: bool = None,
         external_account_binding: ExternalAccountBinding = None,
         preferred_chain: str = None,
-        private_key_secret_ref: PrivateKeySecretRef = None,
+        private_key_secret_ref: SecretRef = None,
         server: str = None,
         skip_tls_verify: bool = None,
         solvers: List[Solver] = None,
