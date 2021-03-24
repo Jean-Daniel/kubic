@@ -1,3 +1,4 @@
+import sys
 from collections import defaultdict
 from typing import List, Iterable, Tuple, Optional, Dict, Set
 
@@ -10,21 +11,34 @@ from .types import (
     Type,
     AnonymousType,
     GenericType,
-    ApiType, ApiTypeRef,
+    ApiType,
+    ApiTypeRef,
 )
 
-TimeType = TypeAlias(QualifiedName("Time", "meta", "v1"), "str")
+TimeType = TypeAlias(
+    QualifiedName("Time", "meta", "v1"), "str", description="ISO date-time"
+)
 
 QuantityType = TypeAlias(
     QualifiedName("Quantity", "core", "v1"),
     GenericType("Union", ["str", "int", "float"]),
+    description="Quantity is a fixed-point representation of a number. "
+    "It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.",
 )
 
 IntOrStringType = TypeAlias(
-    QualifiedName("IntOrString", "core", "v1"), GenericType("Union", ["str", "int"])
+    QualifiedName("IntOrString", "core", "v1"),
+    GenericType("Union", ["str", "int"]),
+    description="IntOrString is a type that can hold an int32 or a string.",
 )
-IDNHostname = TypeAlias(QualifiedName("IDNHostname", "core", "v1"), "str")
-Base64Type = TypeAlias(QualifiedName("Base64", "core", "v1"), "str")
+IDNHostname = TypeAlias(
+    QualifiedName("IDNHostname", "core", "v1"), "str", description=""
+)
+Base64Type = TypeAlias(
+    QualifiedName("Base64", "core", "v1"),
+    "str",
+    description="binary data encoded in base64",
+)
 
 
 class ApiGroup:
@@ -136,6 +150,8 @@ class ApiGroup:
             if ty in self:
                 if isinstance(ty, ObjectType):
                     self._base_types.add(ty.kubic_type)
+                elif sys.version_info >= (3, 10) and isinstance(ty, TypeAlias):
+                    self._typing.add("TypeAlias")
             elif ty.group:
                 self._refs.add(ty.group)
         else:
@@ -280,6 +296,7 @@ class Parser:
                 ty = AnonymousType.with_property(
                     schema.get("_type_name_", prop_name), obj_type
                 )
+                ty.description = schema.get("description")
                 self._register_type(ty, schema)
                 return ty
 

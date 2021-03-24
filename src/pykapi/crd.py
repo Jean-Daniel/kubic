@@ -50,7 +50,10 @@ class CRDParser(Parser):
             }
             # may contains items from remapped groups
             self._register_type(
-                ApiResourceType(fqn, schema.get("x-scoped", True)), schema
+                ApiResourceType(
+                    fqn, schema.get("description"), schema.get("x-scoped", True)
+                ),
+                schema,
             )
 
         for obj_type, schema in self.pendings:

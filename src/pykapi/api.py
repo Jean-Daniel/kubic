@@ -143,26 +143,20 @@ class ApiParser(Parser):
                     fqn.version == gvk[0]["version"]
                 ), f"extract version {fqn.version} does not match type declared version {gvk[0]['version']}"
                 typedecl = ApiResourceType(
-                    fqn, schema.get("x-scoped", fqn.name not in CLUSTER_OBJECTS)
+                    fqn,
+                    schema.get("description"),
+                    schema.get("x-scoped", fqn.name not in CLUSTER_OBJECTS),
                 )
             else:
-                typedecl = ObjectType(fqn)
+                typedecl = ObjectType(fqn, schema.get("description"))
 
             self._register_type(typedecl, schema)
             return typedecl
 
         # Type Alias
 
-        # In practice, controller accept numbers for Quantity
-        # if fqn.name == "Quantity" and "str" == schema["type"]:
-        #     self.imports.add("Union")
-        #     typename = "Union[str, int, float]"
-
-        # if sys.version_info >= (3, 10):
-        #     self.imports.add("TypeAlias")
-
         # Create alias type
-        alias = TypeAlias(fqn, "")
+        alias = TypeAlias(fqn, "", schema.get("description"))
         alias.type = self.import_property(alias, fqn.name, schema)
         group.add(alias)
         return alias

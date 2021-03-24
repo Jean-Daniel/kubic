@@ -75,6 +75,15 @@ class TypePrinter:
         stream.write(ty.name)
         stream.write(f"({ty.kubic_type})")
         stream.write(":\n")
+
+        # if ty.description:
+        #     stream.write('    """\n')
+        #     for line in ty.description.splitlines():
+        #         stream.write("    ")
+        #         stream.write(line)
+        #         stream.write("\n")
+        #     stream.write('    """\n')
+
         stream.write("    __slots__ = ()\n")
 
         if not isinstance(ty, AnonymousType):

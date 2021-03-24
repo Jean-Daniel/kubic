@@ -15,6 +15,8 @@ class GenericType(NamedTuple):
 
 
 class ApiType:
+    __slots__ = ("fqn",)
+
     def __init__(self, fqn: QualifiedName):
         super().__init__()
         self.fqn = fqn
@@ -47,9 +49,12 @@ class ApiTypeRef(ApiType):
 
 
 class TypeAlias(ApiType):
-    def __init__(self, fqn: QualifiedName, ty: "Type"):
+    __slots__ = ("type", "description")
+
+    def __init__(self, fqn: QualifiedName, ty: "Type", description: str):
         super().__init__(fqn)
         self.type = ty
+        self.description = description
 
     def __eq__(self, other):
         return self.name == other.name and self.type == other.type
@@ -66,8 +71,11 @@ class Property(NamedTuple):
 
 
 class ObjectType(ApiType):
-    def __init__(self, fqn: QualifiedName):
+    __slots__ = ("properties", "description")
+
+    def __init__(self, fqn: QualifiedName, description: str):
         super().__init__(fqn)
+        self.description = description
         self.properties: List[Property] = []
 
     def __eq__(self, other):
@@ -87,8 +95,10 @@ class ObjectType(ApiType):
 
 
 class ApiResourceType(ObjectType):
-    def __init__(self, name: QualifiedName, scoped: bool):
-        super().__init__(name)
+    __slots__ = ("scoped",)
+
+    def __init__(self, name: QualifiedName, description: str, scoped: bool):
+        super().__init__(name, description)
         self.scoped = scoped
 
     @property
@@ -101,8 +111,10 @@ class ApiResourceType(ObjectType):
 
 
 class AnonymousType(ObjectType):
+    __slots__ = ("parent", "_basename", "prop_name")
+
     def __init__(self, fqn: QualifiedName, parent: ObjectType, prop_name: str):
-        super().__init__(fqn)
+        super().__init__(fqn, "")
         self.parent = parent
         self._basename = fqn.name
         self.prop_name = prop_name
