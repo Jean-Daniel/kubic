@@ -145,10 +145,8 @@ class TypePrinter:
         stream.write("        super().__init__(")
         if isinstance(ty, ApiResourceType):
             stream.write('"')
-            if ty.group:
-                stream.write(f"{ty.group}/")
-            stream.write(f'{ty.version}"')
-            stream.write(", ")
+            stream.write(ty.api_version)
+            stream.write('", ')
             stream.write(f'"{ty.kind}"')
             stream.write(", name")
             if ty.scoped:

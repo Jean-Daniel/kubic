@@ -609,7 +609,7 @@ class ConfigMap(KubernetesApiResource):
         metadata: meta.ObjectMeta = None,
     ):
         super().__init__(
-            "core/v1",
+            "v1",
             "ConfigMap",
             name,
             namespace,
@@ -1893,7 +1893,7 @@ class Namespace(KubernetesApiResource):
     def __init__(
         self, name: str, metadata: meta.ObjectMeta = None, spec: NamespaceSpec = None
     ):
-        super().__init__("core/v1", "Namespace", name, "", metadata=metadata, spec=spec)
+        super().__init__("v1", "Namespace", name, "", metadata=metadata, spec=spec)
 
 
 class ObjectReference(KubernetesObject):
@@ -2301,7 +2301,7 @@ class PersistentVolume(KubernetesApiResource):
         spec: PersistentVolumeSpec = None,
     ):
         super().__init__(
-            "core/v1", "PersistentVolume", name, "", metadata=metadata, spec=spec
+            "v1", "PersistentVolume", name, "", metadata=metadata, spec=spec
         )
 
 
@@ -2322,12 +2322,7 @@ class PersistentVolumeClaim(KubernetesApiResource):
         spec: PersistentVolumeClaimSpec = None,
     ):
         super().__init__(
-            "core/v1",
-            "PersistentVolumeClaim",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
+            "v1", "PersistentVolumeClaim", name, namespace, metadata=metadata, spec=spec
         )
 
 
@@ -3061,7 +3056,7 @@ class ResourceQuota(KubernetesApiResource):
         spec: ResourceQuotaSpec = None,
     ):
         super().__init__(
-            "core/v1", "ResourceQuota", name, namespace, metadata=metadata, spec=spec
+            "v1", "ResourceQuota", name, namespace, metadata=metadata, spec=spec
         )
 
 
@@ -3088,7 +3083,7 @@ class Secret(KubernetesApiResource):
         type: str = None,
     ):
         super().__init__(
-            "core/v1",
+            "v1",
             "Secret",
             name,
             namespace,
@@ -3246,9 +3241,7 @@ class Service(KubernetesApiResource):
         metadata: meta.ObjectMeta = None,
         spec: ServiceSpec = None,
     ):
-        super().__init__(
-            "core/v1", "Service", name, namespace, metadata=metadata, spec=spec
-        )
+        super().__init__("v1", "Service", name, namespace, metadata=metadata, spec=spec)
 
 
 class ServiceAccount(KubernetesApiResource):
@@ -3272,7 +3265,7 @@ class ServiceAccount(KubernetesApiResource):
         secrets: List[ObjectReference] = None,
     ):
         super().__init__(
-            "core/v1",
+            "v1",
             "ServiceAccount",
             name,
             namespace,

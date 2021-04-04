@@ -13,6 +13,7 @@ from .types import (
     GenericType,
     ApiType,
     ApiTypeRef,
+    NamedProperty,
 )
 
 TimeType = TypeAlias(
@@ -248,6 +249,7 @@ class Parser:
             if is_api_resource and (prop == "apiVersion" or prop == "kind"):
                 continue
 
+            snake_name = None
             if patch:
                 overwrite = patch.get(prop, value)
                 if not overwrite:
@@ -260,14 +262,18 @@ class Parser:
                     else:
                         overwrite = {"$ref": overwrite}
 
+                special = 0
                 # type override (for anonymous prop only)
                 name = overwrite.get("type_name")
                 if name:
                     value["_type_name_"] = name
-                    if len(overwrite) == 1:
-                        overwrite = None
+                    special += 1
 
-                if overwrite:
+                snake_name = overwrite.get("snake_name")
+                if snake_name:
+                    special += 1
+
+                if len(overwrite) > special:
                     # make sure array are replaced by array
                     assert (
                         value.get("type") != "array" or overwrite.get("type") == "array"
@@ -275,7 +281,11 @@ class Parser:
                     value = overwrite
             prop_type = self.import_property(obj_type, prop, value)
             if prop_type:
-                obj_type.properties.append(Property(prop, prop_type, prop in required))
+                obj_type.properties.append(
+                    NamedProperty(prop, prop_type, prop in required, snake_name)
+                    if snake_name
+                    else Property(prop, prop_type, prop in required)
+                )
         obj_type.properties.sort()
 
     def import_property(self, obj_type: ApiType, prop_name: str, schema: dict) -> Type:

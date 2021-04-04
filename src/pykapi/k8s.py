@@ -94,9 +94,12 @@ class QualifiedName(NamedTuple):
         return QualifiedName(name, "", "")
 
 
+# FIXME: should find a way to inject annotations
+MODULE_NAMES = {"operator.victoriametrics.com": "victoriametrics"}
+
+
 def module_for_group(group) -> str:
-    # return self.group.name.removesuffix(".k8s.io").replace(".", "_")
-    return group.split(".", maxsplit=1)[0].replace("-", "_")
+    return MODULE_NAMES.get(group) or group.split(".", maxsplit=1)[0].replace("-", "_")
 
 
 # used to fix camel_to_snake edge cases (URLs -> _url_s for instance)
@@ -131,7 +134,7 @@ def camel_to_snake(name: str):
     return snake
 
 
-ACRONYMES = {"tls", "ipam"}
+ACRONYMES = {"tls", "ipam", "api"}
 
 
 def type_name_from_property_name(name: str):

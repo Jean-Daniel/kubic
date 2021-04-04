@@ -4,43 +4,109 @@ from .. import KubernetesApiResource, KubernetesObject
 from .. import core, meta
 
 
-class AdditionalAlertManagerConfig(KubernetesObject):
+class BasicAuth(KubernetesObject):
     __slots__ = ()
 
-    _required_ = ["key"]
+    password: core.SecretKeySelector
+    username: core.ConfigMapKeySelector
 
-    key: str
-    name: str
-    optional: bool
+    def __init__(
+        self,
+        password: core.SecretKeySelector = None,
+        username: core.ConfigMapKeySelector = None,
+    ):
+        super().__init__(password=password, username=username)
 
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
 
-
-class AdditionalAlertRelabelConfig(KubernetesObject):
+class CA(KubernetesObject):
     __slots__ = ()
 
-    _required_ = ["key"]
+    config_map: core.ConfigMapKeySelector
+    secret: core.SecretKeySelector
 
-    key: str
-    name: str
-    optional: bool
+    def __init__(
+        self,
+        config_map: core.ConfigMapKeySelector = None,
+        secret: core.SecretKeySelector = None,
+    ):
+        super().__init__(config_map=config_map, secret=secret)
 
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
 
-
-class AdditionalScrapeConfig(KubernetesObject):
+class Cert(KubernetesObject):
     __slots__ = ()
 
-    _required_ = ["key"]
+    config_map: core.ConfigMapKeySelector
+    secret: core.SecretKeySelector
 
-    key: str
-    name: str
-    optional: bool
+    def __init__(
+        self,
+        config_map: core.ConfigMapKeySelector = None,
+        secret: core.SecretKeySelector = None,
+    ):
+        super().__init__(config_map=config_map, secret=secret)
 
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
+
+class APIserverConfigTLSConfig(KubernetesObject):
+    __slots__ = ()
+
+    ca: CA
+    ca_file: str
+    cert: Cert
+    cert_file: str
+    insecure_skip_verify: bool
+    key_file: str
+    key_secret: core.SecretKeySelector
+    server_name: str
+
+    def __init__(
+        self,
+        ca: CA = None,
+        ca_file: str = None,
+        cert: Cert = None,
+        cert_file: str = None,
+        insecure_skip_verify: bool = None,
+        key_file: str = None,
+        key_secret: core.SecretKeySelector = None,
+        server_name: str = None,
+    ):
+        super().__init__(
+            ca=ca,
+            ca_file=ca_file,
+            cert=cert,
+            cert_file=cert_file,
+            insecure_skip_verify=insecure_skip_verify,
+            key_file=key_file,
+            key_secret=key_secret,
+            server_name=server_name,
+        )
+
+
+class APIserverConfig(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["host"]
+
+    basic_auth: BasicAuth
+    bearer_token: str
+    bearer_token_file: str
+    host: str
+    tls_config: APIserverConfigTLSConfig
+
+    def __init__(
+        self,
+        basic_auth: BasicAuth = None,
+        bearer_token: str = None,
+        bearer_token_file: str = None,
+        host: str = None,
+        tls_config: APIserverConfigTLSConfig = None,
+    ):
+        super().__init__(
+            basic_auth=basic_auth,
+            bearer_token=bearer_token,
+            bearer_token_file=bearer_token_file,
+            host=host,
+            tls_config=tls_config,
+        )
 
 
 class Alert(KubernetesObject):
@@ -63,65 +129,6 @@ class Alert(KubernetesObject):
         )
 
 
-class ConfigMap(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
-
-
-class Secret(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
-
-
-class CA(KubernetesObject):
-    __slots__ = ()
-
-    config_map: ConfigMap
-    secret: Secret
-
-    def __init__(self, config_map: ConfigMap = None, secret: Secret = None):
-        super().__init__(config_map=config_map, secret=secret)
-
-
-class Cert(KubernetesObject):
-    __slots__ = ()
-
-    config_map: ConfigMap
-    secret: Secret
-
-    def __init__(self, config_map: ConfigMap = None, secret: Secret = None):
-        super().__init__(config_map=config_map, secret=secret)
-
-
-class KeySecret(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
-
-
 class AlertmanagerTLSConfig(KubernetesObject):
     __slots__ = ()
 
@@ -131,7 +138,7 @@ class AlertmanagerTLSConfig(KubernetesObject):
     cert_file: str
     insecure_skip_verify: bool
     key_file: str
-    key_secret: KeySecret
+    key_secret: core.SecretKeySelector
     server_name: str
 
     def __init__(
@@ -142,7 +149,7 @@ class AlertmanagerTLSConfig(KubernetesObject):
         cert_file: str = None,
         insecure_skip_verify: bool = None,
         key_file: str = None,
-        key_secret: KeySecret = None,
+        key_secret: core.SecretKeySelector = None,
         server_name: str = None,
     ):
         super().__init__(
@@ -375,118 +382,6 @@ class AlertmanagerSpec(KubernetesObject):
         )
 
 
-class AlertmanagersConfig(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
-
-
-class Password(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
-
-
-class Username(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
-
-
-class BasicAuth(KubernetesObject):
-    __slots__ = ()
-
-    password: Password
-    username: Username
-
-    def __init__(self, password: Password = None, username: Username = None):
-        super().__init__(password=password, username=username)
-
-
-class ApiserverConfigTLSConfig(KubernetesObject):
-    __slots__ = ()
-
-    ca: CA
-    ca_file: str
-    cert: Cert
-    cert_file: str
-    insecure_skip_verify: bool
-    key_file: str
-    key_secret: KeySecret
-    server_name: str
-
-    def __init__(
-        self,
-        ca: CA = None,
-        ca_file: str = None,
-        cert: Cert = None,
-        cert_file: str = None,
-        insecure_skip_verify: bool = None,
-        key_file: str = None,
-        key_secret: KeySecret = None,
-        server_name: str = None,
-    ):
-        super().__init__(
-            ca=ca,
-            ca_file=ca_file,
-            cert=cert,
-            cert_file=cert_file,
-            insecure_skip_verify=insecure_skip_verify,
-            key_file=key_file,
-            key_secret=key_secret,
-            server_name=server_name,
-        )
-
-
-class ApiserverConfig(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["host"]
-
-    basic_auth: BasicAuth
-    bearer_token: str
-    bearer_token_file: str
-    host: str
-    tls_config: ApiserverConfigTLSConfig
-
-    def __init__(
-        self,
-        basic_auth: BasicAuth = None,
-        bearer_token: str = None,
-        bearer_token_file: str = None,
-        host: str = None,
-        tls_config: ApiserverConfigTLSConfig = None,
-    ):
-        super().__init__(
-            basic_auth=basic_auth,
-            bearer_token=bearer_token,
-            bearer_token_file=bearer_token_file,
-            host=host,
-            tls_config=tls_config,
-        )
-
-
 class ArbitraryFSAccessThroughSM(KubernetesObject):
     __slots__ = ()
 
@@ -494,19 +389,6 @@ class ArbitraryFSAccessThroughSM(KubernetesObject):
 
     def __init__(self, deny: bool = None):
         super().__init__(deny=deny)
-
-
-class BearerTokenSecret(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
 
 
 class Capabilitie(KubernetesObject):
@@ -517,19 +399,6 @@ class Capabilitie(KubernetesObject):
 
     def __init__(self, add: List[str] = None, drop: List[str] = None):
         super().__init__(add=add, drop=drop)
-
-
-class ConfigMapKeyRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
 
 
 class ConfigMapRef(KubernetesObject):
@@ -574,33 +443,20 @@ class ResourceFieldRef(KubernetesObject):
         )
 
 
-class SecretKeyRef(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
-
-
 class ValueFrom(KubernetesObject):
     __slots__ = ()
 
-    config_map_key_ref: ConfigMapKeyRef
+    config_map_key_ref: core.ConfigMapKeySelector
     field_ref: FieldRef
     resource_field_ref: ResourceFieldRef
-    secret_key_ref: SecretKeyRef
+    secret_key_ref: core.SecretKeySelector
 
     def __init__(
         self,
-        config_map_key_ref: ConfigMapKeyRef = None,
+        config_map_key_ref: core.ConfigMapKeySelector = None,
         field_ref: FieldRef = None,
         resource_field_ref: ResourceFieldRef = None,
-        secret_key_ref: SecretKeyRef = None,
+        secret_key_ref: core.SecretKeySelector = None,
     ):
         super().__init__(
             config_map_key_ref=config_map_key_ref,
@@ -1170,7 +1026,7 @@ class EndpointTLSConfig(KubernetesObject):
     cert_file: str
     insecure_skip_verify: bool
     key_file: str
-    key_secret: KeySecret
+    key_secret: core.SecretKeySelector
     server_name: str
 
     def __init__(
@@ -1181,7 +1037,7 @@ class EndpointTLSConfig(KubernetesObject):
         cert_file: str = None,
         insecure_skip_verify: bool = None,
         key_file: str = None,
-        key_secret: KeySecret = None,
+        key_secret: core.SecretKeySelector = None,
         server_name: str = None,
     ):
         super().__init__(
@@ -1201,7 +1057,7 @@ class Endpoint(KubernetesObject):
 
     basic_auth: BasicAuth
     bearer_token_file: str
-    bearer_token_secret: BearerTokenSecret
+    bearer_token_secret: core.ConfigMapKeySelector
     honor_labels: bool
     honor_timestamps: bool
     interval: str
@@ -1220,7 +1076,7 @@ class Endpoint(KubernetesObject):
         self,
         basic_auth: BasicAuth = None,
         bearer_token_file: str = None,
-        bearer_token_secret: BearerTokenSecret = None,
+        bearer_token_secret: core.ConfigMapKeySelector = None,
         honor_labels: bool = None,
         honor_timestamps: bool = None,
         interval: str = None,
@@ -1328,7 +1184,7 @@ class GrpcServerTlsConfig(KubernetesObject):
     cert_file: str
     insecure_skip_verify: bool
     key_file: str
-    key_secret: KeySecret
+    key_secret: core.SecretKeySelector
     server_name: str
 
     def __init__(
@@ -1339,7 +1195,7 @@ class GrpcServerTlsConfig(KubernetesObject):
         cert_file: str = None,
         insecure_skip_verify: bool = None,
         key_file: str = None,
-        key_secret: KeySecret = None,
+        key_secret: core.SecretKeySelector = None,
         server_name: str = None,
     ):
         super().__init__(
@@ -1416,26 +1272,13 @@ class Ingress(KubernetesObject):
         )
 
 
-class ObjectStorageConfig(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
-
-
 class PodMetricsEndpointTLSConfig(KubernetesObject):
     __slots__ = ()
 
     ca: CA
     cert: Cert
     insecure_skip_verify: bool
-    key_secret: KeySecret
+    key_secret: core.SecretKeySelector
     server_name: str
 
     def __init__(
@@ -1443,7 +1286,7 @@ class PodMetricsEndpointTLSConfig(KubernetesObject):
         ca: CA = None,
         cert: Cert = None,
         insecure_skip_verify: bool = None,
-        key_secret: KeySecret = None,
+        key_secret: core.SecretKeySelector = None,
         server_name: str = None,
     ):
         super().__init__(
@@ -1459,7 +1302,7 @@ class PodMetricsEndpoint(KubernetesObject):
     __slots__ = ()
 
     basic_auth: BasicAuth
-    bearer_token_secret: BearerTokenSecret
+    bearer_token_secret: core.ConfigMapKeySelector
     honor_labels: bool
     honor_timestamps: bool
     interval: str
@@ -1477,7 +1320,7 @@ class PodMetricsEndpoint(KubernetesObject):
     def __init__(
         self,
         basic_auth: BasicAuth = None,
-        bearer_token_secret: BearerTokenSecret = None,
+        bearer_token_secret: core.ConfigMapKeySelector = None,
         honor_labels: bool = None,
         honor_timestamps: bool = None,
         interval: str = None,
@@ -1707,7 +1550,7 @@ class RemoteReadTLSConfig(KubernetesObject):
     cert_file: str
     insecure_skip_verify: bool
     key_file: str
-    key_secret: KeySecret
+    key_secret: core.SecretKeySelector
     server_name: str
 
     def __init__(
@@ -1718,7 +1561,7 @@ class RemoteReadTLSConfig(KubernetesObject):
         cert_file: str = None,
         insecure_skip_verify: bool = None,
         key_file: str = None,
-        key_secret: KeySecret = None,
+        key_secret: core.SecretKeySelector = None,
         server_name: str = None,
     ):
         super().__init__(
@@ -1820,7 +1663,7 @@ class RemoteWriteTLSConfig(KubernetesObject):
     cert_file: str
     insecure_skip_verify: bool
     key_file: str
-    key_secret: KeySecret
+    key_secret: core.SecretKeySelector
     server_name: str
 
     def __init__(
@@ -1831,7 +1674,7 @@ class RemoteWriteTLSConfig(KubernetesObject):
         cert_file: str = None,
         insecure_skip_verify: bool = None,
         key_file: str = None,
-        key_secret: KeySecret = None,
+        key_secret: core.SecretKeySelector = None,
         server_name: str = None,
     ):
         super().__init__(
@@ -1930,19 +1773,6 @@ class PrometheusSpecRule(KubernetesObject):
         super().__init__(alert=alert)
 
 
-class TracingConfig(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
-
-
 class Thano(KubernetesObject):
     __slots__ = ()
 
@@ -1953,12 +1783,12 @@ class Thano(KubernetesObject):
     log_format: str
     log_level: str
     min_time: str
-    object_storage_config: ObjectStorageConfig
+    object_storage_config: core.ConfigMapKeySelector
     object_storage_config_file: str
     resources: core.ResourceRequirements
     sha: str
     tag: str
-    tracing_config: TracingConfig
+    tracing_config: core.ConfigMapKeySelector
     tracing_config_file: str
     version: str
 
@@ -1971,12 +1801,12 @@ class Thano(KubernetesObject):
         log_format: str = None,
         log_level: str = None,
         min_time: str = None,
-        object_storage_config: ObjectStorageConfig = None,
+        object_storage_config: core.ConfigMapKeySelector = None,
         object_storage_config_file: str = None,
         resources: core.ResourceRequirements = None,
         sha: str = None,
         tag: str = None,
-        tracing_config: TracingConfig = None,
+        tracing_config: core.ConfigMapKeySelector = None,
         tracing_config_file: str = None,
         version: str = None,
     ):
@@ -2020,13 +1850,13 @@ class PrometheusSpec(KubernetesObject):
         "enableAdminAPI": "enable_admin_api",
     }
 
-    additional_alert_manager_configs: AdditionalAlertManagerConfig
-    additional_alert_relabel_configs: AdditionalAlertRelabelConfig
-    additional_scrape_configs: AdditionalScrapeConfig
+    additional_alert_manager_configs: core.ConfigMapKeySelector
+    additional_alert_relabel_configs: core.ConfigMapKeySelector
+    additional_scrape_configs: core.ConfigMapKeySelector
     affinity: core.Affinity
     alerting: Alerting
     allow_overlapping_blocks: bool
-    apiserver_config: ApiserverConfig
+    apiserver_config: APIserverConfig
     arbitrary_fs_access_through_sms: ArbitraryFSAccessThroughSM
     base_image: str
     config_maps: List[str]
@@ -2094,13 +1924,13 @@ class PrometheusSpec(KubernetesObject):
 
     def __init__(
         self,
-        additional_alert_manager_configs: AdditionalAlertManagerConfig = None,
-        additional_alert_relabel_configs: AdditionalAlertRelabelConfig = None,
-        additional_scrape_configs: AdditionalScrapeConfig = None,
+        additional_alert_manager_configs: core.ConfigMapKeySelector = None,
+        additional_alert_relabel_configs: core.ConfigMapKeySelector = None,
+        additional_scrape_configs: core.ConfigMapKeySelector = None,
         affinity: core.Affinity = None,
         alerting: Alerting = None,
         allow_overlapping_blocks: bool = None,
-        apiserver_config: ApiserverConfig = None,
+        apiserver_config: APIserverConfig = None,
         arbitrary_fs_access_through_sms: ArbitraryFSAccessThroughSM = None,
         base_image: str = None,
         config_maps: List[str] = None,
@@ -2345,19 +2175,6 @@ class PrometheusRule(KubernetesApiResource):
         )
 
 
-class QueryConfig(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["key"]
-
-    key: str
-    name: str
-    optional: bool
-
-    def __init__(self, key: str = None, name: str = None, optional: bool = None):
-        super().__init__(key=key, name=name, optional=optional)
-
-
 class ServiceMonitorSpec(KubernetesObject):
     __slots__ = ()
 
@@ -2429,7 +2246,7 @@ class ThanosRulerSpec(KubernetesObject):
     affinity: core.Affinity
     alert_drop_labels: List[str]
     alert_query_url: str
-    alertmanagers_config: AlertmanagersConfig
+    alertmanagers_config: core.ConfigMapKeySelector
     alertmanagers_url: List[str]
     containers: List[Container]
     enforced_namespace_label: str
@@ -2444,14 +2261,14 @@ class ThanosRulerSpec(KubernetesObject):
     log_format: str
     log_level: str
     node_selector: Dict[str, str]
-    object_storage_config: ObjectStorageConfig
+    object_storage_config: core.ConfigMapKeySelector
     object_storage_config_file: str
     paused: bool
     pod_metadata: PodMetadata
     port_name: str
     priority_class_name: str
     prometheus_rules_excluded_from_enforce: List[PrometheusRulesExcludedFromEnforce]
-    query_config: QueryConfig
+    query_config: core.ConfigMapKeySelector
     query_endpoints: List[str]
     replicas: int
     resources: core.ResourceRequirements
@@ -2464,7 +2281,7 @@ class ThanosRulerSpec(KubernetesObject):
     storage: Storage
     tolerations: List[core.Toleration]
     topology_spread_constraints: List[core.TopologySpreadConstraint]
-    tracing_config: TracingConfig
+    tracing_config: core.ConfigMapKeySelector
     volumes: List[core.Volume]
 
     def __init__(
@@ -2472,7 +2289,7 @@ class ThanosRulerSpec(KubernetesObject):
         affinity: core.Affinity = None,
         alert_drop_labels: List[str] = None,
         alert_query_url: str = None,
-        alertmanagers_config: AlertmanagersConfig = None,
+        alertmanagers_config: core.ConfigMapKeySelector = None,
         alertmanagers_url: List[str] = None,
         containers: List[Container] = None,
         enforced_namespace_label: str = None,
@@ -2487,7 +2304,7 @@ class ThanosRulerSpec(KubernetesObject):
         log_format: str = None,
         log_level: str = None,
         node_selector: Dict[str, str] = None,
-        object_storage_config: ObjectStorageConfig = None,
+        object_storage_config: core.ConfigMapKeySelector = None,
         object_storage_config_file: str = None,
         paused: bool = None,
         pod_metadata: PodMetadata = None,
@@ -2496,7 +2313,7 @@ class ThanosRulerSpec(KubernetesObject):
         prometheus_rules_excluded_from_enforce: List[
             PrometheusRulesExcludedFromEnforce
         ] = None,
-        query_config: QueryConfig = None,
+        query_config: core.ConfigMapKeySelector = None,
         query_endpoints: List[str] = None,
         replicas: int = None,
         resources: core.ResourceRequirements = None,
@@ -2509,7 +2326,7 @@ class ThanosRulerSpec(KubernetesObject):
         storage: Storage = None,
         tolerations: List[core.Toleration] = None,
         topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
-        tracing_config: TracingConfig = None,
+        tracing_config: core.ConfigMapKeySelector = None,
         volumes: List[core.Volume] = None,
     ):
         super().__init__(

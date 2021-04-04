@@ -4,7 +4,8 @@ set CRDS sealedsecrets.bitnami.com \
          verticalpodautoscaler.autoscaling.k8s.io \
          schemas/cilium.crds.yaml \
          schemas/cert-manager.crds.yaml \
-         schemas/prometheus-operator.crds.yaml
+         schemas/prometheus-operator.crds.yaml\
+         schemas/victoriametrics-operator.crds.yaml
 
 
 for crd in $CRDS;

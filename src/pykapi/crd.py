@@ -61,6 +61,15 @@ class CRDParser(Parser):
         self.group.finalize()
         return self.group
 
+    def import_resource(self, obj_type: ObjectType, schema: dict):
+        # on CRD, remove status only if defined as a generic object
+        if isinstance(obj_type, ApiResourceType):
+            status = schema["properties"].get("status")
+            if status and "properties" not in status:
+                schema["properties"].pop("status", None)
+
+        super().import_resource(obj_type, schema)
+
     def import_property(
         self, obj_type: ObjectType, prop_name: str, schema: dict
     ) -> Type:
@@ -79,6 +88,14 @@ class CRDParser(Parser):
         if schema.get("type") == "object":
             if is_label_selector(schema):
                 return ApiTypeRef(QualifiedName("LabelSelector", "meta", "v1"))
+            if is_key_selector(schema):
+                if (
+                    "secret" in prop_name
+                    or "password" in prop_name
+                    or "key" in prop_name
+                ):
+                    return ApiTypeRef(QualifiedName("SecretKeySelector", "core", "v1"))
+                return ApiTypeRef(QualifiedName("ConfigMapKeySelector", "core", "v1"))
 
         return super().import_base_property(obj_type, prop_name, schema, prop_type)
 
@@ -96,6 +113,27 @@ def is_label_selector(schema: dict) -> bool:
     return (
         properties["matchExpressions"].get("type") == "array"
         and "additionalProperties" in properties["matchLabels"]
+    )
+
+
+def is_key_selector(schema: dict) -> bool:
+    properties = schema.get("properties")
+    if not properties:
+        return False
+    if len(properties) != 3:
+        return False
+
+    if (
+        "key" not in properties
+        or "name" not in properties
+        or "optional" not in properties
+    ):
+        return False
+
+    return (
+        properties["key"].get("type") == "string"
+        and properties["name"].get("type") == "string"
+        and properties["optional"].get("type") == "boolean"
     )
 
 

@@ -70,6 +70,13 @@ class Property(NamedTuple):
         return camel_to_snake(self.name)
 
 
+class NamedProperty(NamedTuple):
+    name: str
+    type: "Type"
+    required: bool
+    snake_name: str
+
+
 class ObjectType(ApiType):
     __slots__ = ("properties", "description")
 
@@ -109,6 +116,12 @@ class ApiResourceType(ObjectType):
     def kind(self):
         return self.fqn.name
 
+    @property
+    def api_version(self) -> str:
+        if self.group and self.group != "core":
+            return f"{self.group}/{self.version}"
+        return self.version
+
 
 class AnonymousType(ObjectType):
     __slots__ = ("parent", "_basename", "prop_name")
@@ -126,7 +139,11 @@ class AnonymousType(ObjectType):
         return self.parent.fqn.name + self._basename
 
     def __eq__(self, other):
-        return self.name == other.name and super().__eq__(other)
+        return (
+            type(self) == type(other)
+            and self.name == other.name
+            and super().__eq__(other)
+        )
 
     def __str__(self):
         return self.name
