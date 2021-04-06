@@ -127,7 +127,7 @@ class TypePrinter:
             stream.write("    ")
             stream.write(prop.snake_name)
             stream.write(": ")
-            stream.write(group.qualified_name(prop.type))
+            stream.write(group.qualified_name(prop.type, ty))
             stream.write("\n")
 
         stream.write("\n    def __init__(self")
@@ -139,7 +139,7 @@ class TypePrinter:
             stream.write(", ")
             stream.write(prop.snake_name)
             stream.write(": ")
-            stream.write(group.qualified_name(prop.type))
+            stream.write(group.qualified_name(prop.type, ty))
             stream.write(" = None")
         stream.write("):\n")
         stream.write("        super().__init__(")

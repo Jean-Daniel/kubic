@@ -1,6 +1,8 @@
 "meta.v1.ObjectMeta":
   managedFields:
 
+"apiextensions.k8s.io.v1.CustomResourceValidation":
+  openAPIV3Schema: { snake_name: "openapi_v3_schema" }
 
 crds:
   # Map CRD group name

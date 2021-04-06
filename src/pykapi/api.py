@@ -1,3 +1,4 @@
+import sys
 from collections import defaultdict
 from typing import Dict, Union, Iterable, List, Optional
 
@@ -78,9 +79,6 @@ class ApiParser(Parser):
             if ref == name and ref not in self.components:
                 raise ValueError(f"unknown type {ref} requested")
 
-            if ref.startswith("io.k8s.apiextensions-apiserver.pkg.apis.apiextensions"):
-                continue
-
             if name.lower() in self.ambiguous:
                 raise ValueError(
                     f"ambiguous short key {name}: {ref}, {', '.join(self.ambiguous[name.lower()])}"
@@ -123,7 +121,10 @@ class ApiParser(Parser):
         schema = self.components[ref]
 
         assert "$ref" not in schema
-        assert "type" in schema, f"unsupported type {schema}"
+        if "type" not in schema:
+            print(f"unsupported type {schema}", file=sys.stderr)
+            return "Any"
+
         if schema["type"] == "object" and "properties" in schema:
             # Create ObjectType or ApiResourceType
 

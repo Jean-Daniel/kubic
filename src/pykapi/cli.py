@@ -65,6 +65,7 @@ def import_k8s_api(args, annotations):
         "ServiceAccount",
         "io.k8s.api.networking.v1.Ingress",
         "io.k8s.api.networking.v1.IngressClass",
+        "io.k8s.apiextensions-apiserver.pkg.apis.apiextensions.v1.CustomResourceDefinition",
     )
 
     print_groups(groups, args.output)

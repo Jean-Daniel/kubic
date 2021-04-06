@@ -107,6 +107,7 @@ PLURALS = {"URLs": "_urls", "WWNs": "_wwns", "CIDRs": "_cidrs", "SMs": "_sms"}
 
 KEYWORDS = {
     "if",
+    "not",
     "for",
     "def",
     "class",
@@ -131,6 +132,8 @@ def camel_to_snake(name: str):
     # avoid conflict with keywords
     if snake in KEYWORDS:
         snake += "_"
+    if snake.startswith("$"):
+        snake = snake[1:] + "_"
     return snake
 
 

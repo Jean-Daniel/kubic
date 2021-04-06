@@ -69,14 +69,17 @@ class ApiGroup:
     def get(self, fqn: QualifiedName) -> Optional[ApiType]:
         return self._types.get(fqn.name)
 
-    def qualified_name(self, ty) -> str:
+    def _quote(self, value: str, quote: bool):
+        return f'"{value}"' if quote else value
+
+    def qualified_name(self, ty, parent_type=None) -> str:
         if isinstance(ty, ApiType):
             if ty not in self:
                 return f"{module_for_group(ty.group)}.{ty.name}"
-            return ty.name
+            return self._quote(ty.name, ty == parent_type)
 
         if isinstance(ty, GenericType):
-            types = (self.qualified_name(value) for value in ty.parameters)
+            types = (self.qualified_name(value, parent_type) for value in ty.parameters)
             return f"{ty.base_type}[{', '.join(types)}]"
 
         return str(ty)
@@ -311,13 +314,14 @@ class Parser:
                 return ty
 
             if "additionalProperties" in schema:
+                vtype = self.import_property(
+                    obj_type, prop_name, schema["additionalProperties"]
+                )
                 return GenericType(
                     "Dict",
                     (
                         "str",
-                        self.import_property(
-                            obj_type, prop_name, schema["additionalProperties"]
-                        ),
+                        vtype,
                     ),
                 )
 
@@ -354,9 +358,8 @@ class Parser:
         if prop_type == "array":
             details = schema.get("items")
             if details:
-                return GenericType(
-                    "List", (self.import_property(obj_type, prop_name, details),)
-                )
+                vtype = self.import_property(obj_type, prop_name, details)
+                return GenericType("List", (vtype,))
             return "list"
 
         raise NotImplementedError(f"{prop_type} base type not supported")
