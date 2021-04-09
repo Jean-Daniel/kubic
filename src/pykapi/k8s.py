@@ -141,6 +141,10 @@ ACRONYMES = {"tls", "ipam", "api"}
 
 
 def type_name_from_property_name(name: str):
+    # true when type_name is specified in annotation
+    if name[0].isupper():
+        return name
+
     # assuming 2 and 3 letters words are acronyms (do it before remote trailing S)
     if len(name) <= 3:
         return name.upper()

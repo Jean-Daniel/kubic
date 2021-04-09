@@ -102,6 +102,15 @@ class ApiGroup:
     def refs(self) -> Iterable[str]:
         return self._refs
 
+    def _rename(self, items):
+        for item in items:
+            item.fqn = QualifiedName(item.fullname, item.group, item.version)
+            if (item.name in self._types and self._types[item.name] != item) or (
+                item.name in self._anonymous and self._anonymous[item.name] != item
+            ):
+                raise ValueError(f"{item.name} still conflicting")
+            self._types[item.name] = item
+
     def finalize(self):
         for name, items in self._anonymous.items():
             base = items[0]
@@ -112,19 +121,7 @@ class ApiGroup:
             for duplicated in items[1:]:
                 if duplicated != base:
                     # Mark all items as conflicting and fix the output type list
-                    for item in items:
-                        item.fqn = QualifiedName(
-                            item.fullname, item.group, item.version
-                        )
-                        if (
-                            item.name in self._types and self._types[item.name] != item
-                        ) or (
-                            item.name in self._anonymous
-                            and self._anonymous[item.name] != item
-                        ):
-                            raise ValueError(f"{item.name} still conflicting")
-                        self._types[item.name] = item
-
+                    self._rename(items)
                     # We are done for this conflict
                     break
             else:
@@ -314,9 +311,10 @@ class Parser:
                 return ty
 
             if "additionalProperties" in schema:
-                vtype = self.import_property(
-                    obj_type, prop_name, schema["additionalProperties"]
-                )
+                details = schema["additionalProperties"]
+                if "_type_name_" in schema:
+                    details["_type_name_"] = schema["_type_name_"]
+                vtype = self.import_property(obj_type, prop_name, details)
                 return GenericType(
                     "Dict",
                     (
@@ -358,6 +356,8 @@ class Parser:
         if prop_type == "array":
             details = schema.get("items")
             if details:
+                if "_type_name_" in schema:
+                    details["_type_name_"] = schema["_type_name_"]
                 vtype = self.import_property(obj_type, prop_name, details)
                 return GenericType("List", (vtype,))
             return "list"

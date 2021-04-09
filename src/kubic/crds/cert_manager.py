@@ -342,6 +342,7 @@ class CertificateSpec(KubernetesObject):
     keystores: Keystore
     private_key: PrivateKey
     renew_before: str
+    revision_history_limit: int
     secret_name: str
     subject: Subject
     uris: List[str]
@@ -360,6 +361,7 @@ class CertificateSpec(KubernetesObject):
         keystores: Keystore = None,
         private_key: PrivateKey = None,
         renew_before: str = None,
+        revision_history_limit: int = None,
         secret_name: str = None,
         subject: Subject = None,
         uris: List[str] = None,
@@ -377,6 +379,7 @@ class CertificateSpec(KubernetesObject):
             keystores=keystores,
             private_key=private_key,
             renew_before=renew_before,
+            revision_history_limit=revision_history_limit,
             secret_name=secret_name,
             subject=subject,
             uris=uris,
@@ -391,6 +394,7 @@ class Condition(KubernetesObject):
 
     last_transition_time: meta.Time
     message: str
+    observed_generation: int
     reason: str
     status: str
     type: str
@@ -399,6 +403,7 @@ class Condition(KubernetesObject):
         self,
         last_transition_time: meta.Time = None,
         message: str = None,
+        observed_generation: int = None,
         reason: str = None,
         status: str = None,
         type: str = None,
@@ -406,6 +411,7 @@ class Condition(KubernetesObject):
         super().__init__(
             last_transition_time=last_transition_time,
             message=message,
+            observed_generation=observed_generation,
             reason=reason,
             status=status,
             type=type,
@@ -488,25 +494,65 @@ class CertificateRequestSpec(KubernetesObject):
     }
 
     duration: str
+    extra: Dict[str, List[str]]
+    groups: List[str]
     is_ca: bool
     issuer_ref: IssuerRef
     request: core.Base64
+    uid: str
     usages: List[str]
+    username: str
 
     def __init__(
         self,
         duration: str = None,
+        extra: Dict[str, List[str]] = None,
+        groups: List[str] = None,
         is_ca: bool = None,
         issuer_ref: IssuerRef = None,
         request: core.Base64 = None,
+        uid: str = None,
         usages: List[str] = None,
+        username: str = None,
     ):
         super().__init__(
             duration=duration,
+            extra=extra,
+            groups=groups,
             is_ca=is_ca,
             issuer_ref=issuer_ref,
             request=request,
+            uid=uid,
             usages=usages,
+            username=username,
+        )
+
+
+class CertificateRequestStatusCondition(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["status", "type"]
+
+    last_transition_time: meta.Time
+    message: str
+    reason: str
+    status: str
+    type: str
+
+    def __init__(
+        self,
+        last_transition_time: meta.Time = None,
+        message: str = None,
+        reason: str = None,
+        status: str = None,
+        type: str = None,
+    ):
+        super().__init__(
+            last_transition_time=last_transition_time,
+            message=message,
+            reason=reason,
+            status=status,
+            type=type,
         )
 
 
@@ -515,14 +561,14 @@ class CertificateRequestStatus(KubernetesObject):
 
     ca: core.Base64
     certificate: core.Base64
-    conditions: List[Condition]
+    conditions: List[CertificateRequestStatusCondition]
     failure_time: meta.Time
 
     def __init__(
         self,
         ca: core.Base64 = None,
         certificate: core.Base64 = None,
-        conditions: List[Condition] = None,
+        conditions: List[CertificateRequestStatusCondition] = None,
         failure_time: meta.Time = None,
     ):
         super().__init__(

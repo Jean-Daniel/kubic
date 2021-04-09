@@ -95,8 +95,12 @@ class ApiParser(Parser):
                 if fqn:
                     ref = f"{fqn.group}.{fqn.version}.{fqn.name}"
                     if name.lower() in self.ambiguous:
-                        logger.info("Using version %s for %s. Existing version: %s",
-                                    fqn.version, name, ', '.join(self.ambiguous[name.lower()]), )
+                        logger.info(
+                            "Using version %s for %s. Existing version: %s",
+                            fqn.version,
+                            name,
+                            ", ".join(self.ambiguous[name.lower()]),
+                        )
 
             if not ref:
                 raise ValueError(f"unknown type '{name}' requested")
@@ -149,7 +153,7 @@ class ApiParser(Parser):
             if gvk:
                 # dirty schema fixup
                 assert (
-                        fqn.name == gvk[0]["kind"]
+                    fqn.name == gvk[0]["kind"]
                 ), f"extract kind {fqn.name} does not match type declared kind {gvk[0]['kind']}"
                 group = gvk[0]["group"]
                 if not group and fqn.group in ("core", "meta"):
@@ -158,7 +162,7 @@ class ApiParser(Parser):
                     group
                 ), f"extract group '{fqn.group}' does not match type declared group '{gvk[0]['group']}': {ref}"
                 assert (
-                        fqn.version == gvk[0]["version"]
+                    fqn.version == gvk[0]["version"]
                 ), f"extract version {fqn.version} does not match type declared version {gvk[0]['version']}"
                 typedecl = ApiResourceType(
                     fqn,
@@ -181,7 +185,7 @@ class ApiParser(Parser):
 
 
 def import_api_types(
-        schema: Union[str, dict], annotations: dict, *names
+    schema: Union[str, dict], annotations: dict, *names
 ) -> List[ApiGroup]:
     parser = ApiParser(schema, annotations)
     return parser.import_types(names)

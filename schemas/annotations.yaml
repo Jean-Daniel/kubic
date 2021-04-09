@@ -47,6 +47,10 @@ crds:
       apiTokenSecretRef: SecretRef
     Route53:
       secretAccessKeySecretRef: SecretRef
+    CertificateRequest:
+      status: { type_name: CertificateRequestStatus }
+    CertificateRequestStatus:
+      conditions: { type_name: CertificateRequestStatusCondition }
     Dns01:
       rfc2136: { type_name: RFC2136 }
     RFC2136:
