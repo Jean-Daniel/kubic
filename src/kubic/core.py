@@ -132,17 +132,20 @@ class PodAffinityTerm(KubernetesObject):
     _required_ = ["topology_key"]
 
     label_selector: meta.LabelSelector
+    namespace_selector: meta.LabelSelector
     namespaces: List[str]
     topology_key: str
 
     def __init__(
         self,
         label_selector: meta.LabelSelector = None,
+        namespace_selector: meta.LabelSelector = None,
         namespaces: List[str] = None,
         topology_key: str = None,
     ):
         super().__init__(
             label_selector=label_selector,
+            namespace_selector=namespace_selector,
             namespaces=namespaces,
             topology_key=topology_key,
         )
@@ -953,6 +956,7 @@ class Probe(KubernetesObject):
     period_seconds: int
     success_threshold: int
     tcp_socket: TCPSocketAction
+    termination_grace_period_seconds: int
     timeout_seconds: int
 
     def __init__(
@@ -964,6 +968,7 @@ class Probe(KubernetesObject):
         period_seconds: int = None,
         success_threshold: int = None,
         tcp_socket: TCPSocketAction = None,
+        termination_grace_period_seconds: int = None,
         timeout_seconds: int = None,
     ):
         super().__init__(
@@ -974,6 +979,7 @@ class Probe(KubernetesObject):
             period_seconds=period_seconds,
             success_threshold=success_threshold,
             tcp_socket=tcp_socket,
+            termination_grace_period_seconds=termination_grace_period_seconds,
             timeout_seconds=timeout_seconds,
         )
 
@@ -1491,17 +1497,10 @@ class EphemeralVolumeSource(KubernetesObject):
     _group_ = "core"
     _version_ = "v1"
 
-    read_only: bool
     volume_claim_template: PersistentVolumeClaimTemplate
 
-    def __init__(
-        self,
-        read_only: bool = None,
-        volume_claim_template: PersistentVolumeClaimTemplate = None,
-    ):
-        super().__init__(
-            read_only=read_only, volume_claim_template=volume_claim_template
-        )
+    def __init__(self, volume_claim_template: PersistentVolumeClaimTemplate = None):
+        super().__init__(volume_claim_template=volume_claim_template)
 
 
 class FCVolumeSource(KubernetesObject):
@@ -3170,8 +3169,10 @@ class ServiceSpec(KubernetesObject):
     external_name: str
     external_traffic_policy: str
     health_check_node_port: int
+    internal_traffic_policy: str
     ip_families: List[str]
     ip_family_policy: str
+    load_balancer_class: str
     load_balancer_ip: str
     load_balancer_source_ranges: List[str]
     ports: List[ServicePort]
@@ -3191,8 +3192,10 @@ class ServiceSpec(KubernetesObject):
         external_name: str = None,
         external_traffic_policy: str = None,
         health_check_node_port: int = None,
+        internal_traffic_policy: str = None,
         ip_families: List[str] = None,
         ip_family_policy: str = None,
+        load_balancer_class: str = None,
         load_balancer_ip: str = None,
         load_balancer_source_ranges: List[str] = None,
         ports: List[ServicePort] = None,
@@ -3211,8 +3214,10 @@ class ServiceSpec(KubernetesObject):
             external_name=external_name,
             external_traffic_policy=external_traffic_policy,
             health_check_node_port=health_check_node_port,
+            internal_traffic_policy=internal_traffic_policy,
             ip_families=ip_families,
             ip_family_policy=ip_family_policy,
+            load_balancer_class=load_balancer_class,
             load_balancer_ip=load_balancer_ip,
             load_balancer_source_ranges=load_balancer_source_ranges,
             ports=ports,

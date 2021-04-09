@@ -10,10 +10,15 @@ class RollingUpdateDaemonSet(KubernetesObject):
     _group_ = "apps"
     _version_ = "v1"
 
+    max_surge: core.IntOrString
     max_unavailable: core.IntOrString
 
-    def __init__(self, max_unavailable: core.IntOrString = None):
-        super().__init__(max_unavailable=max_unavailable)
+    def __init__(
+        self,
+        max_surge: core.IntOrString = None,
+        max_unavailable: core.IntOrString = None,
+    ):
+        super().__init__(max_surge=max_surge, max_unavailable=max_unavailable)
 
 
 class DaemonSetUpdateStrategy(KubernetesObject):

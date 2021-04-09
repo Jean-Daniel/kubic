@@ -1,6 +1,6 @@
-import sys
+import logging
 from collections import defaultdict
-from typing import Dict, Union, Iterable, List, Optional
+from typing import Dict, Union, Iterable, List, Optional, Set
 
 import yaml
 
@@ -16,13 +16,20 @@ from pykapi.parser import (
 )
 from pykapi.types import Type, ApiType, TypeAlias, ApiResourceType, ObjectType
 
-
-def simplename(key: str) -> str:
-    return key.rsplit(".", maxsplit=1)[1] if "." in key else key
+logger = logging.getLogger("api")
 
 
-def shortkey(key: str):
-    return simplename(key).lower()
+def _is_greater_version(v1: str, v2: str) -> bool:
+    if v2[1] > v1[1]:
+        return True
+    elif v1[1] > v2[1]:
+        return False
+    # no alpha/beta qualifier -> stable
+    if len(v1) == 2:
+        return False
+    elif len(v2) == 2:
+        return True
+    return v2 > v1
 
 
 class ApiParser(Parser):
@@ -41,14 +48,21 @@ class ApiParser(Parser):
             self.components = schema["components"]["schemas"]
 
         # short name to fqn map
-        self.index: Dict[str, str] = {}
-        self.ambiguous: Dict[str, List[str]] = defaultdict(list)
+        self.index: Dict[str, QualifiedName] = {}
+        self.ambiguous: Dict[str, Set[str]] = defaultdict(set)
         for key in self.components.keys():
-            short = shortkey(key)
-            if short in self.index:
-                self.ambiguous[short].append(key)
+            group, version, name = key.rsplit(".", maxsplit=2)
+            fqn = QualifiedName(name, group, version)
+            shortname = fqn.name.lower()
+
+            existing = self.index.get(shortname)
+            if existing:
+                self.ambiguous[shortname].add(fqn.version)
+                self.ambiguous[shortname].add(existing.version)
+                if _is_greater_version(existing.version, fqn.version):
+                    self.index[shortname] = fqn
             else:
-                self.index[short] = key
+                self.index[shortname] = fqn
 
     @property
     def groups(self) -> Iterable[ApiGroup]:
@@ -75,14 +89,17 @@ class ApiParser(Parser):
             names = self.components.keys()
 
         for name in names:
-            ref = self.index.get(name.lower(), name)
-            if ref == name and ref not in self.components:
-                raise ValueError(f"unknown type {ref} requested")
+            ref = name if name in self.components else None
+            if not ref and "." not in name:
+                fqn = self.index.get(name.lower())
+                if fqn:
+                    ref = f"{fqn.group}.{fqn.version}.{fqn.name}"
+                    if name.lower() in self.ambiguous:
+                        logger.info("Using version %s for %s. Existing version: %s",
+                                    fqn.version, name, ', '.join(self.ambiguous[name.lower()]), )
 
-            if name.lower() in self.ambiguous:
-                raise ValueError(
-                    f"ambiguous short key {name}: {ref}, {', '.join(self.ambiguous[name.lower()])}"
-                )
+            if not ref:
+                raise ValueError(f"unknown type '{name}' requested")
             self.import_ref(ref)
 
         for pending, schema in self.pendings:
@@ -122,7 +139,7 @@ class ApiParser(Parser):
 
         assert "$ref" not in schema
         if "type" not in schema:
-            print(f"unsupported type {schema}", file=sys.stderr)
+            logger.warning(f"unsupported type {schema}")
             return "Any"
 
         if schema["type"] == "object" and "properties" in schema:
@@ -132,7 +149,7 @@ class ApiParser(Parser):
             if gvk:
                 # dirty schema fixup
                 assert (
-                    fqn.name == gvk[0]["kind"]
+                        fqn.name == gvk[0]["kind"]
                 ), f"extract kind {fqn.name} does not match type declared kind {gvk[0]['kind']}"
                 group = gvk[0]["group"]
                 if not group and fqn.group in ("core", "meta"):
@@ -141,7 +158,7 @@ class ApiParser(Parser):
                     group
                 ), f"extract group '{fqn.group}' does not match type declared group '{gvk[0]['group']}': {ref}"
                 assert (
-                    fqn.version == gvk[0]["version"]
+                        fqn.version == gvk[0]["version"]
                 ), f"extract version {fqn.version} does not match type declared version {gvk[0]['version']}"
                 typedecl = ApiResourceType(
                     fqn,
@@ -164,7 +181,7 @@ class ApiParser(Parser):
 
 
 def import_api_types(
-    schema: Union[str, dict], annotations: dict, *names
+        schema: Union[str, dict], annotations: dict, *names
 ) -> List[ApiGroup]:
     parser = ApiParser(schema, annotations)
     return parser.import_types(names)

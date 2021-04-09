@@ -12,10 +12,12 @@ class JobSpec(KubernetesObject):
 
     active_deadline_seconds: int
     backoff_limit: int
+    completion_mode: str
     completions: int
     manual_selector: bool
     parallelism: int
     selector: meta.LabelSelector
+    suspend: bool
     template: core.PodTemplateSpec
     ttl_seconds_after_finished: int
 
@@ -23,20 +25,24 @@ class JobSpec(KubernetesObject):
         self,
         active_deadline_seconds: int = None,
         backoff_limit: int = None,
+        completion_mode: str = None,
         completions: int = None,
         manual_selector: bool = None,
         parallelism: int = None,
         selector: meta.LabelSelector = None,
+        suspend: bool = None,
         template: core.PodTemplateSpec = None,
         ttl_seconds_after_finished: int = None,
     ):
         super().__init__(
             active_deadline_seconds=active_deadline_seconds,
             backoff_limit=backoff_limit,
+            completion_mode=completion_mode,
             completions=completions,
             manual_selector=manual_selector,
             parallelism=parallelism,
             selector=selector,
+            suspend=suspend,
             template=template,
             ttl_seconds_after_finished=ttl_seconds_after_finished,
         )
@@ -46,7 +52,7 @@ class JobTemplateSpec(KubernetesObject):
     __slots__ = ()
 
     _group_ = "batch"
-    _version_ = "v1beta1"
+    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: JobSpec
@@ -59,7 +65,7 @@ class CronJobSpec(KubernetesObject):
     __slots__ = ()
 
     _group_ = "batch"
-    _version_ = "v1beta1"
+    _version_ = "v1"
 
     _required_ = ["job_template", "schedule"]
 
@@ -96,7 +102,7 @@ class CronJob(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "batch"
-    _version_ = "v1beta1"
+    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: CronJobSpec
@@ -109,7 +115,7 @@ class CronJob(KubernetesApiResource):
         spec: CronJobSpec = None,
     ):
         super().__init__(
-            "batch/v1beta1", "CronJob", name, namespace, metadata=metadata, spec=spec
+            "batch/v1", "CronJob", name, namespace, metadata=metadata, spec=spec
         )
 
 

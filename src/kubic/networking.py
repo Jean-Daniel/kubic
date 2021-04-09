@@ -178,6 +178,33 @@ class Ingress(KubernetesApiResource):
         )
 
 
+class IngressClassParametersReference(KubernetesObject):
+    __slots__ = ()
+
+    _group_ = "networking.k8s.io"
+    _version_ = "v1"
+
+    _required_ = ["kind", "name"]
+
+    api_group: str
+    kind: str
+    name: str
+    namespace: str
+    scope: str
+
+    def __init__(
+        self,
+        api_group: str = None,
+        kind: str = None,
+        name: str = None,
+        namespace: str = None,
+        scope: str = None,
+    ):
+        super().__init__(
+            api_group=api_group, kind=kind, name=name, namespace=namespace, scope=scope
+        )
+
+
 class IngressClassSpec(KubernetesObject):
     __slots__ = ()
 
@@ -185,10 +212,10 @@ class IngressClassSpec(KubernetesObject):
     _version_ = "v1"
 
     controller: str
-    parameters: core.TypedLocalObjectReference
+    parameters: IngressClassParametersReference
 
     def __init__(
-        self, controller: str = None, parameters: core.TypedLocalObjectReference = None
+        self, controller: str = None, parameters: IngressClassParametersReference = None
     ):
         super().__init__(controller=controller, parameters=parameters)
 
@@ -221,11 +248,14 @@ class NetworkPolicyPort(KubernetesObject):
     _group_ = "networking.k8s.io"
     _version_ = "v1"
 
+    end_port: int
     port: core.IntOrString
     protocol: str
 
-    def __init__(self, port: core.IntOrString = None, protocol: str = None):
-        super().__init__(port=port, protocol=protocol)
+    def __init__(
+        self, end_port: int = None, port: core.IntOrString = None, protocol: str = None
+    ):
+        super().__init__(end_port=end_port, port=port, protocol=protocol)
 
 
 class NetworkPolicyPeer(KubernetesObject):

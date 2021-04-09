@@ -92,7 +92,7 @@ class PodDisruptionBudgetSpec(KubernetesObject):
     __slots__ = ()
 
     _group_ = "policy"
-    _version_ = "v1beta1"
+    _version_ = "v1"
 
     max_unavailable: core.IntOrString
     min_available: core.IntOrString
@@ -115,7 +115,7 @@ class PodDisruptionBudget(KubernetesApiResource):
     __slots__ = ()
 
     _group_ = "policy"
-    _version_ = "v1beta1"
+    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: PodDisruptionBudgetSpec
@@ -128,7 +128,7 @@ class PodDisruptionBudget(KubernetesApiResource):
         spec: PodDisruptionBudgetSpec = None,
     ):
         super().__init__(
-            "policy/v1beta1",
+            "policy/v1",
             "PodDisruptionBudget",
             name,
             namespace,

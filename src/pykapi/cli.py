@@ -17,10 +17,11 @@ from .printer import TypePrinter
 
 def import_k8s_api(args, annotations):
     # import kubernetes types
-    file = os.path.join(args.schemas, "1.20.json")
+    version = args.version
+    file = os.path.join(args.schemas, f"{version}.json")
     if not os.path.exists(file):
         tmp, headers = urlretrieve(
-            "https://github.com/kubernetes/kubernetes/raw/release-1.20/api/openapi-spec/swagger.json"
+            f"https://github.com/kubernetes/kubernetes/raw/release-{version}/api/openapi-spec/swagger.json"
         )
         with open(tmp, "rb") as f:
             data = json.load(f)
@@ -38,34 +39,37 @@ def import_k8s_api(args, annotations):
         file,
         annotations,
         "Namespace",
-        "io.k8s.api.rbac.v1.Role",
-        "io.k8s.api.rbac.v1.RoleBinding",
-        "io.k8s.api.rbac.v1.ClusterRole",
-        "io.k8s.api.rbac.v1.ClusterRoleBinding",
+        "Role",
+        "RoleBinding",
+        "ClusterRole",
+        "ClusterRoleBinding",
+
         "ConfigMap",
         "Secret",
         "Deployment",
         "StatefulSet",
         "DaemonSet",
         "Job",
-        "io.k8s.api.batch.v1beta1.CronJob",
-        "io.k8s.api.storage.v1.StorageClass",
-        "io.k8s.api.storage.v1.VolumeAttachment",
+
+        "CronJob",
+        "StorageClass",
+        "VolumeAttachment",
+
         "NetworkPolicy",
         "ResourceQuota",
         "PersistentVolume",
         "PodSecurityPolicy",
         "PodDisruptionBudget",
-        "io.k8s.api.scheduling.v1.PriorityClass",
-        "io.k8s.api.autoscaling.v1.HorizontalPodAutoscaler",
-        "io.k8s.api.autoscaling.v1.CrossVersionObjectReference",
-        "io.k8s.api.admissionregistration.v1.MutatingWebhookConfiguration",
-        "io.k8s.api.admissionregistration.v1.ValidatingWebhookConfiguration",
+        "PriorityClass",
+        "HorizontalPodAutoscaler",
+        "CrossVersionObjectReference",
+        "MutatingWebhookConfiguration",
+        "ValidatingWebhookConfiguration",
         "Service",
         "ServiceAccount",
-        "io.k8s.api.networking.v1.Ingress",
-        "io.k8s.api.networking.v1.IngressClass",
-        "io.k8s.apiextensions-apiserver.pkg.apis.apiextensions.v1.CustomResourceDefinition",
+        "Ingress",
+        "IngressClass",
+        "CustomResourceDefinition",
     )
 
     print_groups(groups, args.output)
@@ -168,6 +172,7 @@ def main():
     )
     parser.add_argument("-o", "--output", type=str, default="-")
     parser.add_argument("-s", "--schemas", type=str, default=SCHEMA_DIR)
+    parser.add_argument("--version", type=str, default="1.21")
     parser.add_argument("crds", nargs="*", type=str)
 
     args = parser.parse_args()
