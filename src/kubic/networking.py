@@ -7,8 +7,7 @@ from . import core, meta
 class ServiceBackendPort(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     name: str
     number: int
@@ -20,8 +19,7 @@ class ServiceBackendPort(KubernetesObject):
 class IngressServiceBackend(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     _required_ = ["name"]
 
@@ -35,8 +33,7 @@ class IngressServiceBackend(KubernetesObject):
 class IngressBackend(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     resource: core.TypedLocalObjectReference
     service: IngressServiceBackend
@@ -48,8 +45,7 @@ class IngressBackend(KubernetesObject):
 class HTTPIngressPath(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     _required_ = ["backend"]
 
@@ -64,8 +60,7 @@ class HTTPIngressPath(KubernetesObject):
 class HTTPIngressRuleValue(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     _required_ = ["paths"]
 
@@ -78,8 +73,7 @@ class HTTPIngressRuleValue(KubernetesObject):
 class IPBlock(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     _required_ = ["cidr"]
 
@@ -97,8 +91,7 @@ class IPBlock(KubernetesObject):
 class IngressRule(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     host: str
     http: HTTPIngressRuleValue
@@ -110,8 +103,7 @@ class IngressRule(KubernetesObject):
 class IngressTLS(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     hosts: List[str]
     secret_name: str
@@ -123,8 +115,7 @@ class IngressTLS(KubernetesObject):
 class IngressSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     default_backend: IngressBackend
     ingress_class_name: str
@@ -144,9 +135,8 @@ class IngressSpec(KubernetesObject):
 class Ingress(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "networking.k8s.io/v1"
     _kind_ = "Ingress"
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: IngressSpec
@@ -158,8 +148,7 @@ class Ingress(KubernetesApiResource):
 class IngressClassParametersReference(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     _required_ = ["kind", "name"]
 
@@ -176,8 +165,7 @@ class IngressClassParametersReference(KubernetesObject):
 class IngressClassSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     controller: str
     parameters: IngressClassParametersReference
@@ -189,9 +177,8 @@ class IngressClassSpec(KubernetesObject):
 class IngressClass(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "networking.k8s.io/v1"
     _kind_ = "IngressClass"
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: IngressClassSpec
@@ -203,8 +190,7 @@ class IngressClass(KubernetesApiResource):
 class NetworkPolicyPort(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     end_port: int
     port: core.IntOrString
@@ -217,8 +203,7 @@ class NetworkPolicyPort(KubernetesObject):
 class NetworkPolicyPeer(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     ip_block: IPBlock
     namespace_selector: meta.LabelSelector
@@ -231,8 +216,7 @@ class NetworkPolicyPeer(KubernetesObject):
 class NetworkPolicyEgressRule(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     ports: List[NetworkPolicyPort]
     to: List[NetworkPolicyPeer]
@@ -244,8 +228,7 @@ class NetworkPolicyEgressRule(KubernetesObject):
 class NetworkPolicyIngressRule(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     _revfield_names_ = {
         "from": "from_",
@@ -261,8 +244,7 @@ class NetworkPolicyIngressRule(KubernetesObject):
 class NetworkPolicySpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "networking.k8s.io/v1"
 
     _required_ = ["pod_selector"]
 
@@ -284,9 +266,8 @@ class NetworkPolicySpec(KubernetesObject):
 class NetworkPolicy(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "networking.k8s.io/v1"
     _kind_ = "NetworkPolicy"
-    _group_ = "networking.k8s.io"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: NetworkPolicySpec

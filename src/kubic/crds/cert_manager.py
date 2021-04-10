@@ -406,9 +406,8 @@ class CertificateStatus(KubernetesObject):
 class Certificate(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cert-manager.io/v1"
     _kind_ = "Certificate"
-    _group_ = "cert-manager.io"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 
@@ -512,9 +511,8 @@ class CertificateRequestStatus(KubernetesObject):
 class CertificateRequest(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cert-manager.io/v1"
     _kind_ = "CertificateRequest"
-    _group_ = "cert-manager.io"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 
@@ -1035,9 +1033,8 @@ class ClusterIssuerStatus(KubernetesObject):
 class ClusterIssuer(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cert-manager.io/v1"
     _kind_ = "ClusterIssuer"
-    _group_ = "cert-manager.io"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 
@@ -1124,9 +1121,8 @@ class IssuerStatus(KubernetesObject):
 class Issuer(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cert-manager.io/v1"
     _kind_ = "Issuer"
-    _group_ = "cert-manager.io"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 
@@ -1213,9 +1209,8 @@ class OrderStatus(KubernetesObject):
 class Order(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "acme.cert-manager.io/v1"
     _kind_ = "Order"
-    _group_ = "acme.cert-manager.io"
-    _version_ = "v1"
 
     _required_ = ["metadata", "spec"]
 

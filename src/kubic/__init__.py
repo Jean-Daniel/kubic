@@ -18,12 +18,11 @@ class _K8SResourceMeta(type):
             if hasattr(parent, "_revfield_names_"):
                 fields.update(getattr(parent, "_field_names_"))
 
+        attributedict["_hints"] = None
         attributedict["_field_names_"] = fields
         attributedict["_revfield_names_"] = revfields
 
-        cls = type.__new__(mcs, clsname, superclasses, attributedict)
-        cls._hints_ = typing.get_type_hints(cls)
-        return cls
+        return type.__new__(mcs, clsname, superclasses, attributedict)
 
 
 @cache
@@ -174,23 +173,28 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         del self[camel_name]
 
     def __dir__(self):
-        return dir(type(self)) + list(self._hints_.keys())
+        return dir(type(self)) + list(self._hints_().keys())
 
-    @classmethod
-    def _item_hint(cls, key: str):
-        hint = cls._hints_.get(key)
+    def _hints_(self) -> dict:
+        cls = type(self)
+        if cls._hints is None:
+            cls._hints = typing.get_type_hints(cls)
+        return cls._hints
+
+    def _item_hint(self, key: str):
+        hint = self._hints_().get(key)
         if not hint:
             # if not -> raise an attribute error
-            cls._attribute_error(key)
+            self._attribute_error(key)
         return hint
 
     def _update(self, key, value):
         # Dict accepts keys in both python syntax and using the kubernetes case
         # it also accepts keyword properties with or without the trailing '_'.
-        factory = self._hints_.get(key)
+        factory = self._hints_().get(key)
         if factory is None:
             snake_name = self._revfield_names_.get(key) or camel_to_snake(key)
-            factory = self._hints_.get(snake_name)
+            factory = self._hints_().get(snake_name)
             if factory:
                 key = snake_name
             else:
@@ -233,9 +237,10 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         self.update(other)
         return self
 
-    @classmethod
-    def _attribute_error(cls, attr: str):
-        raise AttributeError(f"{cls.__name__} does not has attribute {attr}. Available attributes are: {', '.join(cls._hints_.keys())}")
+    def _attribute_error(self, attr: str):
+        raise AttributeError(
+            f"{type(self).__name__} does not has attribute {attr}. Available attributes are: {', '.join(self._hints_().keys())}"
+        )
 
     @classmethod
     def from_dict(cls, values: dict):

@@ -2,7 +2,10 @@ import unittest
 from collections.abc import MutableSequence
 from typing import List, Union
 
-from kubic import KubernetesObject
+from kubic import KubernetesObject, KubernetesApiResource
+from kubic.apps import Deployment
+from kubic.meta import ObjectMeta
+from kubic.reader import create_api_resource
 
 
 class LeaveType(KubernetesObject):
@@ -147,3 +150,36 @@ class ResourceTest(unittest.TestCase):
 
         with self.assertRaises(AttributeError):
             base.update({"unknown": "foo"})
+
+
+class LoaderTest(unittest.TestCase):
+
+    def test_create(self):
+        spec = {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "spec": {},
+            "metadata": {
+                "name": "myobject"
+            },
+            "status": {}
+        }
+        rsrc = create_api_resource(spec)
+        self.assertIsInstance(rsrc, Deployment)
+        self.assertIsInstance(rsrc.metadata, ObjectMeta)
+        self.assertEqual(rsrc.metadata.name, "myobject")
+
+    def test_create_any(self):
+        spec = {
+            "apiVersion": "apps/v3",
+            "kind": "Deployment",
+            "spec": {},
+            "metadata": {
+                "name": "myobject"
+            },
+            "status": {}
+        }
+        rsrc = create_api_resource(spec)
+        self.assertIsInstance(rsrc, KubernetesApiResource)
+        self.assertIsInstance(rsrc.metadata, ObjectMeta)
+        self.assertEqual(rsrc.metadata.name, "myobject")

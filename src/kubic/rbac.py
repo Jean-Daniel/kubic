@@ -7,8 +7,7 @@ from . import meta
 class AggregationRule(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "rbac.authorization.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "rbac.authorization.k8s.io/v1"
 
     cluster_role_selectors: List[meta.LabelSelector]
 
@@ -19,8 +18,7 @@ class AggregationRule(KubernetesObject):
 class PolicyRule(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "rbac.authorization.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "rbac.authorization.k8s.io/v1"
 
     _required_ = ["verbs"]
 
@@ -53,9 +51,8 @@ class PolicyRule(KubernetesObject):
 class ClusterRole(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "rbac.authorization.k8s.io/v1"
     _kind_ = "ClusterRole"
-    _group_ = "rbac.authorization.k8s.io"
-    _version_ = "v1"
 
     aggregation_rule: AggregationRule
     metadata: meta.ObjectMeta
@@ -72,8 +69,7 @@ class ClusterRole(KubernetesApiResource):
 class RoleRef(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "rbac.authorization.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "rbac.authorization.k8s.io/v1"
 
     _required_ = ["api_group", "kind", "name"]
 
@@ -88,8 +84,7 @@ class RoleRef(KubernetesObject):
 class Subject(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "rbac.authorization.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "rbac.authorization.k8s.io/v1"
 
     _required_ = ["kind", "name"]
 
@@ -105,9 +100,8 @@ class Subject(KubernetesObject):
 class ClusterRoleBinding(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "rbac.authorization.k8s.io/v1"
     _kind_ = "ClusterRoleBinding"
-    _group_ = "rbac.authorization.k8s.io"
-    _version_ = "v1"
 
     _required_ = ["role_ref"]
 
@@ -124,9 +118,8 @@ class ClusterRoleBinding(KubernetesApiResource):
 class Role(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "rbac.authorization.k8s.io/v1"
     _kind_ = "Role"
-    _group_ = "rbac.authorization.k8s.io"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     rules: List[PolicyRule]
@@ -138,9 +131,8 @@ class Role(KubernetesApiResource):
 class RoleBinding(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "rbac.authorization.k8s.io/v1"
     _kind_ = "RoleBinding"
-    _group_ = "rbac.authorization.k8s.io"
-    _version_ = "v1"
 
     _required_ = ["role_ref"]
 

@@ -7,9 +7,8 @@ from . import core, meta
 class StorageClass(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "storage.k8s.io/v1"
     _kind_ = "StorageClass"
-    _group_ = "storage.k8s.io"
-    _version_ = "v1"
 
     _required_ = ["provisioner"]
 
@@ -53,8 +52,7 @@ class StorageClass(KubernetesApiResource):
 class VolumeAttachmentSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "storage.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "storage.k8s.io/v1"
 
     inline_volume_spec: core.PersistentVolumeSpec
     persistent_volume_name: str
@@ -66,8 +64,7 @@ class VolumeAttachmentSource(KubernetesObject):
 class VolumeAttachmentSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "storage.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "storage.k8s.io/v1"
 
     _required_ = ["attacher", "node_name", "source"]
 
@@ -82,9 +79,8 @@ class VolumeAttachmentSpec(KubernetesObject):
 class VolumeAttachment(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "storage.k8s.io/v1"
     _kind_ = "VolumeAttachment"
-    _group_ = "storage.k8s.io"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 

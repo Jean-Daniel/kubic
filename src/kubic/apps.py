@@ -7,8 +7,7 @@ from . import core, meta
 class RollingUpdateDaemonSet(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apps"
-    _version_ = "v1"
+    _api_version_ = "apps/v1"
 
     max_surge: core.IntOrString
     max_unavailable: core.IntOrString
@@ -20,8 +19,7 @@ class RollingUpdateDaemonSet(KubernetesObject):
 class DaemonSetUpdateStrategy(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apps"
-    _version_ = "v1"
+    _api_version_ = "apps/v1"
 
     rolling_update: RollingUpdateDaemonSet
     type: str
@@ -33,8 +31,7 @@ class DaemonSetUpdateStrategy(KubernetesObject):
 class DaemonSetSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apps"
-    _version_ = "v1"
+    _api_version_ = "apps/v1"
 
     _required_ = ["selector", "template"]
 
@@ -64,9 +61,8 @@ class DaemonSetSpec(KubernetesObject):
 class DaemonSet(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "apps/v1"
     _kind_ = "DaemonSet"
-    _group_ = "apps"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: DaemonSetSpec
@@ -78,8 +74,7 @@ class DaemonSet(KubernetesApiResource):
 class RollingUpdateDeployment(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apps"
-    _version_ = "v1"
+    _api_version_ = "apps/v1"
 
     max_surge: core.IntOrString
     max_unavailable: core.IntOrString
@@ -91,8 +86,7 @@ class RollingUpdateDeployment(KubernetesObject):
 class DeploymentStrategy(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apps"
-    _version_ = "v1"
+    _api_version_ = "apps/v1"
 
     rolling_update: RollingUpdateDeployment
     type: str
@@ -104,8 +98,7 @@ class DeploymentStrategy(KubernetesObject):
 class DeploymentSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apps"
-    _version_ = "v1"
+    _api_version_ = "apps/v1"
 
     _required_ = ["selector", "template"]
 
@@ -144,9 +137,8 @@ class DeploymentSpec(KubernetesObject):
 class Deployment(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "apps/v1"
     _kind_ = "Deployment"
-    _group_ = "apps"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: DeploymentSpec
@@ -158,8 +150,7 @@ class Deployment(KubernetesApiResource):
 class RollingUpdateStatefulSetStrategy(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apps"
-    _version_ = "v1"
+    _api_version_ = "apps/v1"
 
     partition: int
 
@@ -170,8 +161,7 @@ class RollingUpdateStatefulSetStrategy(KubernetesObject):
 class StatefulSetUpdateStrategy(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apps"
-    _version_ = "v1"
+    _api_version_ = "apps/v1"
 
     rolling_update: RollingUpdateStatefulSetStrategy
     type: str
@@ -183,8 +173,7 @@ class StatefulSetUpdateStrategy(KubernetesObject):
 class StatefulSetSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apps"
-    _version_ = "v1"
+    _api_version_ = "apps/v1"
 
     _required_ = ["selector", "service_name", "template"]
 
@@ -223,9 +212,8 @@ class StatefulSetSpec(KubernetesObject):
 class StatefulSet(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "apps/v1"
     _kind_ = "StatefulSet"
-    _group_ = "apps"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: StatefulSetSpec

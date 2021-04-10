@@ -33,6 +33,12 @@ class ApiType:
     def version(self) -> str:
         return self.fqn.version
 
+    @property
+    def api_version(self) -> str:
+        if self.group and self.group != "core":
+            return f"{self.group}/{self.version}"
+        return self.version
+
     def __eq__(self, other):
         return self.name == other.name
 
@@ -115,12 +121,6 @@ class ApiResourceType(ObjectType):
     @property
     def kind(self):
         return self.fqn.name
-
-    @property
-    def api_version(self) -> str:
-        if self.group and self.group != "core":
-            return f"{self.group}/{self.version}"
-        return self.version
 
 
 class AnonymousType(ObjectType):

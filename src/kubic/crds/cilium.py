@@ -652,9 +652,8 @@ class CiliumClusterwideNetworkPolicyStatus(KubernetesObject):
 class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumClusterwideNetworkPolicy"
-    _group_ = "cilium.io"
-    _version_ = "v2"
 
     _required_ = ["metadata"]
 
@@ -1028,9 +1027,8 @@ class CiliumEndpointStatus(KubernetesObject):
 class CiliumEndpoint(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumEndpoint"
-    _group_ = "cilium.io"
-    _version_ = "v2"
 
     _required_ = ["metadata"]
 
@@ -1073,9 +1071,8 @@ class CiliumExternalWorkloadStatus(KubernetesObject):
 class CiliumExternalWorkload(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumExternalWorkload"
-    _group_ = "cilium.io"
-    _version_ = "v2"
 
     _required_ = ["metadata"]
 
@@ -1096,9 +1093,8 @@ class CiliumExternalWorkload(KubernetesApiResource):
 class CiliumIdentity(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumIdentity"
-    _group_ = "cilium.io"
-    _version_ = "v2"
 
     _required_ = ["metadata", "security_labels"]
 
@@ -1202,9 +1198,8 @@ class CiliumLocalRedirectPolicyStatus(KubernetesObject):
 class CiliumLocalRedirectPolicy(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumLocalRedirectPolicy"
-    _group_ = "cilium.io"
-    _version_ = "v2"
 
     _required_ = ["metadata"]
 
@@ -1358,9 +1353,8 @@ class CiliumNetworkPolicyStatus(KubernetesObject):
 class CiliumNetworkPolicy(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumNetworkPolicy"
-    _group_ = "cilium.io"
-    _version_ = "v2"
 
     _required_ = ["metadata"]
 
@@ -1775,9 +1769,8 @@ class CiliumNodeStatus(KubernetesObject):
 class CiliumNode(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumNode"
-    _group_ = "cilium.io"
-    _version_ = "v2"
 
     _required_ = ["metadata", "spec"]
 

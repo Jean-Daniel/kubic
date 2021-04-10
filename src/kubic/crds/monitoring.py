@@ -1275,9 +1275,8 @@ class PodMonitorSpec(KubernetesObject):
 class PodMonitor(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "PodMonitor"
-    _group_ = "monitoring.coreos.com"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 
@@ -1346,9 +1345,8 @@ class ProbeSpec(KubernetesObject):
 class Probe(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "Probe"
-    _group_ = "monitoring.coreos.com"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 
@@ -1944,9 +1942,8 @@ class Status(KubernetesObject):
 class Prometheus(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "Prometheus"
-    _group_ = "monitoring.coreos.com"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 
@@ -1972,9 +1969,8 @@ class PrometheusRuleSpec(KubernetesObject):
 class PrometheusRule(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "PrometheusRule"
-    _group_ = "monitoring.coreos.com"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 
@@ -2025,9 +2021,8 @@ class ServiceMonitorSpec(KubernetesObject):
 class ServiceMonitor(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "ServiceMonitor"
-    _group_ = "monitoring.coreos.com"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 
@@ -2172,9 +2167,8 @@ class ThanosRulerSpec(KubernetesObject):
 class ThanosRuler(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "ThanosRuler"
-    _group_ = "monitoring.coreos.com"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 

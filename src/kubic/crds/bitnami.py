@@ -7,9 +7,8 @@ from .. import meta
 class SealedSecret(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "bitnami.com/v1alpha1"
     _kind_ = "SealedSecret"
-    _group_ = "bitnami.com"
-    _version_ = "v1alpha1"
 
     metadata: meta.ObjectMeta
     spec: Dict[str, Any]

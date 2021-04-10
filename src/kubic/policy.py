@@ -7,8 +7,7 @@ from . import core, meta
 class AllowedCSIDriver(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     _required_ = ["name"]
 
@@ -21,8 +20,7 @@ class AllowedCSIDriver(KubernetesObject):
 class AllowedFlexVolume(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     _required_ = ["driver"]
 
@@ -35,8 +33,7 @@ class AllowedFlexVolume(KubernetesObject):
 class AllowedHostPath(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     path_prefix: str
     read_only: bool
@@ -48,8 +45,7 @@ class AllowedHostPath(KubernetesObject):
 class IDRange(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     _required_ = ["max", "min"]
 
@@ -63,8 +59,7 @@ class IDRange(KubernetesObject):
 class FSGroupStrategyOptions(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     ranges: List[IDRange]
     rule: str
@@ -76,8 +71,7 @@ class FSGroupStrategyOptions(KubernetesObject):
 class HostPortRange(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     _required_ = ["max", "min"]
 
@@ -91,8 +85,7 @@ class HostPortRange(KubernetesObject):
 class PodDisruptionBudgetSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1"
+    _api_version_ = "policy/v1"
 
     max_unavailable: core.IntOrString
     min_available: core.IntOrString
@@ -107,9 +100,8 @@ class PodDisruptionBudgetSpec(KubernetesObject):
 class PodDisruptionBudget(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "policy/v1"
     _kind_ = "PodDisruptionBudget"
-    _group_ = "policy"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: PodDisruptionBudgetSpec
@@ -121,8 +113,7 @@ class PodDisruptionBudget(KubernetesApiResource):
 class RunAsGroupStrategyOptions(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     _required_ = ["rule"]
 
@@ -136,8 +127,7 @@ class RunAsGroupStrategyOptions(KubernetesObject):
 class RunAsUserStrategyOptions(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     _required_ = ["rule"]
 
@@ -151,8 +141,7 @@ class RunAsUserStrategyOptions(KubernetesObject):
 class RuntimeClassStrategyOptions(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     _required_ = ["allowed_runtime_class_names"]
 
@@ -166,8 +155,7 @@ class RuntimeClassStrategyOptions(KubernetesObject):
 class SELinuxStrategyOptions(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     _required_ = ["rule"]
 
@@ -181,8 +169,7 @@ class SELinuxStrategyOptions(KubernetesObject):
 class SupplementalGroupsStrategyOptions(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     ranges: List[IDRange]
     rule: str
@@ -194,8 +181,7 @@ class SupplementalGroupsStrategyOptions(KubernetesObject):
 class PodSecurityPolicySpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "policy"
-    _version_ = "v1beta1"
+    _api_version_ = "policy/v1beta1"
 
     _required_ = ["fs_group", "run_as_user", "se_linux", "supplemental_groups"]
 
@@ -293,9 +279,8 @@ class PodSecurityPolicySpec(KubernetesObject):
 class PodSecurityPolicy(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "policy/v1beta1"
     _kind_ = "PodSecurityPolicy"
-    _group_ = "policy"
-    _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: PodSecurityPolicySpec

@@ -7,8 +7,7 @@ from . import core, meta
 class CustomResourceColumnDefinition(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     _required_ = ["json_path", "name", "type"]
 
@@ -28,8 +27,7 @@ class CustomResourceColumnDefinition(KubernetesObject):
 class ServiceReference(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     _required_ = ["name", "namespace"]
 
@@ -45,8 +43,7 @@ class ServiceReference(KubernetesObject):
 class WebhookClientConfig(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     ca_bundle: core.Base64
     service: ServiceReference
@@ -59,8 +56,7 @@ class WebhookClientConfig(KubernetesObject):
 class WebhookConversion(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     _required_ = ["conversion_review_versions"]
 
@@ -74,8 +70,7 @@ class WebhookConversion(KubernetesObject):
 class CustomResourceConversion(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     _required_ = ["strategy"]
 
@@ -89,8 +84,7 @@ class CustomResourceConversion(KubernetesObject):
 class CustomResourceDefinitionNames(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     _required_ = ["kind", "plural"]
 
@@ -116,8 +110,7 @@ class CustomResourceDefinitionNames(KubernetesObject):
 class ExternalDocumentation(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     description: str
     url: str
@@ -129,8 +122,7 @@ class ExternalDocumentation(KubernetesObject):
 class JSONSchemaProps(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     _field_names_ = {
         "ref_": "$ref",
@@ -294,8 +286,7 @@ class JSONSchemaProps(KubernetesObject):
 class CustomResourceValidation(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     _field_names_ = {
         "openapi_v3_schema": "openAPIV3Schema",
@@ -313,8 +304,7 @@ class CustomResourceValidation(KubernetesObject):
 class CustomResourceSubresourceScale(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     _required_ = ["spec_replicas_path", "status_replicas_path"]
 
@@ -334,8 +324,7 @@ CustomResourceSubresourceStatus = Dict[str, Any]
 class CustomResourceSubresources(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     scale: CustomResourceSubresourceScale
     status: CustomResourceSubresourceStatus
@@ -347,8 +336,7 @@ class CustomResourceSubresources(KubernetesObject):
 class CustomResourceDefinitionVersion(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     _required_ = ["name", "served", "storage"]
 
@@ -387,8 +375,7 @@ class CustomResourceDefinitionVersion(KubernetesObject):
 class CustomResourceDefinitionSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "apiextensions.k8s.io/v1"
 
     _required_ = ["group", "names", "scope", "versions"]
 
@@ -416,9 +403,8 @@ class CustomResourceDefinitionSpec(KubernetesObject):
 class CustomResourceDefinition(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "apiextensions.k8s.io/v1"
     _kind_ = "CustomResourceDefinition"
-    _group_ = "apiextensions.k8s.io"
-    _version_ = "v1"
 
     _required_ = ["spec"]
 

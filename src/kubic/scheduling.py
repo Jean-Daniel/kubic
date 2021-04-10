@@ -5,9 +5,8 @@ from . import meta
 class PriorityClass(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "scheduling.k8s.io/v1"
     _kind_ = "PriorityClass"
-    _group_ = "scheduling.k8s.io"
-    _version_ = "v1"
 
     _required_ = ["value"]
 

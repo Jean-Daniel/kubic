@@ -539,13 +539,13 @@ class StorageSpec(KubernetesObject):
     __slots__ = ()
 
     disable_mount_sub_path: bool
-    empty_dir: core.EmptyDir
+    empty_dir: core.EmptyDirVolumeSource
     volume_claim_template: EmbeddedPersistentVolumeClaim
 
     def __init__(
         self,
         disable_mount_sub_path: bool = None,
-        empty_dir: core.EmptyDir = None,
+        empty_dir: core.EmptyDirVolumeSource = None,
         volume_claim_template: EmbeddedPersistentVolumeClaim = None,
     ):
         super().__init__(disable_mount_sub_path=disable_mount_sub_path, empty_dir=empty_dir, volume_claim_template=volume_claim_template)
@@ -882,9 +882,8 @@ class VMAgentStatus(KubernetesObject):
 class VMAgent(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMAgent"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: VMAgentSpec
@@ -1093,9 +1092,8 @@ class VMAlertStatus(KubernetesObject):
 class VMAlert(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMAlert"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: VMAlertSpec
@@ -1270,9 +1268,8 @@ class VMAlertmanagerStatus(KubernetesObject):
 class VMAlertmanager(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMAlertmanager"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     _required_ = ["spec"]
 
@@ -1736,9 +1733,8 @@ class VMClusterStatus(KubernetesObject):
 class VMCluster(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMCluster"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     _required_ = ["spec"]
 
@@ -1830,9 +1826,8 @@ class VMNodeScrapeSpec(KubernetesObject):
 class VMNodeScrape(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMNodeScrape"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: VMNodeScrapeSpec
@@ -1875,9 +1870,8 @@ class VMPodScrapeSpec(KubernetesObject):
 class VMPodScrape(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMPodScrape"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: VMPodScrapeSpec
@@ -1933,9 +1927,8 @@ class VMProbeSpec(KubernetesObject):
 class VMProbe(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMProbe"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     _required_ = ["spec"]
 
@@ -1960,9 +1953,8 @@ class VMRuleSpec(KubernetesObject):
 class VMRule(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMRule"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     _required_ = ["spec"]
 
@@ -2013,9 +2005,8 @@ class VMServiceScrapeSpec(KubernetesObject):
 class VMServiceScrape(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMServiceScrape"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     _required_ = ["spec"]
 
@@ -2165,9 +2156,8 @@ class VMSingleStatus(KubernetesObject):
 class VMSingle(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMSingle"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: VMSingleSpec
@@ -2195,9 +2185,8 @@ class VMStaticScrapeSpec(KubernetesObject):
 class VMStaticScrape(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMStaticScrape"
-    _group_ = "operator.victoriametrics.com"
-    _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: VMStaticScrapeSpec

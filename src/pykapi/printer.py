@@ -87,13 +87,10 @@ class TypePrinter:
         stream.write("    __slots__ = ()\n")
 
         if not isinstance(ty, AnonymousType):
+            stream.write(f'\n    _api_version_ = "{ty.api_version}"\n')
             if isinstance(ty, ApiResourceType):
                 if ty.kind:
-                    stream.write(f'\n    _kind_ = "{ty.kind}"')
-            if ty.group:
-                stream.write(f'\n    _group_ = "{ty.group}"\n')
-            if ty.version:
-                stream.write(f'    _version_ = "{ty.version}"\n')
+                    stream.write(f'    _kind_ = "{ty.kind}"\n')
 
         required = [prop.snake_name for prop in ty.required_properties]
         if required:

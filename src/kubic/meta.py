@@ -6,8 +6,7 @@ from . import KubernetesObject
 class LabelSelectorRequirement(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "meta"
-    _version_ = "v1"
+    _api_version_ = "meta/v1"
 
     _required_ = ["key", "operator"]
 
@@ -22,8 +21,7 @@ class LabelSelectorRequirement(KubernetesObject):
 class LabelSelector(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "meta"
-    _version_ = "v1"
+    _api_version_ = "meta/v1"
 
     match_expressions: List[LabelSelectorRequirement]
     match_labels: Dict[str, str]
@@ -38,8 +36,7 @@ Time = str
 class OwnerReference(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "meta"
-    _version_ = "v1"
+    _api_version_ = "meta/v1"
 
     _required_ = ["api_version", "kind", "name", "uid"]
 
@@ -67,8 +64,7 @@ class OwnerReference(KubernetesObject):
 class ObjectMeta(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "meta"
-    _version_ = "v1"
+    _api_version_ = "meta/v1"
 
     annotations: Dict[str, str]
     cluster_name: str

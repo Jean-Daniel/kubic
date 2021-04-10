@@ -5,8 +5,7 @@ from . import core, meta
 class JobSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "batch"
-    _version_ = "v1"
+    _api_version_ = "batch/v1"
 
     _required_ = ["template"]
 
@@ -51,8 +50,7 @@ class JobSpec(KubernetesObject):
 class JobTemplateSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "batch"
-    _version_ = "v1"
+    _api_version_ = "batch/v1"
 
     metadata: meta.ObjectMeta
     spec: JobSpec
@@ -64,8 +62,7 @@ class JobTemplateSpec(KubernetesObject):
 class CronJobSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "batch"
-    _version_ = "v1"
+    _api_version_ = "batch/v1"
 
     _required_ = ["job_template", "schedule"]
 
@@ -101,9 +98,8 @@ class CronJobSpec(KubernetesObject):
 class CronJob(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "batch/v1"
     _kind_ = "CronJob"
-    _group_ = "batch"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: CronJobSpec
@@ -115,9 +111,8 @@ class CronJob(KubernetesApiResource):
 class Job(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "batch/v1"
     _kind_ = "Job"
-    _group_ = "batch"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: JobSpec

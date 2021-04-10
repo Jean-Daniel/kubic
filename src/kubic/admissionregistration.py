@@ -7,8 +7,7 @@ from . import core, meta
 class ServiceReference(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "admissionregistration.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     _required_ = ["name", "namespace"]
 
@@ -24,8 +23,7 @@ class ServiceReference(KubernetesObject):
 class WebhookClientConfig(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "admissionregistration.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     ca_bundle: core.Base64
     service: ServiceReference
@@ -38,8 +36,7 @@ class WebhookClientConfig(KubernetesObject):
 class RuleWithOperations(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "admissionregistration.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     api_groups: List[str]
     api_versions: List[str]
@@ -61,8 +58,7 @@ class RuleWithOperations(KubernetesObject):
 class MutatingWebhook(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "admissionregistration.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     _required_ = ["admission_review_versions", "client_config", "name", "side_effects"]
 
@@ -110,9 +106,8 @@ class MutatingWebhook(KubernetesObject):
 class MutatingWebhookConfiguration(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "admissionregistration.k8s.io/v1"
     _kind_ = "MutatingWebhookConfiguration"
-    _group_ = "admissionregistration.k8s.io"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     webhooks: List[MutatingWebhook]
@@ -124,8 +119,7 @@ class MutatingWebhookConfiguration(KubernetesApiResource):
 class ValidatingWebhook(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "admissionregistration.k8s.io"
-    _version_ = "v1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     _required_ = ["admission_review_versions", "client_config", "name", "side_effects"]
 
@@ -170,9 +164,8 @@ class ValidatingWebhook(KubernetesObject):
 class ValidatingWebhookConfiguration(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "admissionregistration.k8s.io/v1"
     _kind_ = "ValidatingWebhookConfiguration"
-    _group_ = "admissionregistration.k8s.io"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     webhooks: List[ValidatingWebhook]

@@ -101,7 +101,7 @@ crds:
       spec: "io.k8s.api.core.v1.ServiceSpec"
 
     "StorageSpec":
-      emptyDir: "io.k8s.api.core.v1.EmptyDir"
+      emptyDir: "io.k8s.api.core.v1.EmptyDirVolumeSource"
       volumeClaimTemplate:
         type_name: EmbeddedPersistentVolumeClaim
 

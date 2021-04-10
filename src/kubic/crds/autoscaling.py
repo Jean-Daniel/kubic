@@ -41,9 +41,8 @@ class VerticalPodAutoscalerSpec(KubernetesObject):
 class VerticalPodAutoscaler(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "autoscaling.k8s.io/v1beta2"
     _kind_ = "VerticalPodAutoscaler"
-    _group_ = "autoscaling.k8s.io"
-    _version_ = "v1beta2"
 
     metadata: meta.ObjectMeta
     spec: VerticalPodAutoscalerSpec

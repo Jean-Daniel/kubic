@@ -7,8 +7,7 @@ from . import meta
 class AWSElasticBlockStoreVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["volume_id"]
 
@@ -31,8 +30,7 @@ class AWSElasticBlockStoreVolumeSource(KubernetesObject):
 class NodeSelectorRequirement(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["key", "operator"]
 
@@ -47,8 +45,7 @@ class NodeSelectorRequirement(KubernetesObject):
 class NodeSelectorTerm(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     match_expressions: List[NodeSelectorRequirement]
     match_fields: List[NodeSelectorRequirement]
@@ -60,8 +57,7 @@ class NodeSelectorTerm(KubernetesObject):
 class PreferredSchedulingTerm(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["preference", "weight"]
 
@@ -75,8 +71,7 @@ class PreferredSchedulingTerm(KubernetesObject):
 class NodeSelector(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["node_selector_terms"]
 
@@ -89,8 +84,7 @@ class NodeSelector(KubernetesObject):
 class NodeAffinity(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     preferred_during_scheduling_ignored_during_execution: List[PreferredSchedulingTerm]
     required_during_scheduling_ignored_during_execution: NodeSelector
@@ -109,8 +103,7 @@ class NodeAffinity(KubernetesObject):
 class PodAffinityTerm(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["topology_key"]
 
@@ -134,8 +127,7 @@ class PodAffinityTerm(KubernetesObject):
 class WeightedPodAffinityTerm(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["pod_affinity_term", "weight"]
 
@@ -149,8 +141,7 @@ class WeightedPodAffinityTerm(KubernetesObject):
 class PodAffinity(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     preferred_during_scheduling_ignored_during_execution: List[WeightedPodAffinityTerm]
     required_during_scheduling_ignored_during_execution: List[PodAffinityTerm]
@@ -169,8 +160,7 @@ class PodAffinity(KubernetesObject):
 class PodAntiAffinity(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     preferred_during_scheduling_ignored_during_execution: List[WeightedPodAffinityTerm]
     required_during_scheduling_ignored_during_execution: List[PodAffinityTerm]
@@ -189,8 +179,7 @@ class PodAntiAffinity(KubernetesObject):
 class Affinity(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     node_affinity: NodeAffinity
     pod_affinity: PodAffinity
@@ -203,8 +192,7 @@ class Affinity(KubernetesObject):
 class AzureDiskVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["disk_name", "disk_uri"]
 
@@ -237,8 +225,7 @@ class AzureDiskVolumeSource(KubernetesObject):
 class AzureFilePersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["secret_name", "share_name"]
 
@@ -254,8 +241,7 @@ class AzureFilePersistentVolumeSource(KubernetesObject):
 class AzureFileVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["secret_name", "share_name"]
 
@@ -273,8 +259,7 @@ Base64 = str
 class SecretReference(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     name: str
     namespace: str
@@ -286,8 +271,7 @@ class SecretReference(KubernetesObject):
 class CSIPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["driver", "volume_handle"]
 
@@ -329,8 +313,7 @@ class CSIPersistentVolumeSource(KubernetesObject):
 class LocalObjectReference(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     name: str
 
@@ -341,8 +324,7 @@ class LocalObjectReference(KubernetesObject):
 class CSIVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["driver"]
 
@@ -372,8 +354,7 @@ class CSIVolumeSource(KubernetesObject):
 class Capabilities(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     add: List[str]
     drop: List[str]
@@ -385,8 +366,7 @@ class Capabilities(KubernetesObject):
 class CephFSPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["monitors"]
 
@@ -412,8 +392,7 @@ class CephFSPersistentVolumeSource(KubernetesObject):
 class CephFSVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["monitors"]
 
@@ -439,8 +418,7 @@ class CephFSVolumeSource(KubernetesObject):
 class CinderPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["volume_id"]
 
@@ -463,8 +441,7 @@ class CinderPersistentVolumeSource(KubernetesObject):
 class CinderVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["volume_id"]
 
@@ -487,8 +464,7 @@ class CinderVolumeSource(KubernetesObject):
 class ClientIPConfig(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     timeout_seconds: int
 
@@ -499,9 +475,8 @@ class ClientIPConfig(KubernetesObject):
 class ConfigMap(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "v1"
     _kind_ = "ConfigMap"
-    _group_ = "core"
-    _version_ = "v1"
 
     binary_data: Dict[str, Base64]
     data: Dict[str, str]
@@ -523,8 +498,7 @@ class ConfigMap(KubernetesApiResource):
 class ConfigMapEnvSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     name: str
     optional: bool
@@ -536,8 +510,7 @@ class ConfigMapEnvSource(KubernetesObject):
 class ConfigMapKeySelector(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["key"]
 
@@ -552,8 +525,7 @@ class ConfigMapKeySelector(KubernetesObject):
 class KeyToPath(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["key", "path"]
 
@@ -568,8 +540,7 @@ class KeyToPath(KubernetesObject):
 class ConfigMapProjection(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     items: List[KeyToPath]
     name: str
@@ -582,8 +553,7 @@ class ConfigMapProjection(KubernetesObject):
 class ConfigMapVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     default_mode: int
     items: List[KeyToPath]
@@ -597,8 +567,7 @@ class ConfigMapVolumeSource(KubernetesObject):
 class ObjectFieldSelector(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["field_path"]
 
@@ -615,8 +584,7 @@ Quantity = Union[str, int, float]
 class ResourceFieldSelector(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["resource"]
 
@@ -631,8 +599,7 @@ class ResourceFieldSelector(KubernetesObject):
 class SecretKeySelector(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["key"]
 
@@ -647,8 +614,7 @@ class SecretKeySelector(KubernetesObject):
 class EnvVarSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     config_map_key_ref: ConfigMapKeySelector
     field_ref: ObjectFieldSelector
@@ -670,8 +636,7 @@ class EnvVarSource(KubernetesObject):
 class EnvVar(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["name"]
 
@@ -686,8 +651,7 @@ class EnvVar(KubernetesObject):
 class SecretEnvSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     name: str
     optional: bool
@@ -699,8 +663,7 @@ class SecretEnvSource(KubernetesObject):
 class EnvFromSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     config_map_ref: ConfigMapEnvSource
     prefix: str
@@ -713,8 +676,7 @@ class EnvFromSource(KubernetesObject):
 class ExecAction(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     command: List[str]
 
@@ -725,8 +687,7 @@ class ExecAction(KubernetesObject):
 class HTTPHeader(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["name", "value"]
 
@@ -743,8 +704,7 @@ IntOrString = Union[str, int]
 class HTTPGetAction(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["port"]
 
@@ -763,8 +723,7 @@ class HTTPGetAction(KubernetesObject):
 class TCPSocketAction(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["port"]
 
@@ -778,8 +737,7 @@ class TCPSocketAction(KubernetesObject):
 class Handler(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     exec: ExecAction
     http_get: HTTPGetAction
@@ -792,8 +750,7 @@ class Handler(KubernetesObject):
 class Lifecycle(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     post_start: Handler
     pre_stop: Handler
@@ -805,8 +762,7 @@ class Lifecycle(KubernetesObject):
 class Probe(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     exec: ExecAction
     failure_threshold: int
@@ -846,8 +802,7 @@ class Probe(KubernetesObject):
 class ContainerPort(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["container_port"]
 
@@ -871,8 +826,7 @@ class ContainerPort(KubernetesObject):
 class ResourceRequirements(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     limits: Dict[str, Quantity]
     requests: Dict[str, Quantity]
@@ -884,8 +838,7 @@ class ResourceRequirements(KubernetesObject):
 class SELinuxOptions(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     level: str
     role: str
@@ -899,8 +852,7 @@ class SELinuxOptions(KubernetesObject):
 class SeccompProfile(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["type"]
 
@@ -914,8 +866,7 @@ class SeccompProfile(KubernetesObject):
 class WindowsSecurityContextOptions(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     gmsa_credential_spec: str
     gmsa_credential_spec_name: str
@@ -932,8 +883,7 @@ class WindowsSecurityContextOptions(KubernetesObject):
 class SecurityContext(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     allow_privilege_escalation: bool
     capabilities: Capabilities
@@ -979,8 +929,7 @@ class SecurityContext(KubernetesObject):
 class VolumeDevice(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["device_path", "name"]
 
@@ -994,8 +943,7 @@ class VolumeDevice(KubernetesObject):
 class VolumeMount(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["mount_path", "name"]
 
@@ -1028,8 +976,7 @@ class VolumeMount(KubernetesObject):
 class Container(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["name"]
 
@@ -1110,8 +1057,7 @@ class Container(KubernetesObject):
 class DownwardAPIVolumeFile(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["path"]
 
@@ -1129,8 +1075,7 @@ class DownwardAPIVolumeFile(KubernetesObject):
 class DownwardAPIProjection(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     items: List[DownwardAPIVolumeFile]
 
@@ -1141,8 +1086,7 @@ class DownwardAPIProjection(KubernetesObject):
 class DownwardAPIVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     default_mode: int
     items: List[DownwardAPIVolumeFile]
@@ -1154,8 +1098,7 @@ class DownwardAPIVolumeSource(KubernetesObject):
 class EmptyDirVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     medium: str
     size_limit: Quantity
@@ -1167,8 +1110,7 @@ class EmptyDirVolumeSource(KubernetesObject):
 class EphemeralContainer(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["name"]
 
@@ -1252,8 +1194,7 @@ class EphemeralContainer(KubernetesObject):
 class TypedLocalObjectReference(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["kind", "name"]
 
@@ -1268,8 +1209,7 @@ class TypedLocalObjectReference(KubernetesObject):
 class PersistentVolumeClaimSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     access_modes: List[str]
     data_source: TypedLocalObjectReference
@@ -1303,8 +1243,7 @@ class PersistentVolumeClaimSpec(KubernetesObject):
 class PersistentVolumeClaimTemplate(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["spec"]
 
@@ -1318,8 +1257,7 @@ class PersistentVolumeClaimTemplate(KubernetesObject):
 class EphemeralVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     volume_claim_template: PersistentVolumeClaimTemplate
 
@@ -1330,8 +1268,7 @@ class EphemeralVolumeSource(KubernetesObject):
 class FCVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _field_names_ = {
         "target_wwns": "targetWWNs",
@@ -1355,8 +1292,7 @@ class FCVolumeSource(KubernetesObject):
 class FlexPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["driver"]
 
@@ -1380,8 +1316,7 @@ class FlexPersistentVolumeSource(KubernetesObject):
 class FlexVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["driver"]
 
@@ -1405,8 +1340,7 @@ class FlexVolumeSource(KubernetesObject):
 class FlockerVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _field_names_ = {
         "dataset_uuid": "datasetUUID",
@@ -1425,8 +1359,7 @@ class FlockerVolumeSource(KubernetesObject):
 class GCEPersistentDiskVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["pd_name"]
 
@@ -1442,8 +1375,7 @@ class GCEPersistentDiskVolumeSource(KubernetesObject):
 class GitRepoVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["repository"]
 
@@ -1458,8 +1390,7 @@ class GitRepoVolumeSource(KubernetesObject):
 class GlusterfsPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["endpoints", "path"]
 
@@ -1475,8 +1406,7 @@ class GlusterfsPersistentVolumeSource(KubernetesObject):
 class GlusterfsVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["endpoints", "path"]
 
@@ -1491,8 +1421,7 @@ class GlusterfsVolumeSource(KubernetesObject):
 class HostAlias(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     hostnames: List[str]
     ip: str
@@ -1504,8 +1433,7 @@ class HostAlias(KubernetesObject):
 class HostPathVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["path"]
 
@@ -1522,8 +1450,7 @@ IDNHostname = str
 class ISCSIPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["iqn", "lun", "target_portal"]
 
@@ -1571,8 +1498,7 @@ class ISCSIPersistentVolumeSource(KubernetesObject):
 class ISCSIVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["iqn", "lun", "target_portal"]
 
@@ -1620,8 +1546,7 @@ class ISCSIVolumeSource(KubernetesObject):
 class LocalVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["path"]
 
@@ -1635,8 +1560,7 @@ class LocalVolumeSource(KubernetesObject):
 class NFSVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["path", "server"]
 
@@ -1651,8 +1575,7 @@ class NFSVolumeSource(KubernetesObject):
 class NamespaceSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     finalizers: List[str]
 
@@ -1663,9 +1586,8 @@ class NamespaceSpec(KubernetesObject):
 class Namespace(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "v1"
     _kind_ = "Namespace"
-    _group_ = "core"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: NamespaceSpec
@@ -1677,8 +1599,7 @@ class Namespace(KubernetesApiResource):
 class ObjectReference(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     api_version: str
     field_path: str
@@ -1712,8 +1633,7 @@ class ObjectReference(KubernetesObject):
 class VolumeNodeAffinity(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     required: NodeSelector
 
@@ -1724,8 +1644,7 @@ class VolumeNodeAffinity(KubernetesObject):
 class PhotonPersistentDiskVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["pd_id"]
 
@@ -1746,8 +1665,7 @@ class PhotonPersistentDiskVolumeSource(KubernetesObject):
 class PortworxVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["volume_id"]
 
@@ -1769,8 +1687,7 @@ class PortworxVolumeSource(KubernetesObject):
 class QuobyteVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["registry", "volume"]
 
@@ -1790,8 +1707,7 @@ class QuobyteVolumeSource(KubernetesObject):
 class RBDPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["image", "monitors"]
 
@@ -1830,8 +1746,7 @@ class RBDPersistentVolumeSource(KubernetesObject):
 class ScaleIOPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["gateway", "secret_ref", "system"]
 
@@ -1876,8 +1791,7 @@ class ScaleIOPersistentVolumeSource(KubernetesObject):
 class StorageOSPersistentVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     fs_type: str
     read_only: bool
@@ -1901,8 +1815,7 @@ class StorageOSPersistentVolumeSource(KubernetesObject):
 class VsphereVirtualDiskVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["volume_path"]
 
@@ -1927,8 +1840,7 @@ class VsphereVirtualDiskVolumeSource(KubernetesObject):
 class PersistentVolumeSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _field_names_ = {
         "scale_io": "scaleIO",
@@ -2038,9 +1950,8 @@ class PersistentVolumeSpec(KubernetesObject):
 class PersistentVolume(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "v1"
     _kind_ = "PersistentVolume"
-    _group_ = "core"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: PersistentVolumeSpec
@@ -2052,9 +1963,8 @@ class PersistentVolume(KubernetesApiResource):
 class PersistentVolumeClaim(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "v1"
     _kind_ = "PersistentVolumeClaim"
-    _group_ = "core"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: PersistentVolumeClaimSpec
@@ -2066,8 +1976,7 @@ class PersistentVolumeClaim(KubernetesApiResource):
 class PersistentVolumeClaimVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["claim_name"]
 
@@ -2081,8 +1990,7 @@ class PersistentVolumeClaimVolumeSource(KubernetesObject):
 class PodDNSConfigOption(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     name: str
     value: str
@@ -2094,8 +2002,7 @@ class PodDNSConfigOption(KubernetesObject):
 class PodDNSConfig(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     nameservers: List[str]
     options: List[PodDNSConfigOption]
@@ -2108,8 +2015,7 @@ class PodDNSConfig(KubernetesObject):
 class PodReadinessGate(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["condition_type"]
 
@@ -2122,8 +2028,7 @@ class PodReadinessGate(KubernetesObject):
 class Sysctl(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["name", "value"]
 
@@ -2137,8 +2042,7 @@ class Sysctl(KubernetesObject):
 class PodSecurityContext(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     fs_group: int
     fs_group_change_policy: str
@@ -2181,8 +2085,7 @@ class PodSecurityContext(KubernetesObject):
 class Toleration(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     effect: str
     key: str
@@ -2197,8 +2100,7 @@ class Toleration(KubernetesObject):
 class TopologySpreadConstraint(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["max_skew", "topology_key", "when_unsatisfiable"]
 
@@ -2216,8 +2118,7 @@ class TopologySpreadConstraint(KubernetesObject):
 class SecretProjection(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     items: List[KeyToPath]
     name: str
@@ -2230,8 +2131,7 @@ class SecretProjection(KubernetesObject):
 class ServiceAccountTokenProjection(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["path"]
 
@@ -2246,8 +2146,7 @@ class ServiceAccountTokenProjection(KubernetesObject):
 class VolumeProjection(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _field_names_ = {
         "downward_api": "downwardAPI",
@@ -2274,8 +2173,7 @@ class VolumeProjection(KubernetesObject):
 class ProjectedVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     default_mode: int
     sources: List[VolumeProjection]
@@ -2287,8 +2185,7 @@ class ProjectedVolumeSource(KubernetesObject):
 class RBDVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["image", "monitors"]
 
@@ -2327,8 +2224,7 @@ class RBDVolumeSource(KubernetesObject):
 class ScaleIOVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["gateway", "secret_ref", "system"]
 
@@ -2373,8 +2269,7 @@ class ScaleIOVolumeSource(KubernetesObject):
 class SecretVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     default_mode: int
     items: List[KeyToPath]
@@ -2388,8 +2283,7 @@ class SecretVolumeSource(KubernetesObject):
 class StorageOSVolumeSource(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     fs_type: str
     read_only: bool
@@ -2413,8 +2307,7 @@ class StorageOSVolumeSource(KubernetesObject):
 class Volume(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["name"]
 
@@ -2528,8 +2421,7 @@ class Volume(KubernetesObject):
 class PodSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["containers"]
 
@@ -2660,8 +2552,7 @@ class PodSpec(KubernetesObject):
 class PodTemplateSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: PodSpec
@@ -2673,8 +2564,7 @@ class PodTemplateSpec(KubernetesObject):
 class ScopedResourceSelectorRequirement(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["operator", "scope_name"]
 
@@ -2689,8 +2579,7 @@ class ScopedResourceSelectorRequirement(KubernetesObject):
 class ScopeSelector(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     match_expressions: List[ScopedResourceSelectorRequirement]
 
@@ -2701,8 +2590,7 @@ class ScopeSelector(KubernetesObject):
 class ResourceQuotaSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     hard: Dict[str, Quantity]
     scope_selector: ScopeSelector
@@ -2715,9 +2603,8 @@ class ResourceQuotaSpec(KubernetesObject):
 class ResourceQuota(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "v1"
     _kind_ = "ResourceQuota"
-    _group_ = "core"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: ResourceQuotaSpec
@@ -2729,9 +2616,8 @@ class ResourceQuota(KubernetesApiResource):
 class Secret(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "v1"
     _kind_ = "Secret"
-    _group_ = "core"
-    _version_ = "v1"
 
     data: Dict[str, Base64]
     immutable: bool
@@ -2757,8 +2643,7 @@ class Secret(KubernetesApiResource):
 class ServicePort(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["port"]
 
@@ -2784,8 +2669,7 @@ class ServicePort(KubernetesObject):
 class SessionAffinityConfig(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _field_names_ = {
         "client_ip": "clientIP",
@@ -2803,8 +2687,7 @@ class SessionAffinityConfig(KubernetesObject):
 class ServiceSpec(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _field_names_ = {
         "cluster_ip": "clusterIP",
@@ -2886,9 +2769,8 @@ class ServiceSpec(KubernetesObject):
 class Service(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "v1"
     _kind_ = "Service"
-    _group_ = "core"
-    _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: ServiceSpec
@@ -2900,9 +2782,8 @@ class Service(KubernetesApiResource):
 class ServiceAccount(KubernetesApiResource):
     __slots__ = ()
 
+    _api_version_ = "v1"
     _kind_ = "ServiceAccount"
-    _group_ = "core"
-    _version_ = "v1"
 
     automount_service_account_token: bool
     image_pull_secrets: List[LocalObjectReference]
@@ -2933,8 +2814,7 @@ class ServiceAccount(KubernetesApiResource):
 class TopologySelectorLabelRequirement(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     _required_ = ["key", "values"]
 
@@ -2948,8 +2828,7 @@ class TopologySelectorLabelRequirement(KubernetesObject):
 class TopologySelectorTerm(KubernetesObject):
     __slots__ = ()
 
-    _group_ = "core"
-    _version_ = "v1"
+    _api_version_ = "v1"
 
     match_label_expressions: List[TopologySelectorLabelRequirement]
 
