@@ -45,14 +45,10 @@ class CRDParser(Parser):
 
     def process(self, *resources: Tuple[QualifiedName, dict]) -> ApiGroup:
         for fqn, schema in resources:
-            schema["properties"]["metadata"] = {
-                "$ref": "io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta"
-            }
+            schema["properties"]["metadata"] = {"$ref": "io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta"}
             # may contains items from remapped groups
             self._register_type(
-                ApiResourceType(
-                    fqn, schema.get("description"), schema.get("x-scoped", True)
-                ),
+                ApiResourceType(fqn, schema.get("description"), schema.get("x-scoped", True)),
                 schema,
             )
 
@@ -70,9 +66,7 @@ class CRDParser(Parser):
 
         super().import_resource(obj_type, schema)
 
-    def import_property(
-        self, obj_type: ObjectType, prop_name: str, schema: dict
-    ) -> Type:
+    def import_property(self, obj_type: ObjectType, prop_name: str, schema: dict) -> Type:
         ref = schema.get("$ref")
         if ref:
             # for ref -> import type recursively
@@ -81,19 +75,13 @@ class CRDParser(Parser):
             return ApiTypeRef(fqn)
         return super().import_property(obj_type, prop_name, schema)
 
-    def import_base_property(
-        self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str
-    ) -> Type:
+    def import_base_property(self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str) -> Type:
         # common pattern matching
         if schema.get("type") == "object":
             if is_label_selector(schema):
                 return ApiTypeRef(QualifiedName("LabelSelector", "meta", "v1"))
             if is_key_selector(schema):
-                if (
-                    "secret" in prop_name
-                    or "password" in prop_name
-                    or "key" in prop_name
-                ):
+                if "secret" in prop_name or "password" in prop_name or "key" in prop_name:
                     return ApiTypeRef(QualifiedName("SecretKeySelector", "core", "v1"))
                 return ApiTypeRef(QualifiedName("ConfigMapKeySelector", "core", "v1"))
 
@@ -110,10 +98,7 @@ def is_label_selector(schema: dict) -> bool:
     if "matchExpressions" not in properties or "matchLabels" not in properties:
         return False
 
-    return (
-        properties["matchExpressions"].get("type") == "array"
-        and "additionalProperties" in properties["matchLabels"]
-    )
+    return properties["matchExpressions"].get("type") == "array" and "additionalProperties" in properties["matchLabels"]
 
 
 def is_key_selector(schema: dict) -> bool:
@@ -123,11 +108,7 @@ def is_key_selector(schema: dict) -> bool:
     if len(properties) != 3:
         return False
 
-    if (
-        "key" not in properties
-        or "name" not in properties
-        or "optional" not in properties
-    ):
+    if "key" not in properties or "name" not in properties or "optional" not in properties:
         return False
 
     return (

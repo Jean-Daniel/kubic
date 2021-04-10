@@ -19,12 +19,7 @@ class AWS(KubernetesObject):
         security_groups_ids: List[str] = None,
         security_groups_names: List[str] = None,
     ):
-        super().__init__(
-            labels=labels,
-            region=region,
-            security_groups_ids=security_groups_ids,
-            security_groups_names=security_groups_names,
-        )
+        super().__init__(labels=labels, region=region, security_groups_ids=security_groups_ids, security_groups_names=security_groups_names)
 
 
 class Adding(KubernetesObject):
@@ -44,19 +39,8 @@ class Adding(KubernetesObject):
     identity_labels: Dict[str, str]
     protocol: int
 
-    def __init__(
-        self,
-        dest_port: int = None,
-        identity: int = None,
-        identity_labels: Dict[str, str] = None,
-        protocol: int = None,
-    ):
-        super().__init__(
-            dest_port=dest_port,
-            identity=identity,
-            identity_labels=identity_labels,
-            protocol=protocol,
-        )
+    def __init__(self, dest_port: int = None, identity: int = None, identity_labels: Dict[str, str] = None, protocol: int = None):
+        super().__init__(dest_port=dest_port, identity=identity, identity_labels=identity_labels, protocol=protocol)
 
 
 class AddressMatcherToPort(KubernetesObject):
@@ -111,19 +95,8 @@ class Allowed(KubernetesObject):
     identity_labels: Dict[str, str]
     protocol: int
 
-    def __init__(
-        self,
-        dest_port: int = None,
-        identity: int = None,
-        identity_labels: Dict[str, str] = None,
-        protocol: int = None,
-    ):
-        super().__init__(
-            dest_port=dest_port,
-            identity=identity,
-            identity_labels=identity_labels,
-            protocol=protocol,
-        )
+    def __init__(self, dest_port: int = None, identity: int = None, identity_labels: Dict[str, str] = None, protocol: int = None):
+        super().__init__(dest_port=dest_port, identity=identity, identity_labels=identity_labels, protocol=protocol)
 
 
 class ToFQDN(KubernetesObject):
@@ -174,19 +147,8 @@ class OriginatingTLS(KubernetesObject):
     secret: Secret
     trusted_ca: str
 
-    def __init__(
-        self,
-        certificate: str = None,
-        private_key: str = None,
-        secret: Secret = None,
-        trusted_ca: str = None,
-    ):
-        super().__init__(
-            certificate=certificate,
-            private_key=private_key,
-            secret=secret,
-            trusted_ca=trusted_ca,
-        )
+    def __init__(self, certificate: str = None, private_key: str = None, secret: Secret = None, trusted_ca: str = None):
+        super().__init__(certificate=certificate, private_key=private_key, secret=secret, trusted_ca=trusted_ca)
 
 
 class Port(KubernetesObject):
@@ -221,13 +183,7 @@ class HeaderMatche(KubernetesObject):
     secret: Secret
     value: str
 
-    def __init__(
-        self,
-        mismatch: str = None,
-        name: str = None,
-        secret: Secret = None,
-        value: str = None,
-    ):
+    def __init__(self, mismatch: str = None, name: str = None, secret: Secret = None, value: str = None):
         super().__init__(mismatch=mismatch, name=name, secret=secret, value=value)
 
 
@@ -248,13 +204,7 @@ class Http(KubernetesObject):
         method: str = None,
         path: str = None,
     ):
-        super().__init__(
-            header_matches=header_matches,
-            headers=headers,
-            host=host,
-            method=method,
-            path=path,
-        )
+        super().__init__(header_matches=header_matches, headers=headers, host=host, method=method, path=path)
 
 
 class Kafka(KubernetesObject):
@@ -273,21 +223,8 @@ class Kafka(KubernetesObject):
     role: str
     topic: str
 
-    def __init__(
-        self,
-        api_key: str = None,
-        api_version: str = None,
-        client_id: str = None,
-        role: str = None,
-        topic: str = None,
-    ):
-        super().__init__(
-            api_key=api_key,
-            api_version=api_version,
-            client_id=client_id,
-            role=role,
-            topic=topic,
-        )
+    def __init__(self, api_key: str = None, api_version: str = None, client_id: str = None, role: str = None, topic: str = None):
+        super().__init__(api_key=api_key, api_version=api_version, client_id=client_id, role=role, topic=topic)
 
 
 class Rule(KubernetesObject):
@@ -327,19 +264,8 @@ class TerminatingTLS(KubernetesObject):
     secret: Secret
     trusted_ca: str
 
-    def __init__(
-        self,
-        certificate: str = None,
-        private_key: str = None,
-        secret: Secret = None,
-        trusted_ca: str = None,
-    ):
-        super().__init__(
-            certificate=certificate,
-            private_key=private_key,
-            secret=secret,
-            trusted_ca=trusted_ca,
-        )
+    def __init__(self, certificate: str = None, private_key: str = None, secret: Secret = None, trusted_ca: str = None):
+        super().__init__(certificate=certificate, private_key=private_key, secret=secret, trusted_ca=trusted_ca)
 
 
 class EgressToPort(KubernetesObject):
@@ -360,18 +286,9 @@ class EgressToPort(KubernetesObject):
     terminating_tls: TerminatingTLS
 
     def __init__(
-        self,
-        originating_tls: OriginatingTLS = None,
-        ports: List[Port] = None,
-        rules: Rule = None,
-        terminating_tls: TerminatingTLS = None,
+        self, originating_tls: OriginatingTLS = None, ports: List[Port] = None, rules: Rule = None, terminating_tls: TerminatingTLS = None
     ):
-        super().__init__(
-            originating_tls=originating_tls,
-            ports=ports,
-            rules=rules,
-            terminating_tls=terminating_tls,
-        )
+        super().__init__(originating_tls=originating_tls, ports=ports, rules=rules, terminating_tls=terminating_tls)
 
 
 class K8sService(KubernetesObject):
@@ -402,14 +319,8 @@ class ToService(KubernetesObject):
     k8s_service: K8sService
     k8s_service_selector: K8sServiceSelector
 
-    def __init__(
-        self,
-        k8s_service: K8sService = None,
-        k8s_service_selector: K8sServiceSelector = None,
-    ):
-        super().__init__(
-            k8s_service=k8s_service, k8s_service_selector=k8s_service_selector
-        )
+    def __init__(self, k8s_service: K8sService = None, k8s_service_selector: K8sServiceSelector = None):
+        super().__init__(k8s_service=k8s_service, k8s_service_selector=k8s_service_selector)
 
 
 class CiliumClusterwideNetworkPolicySpecEgress(KubernetesObject):
@@ -532,18 +443,9 @@ class IngressToPort(KubernetesObject):
     terminating_tls: TerminatingTLS
 
     def __init__(
-        self,
-        originating_tls: OriginatingTLS = None,
-        ports: List[Port] = None,
-        rules: Rule = None,
-        terminating_tls: TerminatingTLS = None,
+        self, originating_tls: OriginatingTLS = None, ports: List[Port] = None, rules: Rule = None, terminating_tls: TerminatingTLS = None
     ):
-        super().__init__(
-            originating_tls=originating_tls,
-            ports=ports,
-            rules=rules,
-            terminating_tls=terminating_tls,
-        )
+        super().__init__(originating_tls=originating_tls, ports=ports, rules=rules, terminating_tls=terminating_tls)
 
 
 class CiliumClusterwideNetworkPolicySpecIngress(KubernetesObject):
@@ -743,17 +645,14 @@ class CiliumClusterwideNetworkPolicyStatus(KubernetesObject):
     derivative_policies: Dict[str, DerivativePolicie]
     nodes: Dict[str, Node]
 
-    def __init__(
-        self,
-        derivative_policies: Dict[str, DerivativePolicie] = None,
-        nodes: Dict[str, Node] = None,
-    ):
+    def __init__(self, derivative_policies: Dict[str, DerivativePolicie] = None, nodes: Dict[str, Node] = None):
         super().__init__(derivative_policies=derivative_policies, nodes=nodes)
 
 
 class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "CiliumClusterwideNetworkPolicy"
     _group_ = "cilium.io"
     _version_ = "v2"
 
@@ -773,14 +672,7 @@ class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
         status: CiliumClusterwideNetworkPolicyStatus = None,
     ):
         super().__init__(
-            "cilium.io/v2",
-            "CiliumClusterwideNetworkPolicy",
-            name,
-            "",
-            metadata=metadata,
-            spec=spec,
-            specs=specs,
-            status=status,
+            "cilium.io/v2", "CiliumClusterwideNetworkPolicy", name, "", metadata=metadata, spec=spec, specs=specs, status=status
         )
 
 
@@ -800,17 +692,8 @@ class Configuration(KubernetesObject):
     error_retry_base: int
     interval: int
 
-    def __init__(
-        self,
-        error_retry: bool = None,
-        error_retry_base: int = None,
-        interval: int = None,
-    ):
-        super().__init__(
-            error_retry=error_retry,
-            error_retry_base=error_retry_base,
-            interval=interval,
-        )
+    def __init__(self, error_retry: bool = None, error_retry_base: int = None, interval: int = None):
+        super().__init__(error_retry=error_retry, error_retry_base=error_retry_base, interval=interval)
 
 
 class ControllerStatus(KubernetesObject):
@@ -867,16 +750,8 @@ class Controller(KubernetesObject):
     status: ControllerStatus
     uuid: str
 
-    def __init__(
-        self,
-        configuration: Configuration = None,
-        name: str = None,
-        status: ControllerStatus = None,
-        uuid: str = None,
-    ):
-        super().__init__(
-            configuration=configuration, name=name, status=status, uuid=uuid
-        )
+    def __init__(self, configuration: Configuration = None, name: str = None, status: ControllerStatus = None, uuid: str = None):
+        super().__init__(configuration=configuration, name=name, status=status, uuid=uuid)
 
 
 class Encryption(KubernetesObject):
@@ -947,16 +822,8 @@ class StatusHealth(KubernetesObject):
     overall_health: str
     policy: str
 
-    def __init__(
-        self,
-        bpf: str = None,
-        connected: bool = None,
-        overall_health: str = None,
-        policy: str = None,
-    ):
-        super().__init__(
-            bpf=bpf, connected=connected, overall_health=overall_health, policy=policy
-        )
+    def __init__(self, bpf: str = None, connected: bool = None, overall_health: str = None, policy: str = None):
+        super().__init__(bpf=bpf, connected=connected, overall_health=overall_health, policy=policy)
 
 
 class Identity(KubernetesObject):
@@ -977,13 +844,7 @@ class LOG(KubernetesObject):
     state: str
     timestamp: str
 
-    def __init__(
-        self,
-        code: str = None,
-        message: str = None,
-        state: str = None,
-        timestamp: str = None,
-    ):
+    def __init__(self, code: str = None, message: str = None, state: str = None, timestamp: str = None):
         super().__init__(code=code, message=message, state=state, timestamp=timestamp)
 
 
@@ -1027,19 +888,8 @@ class Denied(KubernetesObject):
     identity_labels: Dict[str, str]
     protocol: int
 
-    def __init__(
-        self,
-        dest_port: int = None,
-        identity: int = None,
-        identity_labels: Dict[str, str] = None,
-        protocol: int = None,
-    ):
-        super().__init__(
-            dest_port=dest_port,
-            identity=identity,
-            identity_labels=identity_labels,
-            protocol=protocol,
-        )
+    def __init__(self, dest_port: int = None, identity: int = None, identity_labels: Dict[str, str] = None, protocol: int = None):
+        super().__init__(dest_port=dest_port, identity=identity, identity_labels=identity_labels, protocol=protocol)
 
 
 class Removing(KubernetesObject):
@@ -1059,19 +909,8 @@ class Removing(KubernetesObject):
     identity_labels: Dict[str, str]
     protocol: int
 
-    def __init__(
-        self,
-        dest_port: int = None,
-        identity: int = None,
-        identity_labels: Dict[str, str] = None,
-        protocol: int = None,
-    ):
-        super().__init__(
-            dest_port=dest_port,
-            identity=identity,
-            identity_labels=identity_labels,
-            protocol=protocol,
-        )
+    def __init__(self, dest_port: int = None, identity: int = None, identity_labels: Dict[str, str] = None, protocol: int = None):
+        super().__init__(dest_port=dest_port, identity=identity, identity_labels=identity_labels, protocol=protocol)
 
 
 class PolicyEgress(KubernetesObject):
@@ -1093,13 +932,7 @@ class PolicyEgress(KubernetesObject):
         enforcing: bool = None,
         removing: List[Removing] = None,
     ):
-        super().__init__(
-            adding=adding,
-            allowed=allowed,
-            denied=denied,
-            enforcing=enforcing,
-            removing=removing,
-        )
+        super().__init__(adding=adding, allowed=allowed, denied=denied, enforcing=enforcing, removing=removing)
 
 
 class PolicyIngress(KubernetesObject):
@@ -1121,13 +954,7 @@ class PolicyIngress(KubernetesObject):
         enforcing: bool = None,
         removing: List[Removing] = None,
     ):
-        super().__init__(
-            adding=adding,
-            allowed=allowed,
-            denied=denied,
-            enforcing=enforcing,
-            removing=removing,
-        )
+        super().__init__(adding=adding, allowed=allowed, denied=denied, enforcing=enforcing, removing=removing)
 
 
 class Policy(KubernetesObject):
@@ -1201,6 +1028,7 @@ class CiliumEndpointStatus(KubernetesObject):
 class CiliumEndpoint(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "CiliumEndpoint"
     _group_ = "cilium.io"
     _version_ = "v2"
 
@@ -1209,21 +1037,8 @@ class CiliumEndpoint(KubernetesApiResource):
     metadata: meta.ObjectMeta
     status: CiliumEndpointStatus
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        status: CiliumEndpointStatus = None,
-    ):
-        super().__init__(
-            "cilium.io/v2",
-            "CiliumEndpoint",
-            name,
-            namespace,
-            metadata=metadata,
-            status=status,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, status: CiliumEndpointStatus = None):
+        super().__init__("cilium.io/v2", "CiliumEndpoint", name, namespace, metadata=metadata, status=status)
 
 
 class CiliumExternalWorkloadSpec(KubernetesObject):
@@ -1242,9 +1057,7 @@ class CiliumExternalWorkloadSpec(KubernetesObject):
     ipv6_alloc_cidr: str
 
     def __init__(self, ipv4_alloc_cidr: str = None, ipv6_alloc_cidr: str = None):
-        super().__init__(
-            ipv4_alloc_cidr=ipv4_alloc_cidr, ipv6_alloc_cidr=ipv6_alloc_cidr
-        )
+        super().__init__(ipv4_alloc_cidr=ipv4_alloc_cidr, ipv6_alloc_cidr=ipv6_alloc_cidr)
 
 
 class CiliumExternalWorkloadStatus(KubernetesObject):
@@ -1260,6 +1073,7 @@ class CiliumExternalWorkloadStatus(KubernetesObject):
 class CiliumExternalWorkload(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "CiliumExternalWorkload"
     _group_ = "cilium.io"
     _version_ = "v2"
 
@@ -1276,20 +1090,13 @@ class CiliumExternalWorkload(KubernetesApiResource):
         spec: CiliumExternalWorkloadSpec = None,
         status: CiliumExternalWorkloadStatus = None,
     ):
-        super().__init__(
-            "cilium.io/v2",
-            "CiliumExternalWorkload",
-            name,
-            "",
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("cilium.io/v2", "CiliumExternalWorkload", name, "", metadata=metadata, spec=spec, status=status)
 
 
 class CiliumIdentity(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "CiliumIdentity"
     _group_ = "cilium.io"
     _version_ = "v2"
 
@@ -1305,20 +1112,8 @@ class CiliumIdentity(KubernetesApiResource):
     metadata: meta.ObjectMeta
     security_labels: Dict[str, str]
 
-    def __init__(
-        self,
-        name: str,
-        metadata: meta.ObjectMeta = None,
-        security_labels: Dict[str, str] = None,
-    ):
-        super().__init__(
-            "cilium.io/v2",
-            "CiliumIdentity",
-            name,
-            "",
-            metadata=metadata,
-            security_labels=security_labels,
-        )
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, security_labels: Dict[str, str] = None):
+        super().__init__("cilium.io/v2", "CiliumIdentity", name, "", metadata=metadata, security_labels=security_labels)
 
 
 class RedirectBackendToPort(KubernetesObject):
@@ -1342,14 +1137,8 @@ class RedirectBackend(KubernetesObject):
     local_endpoint_selector: meta.LabelSelector
     to_ports: List[RedirectBackendToPort]
 
-    def __init__(
-        self,
-        local_endpoint_selector: meta.LabelSelector = None,
-        to_ports: List[RedirectBackendToPort] = None,
-    ):
-        super().__init__(
-            local_endpoint_selector=local_endpoint_selector, to_ports=to_ports
-        )
+    def __init__(self, local_endpoint_selector: meta.LabelSelector = None, to_ports: List[RedirectBackendToPort] = None):
+        super().__init__(local_endpoint_selector=local_endpoint_selector, to_ports=to_ports)
 
 
 class ServiceMatcherToPort(KubernetesObject):
@@ -1374,15 +1163,8 @@ class ServiceMatcher(KubernetesObject):
     service_name: str
     to_ports: List[ServiceMatcherToPort]
 
-    def __init__(
-        self,
-        namespace: str = None,
-        service_name: str = None,
-        to_ports: List[ServiceMatcherToPort] = None,
-    ):
-        super().__init__(
-            namespace=namespace, service_name=service_name, to_ports=to_ports
-        )
+    def __init__(self, namespace: str = None, service_name: str = None, to_ports: List[ServiceMatcherToPort] = None):
+        super().__init__(namespace=namespace, service_name=service_name, to_ports=to_ports)
 
 
 class RedirectFrontend(KubernetesObject):
@@ -1391,14 +1173,8 @@ class RedirectFrontend(KubernetesObject):
     address_matcher: AddressMatcher
     service_matcher: ServiceMatcher
 
-    def __init__(
-        self,
-        address_matcher: AddressMatcher = None,
-        service_matcher: ServiceMatcher = None,
-    ):
-        super().__init__(
-            address_matcher=address_matcher, service_matcher=service_matcher
-        )
+    def __init__(self, address_matcher: AddressMatcher = None, service_matcher: ServiceMatcher = None):
+        super().__init__(address_matcher=address_matcher, service_matcher=service_matcher)
 
 
 class CiliumLocalRedirectPolicySpec(KubernetesObject):
@@ -1410,17 +1186,8 @@ class CiliumLocalRedirectPolicySpec(KubernetesObject):
     redirect_backend: RedirectBackend
     redirect_frontend: RedirectFrontend
 
-    def __init__(
-        self,
-        description: str = None,
-        redirect_backend: RedirectBackend = None,
-        redirect_frontend: RedirectFrontend = None,
-    ):
-        super().__init__(
-            description=description,
-            redirect_backend=redirect_backend,
-            redirect_frontend=redirect_frontend,
-        )
+    def __init__(self, description: str = None, redirect_backend: RedirectBackend = None, redirect_frontend: RedirectFrontend = None):
+        super().__init__(description=description, redirect_backend=redirect_backend, redirect_frontend=redirect_frontend)
 
 
 class CiliumLocalRedirectPolicyStatus(KubernetesObject):
@@ -1435,6 +1202,7 @@ class CiliumLocalRedirectPolicyStatus(KubernetesObject):
 class CiliumLocalRedirectPolicy(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "CiliumLocalRedirectPolicy"
     _group_ = "cilium.io"
     _version_ = "v2"
 
@@ -1452,15 +1220,7 @@ class CiliumLocalRedirectPolicy(KubernetesApiResource):
         spec: CiliumLocalRedirectPolicySpec = None,
         status: CiliumLocalRedirectPolicyStatus = None,
     ):
-        super().__init__(
-            "cilium.io/v2",
-            "CiliumLocalRedirectPolicy",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("cilium.io/v2", "CiliumLocalRedirectPolicy", name, namespace, metadata=metadata, spec=spec, status=status)
 
 
 class CiliumNetworkPolicySpecEgress(KubernetesObject):
@@ -1591,17 +1351,14 @@ class CiliumNetworkPolicyStatus(KubernetesObject):
     derivative_policies: Dict[str, DerivativePolicie]
     nodes: Dict[str, Node]
 
-    def __init__(
-        self,
-        derivative_policies: Dict[str, DerivativePolicie] = None,
-        nodes: Dict[str, Node] = None,
-    ):
+    def __init__(self, derivative_policies: Dict[str, DerivativePolicie] = None, nodes: Dict[str, Node] = None):
         super().__init__(derivative_policies=derivative_policies, nodes=nodes)
 
 
 class CiliumNetworkPolicy(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "CiliumNetworkPolicy"
     _group_ = "cilium.io"
     _version_ = "v2"
 
@@ -1621,16 +1378,7 @@ class CiliumNetworkPolicy(KubernetesApiResource):
         specs: List[CiliumNetworkPolicySpec] = None,
         status: CiliumNetworkPolicyStatus = None,
     ):
-        super().__init__(
-            "cilium.io/v2",
-            "CiliumNetworkPolicy",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            specs=specs,
-            status=status,
-        )
+        super().__init__("cilium.io/v2", "CiliumNetworkPolicy", name, namespace, metadata=metadata, spec=spec, specs=specs, status=status)
 
 
 class CiliumNodeSpecAddresse(KubernetesObject):
@@ -1878,14 +1626,7 @@ class Interface(KubernetesObject):
         security_group: str = None,
         state: str = None,
     ):
-        super().__init__(
-            addresses=addresses,
-            id=id,
-            mac=mac,
-            name=name,
-            security_group=security_group,
-            state=state,
-        )
+        super().__init__(addresses=addresses, id=id, mac=mac, name=name, security_group=security_group, state=state)
 
 
 class StatusAzure(KubernetesObject):
@@ -1921,9 +1662,7 @@ class VPC(KubernetesObject):
     id: str
     primary_cidr: str
 
-    def __init__(
-        self, cidrs: List[str] = None, id: str = None, primary_cidr: str = None
-    ):
+    def __init__(self, cidrs: List[str] = None, id: str = None, primary_cidr: str = None):
         super().__init__(cidrs=cidrs, id=id, primary_cidr=primary_cidr)
 
 
@@ -2018,9 +1757,7 @@ class StatusIPAM(KubernetesObject):
     operator_status: OperatorStatus
     used: Dict[str, Used]
 
-    def __init__(
-        self, operator_status: OperatorStatus = None, used: Dict[str, Used] = None
-    ):
+    def __init__(self, operator_status: OperatorStatus = None, used: Dict[str, Used] = None):
         super().__init__(operator_status=operator_status, used=used)
 
 
@@ -2031,15 +1768,14 @@ class CiliumNodeStatus(KubernetesObject):
     eni: ENIStatus
     ipam: StatusIPAM
 
-    def __init__(
-        self, azure: StatusAzure = None, eni: ENIStatus = None, ipam: StatusIPAM = None
-    ):
+    def __init__(self, azure: StatusAzure = None, eni: ENIStatus = None, ipam: StatusIPAM = None):
         super().__init__(azure=azure, eni=eni, ipam=ipam)
 
 
 class CiliumNode(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "CiliumNode"
     _group_ = "cilium.io"
     _version_ = "v2"
 
@@ -2049,19 +1785,5 @@ class CiliumNode(KubernetesApiResource):
     spec: CiliumNodeSpec
     status: CiliumNodeStatus
 
-    def __init__(
-        self,
-        name: str,
-        metadata: meta.ObjectMeta = None,
-        spec: CiliumNodeSpec = None,
-        status: CiliumNodeStatus = None,
-    ):
-        super().__init__(
-            "cilium.io/v2",
-            "CiliumNode",
-            name,
-            "",
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: CiliumNodeSpec = None, status: CiliumNodeStatus = None):
+        super().__init__("cilium.io/v2", "CiliumNode", name, "", metadata=metadata, spec=spec, status=status)

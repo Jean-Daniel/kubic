@@ -17,19 +17,8 @@ class MetricTarget(KubernetesObject):
     type: str
     value: core.Quantity
 
-    def __init__(
-        self,
-        average_utilization: int = None,
-        average_value: core.Quantity = None,
-        type: str = None,
-        value: core.Quantity = None,
-    ):
-        super().__init__(
-            average_utilization=average_utilization,
-            average_value=average_value,
-            type=type,
-            value=value,
-        )
+    def __init__(self, average_utilization: int = None, average_value: core.Quantity = None, type: str = None, value: core.Quantity = None):
+        super().__init__(average_utilization=average_utilization, average_value=average_value, type=type, value=value)
 
 
 class ContainerResourceMetricSource(KubernetesObject):
@@ -44,9 +33,7 @@ class ContainerResourceMetricSource(KubernetesObject):
     name: str
     target: MetricTarget
 
-    def __init__(
-        self, container: str = None, name: str = None, target: MetricTarget = None
-    ):
+    def __init__(self, container: str = None, name: str = None, target: MetricTarget = None):
         super().__init__(container=container, name=name, target=target)
 
 
@@ -122,17 +109,8 @@ class HPAScalingRules(KubernetesObject):
     select_policy: str
     stabilization_window_seconds: int
 
-    def __init__(
-        self,
-        policies: List[HPAScalingPolicy] = None,
-        select_policy: str = None,
-        stabilization_window_seconds: int = None,
-    ):
-        super().__init__(
-            policies=policies,
-            select_policy=select_policy,
-            stabilization_window_seconds=stabilization_window_seconds,
-        )
+    def __init__(self, policies: List[HPAScalingPolicy] = None, select_policy: str = None, stabilization_window_seconds: int = None):
+        super().__init__(policies=policies, select_policy=select_policy, stabilization_window_seconds=stabilization_window_seconds)
 
 
 class HorizontalPodAutoscalerBehavior(KubernetesObject):
@@ -144,9 +122,7 @@ class HorizontalPodAutoscalerBehavior(KubernetesObject):
     scale_down: HPAScalingRules
     scale_up: HPAScalingRules
 
-    def __init__(
-        self, scale_down: HPAScalingRules = None, scale_up: HPAScalingRules = None
-    ):
+    def __init__(self, scale_down: HPAScalingRules = None, scale_up: HPAScalingRules = None):
         super().__init__(scale_down=scale_down, scale_up=scale_up)
 
 
@@ -162,15 +138,8 @@ class ObjectMetricSource(KubernetesObject):
     metric: MetricIdentifier
     target: MetricTarget
 
-    def __init__(
-        self,
-        described_object: CrossVersionObjectReference = None,
-        metric: MetricIdentifier = None,
-        target: MetricTarget = None,
-    ):
-        super().__init__(
-            described_object=described_object, metric=metric, target=target
-        )
+    def __init__(self, described_object: CrossVersionObjectReference = None, metric: MetricIdentifier = None, target: MetricTarget = None):
+        super().__init__(described_object=described_object, metric=metric, target=target)
 
 
 class PodsMetricSource(KubernetesObject):
@@ -227,14 +196,7 @@ class MetricSpec(KubernetesObject):
         resource: ResourceMetricSource = None,
         type: str = None,
     ):
-        super().__init__(
-            container_resource=container_resource,
-            external=external,
-            object=object,
-            pods=pods,
-            resource=resource,
-            type=type,
-        )
+        super().__init__(container_resource=container_resource, external=external, object=object, pods=pods, resource=resource, type=type)
 
 
 class HorizontalPodAutoscalerSpec(KubernetesObject):
@@ -260,35 +222,19 @@ class HorizontalPodAutoscalerSpec(KubernetesObject):
         scale_target_ref: CrossVersionObjectReference = None,
     ):
         super().__init__(
-            behavior=behavior,
-            max_replicas=max_replicas,
-            metrics=metrics,
-            min_replicas=min_replicas,
-            scale_target_ref=scale_target_ref,
+            behavior=behavior, max_replicas=max_replicas, metrics=metrics, min_replicas=min_replicas, scale_target_ref=scale_target_ref
         )
 
 
 class HorizontalPodAutoscaler(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "HorizontalPodAutoscaler"
     _group_ = "autoscaling"
     _version_ = "v2beta2"
 
     metadata: meta.ObjectMeta
     spec: HorizontalPodAutoscalerSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: HorizontalPodAutoscalerSpec = None,
-    ):
-        super().__init__(
-            "autoscaling/v2beta2",
-            "HorizontalPodAutoscaler",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: HorizontalPodAutoscalerSpec = None):
+        super().__init__("autoscaling/v2beta2", "HorizontalPodAutoscaler", name, namespace, metadata=metadata, spec=spec)

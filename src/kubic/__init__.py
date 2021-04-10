@@ -235,9 +235,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
 
     @classmethod
     def _attribute_error(cls, attr: str):
-        raise AttributeError(
-            f"{cls.__name__} does not has attribute {attr}. Available attributes are: {', '.join(cls._hints_.keys())}"
-        )
+        raise AttributeError(f"{cls.__name__} does not has attribute {attr}. Available attributes are: {', '.join(cls._hints_.keys())}")
 
     @classmethod
     def from_dict(cls, values: dict):
@@ -253,9 +251,7 @@ class KubernetesApiResource(KubernetesObject):
     api_version: str
     kind: str
 
-    def __init__(
-        self, version: str, kind: str, name: str, namespace: str = None, **kwargs
-    ):
+    def __init__(self, version: str, kind: str, name: str, namespace: str = None, **kwargs):
         super().__init__(**kwargs)
         self["apiVersion"] = version
         self["kind"] = kind

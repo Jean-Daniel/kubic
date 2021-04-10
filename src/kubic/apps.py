@@ -13,11 +13,7 @@ class RollingUpdateDaemonSet(KubernetesObject):
     max_surge: core.IntOrString
     max_unavailable: core.IntOrString
 
-    def __init__(
-        self,
-        max_surge: core.IntOrString = None,
-        max_unavailable: core.IntOrString = None,
-    ):
+    def __init__(self, max_surge: core.IntOrString = None, max_unavailable: core.IntOrString = None):
         super().__init__(max_surge=max_surge, max_unavailable=max_unavailable)
 
 
@@ -68,22 +64,15 @@ class DaemonSetSpec(KubernetesObject):
 class DaemonSet(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "DaemonSet"
     _group_ = "apps"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: DaemonSetSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: DaemonSetSpec = None,
-    ):
-        super().__init__(
-            "apps/v1", "DaemonSet", name, namespace, metadata=metadata, spec=spec
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: DaemonSetSpec = None):
+        super().__init__("apps/v1", "DaemonSet", name, namespace, metadata=metadata, spec=spec)
 
 
 class RollingUpdateDeployment(KubernetesObject):
@@ -95,11 +84,7 @@ class RollingUpdateDeployment(KubernetesObject):
     max_surge: core.IntOrString
     max_unavailable: core.IntOrString
 
-    def __init__(
-        self,
-        max_surge: core.IntOrString = None,
-        max_unavailable: core.IntOrString = None,
-    ):
+    def __init__(self, max_surge: core.IntOrString = None, max_unavailable: core.IntOrString = None):
         super().__init__(max_surge=max_surge, max_unavailable=max_unavailable)
 
 
@@ -112,9 +97,7 @@ class DeploymentStrategy(KubernetesObject):
     rolling_update: RollingUpdateDeployment
     type: str
 
-    def __init__(
-        self, rolling_update: RollingUpdateDeployment = None, type: str = None
-    ):
+    def __init__(self, rolling_update: RollingUpdateDeployment = None, type: str = None):
         super().__init__(rolling_update=rolling_update, type=type)
 
 
@@ -161,22 +144,15 @@ class DeploymentSpec(KubernetesObject):
 class Deployment(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Deployment"
     _group_ = "apps"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: DeploymentSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: DeploymentSpec = None,
-    ):
-        super().__init__(
-            "apps/v1", "Deployment", name, namespace, metadata=metadata, spec=spec
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: DeploymentSpec = None):
+        super().__init__("apps/v1", "Deployment", name, namespace, metadata=metadata, spec=spec)
 
 
 class RollingUpdateStatefulSetStrategy(KubernetesObject):
@@ -200,9 +176,7 @@ class StatefulSetUpdateStrategy(KubernetesObject):
     rolling_update: RollingUpdateStatefulSetStrategy
     type: str
 
-    def __init__(
-        self, rolling_update: RollingUpdateStatefulSetStrategy = None, type: str = None
-    ):
+    def __init__(self, rolling_update: RollingUpdateStatefulSetStrategy = None, type: str = None):
         super().__init__(rolling_update=rolling_update, type=type)
 
 
@@ -249,19 +223,12 @@ class StatefulSetSpec(KubernetesObject):
 class StatefulSet(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "StatefulSet"
     _group_ = "apps"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: StatefulSetSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: StatefulSetSpec = None,
-    ):
-        super().__init__(
-            "apps/v1", "StatefulSet", name, namespace, metadata=metadata, spec=spec
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: StatefulSetSpec = None):
+        super().__init__("apps/v1", "StatefulSet", name, namespace, metadata=metadata, spec=spec)

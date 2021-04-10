@@ -7,6 +7,7 @@ from . import core, meta
 class StorageClass(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "StorageClass"
     _group_ = "storage.k8s.io"
     _version_ = "v1"
 
@@ -58,15 +59,8 @@ class VolumeAttachmentSource(KubernetesObject):
     inline_volume_spec: core.PersistentVolumeSpec
     persistent_volume_name: str
 
-    def __init__(
-        self,
-        inline_volume_spec: core.PersistentVolumeSpec = None,
-        persistent_volume_name: str = None,
-    ):
-        super().__init__(
-            inline_volume_spec=inline_volume_spec,
-            persistent_volume_name=persistent_volume_name,
-        )
+    def __init__(self, inline_volume_spec: core.PersistentVolumeSpec = None, persistent_volume_name: str = None):
+        super().__init__(inline_volume_spec=inline_volume_spec, persistent_volume_name=persistent_volume_name)
 
 
 class VolumeAttachmentSpec(KubernetesObject):
@@ -81,18 +75,14 @@ class VolumeAttachmentSpec(KubernetesObject):
     node_name: str
     source: VolumeAttachmentSource
 
-    def __init__(
-        self,
-        attacher: str = None,
-        node_name: str = None,
-        source: VolumeAttachmentSource = None,
-    ):
+    def __init__(self, attacher: str = None, node_name: str = None, source: VolumeAttachmentSource = None):
         super().__init__(attacher=attacher, node_name=node_name, source=source)
 
 
 class VolumeAttachment(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VolumeAttachment"
     _group_ = "storage.k8s.io"
     _version_ = "v1"
 
@@ -101,17 +91,5 @@ class VolumeAttachment(KubernetesApiResource):
     metadata: meta.ObjectMeta
     spec: VolumeAttachmentSpec
 
-    def __init__(
-        self,
-        name: str,
-        metadata: meta.ObjectMeta = None,
-        spec: VolumeAttachmentSpec = None,
-    ):
-        super().__init__(
-            "storage.k8s.io/v1",
-            "VolumeAttachment",
-            name,
-            "",
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: VolumeAttachmentSpec = None):
+        super().__init__("storage.k8s.io/v1", "VolumeAttachment", name, "", metadata=metadata, spec=spec)

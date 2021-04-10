@@ -10,11 +10,7 @@ class BasicAuth(KubernetesObject):
     password: core.SecretKeySelector
     username: core.SecretKeySelector
 
-    def __init__(
-        self,
-        password: core.SecretKeySelector = None,
-        username: core.SecretKeySelector = None,
-    ):
+    def __init__(self, password: core.SecretKeySelector = None, username: core.SecretKeySelector = None):
         super().__init__(password=password, username=username)
 
 
@@ -24,11 +20,7 @@ class CA(KubernetesObject):
     config_map: core.ConfigMapKeySelector
     secret: core.SecretKeySelector
 
-    def __init__(
-        self,
-        config_map: core.ConfigMapKeySelector = None,
-        secret: core.SecretKeySelector = None,
-    ):
+    def __init__(self, config_map: core.ConfigMapKeySelector = None, secret: core.SecretKeySelector = None):
         super().__init__(config_map=config_map, secret=secret)
 
 
@@ -38,11 +30,7 @@ class Cert(KubernetesObject):
     config_map: core.ConfigMapKeySelector
     secret: core.SecretKeySelector
 
-    def __init__(
-        self,
-        config_map: core.ConfigMapKeySelector = None,
-        secret: core.SecretKeySelector = None,
-    ):
+    def __init__(self, config_map: core.ConfigMapKeySelector = None, secret: core.SecretKeySelector = None):
         super().__init__(config_map=config_map, secret=secret)
 
 
@@ -101,11 +89,7 @@ class APIServerConfig(KubernetesObject):
         tls_config: TLSConfig = None,
     ):
         super().__init__(
-            basic_auth=basic_auth,
-            bearer_token=bearer_token,
-            bearer_token_file=bearer_token_file,
-            host=host,
-            tls_config=tls_config,
+            basic_auth=basic_auth, bearer_token=bearer_token, bearer_token_file=bearer_token_file, host=host, tls_config=tls_config
         )
 
 
@@ -127,12 +111,7 @@ class Datasource(KubernetesObject):
     tls_config: TLSConfig
     url: str
 
-    def __init__(
-        self,
-        basic_auth: BasicAuth = None,
-        tls_config: TLSConfig = None,
-        url: str = None,
-    ):
+    def __init__(self, basic_auth: BasicAuth = None, tls_config: TLSConfig = None, url: str = None):
         super().__init__(basic_auth=basic_auth, tls_config=tls_config, url=url)
 
 
@@ -143,12 +122,7 @@ class Metadata(KubernetesObject):
     labels: Dict[str, str]
     name: str
 
-    def __init__(
-        self,
-        annotations: Dict[str, str] = None,
-        labels: Dict[str, str] = None,
-        name: str = None,
-    ):
+    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None, name: str = None):
         super().__init__(annotations=annotations, labels=labels, name=name)
 
 
@@ -160,16 +134,8 @@ class EmbeddedPersistentVolumeClaim(KubernetesObject):
     metadata: Metadata
     spec: core.PersistentVolumeClaimSpec
 
-    def __init__(
-        self,
-        api_version: str = None,
-        kind: str = None,
-        metadata: Metadata = None,
-        spec: core.PersistentVolumeClaimSpec = None,
-    ):
-        super().__init__(
-            api_version=api_version, kind=kind, metadata=metadata, spec=spec
-        )
+    def __init__(self, api_version: str = None, kind: str = None, metadata: Metadata = None, spec: core.PersistentVolumeClaimSpec = None):
+        super().__init__(api_version=api_version, kind=kind, metadata=metadata, spec=spec)
 
 
 class RelabelConfig(KubernetesObject):
@@ -291,15 +257,8 @@ class ResourceFieldRef(KubernetesObject):
     divisor: core.IntOrString
     resource: str
 
-    def __init__(
-        self,
-        container_name: str = None,
-        divisor: core.IntOrString = None,
-        resource: str = None,
-    ):
-        super().__init__(
-            container_name=container_name, divisor=divisor, resource=resource
-        )
+    def __init__(self, container_name: str = None, divisor: core.IntOrString = None, resource: str = None):
+        super().__init__(container_name=container_name, divisor=divisor, resource=resource)
 
 
 class ValueFrom(KubernetesObject):
@@ -318,10 +277,7 @@ class ValueFrom(KubernetesObject):
         secret_key_ref: core.SecretKeySelector = None,
     ):
         super().__init__(
-            config_map_key_ref=config_map_key_ref,
-            field_ref=field_ref,
-            resource_field_ref=resource_field_ref,
-            secret_key_ref=secret_key_ref,
+            config_map_key_ref=config_map_key_ref, field_ref=field_ref, resource_field_ref=resource_field_ref, secret_key_ref=secret_key_ref
         )
 
 
@@ -334,9 +290,7 @@ class ExtraEnv(KubernetesObject):
     value: str
     value_from: ValueFrom
 
-    def __init__(
-        self, name: str = None, value: str = None, value_from: ValueFrom = None
-    ):
+    def __init__(self, name: str = None, value: str = None, value_from: ValueFrom = None):
         super().__init__(name=name, value=value, value_from=value_from)
 
 
@@ -363,14 +317,7 @@ class Rule(KubernetesObject):
         labels: Dict[str, str] = None,
         record: str = None,
     ):
-        super().__init__(
-            alert=alert,
-            annotations=annotations,
-            expr=expr,
-            for_=for_,
-            labels=labels,
-            record=record,
-        )
+        super().__init__(alert=alert, annotations=annotations, expr=expr, for_=for_, labels=labels, record=record)
 
 
 class Group(KubernetesObject):
@@ -383,16 +330,8 @@ class Group(KubernetesObject):
     name: str
     rules: List[Rule]
 
-    def __init__(
-        self,
-        concurrency: int = None,
-        interval: str = None,
-        name: str = None,
-        rules: List[Rule] = None,
-    ):
-        super().__init__(
-            concurrency=concurrency, interval=interval, name=name, rules=rules
-        )
+    def __init__(self, concurrency: int = None, interval: str = None, name: str = None, rules: List[Rule] = None):
+        super().__init__(concurrency=concurrency, interval=interval, name=name, rules=rules)
 
 
 class Host_aliase(KubernetesObject):
@@ -412,9 +351,7 @@ class Image(KubernetesObject):
     repository: str
     tag: str
 
-    def __init__(
-        self, pull_policy: str = None, repository: str = None, tag: str = None
-    ):
+    def __init__(self, pull_policy: str = None, repository: str = None, tag: str = None):
         super().__init__(pull_policy=pull_policy, repository=repository, tag=tag)
 
 
@@ -441,11 +378,7 @@ class Ingress(KubernetesObject):
         relabeling_configs: List[RelabelConfig] = None,
         selector: meta.LabelSelector = None,
     ):
-        super().__init__(
-            namespace_selector=namespace_selector,
-            relabeling_configs=relabeling_configs,
-            selector=selector,
-        )
+        super().__init__(namespace_selector=namespace_selector, relabeling_configs=relabeling_configs, selector=selector)
 
 
 class InsertPort(KubernetesObject):
@@ -465,18 +398,9 @@ class InsertPort(KubernetesObject):
     open_tsdbhttp_port: str
     open_tsdb_port: str
 
-    def __init__(
-        self,
-        graphite_port: str = None,
-        influx_port: str = None,
-        open_tsdbhttp_port: str = None,
-        open_tsdb_port: str = None,
-    ):
+    def __init__(self, graphite_port: str = None, influx_port: str = None, open_tsdbhttp_port: str = None, open_tsdb_port: str = None):
         super().__init__(
-            graphite_port=graphite_port,
-            influx_port=influx_port,
-            open_tsdbhttp_port=open_tsdbhttp_port,
-            open_tsdb_port=open_tsdb_port,
+            graphite_port=graphite_port, influx_port=influx_port, open_tsdbhttp_port=open_tsdbhttp_port, open_tsdb_port=open_tsdb_port
         )
 
 
@@ -489,12 +413,7 @@ class Notifier(KubernetesObject):
     tls_config: TLSConfig
     url: str
 
-    def __init__(
-        self,
-        basic_auth: BasicAuth = None,
-        tls_config: TLSConfig = None,
-        url: str = None,
-    ):
+    def __init__(self, basic_auth: BasicAuth = None, tls_config: TLSConfig = None, url: str = None):
         super().__init__(basic_auth=basic_auth, tls_config=tls_config, url=url)
 
 
@@ -504,11 +423,7 @@ class PodDisruptionBudget(KubernetesObject):
     max_unavailable: core.IntOrString
     min_available: core.IntOrString
 
-    def __init__(
-        self,
-        max_unavailable: core.IntOrString = None,
-        min_available: core.IntOrString = None,
-    ):
+    def __init__(self, max_unavailable: core.IntOrString = None, min_available: core.IntOrString = None):
         super().__init__(max_unavailable=max_unavailable, min_available=min_available)
 
 
@@ -519,12 +434,7 @@ class PodMetadata(KubernetesObject):
     labels: Dict[str, str]
     name: str
 
-    def __init__(
-        self,
-        annotations: Dict[str, str] = None,
-        labels: Dict[str, str] = None,
-        name: str = None,
-    ):
+    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None, name: str = None):
         super().__init__(annotations=annotations, labels=labels, name=name)
 
 
@@ -538,16 +448,8 @@ class RemoteRead(KubernetesObject):
     tls_config: TLSConfig
     url: str
 
-    def __init__(
-        self,
-        basic_auth: BasicAuth = None,
-        lookback: str = None,
-        tls_config: TLSConfig = None,
-        url: str = None,
-    ):
-        super().__init__(
-            basic_auth=basic_auth, lookback=lookback, tls_config=tls_config, url=url
-        )
+    def __init__(self, basic_auth: BasicAuth = None, lookback: str = None, tls_config: TLSConfig = None, url: str = None):
+        super().__init__(basic_auth=basic_auth, lookback=lookback, tls_config=tls_config, url=url)
 
 
 class RemoteWriteSetting(KubernetesObject):
@@ -594,11 +496,7 @@ class Resource(KubernetesObject):
     limits: Dict[str, core.IntOrString]
     requests: Dict[str, core.IntOrString]
 
-    def __init__(
-        self,
-        limits: Dict[str, core.IntOrString] = None,
-        requests: Dict[str, core.IntOrString] = None,
-    ):
+    def __init__(self, limits: Dict[str, core.IntOrString] = None, requests: Dict[str, core.IntOrString] = None):
         super().__init__(limits=limits, requests=requests)
 
 
@@ -608,11 +506,7 @@ class RollingUpdate(KubernetesObject):
     max_surge: core.IntOrString
     max_unavailable: core.IntOrString
 
-    def __init__(
-        self,
-        max_surge: core.IntOrString = None,
-        max_unavailable: core.IntOrString = None,
-    ):
+    def __init__(self, max_surge: core.IntOrString = None, max_unavailable: core.IntOrString = None):
         super().__init__(max_surge=max_surge, max_unavailable=max_unavailable)
 
 
@@ -637,15 +531,8 @@ class StaticConfig(KubernetesObject):
     relabeling_configs: List[RelabelConfig]
     targets: List[str]
 
-    def __init__(
-        self,
-        labels: Dict[str, str] = None,
-        relabeling_configs: List[RelabelConfig] = None,
-        targets: List[str] = None,
-    ):
-        super().__init__(
-            labels=labels, relabeling_configs=relabeling_configs, targets=targets
-        )
+    def __init__(self, labels: Dict[str, str] = None, relabeling_configs: List[RelabelConfig] = None, targets: List[str] = None):
+        super().__init__(labels=labels, relabeling_configs=relabeling_configs, targets=targets)
 
 
 class StorageSpec(KubernetesObject):
@@ -661,11 +548,7 @@ class StorageSpec(KubernetesObject):
         empty_dir: core.EmptyDir = None,
         volume_claim_template: EmbeddedPersistentVolumeClaim = None,
     ):
-        super().__init__(
-            disable_mount_sub_path=disable_mount_sub_path,
-            empty_dir=empty_dir,
-            volume_claim_template=volume_claim_template,
-        )
+        super().__init__(disable_mount_sub_path=disable_mount_sub_path, empty_dir=empty_dir, volume_claim_template=volume_claim_template)
 
 
 class Target(KubernetesObject):
@@ -978,12 +861,7 @@ class VMAgentSpec(KubernetesObject):
 class VMAgentStatus(KubernetesObject):
     __slots__ = ()
 
-    _required_ = [
-        "available_replicas",
-        "replicas",
-        "unavailable_replicas",
-        "updated_replicas",
-    ]
+    _required_ = ["available_replicas", "replicas", "unavailable_replicas", "updated_replicas"]
 
     available_replicas: int
     replicas: int
@@ -991,11 +869,7 @@ class VMAgentStatus(KubernetesObject):
     updated_replicas: int
 
     def __init__(
-        self,
-        available_replicas: int = None,
-        replicas: int = None,
-        unavailable_replicas: int = None,
-        updated_replicas: int = None,
+        self, available_replicas: int = None, replicas: int = None, unavailable_replicas: int = None, updated_replicas: int = None
     ):
         super().__init__(
             available_replicas=available_replicas,
@@ -1008,6 +882,7 @@ class VMAgentStatus(KubernetesObject):
 class VMAgent(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMAgent"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
@@ -1016,22 +891,9 @@ class VMAgent(KubernetesApiResource):
     status: VMAgentStatus
 
     def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMAgentSpec = None,
-        status: VMAgentStatus = None,
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMAgentSpec = None, status: VMAgentStatus = None
     ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMAgent",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMAgent", name, namespace, metadata=metadata, spec=spec, status=status)
 
 
 class VMAlertSpecRemoteWrite(KubernetesObject):
@@ -1210,12 +1072,7 @@ class VMAlertSpec(KubernetesObject):
 class VMAlertStatus(KubernetesObject):
     __slots__ = ()
 
-    _required_ = [
-        "available_replicas",
-        "replicas",
-        "unavailable_replicas",
-        "updated_replicas",
-    ]
+    _required_ = ["available_replicas", "replicas", "unavailable_replicas", "updated_replicas"]
 
     available_replicas: int
     replicas: int
@@ -1223,11 +1080,7 @@ class VMAlertStatus(KubernetesObject):
     updated_replicas: int
 
     def __init__(
-        self,
-        available_replicas: int = None,
-        replicas: int = None,
-        unavailable_replicas: int = None,
-        updated_replicas: int = None,
+        self, available_replicas: int = None, replicas: int = None, unavailable_replicas: int = None, updated_replicas: int = None
     ):
         super().__init__(
             available_replicas=available_replicas,
@@ -1240,6 +1093,7 @@ class VMAlertStatus(KubernetesObject):
 class VMAlert(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMAlert"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
@@ -1248,22 +1102,9 @@ class VMAlert(KubernetesApiResource):
     status: VMAlertStatus
 
     def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMAlertSpec = None,
-        status: VMAlertStatus = None,
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMAlertSpec = None, status: VMAlertStatus = None
     ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMAlert",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMAlert", name, namespace, metadata=metadata, spec=spec, status=status)
 
 
 class VMAlertmanagerSpec(KubernetesObject):
@@ -1401,13 +1242,7 @@ class VMAlertmanagerSpec(KubernetesObject):
 class VMAlertmanagerStatus(KubernetesObject):
     __slots__ = ()
 
-    _required_ = [
-        "available_replicas",
-        "paused",
-        "replicas",
-        "unavailable_replicas",
-        "updated_replicas",
-    ]
+    _required_ = ["available_replicas", "paused", "replicas", "unavailable_replicas", "updated_replicas"]
 
     available_replicas: int
     paused: bool
@@ -1435,6 +1270,7 @@ class VMAlertmanagerStatus(KubernetesObject):
 class VMAlertmanager(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMAlertmanager"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
@@ -1453,13 +1289,7 @@ class VMAlertmanager(KubernetesApiResource):
         status: VMAlertmanagerStatus = None,
     ):
         super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMAlertmanager",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
+            "operator.victoriametrics.com/v1beta1", "VMAlertmanager", name, namespace, metadata=metadata, spec=spec, status=status
         )
 
 
@@ -1899,24 +1729,14 @@ class VMClusterStatus(KubernetesObject):
     reason: str
     update_fail_count: int
 
-    def __init__(
-        self,
-        cluster_status: str = None,
-        last_sync: str = None,
-        reason: str = None,
-        update_fail_count: int = None,
-    ):
-        super().__init__(
-            cluster_status=cluster_status,
-            last_sync=last_sync,
-            reason=reason,
-            update_fail_count=update_fail_count,
-        )
+    def __init__(self, cluster_status: str = None, last_sync: str = None, reason: str = None, update_fail_count: int = None):
+        super().__init__(cluster_status=cluster_status, last_sync=last_sync, reason=reason, update_fail_count=update_fail_count)
 
 
 class VMCluster(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMCluster"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
@@ -1927,22 +1747,9 @@ class VMCluster(KubernetesApiResource):
     status: VMClusterStatus
 
     def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMClusterSpec = None,
-        status: VMClusterStatus = None,
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMClusterSpec = None, status: VMClusterStatus = None
     ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMCluster",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMCluster", name, namespace, metadata=metadata, spec=spec, status=status)
 
 
 class VMNodeScrapeSpec(KubernetesObject):
@@ -2023,27 +1830,15 @@ class VMNodeScrapeSpec(KubernetesObject):
 class VMNodeScrape(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMNodeScrape"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: VMNodeScrapeSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMNodeScrapeSpec = None,
-    ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMNodeScrape",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMNodeScrapeSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMNodeScrape", name, namespace, metadata=metadata, spec=spec)
 
 
 class VMPodScrapeSpec(KubernetesObject):
@@ -2080,27 +1875,15 @@ class VMPodScrapeSpec(KubernetesObject):
 class VMPodScrape(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMPodScrape"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: VMPodScrapeSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMPodScrapeSpec = None,
-    ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMPodScrape",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMPodScrapeSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMPodScrape", name, namespace, metadata=metadata, spec=spec)
 
 
 class VmProberSpec(KubernetesObject):
@@ -2150,6 +1933,7 @@ class VMProbeSpec(KubernetesObject):
 class VMProbe(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMProbe"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
@@ -2158,21 +1942,8 @@ class VMProbe(KubernetesApiResource):
     metadata: meta.ObjectMeta
     spec: VMProbeSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMProbeSpec = None,
-    ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMProbe",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMProbeSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMProbe", name, namespace, metadata=metadata, spec=spec)
 
 
 class VMRuleSpec(KubernetesObject):
@@ -2189,6 +1960,7 @@ class VMRuleSpec(KubernetesObject):
 class VMRule(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMRule"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
@@ -2197,21 +1969,8 @@ class VMRule(KubernetesApiResource):
     metadata: meta.ObjectMeta
     spec: VMRuleSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMRuleSpec = None,
-    ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMRule",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMRuleSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMRule", name, namespace, metadata=metadata, spec=spec)
 
 
 class VMServiceScrapeSpec(KubernetesObject):
@@ -2254,6 +2013,7 @@ class VMServiceScrapeSpec(KubernetesObject):
 class VMServiceScrape(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMServiceScrape"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
@@ -2262,21 +2022,8 @@ class VMServiceScrape(KubernetesApiResource):
     metadata: meta.ObjectMeta
     spec: VMServiceScrapeSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMServiceScrapeSpec = None,
-    ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMServiceScrape",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMServiceScrapeSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMServiceScrape", name, namespace, metadata=metadata, spec=spec)
 
 
 class VMSingleSpec(KubernetesObject):
@@ -2397,12 +2144,7 @@ class VMSingleSpec(KubernetesObject):
 class VMSingleStatus(KubernetesObject):
     __slots__ = ()
 
-    _required_ = [
-        "available_replicas",
-        "replicas",
-        "unavailable_replicas",
-        "updated_replicas",
-    ]
+    _required_ = ["available_replicas", "replicas", "unavailable_replicas", "updated_replicas"]
 
     available_replicas: int
     replicas: int
@@ -2410,11 +2152,7 @@ class VMSingleStatus(KubernetesObject):
     updated_replicas: int
 
     def __init__(
-        self,
-        available_replicas: int = None,
-        replicas: int = None,
-        unavailable_replicas: int = None,
-        updated_replicas: int = None,
+        self, available_replicas: int = None, replicas: int = None, unavailable_replicas: int = None, updated_replicas: int = None
     ):
         super().__init__(
             available_replicas=available_replicas,
@@ -2427,6 +2165,7 @@ class VMSingleStatus(KubernetesObject):
 class VMSingle(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMSingle"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
@@ -2435,22 +2174,9 @@ class VMSingle(KubernetesApiResource):
     status: VMSingleStatus
 
     def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMSingleSpec = None,
-        status: VMSingleStatus = None,
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMSingleSpec = None, status: VMSingleStatus = None
     ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMSingle",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMSingle", name, namespace, metadata=metadata, spec=spec, status=status)
 
 
 class VMStaticScrapeSpec(KubernetesObject):
@@ -2462,40 +2188,19 @@ class VMStaticScrapeSpec(KubernetesObject):
     sample_limit: int
     target_endpoints: List[TargetEndpoint]
 
-    def __init__(
-        self,
-        job_name: str = None,
-        sample_limit: int = None,
-        target_endpoints: List[TargetEndpoint] = None,
-    ):
-        super().__init__(
-            job_name=job_name,
-            sample_limit=sample_limit,
-            target_endpoints=target_endpoints,
-        )
+    def __init__(self, job_name: str = None, sample_limit: int = None, target_endpoints: List[TargetEndpoint] = None):
+        super().__init__(job_name=job_name, sample_limit=sample_limit, target_endpoints=target_endpoints)
 
 
 class VMStaticScrape(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VMStaticScrape"
     _group_ = "operator.victoriametrics.com"
     _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: VMStaticScrapeSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMStaticScrapeSpec = None,
-    ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1",
-            "VMStaticScrape",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMStaticScrapeSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMStaticScrape", name, namespace, metadata=metadata, spec=spec)

@@ -101,40 +101,26 @@ class CronJobSpec(KubernetesObject):
 class CronJob(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "CronJob"
     _group_ = "batch"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: CronJobSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: CronJobSpec = None,
-    ):
-        super().__init__(
-            "batch/v1", "CronJob", name, namespace, metadata=metadata, spec=spec
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CronJobSpec = None):
+        super().__init__("batch/v1", "CronJob", name, namespace, metadata=metadata, spec=spec)
 
 
 class Job(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Job"
     _group_ = "batch"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: JobSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: JobSpec = None,
-    ):
-        super().__init__(
-            "batch/v1", "Job", name, namespace, metadata=metadata, spec=spec
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: JobSpec = None):
+        super().__init__("batch/v1", "Job", name, namespace, metadata=metadata, spec=spec)

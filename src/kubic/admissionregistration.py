@@ -17,13 +17,7 @@ class ServiceReference(KubernetesObject):
     path: str
     port: int
 
-    def __init__(
-        self,
-        name: str = None,
-        namespace: str = None,
-        path: str = None,
-        port: int = None,
-    ):
+    def __init__(self, name: str = None, namespace: str = None, path: str = None, port: int = None):
         super().__init__(name=name, namespace=namespace, path=path, port=port)
 
 
@@ -37,12 +31,7 @@ class WebhookClientConfig(KubernetesObject):
     service: ServiceReference
     url: str
 
-    def __init__(
-        self,
-        ca_bundle: core.Base64 = None,
-        service: ServiceReference = None,
-        url: str = None,
-    ):
+    def __init__(self, ca_bundle: core.Base64 = None, service: ServiceReference = None, url: str = None):
         super().__init__(ca_bundle=ca_bundle, service=service, url=url)
 
 
@@ -66,13 +55,7 @@ class RuleWithOperations(KubernetesObject):
         resources: List[str] = None,
         scope: str = None,
     ):
-        super().__init__(
-            api_groups=api_groups,
-            api_versions=api_versions,
-            operations=operations,
-            resources=resources,
-            scope=scope,
-        )
+        super().__init__(api_groups=api_groups, api_versions=api_versions, operations=operations, resources=resources, scope=scope)
 
 
 class MutatingWebhook(KubernetesObject):
@@ -127,26 +110,15 @@ class MutatingWebhook(KubernetesObject):
 class MutatingWebhookConfiguration(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "MutatingWebhookConfiguration"
     _group_ = "admissionregistration.k8s.io"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     webhooks: List[MutatingWebhook]
 
-    def __init__(
-        self,
-        name: str,
-        metadata: meta.ObjectMeta = None,
-        webhooks: List[MutatingWebhook] = None,
-    ):
-        super().__init__(
-            "admissionregistration.k8s.io/v1",
-            "MutatingWebhookConfiguration",
-            name,
-            "",
-            metadata=metadata,
-            webhooks=webhooks,
-        )
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, webhooks: List[MutatingWebhook] = None):
+        super().__init__("admissionregistration.k8s.io/v1", "MutatingWebhookConfiguration", name, "", metadata=metadata, webhooks=webhooks)
 
 
 class ValidatingWebhook(KubernetesObject):
@@ -198,23 +170,14 @@ class ValidatingWebhook(KubernetesObject):
 class ValidatingWebhookConfiguration(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "ValidatingWebhookConfiguration"
     _group_ = "admissionregistration.k8s.io"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     webhooks: List[ValidatingWebhook]
 
-    def __init__(
-        self,
-        name: str,
-        metadata: meta.ObjectMeta = None,
-        webhooks: List[ValidatingWebhook] = None,
-    ):
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, webhooks: List[ValidatingWebhook] = None):
         super().__init__(
-            "admissionregistration.k8s.io/v1",
-            "ValidatingWebhookConfiguration",
-            name,
-            "",
-            metadata=metadata,
-            webhooks=webhooks,
+            "admissionregistration.k8s.io/v1", "ValidatingWebhookConfiguration", name, "", metadata=metadata, webhooks=webhooks
         )

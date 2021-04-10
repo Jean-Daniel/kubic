@@ -99,42 +99,23 @@ class PodDisruptionBudgetSpec(KubernetesObject):
     selector: meta.LabelSelector
 
     def __init__(
-        self,
-        max_unavailable: core.IntOrString = None,
-        min_available: core.IntOrString = None,
-        selector: meta.LabelSelector = None,
+        self, max_unavailable: core.IntOrString = None, min_available: core.IntOrString = None, selector: meta.LabelSelector = None
     ):
-        super().__init__(
-            max_unavailable=max_unavailable,
-            min_available=min_available,
-            selector=selector,
-        )
+        super().__init__(max_unavailable=max_unavailable, min_available=min_available, selector=selector)
 
 
 class PodDisruptionBudget(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "PodDisruptionBudget"
     _group_ = "policy"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: PodDisruptionBudgetSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: PodDisruptionBudgetSpec = None,
-    ):
-        super().__init__(
-            "policy/v1",
-            "PodDisruptionBudget",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PodDisruptionBudgetSpec = None):
+        super().__init__("policy/v1", "PodDisruptionBudget", name, namespace, metadata=metadata, spec=spec)
 
 
 class RunAsGroupStrategyOptions(KubernetesObject):
@@ -178,15 +159,8 @@ class RuntimeClassStrategyOptions(KubernetesObject):
     allowed_runtime_class_names: List[str]
     default_runtime_class_name: str
 
-    def __init__(
-        self,
-        allowed_runtime_class_names: List[str] = None,
-        default_runtime_class_name: str = None,
-    ):
-        super().__init__(
-            allowed_runtime_class_names=allowed_runtime_class_names,
-            default_runtime_class_name=default_runtime_class_name,
-        )
+    def __init__(self, allowed_runtime_class_names: List[str] = None, default_runtime_class_name: str = None):
+        super().__init__(allowed_runtime_class_names=allowed_runtime_class_names, default_runtime_class_name=default_runtime_class_name)
 
 
 class SELinuxStrategyOptions(KubernetesObject):
@@ -319,23 +293,12 @@ class PodSecurityPolicySpec(KubernetesObject):
 class PodSecurityPolicy(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "PodSecurityPolicy"
     _group_ = "policy"
     _version_ = "v1beta1"
 
     metadata: meta.ObjectMeta
     spec: PodSecurityPolicySpec
 
-    def __init__(
-        self,
-        name: str,
-        metadata: meta.ObjectMeta = None,
-        spec: PodSecurityPolicySpec = None,
-    ):
-        super().__init__(
-            "policy/v1beta1",
-            "PodSecurityPolicy",
-            name,
-            "",
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: PodSecurityPolicySpec = None):
+        super().__init__("policy/v1beta1", "PodSecurityPolicy", name, "", metadata=metadata, spec=spec)

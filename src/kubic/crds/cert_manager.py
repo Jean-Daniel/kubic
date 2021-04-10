@@ -31,12 +31,7 @@ class AcmeDNS(KubernetesObject):
 class Akamai(KubernetesObject):
     __slots__ = ()
 
-    _required_ = [
-        "access_token_secret_ref",
-        "client_secret_secret_ref",
-        "client_token_secret_ref",
-        "service_consumer_domain",
-    ]
+    _required_ = ["access_token_secret_ref", "client_secret_secret_ref", "client_token_secret_ref", "service_consumer_domain"]
 
     access_token_secret_ref: SecretRef
     client_secret_secret_ref: SecretRef
@@ -67,9 +62,7 @@ class AppRole(KubernetesObject):
     role_id: str
     secret_ref: SecretRef
 
-    def __init__(
-        self, path: str = None, role_id: str = None, secret_ref: SecretRef = None
-    ):
+    def __init__(self, path: str = None, role_id: str = None, secret_ref: SecretRef = None):
         super().__init__(path=path, role_id=role_id, secret_ref=secret_ref)
 
 
@@ -82,9 +75,7 @@ class Kubernete(KubernetesObject):
     role: str
     secret_ref: SecretRef
 
-    def __init__(
-        self, mount_path: str = None, role: str = None, secret_ref: SecretRef = None
-    ):
+    def __init__(self, mount_path: str = None, role: str = None, secret_ref: SecretRef = None):
         super().__init__(mount_path=mount_path, role=role, secret_ref=secret_ref)
 
 
@@ -95,15 +86,8 @@ class Auth(KubernetesObject):
     kubernetes: Kubernete
     token_secret_ref: SecretRef
 
-    def __init__(
-        self,
-        app_role: AppRole = None,
-        kubernetes: Kubernete = None,
-        token_secret_ref: SecretRef = None,
-    ):
-        super().__init__(
-            app_role=app_role, kubernetes=kubernetes, token_secret_ref=token_secret_ref
-        )
+    def __init__(self, app_role: AppRole = None, kubernetes: Kubernete = None, token_secret_ref: SecretRef = None):
+        super().__init__(app_role=app_role, kubernetes=kubernetes, token_secret_ref=token_secret_ref)
 
 
 class Challenge(KubernetesObject):
@@ -131,20 +115,9 @@ class Authorization(KubernetesObject):
     wildcard: bool
 
     def __init__(
-        self,
-        challenges: List[Challenge] = None,
-        identifier: str = None,
-        initial_state: str = None,
-        url: str = None,
-        wildcard: bool = None,
+        self, challenges: List[Challenge] = None, identifier: str = None, initial_state: str = None, url: str = None, wildcard: bool = None
     ):
-        super().__init__(
-            challenges=challenges,
-            identifier=identifier,
-            initial_state=initial_state,
-            url=url,
-            wildcard=wildcard,
-        )
+        super().__init__(challenges=challenges, identifier=identifier, initial_state=initial_state, url=url, wildcard=wildcard)
 
 
 class AzureDNS(KubernetesObject):
@@ -201,17 +174,8 @@ class CA(KubernetesObject):
     ocsp_servers: List[str]
     secret_name: str
 
-    def __init__(
-        self,
-        crl_distribution_points: List[str] = None,
-        ocsp_servers: List[str] = None,
-        secret_name: str = None,
-    ):
-        super().__init__(
-            crl_distribution_points=crl_distribution_points,
-            ocsp_servers=ocsp_servers,
-            secret_name=secret_name,
-        )
+    def __init__(self, crl_distribution_points: List[str] = None, ocsp_servers: List[str] = None, secret_name: str = None):
+        super().__init__(crl_distribution_points=crl_distribution_points, ocsp_servers=ocsp_servers, secret_name=secret_name)
 
 
 class IssuerRef(KubernetesObject):
@@ -269,19 +233,8 @@ class PrivateKey(KubernetesObject):
     rotation_policy: str
     size: int
 
-    def __init__(
-        self,
-        algorithm: str = None,
-        encoding: str = None,
-        rotation_policy: str = None,
-        size: int = None,
-    ):
-        super().__init__(
-            algorithm=algorithm,
-            encoding=encoding,
-            rotation_policy=rotation_policy,
-            size=size,
-        )
+    def __init__(self, algorithm: str = None, encoding: str = None, rotation_policy: str = None, size: int = None):
+        super().__init__(algorithm=algorithm, encoding=encoding, rotation_policy=rotation_policy, size=size)
 
 
 class Subject(KubernetesObject):
@@ -453,6 +406,7 @@ class CertificateStatus(KubernetesObject):
 class Certificate(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Certificate"
     _group_ = "cert-manager.io"
     _version_ = "v1"
 
@@ -470,15 +424,7 @@ class Certificate(KubernetesApiResource):
         spec: CertificateSpec = None,
         status: CertificateStatus = None,
     ):
-        super().__init__(
-            "cert-manager.io/v1",
-            "Certificate",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("cert-manager.io/v1", "Certificate", name, namespace, metadata=metadata, spec=spec, status=status)
 
 
 class CertificateRequestSpec(KubernetesObject):
@@ -540,20 +486,9 @@ class CertificateRequestStatusCondition(KubernetesObject):
     type: str
 
     def __init__(
-        self,
-        last_transition_time: meta.Time = None,
-        message: str = None,
-        reason: str = None,
-        status: str = None,
-        type: str = None,
+        self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
     ):
-        super().__init__(
-            last_transition_time=last_transition_time,
-            message=message,
-            reason=reason,
-            status=status,
-            type=type,
-        )
+        super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
 class CertificateRequestStatus(KubernetesObject):
@@ -571,17 +506,13 @@ class CertificateRequestStatus(KubernetesObject):
         conditions: List[CertificateRequestStatusCondition] = None,
         failure_time: meta.Time = None,
     ):
-        super().__init__(
-            ca=ca,
-            certificate=certificate,
-            conditions=conditions,
-            failure_time=failure_time,
-        )
+        super().__init__(ca=ca, certificate=certificate, conditions=conditions, failure_time=failure_time)
 
 
 class CertificateRequest(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "CertificateRequest"
     _group_ = "cert-manager.io"
     _version_ = "v1"
 
@@ -599,15 +530,7 @@ class CertificateRequest(KubernetesApiResource):
         spec: CertificateRequestSpec = None,
         status: CertificateRequestStatus = None,
     ):
-        super().__init__(
-            "cert-manager.io/v1",
-            "CertificateRequest",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("cert-manager.io/v1", "CertificateRequest", name, namespace, metadata=metadata, spec=spec, status=status)
 
 
 class CloudDNS(KubernetesObject):
@@ -619,17 +542,8 @@ class CloudDNS(KubernetesObject):
     project: str
     service_account_secret_ref: SecretRef
 
-    def __init__(
-        self,
-        hosted_zone_name: str = None,
-        project: str = None,
-        service_account_secret_ref: SecretRef = None,
-    ):
-        super().__init__(
-            hosted_zone_name=hosted_zone_name,
-            project=project,
-            service_account_secret_ref=service_account_secret_ref,
-        )
+    def __init__(self, hosted_zone_name: str = None, project: str = None, service_account_secret_ref: SecretRef = None):
+        super().__init__(hosted_zone_name=hosted_zone_name, project=project, service_account_secret_ref=service_account_secret_ref)
 
 
 class Cloudflare(KubernetesObject):
@@ -639,17 +553,8 @@ class Cloudflare(KubernetesObject):
     api_token_secret_ref: SecretRef
     email: str
 
-    def __init__(
-        self,
-        api_key_secret_ref: SecretRef = None,
-        api_token_secret_ref: SecretRef = None,
-        email: str = None,
-    ):
-        super().__init__(
-            api_key_secret_ref=api_key_secret_ref,
-            api_token_secret_ref=api_token_secret_ref,
-            email=email,
-        )
+    def __init__(self, api_key_secret_ref: SecretRef = None, api_token_secret_ref: SecretRef = None, email: str = None):
+        super().__init__(api_key_secret_ref=api_key_secret_ref, api_token_secret_ref=api_token_secret_ref, email=email)
 
 
 class Digitalocean(KubernetesObject):
@@ -674,17 +579,10 @@ class RFC2136(KubernetesObject):
     tsig_secret_secret_ref: SecretRef
 
     def __init__(
-        self,
-        nameserver: str = None,
-        tsig_algorithm: str = None,
-        tsig_key_name: str = None,
-        tsig_secret_secret_ref: SecretRef = None,
+        self, nameserver: str = None, tsig_algorithm: str = None, tsig_key_name: str = None, tsig_secret_secret_ref: SecretRef = None
     ):
         super().__init__(
-            nameserver=nameserver,
-            tsig_algorithm=tsig_algorithm,
-            tsig_key_name=tsig_key_name,
-            tsig_secret_secret_ref=tsig_secret_secret_ref,
+            nameserver=nameserver, tsig_algorithm=tsig_algorithm, tsig_key_name=tsig_key_name, tsig_secret_secret_ref=tsig_secret_secret_ref
         )
 
 
@@ -734,9 +632,7 @@ class Webhook(KubernetesObject):
     group_name: str
     solver_name: str
 
-    def __init__(
-        self, config: Any = None, group_name: str = None, solver_name: str = None
-    ):
+    def __init__(self, config: Any = None, group_name: str = None, solver_name: str = None):
         super().__init__(config=config, group_name=group_name, solver_name=solver_name)
 
 
@@ -798,9 +694,7 @@ class Metadata(KubernetesObject):
     annotations: Dict[str, str]
     labels: Dict[str, str]
 
-    def __init__(
-        self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None
-    ):
+    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None):
         super().__init__(annotations=annotations, labels=labels)
 
 
@@ -870,13 +764,7 @@ class Ingress(KubernetesObject):
         pod_template: PodTemplate = None,
         service_type: str = None,
     ):
-        super().__init__(
-            class_=class_,
-            ingress_template=ingress_template,
-            name=name,
-            pod_template=pod_template,
-            service_type=service_type,
-        )
+        super().__init__(class_=class_, ingress_template=ingress_template, name=name, pod_template=pod_template, service_type=service_type)
 
 
 class Http01(KubernetesObject):
@@ -895,15 +783,8 @@ class Selector(KubernetesObject):
     dns_zones: List[str]
     match_labels: Dict[str, str]
 
-    def __init__(
-        self,
-        dns_names: List[str] = None,
-        dns_zones: List[str] = None,
-        match_labels: Dict[str, str] = None,
-    ):
-        super().__init__(
-            dns_names=dns_names, dns_zones=dns_zones, match_labels=match_labels
-        )
+    def __init__(self, dns_names: List[str] = None, dns_zones: List[str] = None, match_labels: Dict[str, str] = None):
+        super().__init__(dns_names=dns_names, dns_zones=dns_zones, match_labels=match_labels)
 
 
 class Solver(KubernetesObject):
@@ -913,25 +794,14 @@ class Solver(KubernetesObject):
     http01: Http01
     selector: Selector
 
-    def __init__(
-        self, dns01: Dns01 = None, http01: Http01 = None, selector: Selector = None
-    ):
+    def __init__(self, dns01: Dns01 = None, http01: Http01 = None, selector: Selector = None):
         super().__init__(dns01=dns01, http01=http01, selector=selector)
 
 
 class ChallengeSpec(KubernetesObject):
     __slots__ = ()
 
-    _required_ = [
-        "authorization_url",
-        "dns_name",
-        "issuer_ref",
-        "key",
-        "solver",
-        "token",
-        "type",
-        "url",
-    ]
+    _required_ = ["authorization_url", "dns_name", "issuer_ref", "key", "solver", "token", "type", "url"]
 
     _field_names_ = {
         "authorization_url": "authorizationURL",
@@ -983,16 +853,8 @@ class ChallengeStatus(KubernetesObject):
     reason: str
     state: str
 
-    def __init__(
-        self,
-        presented: bool = None,
-        processing: bool = None,
-        reason: str = None,
-        state: str = None,
-    ):
-        super().__init__(
-            presented=presented, processing=processing, reason=reason, state=state
-        )
+    def __init__(self, presented: bool = None, processing: bool = None, reason: str = None, state: str = None):
+        super().__init__(presented=presented, processing=processing, reason=reason, state=state)
 
 
 class Cloud(KubernetesObject):
@@ -1023,15 +885,8 @@ class ExternalAccountBinding(KubernetesObject):
     key_id: str
     key_secret_ref: SecretRef
 
-    def __init__(
-        self,
-        key_algorithm: str = None,
-        key_id: str = None,
-        key_secret_ref: SecretRef = None,
-    ):
-        super().__init__(
-            key_algorithm=key_algorithm, key_id=key_id, key_secret_ref=key_secret_ref
-        )
+    def __init__(self, key_algorithm: str = None, key_id: str = None, key_secret_ref: SecretRef = None):
+        super().__init__(key_algorithm=key_algorithm, key_id=key_id, key_secret_ref=key_secret_ref)
 
 
 class ClusterIssuerSpecAcme(KubernetesObject):
@@ -1101,21 +956,8 @@ class Vault(KubernetesObject):
     path: str
     server: str
 
-    def __init__(
-        self,
-        auth: Auth = None,
-        ca_bundle: core.Base64 = None,
-        namespace: str = None,
-        path: str = None,
-        server: str = None,
-    ):
-        super().__init__(
-            auth=auth,
-            ca_bundle=ca_bundle,
-            namespace=namespace,
-            path=path,
-            server=server,
-        )
+    def __init__(self, auth: Auth = None, ca_bundle: core.Base64 = None, namespace: str = None, path: str = None, server: str = None):
+        super().__init__(auth=auth, ca_bundle=ca_bundle, namespace=namespace, path=path, server=server)
 
 
 class CredentialsRef(KubernetesObject):
@@ -1138,12 +980,7 @@ class TPP(KubernetesObject):
     credentials_ref: CredentialsRef
     url: str
 
-    def __init__(
-        self,
-        ca_bundle: core.Base64 = None,
-        credentials_ref: CredentialsRef = None,
-        url: str = None,
-    ):
+    def __init__(self, ca_bundle: core.Base64 = None, credentials_ref: CredentialsRef = None, url: str = None):
         super().__init__(ca_bundle=ca_bundle, credentials_ref=credentials_ref, url=url)
 
 
@@ -1170,16 +1007,9 @@ class ClusterIssuerSpec(KubernetesObject):
     venafi: Venafi
 
     def __init__(
-        self,
-        acme: ClusterIssuerSpecAcme = None,
-        ca: CA = None,
-        self_signed: SelfSigned = None,
-        vault: Vault = None,
-        venafi: Venafi = None,
+        self, acme: ClusterIssuerSpecAcme = None, ca: CA = None, self_signed: SelfSigned = None, vault: Vault = None, venafi: Venafi = None
     ):
-        super().__init__(
-            acme=acme, ca=ca, self_signed=self_signed, vault=vault, venafi=venafi
-        )
+        super().__init__(acme=acme, ca=ca, self_signed=self_signed, vault=vault, venafi=venafi)
 
 
 class StatusAcme(KubernetesObject):
@@ -1205,6 +1035,7 @@ class ClusterIssuerStatus(KubernetesObject):
 class ClusterIssuer(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "ClusterIssuer"
     _group_ = "cert-manager.io"
     _version_ = "v1"
 
@@ -1214,22 +1045,8 @@ class ClusterIssuer(KubernetesApiResource):
     spec: ClusterIssuerSpec
     status: ClusterIssuerStatus
 
-    def __init__(
-        self,
-        name: str,
-        metadata: meta.ObjectMeta = None,
-        spec: ClusterIssuerSpec = None,
-        status: ClusterIssuerStatus = None,
-    ):
-        super().__init__(
-            "cert-manager.io/v1",
-            "ClusterIssuer",
-            name,
-            "",
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: ClusterIssuerSpec = None, status: ClusterIssuerStatus = None):
+        super().__init__("cert-manager.io/v1", "ClusterIssuer", name, "", metadata=metadata, spec=spec, status=status)
 
 
 class IssuerSpecAcme(KubernetesObject):
@@ -1289,16 +1106,9 @@ class IssuerSpec(KubernetesObject):
     venafi: Venafi
 
     def __init__(
-        self,
-        acme: IssuerSpecAcme = None,
-        ca: CA = None,
-        self_signed: SelfSigned = None,
-        vault: Vault = None,
-        venafi: Venafi = None,
+        self, acme: IssuerSpecAcme = None, ca: CA = None, self_signed: SelfSigned = None, vault: Vault = None, venafi: Venafi = None
     ):
-        super().__init__(
-            acme=acme, ca=ca, self_signed=self_signed, vault=vault, venafi=venafi
-        )
+        super().__init__(acme=acme, ca=ca, self_signed=self_signed, vault=vault, venafi=venafi)
 
 
 class IssuerStatus(KubernetesObject):
@@ -1314,6 +1124,7 @@ class IssuerStatus(KubernetesObject):
 class Issuer(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Issuer"
     _group_ = "cert-manager.io"
     _version_ = "v1"
 
@@ -1324,22 +1135,9 @@ class Issuer(KubernetesApiResource):
     status: IssuerStatus
 
     def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: IssuerSpec = None,
-        status: IssuerStatus = None,
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: IssuerSpec = None, status: IssuerStatus = None
     ):
-        super().__init__(
-            "cert-manager.io/v1",
-            "Issuer",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("cert-manager.io/v1", "Issuer", name, namespace, metadata=metadata, spec=spec, status=status)
 
 
 class OrderSpec(KubernetesObject):
@@ -1415,6 +1213,7 @@ class OrderStatus(KubernetesObject):
 class Order(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Order"
     _group_ = "acme.cert-manager.io"
     _version_ = "v1"
 
@@ -1425,19 +1224,6 @@ class Order(KubernetesApiResource):
     status: OrderStatus
 
     def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: OrderSpec = None,
-        status: OrderStatus = None,
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: OrderSpec = None, status: OrderStatus = None
     ):
-        super().__init__(
-            "acme.cert-manager.io/v1",
-            "Order",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("acme.cert-manager.io/v1", "Order", name, namespace, metadata=metadata, spec=spec, status=status)

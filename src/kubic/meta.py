@@ -28,11 +28,7 @@ class LabelSelector(KubernetesObject):
     match_expressions: List[LabelSelectorRequirement]
     match_labels: Dict[str, str]
 
-    def __init__(
-        self,
-        match_expressions: List[LabelSelectorRequirement] = None,
-        match_labels: Dict[str, str] = None,
-    ):
+    def __init__(self, match_expressions: List[LabelSelectorRequirement] = None, match_labels: Dict[str, str] = None):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
 
@@ -64,12 +60,7 @@ class OwnerReference(KubernetesObject):
         uid: str = None,
     ):
         super().__init__(
-            api_version=api_version,
-            block_owner_deletion=block_owner_deletion,
-            controller=controller,
-            kind=kind,
-            name=name,
-            uid=uid,
+            api_version=api_version, block_owner_deletion=block_owner_deletion, controller=controller, kind=kind, name=name, uid=uid
         )
 
 

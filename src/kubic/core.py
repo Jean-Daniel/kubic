@@ -24,19 +24,8 @@ class AWSElasticBlockStoreVolumeSource(KubernetesObject):
     read_only: bool
     volume_id: str
 
-    def __init__(
-        self,
-        fs_type: str = None,
-        partition: int = None,
-        read_only: bool = None,
-        volume_id: str = None,
-    ):
-        super().__init__(
-            fs_type=fs_type,
-            partition=partition,
-            read_only=read_only,
-            volume_id=volume_id,
-        )
+    def __init__(self, fs_type: str = None, partition: int = None, read_only: bool = None, volume_id: str = None):
+        super().__init__(fs_type=fs_type, partition=partition, read_only=read_only, volume_id=volume_id)
 
 
 class NodeSelectorRequirement(KubernetesObject):
@@ -64,11 +53,7 @@ class NodeSelectorTerm(KubernetesObject):
     match_expressions: List[NodeSelectorRequirement]
     match_fields: List[NodeSelectorRequirement]
 
-    def __init__(
-        self,
-        match_expressions: List[NodeSelectorRequirement] = None,
-        match_fields: List[NodeSelectorRequirement] = None,
-    ):
+    def __init__(self, match_expressions: List[NodeSelectorRequirement] = None, match_fields: List[NodeSelectorRequirement] = None):
         super().__init__(match_expressions=match_expressions, match_fields=match_fields)
 
 
@@ -112,9 +97,7 @@ class NodeAffinity(KubernetesObject):
 
     def __init__(
         self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            PreferredSchedulingTerm
-        ] = None,
+        preferred_during_scheduling_ignored_during_execution: List[PreferredSchedulingTerm] = None,
         required_during_scheduling_ignored_during_execution: NodeSelector = None,
     ):
         super().__init__(
@@ -144,10 +127,7 @@ class PodAffinityTerm(KubernetesObject):
         topology_key: str = None,
     ):
         super().__init__(
-            label_selector=label_selector,
-            namespace_selector=namespace_selector,
-            namespaces=namespaces,
-            topology_key=topology_key,
+            label_selector=label_selector, namespace_selector=namespace_selector, namespaces=namespaces, topology_key=topology_key
         )
 
 
@@ -177,12 +157,8 @@ class PodAffinity(KubernetesObject):
 
     def __init__(
         self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            WeightedPodAffinityTerm
-        ] = None,
-        required_during_scheduling_ignored_during_execution: List[
-            PodAffinityTerm
-        ] = None,
+        preferred_during_scheduling_ignored_during_execution: List[WeightedPodAffinityTerm] = None,
+        required_during_scheduling_ignored_during_execution: List[PodAffinityTerm] = None,
     ):
         super().__init__(
             preferred_during_scheduling_ignored_during_execution=preferred_during_scheduling_ignored_during_execution,
@@ -201,12 +177,8 @@ class PodAntiAffinity(KubernetesObject):
 
     def __init__(
         self,
-        preferred_during_scheduling_ignored_during_execution: List[
-            WeightedPodAffinityTerm
-        ] = None,
-        required_during_scheduling_ignored_during_execution: List[
-            PodAffinityTerm
-        ] = None,
+        preferred_during_scheduling_ignored_during_execution: List[WeightedPodAffinityTerm] = None,
+        required_during_scheduling_ignored_during_execution: List[PodAffinityTerm] = None,
     ):
         super().__init__(
             preferred_during_scheduling_ignored_during_execution=preferred_during_scheduling_ignored_during_execution,
@@ -224,17 +196,8 @@ class Affinity(KubernetesObject):
     pod_affinity: PodAffinity
     pod_anti_affinity: PodAntiAffinity
 
-    def __init__(
-        self,
-        node_affinity: NodeAffinity = None,
-        pod_affinity: PodAffinity = None,
-        pod_anti_affinity: PodAntiAffinity = None,
-    ):
-        super().__init__(
-            node_affinity=node_affinity,
-            pod_affinity=pod_affinity,
-            pod_anti_affinity=pod_anti_affinity,
-        )
+    def __init__(self, node_affinity: NodeAffinity = None, pod_affinity: PodAffinity = None, pod_anti_affinity: PodAntiAffinity = None):
+        super().__init__(node_affinity=node_affinity, pod_affinity=pod_affinity, pod_anti_affinity=pod_anti_affinity)
 
 
 class AzureDiskVolumeSource(KubernetesObject):
@@ -268,14 +231,7 @@ class AzureDiskVolumeSource(KubernetesObject):
         kind: str = None,
         read_only: bool = None,
     ):
-        super().__init__(
-            caching_mode=caching_mode,
-            disk_name=disk_name,
-            disk_uri=disk_uri,
-            fs_type=fs_type,
-            kind=kind,
-            read_only=read_only,
-        )
+        super().__init__(caching_mode=caching_mode, disk_name=disk_name, disk_uri=disk_uri, fs_type=fs_type, kind=kind, read_only=read_only)
 
 
 class AzureFilePersistentVolumeSource(KubernetesObject):
@@ -291,19 +247,8 @@ class AzureFilePersistentVolumeSource(KubernetesObject):
     secret_namespace: str
     share_name: str
 
-    def __init__(
-        self,
-        read_only: bool = None,
-        secret_name: str = None,
-        secret_namespace: str = None,
-        share_name: str = None,
-    ):
-        super().__init__(
-            read_only=read_only,
-            secret_name=secret_name,
-            secret_namespace=secret_namespace,
-            share_name=share_name,
-        )
+    def __init__(self, read_only: bool = None, secret_name: str = None, secret_namespace: str = None, share_name: str = None):
+        super().__init__(read_only=read_only, secret_name=secret_name, secret_namespace=secret_namespace, share_name=share_name)
 
 
 class AzureFileVolumeSource(KubernetesObject):
@@ -318,12 +263,8 @@ class AzureFileVolumeSource(KubernetesObject):
     secret_name: str
     share_name: str
 
-    def __init__(
-        self, read_only: bool = None, secret_name: str = None, share_name: str = None
-    ):
-        super().__init__(
-            read_only=read_only, secret_name=secret_name, share_name=share_name
-        )
+    def __init__(self, read_only: bool = None, secret_name: str = None, share_name: str = None):
+        super().__init__(read_only=read_only, secret_name=secret_name, share_name=share_name)
 
 
 Base64 = str
@@ -465,14 +406,7 @@ class CephFSPersistentVolumeSource(KubernetesObject):
         secret_ref: SecretReference = None,
         user: str = None,
     ):
-        super().__init__(
-            monitors=monitors,
-            path=path,
-            read_only=read_only,
-            secret_file=secret_file,
-            secret_ref=secret_ref,
-            user=user,
-        )
+        super().__init__(monitors=monitors, path=path, read_only=read_only, secret_file=secret_file, secret_ref=secret_ref, user=user)
 
 
 class CephFSVolumeSource(KubernetesObject):
@@ -499,14 +433,7 @@ class CephFSVolumeSource(KubernetesObject):
         secret_ref: LocalObjectReference = None,
         user: str = None,
     ):
-        super().__init__(
-            monitors=monitors,
-            path=path,
-            read_only=read_only,
-            secret_file=secret_file,
-            secret_ref=secret_ref,
-            user=user,
-        )
+        super().__init__(monitors=monitors, path=path, read_only=read_only, secret_file=secret_file, secret_ref=secret_ref, user=user)
 
 
 class CinderPersistentVolumeSource(KubernetesObject):
@@ -529,19 +456,8 @@ class CinderPersistentVolumeSource(KubernetesObject):
     secret_ref: SecretReference
     volume_id: str
 
-    def __init__(
-        self,
-        fs_type: str = None,
-        read_only: bool = None,
-        secret_ref: SecretReference = None,
-        volume_id: str = None,
-    ):
-        super().__init__(
-            fs_type=fs_type,
-            read_only=read_only,
-            secret_ref=secret_ref,
-            volume_id=volume_id,
-        )
+    def __init__(self, fs_type: str = None, read_only: bool = None, secret_ref: SecretReference = None, volume_id: str = None):
+        super().__init__(fs_type=fs_type, read_only=read_only, secret_ref=secret_ref, volume_id=volume_id)
 
 
 class CinderVolumeSource(KubernetesObject):
@@ -564,19 +480,8 @@ class CinderVolumeSource(KubernetesObject):
     secret_ref: LocalObjectReference
     volume_id: str
 
-    def __init__(
-        self,
-        fs_type: str = None,
-        read_only: bool = None,
-        secret_ref: LocalObjectReference = None,
-        volume_id: str = None,
-    ):
-        super().__init__(
-            fs_type=fs_type,
-            read_only=read_only,
-            secret_ref=secret_ref,
-            volume_id=volume_id,
-        )
+    def __init__(self, fs_type: str = None, read_only: bool = None, secret_ref: LocalObjectReference = None, volume_id: str = None):
+        super().__init__(fs_type=fs_type, read_only=read_only, secret_ref=secret_ref, volume_id=volume_id)
 
 
 class ClientIPConfig(KubernetesObject):
@@ -594,6 +499,7 @@ class ClientIPConfig(KubernetesObject):
 class ConfigMap(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "ConfigMap"
     _group_ = "core"
     _version_ = "v1"
 
@@ -611,16 +517,7 @@ class ConfigMap(KubernetesApiResource):
         immutable: bool = None,
         metadata: meta.ObjectMeta = None,
     ):
-        super().__init__(
-            "v1",
-            "ConfigMap",
-            name,
-            namespace,
-            binary_data=binary_data,
-            data=data,
-            immutable=immutable,
-            metadata=metadata,
-        )
+        super().__init__("v1", "ConfigMap", name, namespace, binary_data=binary_data, data=data, immutable=immutable, metadata=metadata)
 
 
 class ConfigMapEnvSource(KubernetesObject):
@@ -678,9 +575,7 @@ class ConfigMapProjection(KubernetesObject):
     name: str
     optional: bool
 
-    def __init__(
-        self, items: List[KeyToPath] = None, name: str = None, optional: bool = None
-    ):
+    def __init__(self, items: List[KeyToPath] = None, name: str = None, optional: bool = None):
         super().__init__(items=items, name=name, optional=optional)
 
 
@@ -695,16 +590,8 @@ class ConfigMapVolumeSource(KubernetesObject):
     name: str
     optional: bool
 
-    def __init__(
-        self,
-        default_mode: int = None,
-        items: List[KeyToPath] = None,
-        name: str = None,
-        optional: bool = None,
-    ):
-        super().__init__(
-            default_mode=default_mode, items=items, name=name, optional=optional
-        )
+    def __init__(self, default_mode: int = None, items: List[KeyToPath] = None, name: str = None, optional: bool = None):
+        super().__init__(default_mode=default_mode, items=items, name=name, optional=optional)
 
 
 class ObjectFieldSelector(KubernetesObject):
@@ -737,12 +624,8 @@ class ResourceFieldSelector(KubernetesObject):
     divisor: Quantity
     resource: str
 
-    def __init__(
-        self, container_name: str = None, divisor: Quantity = None, resource: str = None
-    ):
-        super().__init__(
-            container_name=container_name, divisor=divisor, resource=resource
-        )
+    def __init__(self, container_name: str = None, divisor: Quantity = None, resource: str = None):
+        super().__init__(container_name=container_name, divisor=divisor, resource=resource)
 
 
 class SecretKeySelector(KubernetesObject):
@@ -780,10 +663,7 @@ class EnvVarSource(KubernetesObject):
         secret_key_ref: SecretKeySelector = None,
     ):
         super().__init__(
-            config_map_key_ref=config_map_key_ref,
-            field_ref=field_ref,
-            resource_field_ref=resource_field_ref,
-            secret_key_ref=secret_key_ref,
+            config_map_key_ref=config_map_key_ref, field_ref=field_ref, resource_field_ref=resource_field_ref, secret_key_ref=secret_key_ref
         )
 
 
@@ -799,9 +679,7 @@ class EnvVar(KubernetesObject):
     value: str
     value_from: EnvVarSource
 
-    def __init__(
-        self, name: str = None, value: str = None, value_from: EnvVarSource = None
-    ):
+    def __init__(self, name: str = None, value: str = None, value_from: EnvVarSource = None):
         super().__init__(name=name, value=value, value_from=value_from)
 
 
@@ -828,15 +706,8 @@ class EnvFromSource(KubernetesObject):
     prefix: str
     secret_ref: SecretEnvSource
 
-    def __init__(
-        self,
-        config_map_ref: ConfigMapEnvSource = None,
-        prefix: str = None,
-        secret_ref: SecretEnvSource = None,
-    ):
-        super().__init__(
-            config_map_ref=config_map_ref, prefix=prefix, secret_ref=secret_ref
-        )
+    def __init__(self, config_map_ref: ConfigMapEnvSource = None, prefix: str = None, secret_ref: SecretEnvSource = None):
+        super().__init__(config_map_ref=config_map_ref, prefix=prefix, secret_ref=secret_ref)
 
 
 class ExecAction(KubernetesObject):
@@ -884,16 +755,9 @@ class HTTPGetAction(KubernetesObject):
     scheme: str
 
     def __init__(
-        self,
-        host: str = None,
-        http_headers: List[HTTPHeader] = None,
-        path: str = None,
-        port: IntOrString = None,
-        scheme: str = None,
+        self, host: str = None, http_headers: List[HTTPHeader] = None, path: str = None, port: IntOrString = None, scheme: str = None
     ):
-        super().__init__(
-            host=host, http_headers=http_headers, path=path, port=port, scheme=scheme
-        )
+        super().__init__(host=host, http_headers=http_headers, path=path, port=port, scheme=scheme)
 
 
 class TCPSocketAction(KubernetesObject):
@@ -921,12 +785,7 @@ class Handler(KubernetesObject):
     http_get: HTTPGetAction
     tcp_socket: TCPSocketAction
 
-    def __init__(
-        self,
-        exec: ExecAction = None,
-        http_get: HTTPGetAction = None,
-        tcp_socket: TCPSocketAction = None,
-    ):
+    def __init__(self, exec: ExecAction = None, http_get: HTTPGetAction = None, tcp_socket: TCPSocketAction = None):
         super().__init__(exec=exec, http_get=http_get, tcp_socket=tcp_socket)
 
 
@@ -1005,21 +864,8 @@ class ContainerPort(KubernetesObject):
     name: str
     protocol: str
 
-    def __init__(
-        self,
-        container_port: int = None,
-        host_ip: str = None,
-        host_port: int = None,
-        name: str = None,
-        protocol: str = None,
-    ):
-        super().__init__(
-            container_port=container_port,
-            host_ip=host_ip,
-            host_port=host_port,
-            name=name,
-            protocol=protocol,
-        )
+    def __init__(self, container_port: int = None, host_ip: str = None, host_port: int = None, name: str = None, protocol: str = None):
+        super().__init__(container_port=container_port, host_ip=host_ip, host_port=host_port, name=name, protocol=protocol)
 
 
 class ResourceRequirements(KubernetesObject):
@@ -1031,9 +877,7 @@ class ResourceRequirements(KubernetesObject):
     limits: Dict[str, Quantity]
     requests: Dict[str, Quantity]
 
-    def __init__(
-        self, limits: Dict[str, Quantity] = None, requests: Dict[str, Quantity] = None
-    ):
+    def __init__(self, limits: Dict[str, Quantity] = None, requests: Dict[str, Quantity] = None):
         super().__init__(limits=limits, requests=requests)
 
 
@@ -1048,9 +892,7 @@ class SELinuxOptions(KubernetesObject):
     type: str
     user: str
 
-    def __init__(
-        self, level: str = None, role: str = None, type: str = None, user: str = None
-    ):
+    def __init__(self, level: str = None, role: str = None, type: str = None, user: str = None):
         super().__init__(level=level, role=role, type=type, user=user)
 
 
@@ -1079,12 +921,7 @@ class WindowsSecurityContextOptions(KubernetesObject):
     gmsa_credential_spec_name: str
     run_as_user_name: str
 
-    def __init__(
-        self,
-        gmsa_credential_spec: str = None,
-        gmsa_credential_spec_name: str = None,
-        run_as_user_name: str = None,
-    ):
+    def __init__(self, gmsa_credential_spec: str = None, gmsa_credential_spec_name: str = None, run_as_user_name: str = None):
         super().__init__(
             gmsa_credential_spec=gmsa_credential_spec,
             gmsa_credential_spec_name=gmsa_credential_spec_name,
@@ -1284,18 +1121,9 @@ class DownwardAPIVolumeFile(KubernetesObject):
     resource_field_ref: ResourceFieldSelector
 
     def __init__(
-        self,
-        field_ref: ObjectFieldSelector = None,
-        mode: int = None,
-        path: str = None,
-        resource_field_ref: ResourceFieldSelector = None,
+        self, field_ref: ObjectFieldSelector = None, mode: int = None, path: str = None, resource_field_ref: ResourceFieldSelector = None
     ):
-        super().__init__(
-            field_ref=field_ref,
-            mode=mode,
-            path=path,
-            resource_field_ref=resource_field_ref,
-        )
+        super().__init__(field_ref=field_ref, mode=mode, path=path, resource_field_ref=resource_field_ref)
 
 
 class DownwardAPIProjection(KubernetesObject):
@@ -1319,9 +1147,7 @@ class DownwardAPIVolumeSource(KubernetesObject):
     default_mode: int
     items: List[DownwardAPIVolumeFile]
 
-    def __init__(
-        self, default_mode: int = None, items: List[DownwardAPIVolumeFile] = None
-    ):
+    def __init__(self, default_mode: int = None, items: List[DownwardAPIVolumeFile] = None):
         super().__init__(default_mode=default_mode, items=items)
 
 
@@ -1485,9 +1311,7 @@ class PersistentVolumeClaimTemplate(KubernetesObject):
     metadata: meta.ObjectMeta
     spec: PersistentVolumeClaimSpec
 
-    def __init__(
-        self, metadata: meta.ObjectMeta = None, spec: PersistentVolumeClaimSpec = None
-    ):
+    def __init__(self, metadata: meta.ObjectMeta = None, spec: PersistentVolumeClaimSpec = None):
         super().__init__(metadata=metadata, spec=spec)
 
 
@@ -1523,20 +1347,9 @@ class FCVolumeSource(KubernetesObject):
     wwids: List[str]
 
     def __init__(
-        self,
-        fs_type: str = None,
-        lun: int = None,
-        read_only: bool = None,
-        target_wwns: List[str] = None,
-        wwids: List[str] = None,
+        self, fs_type: str = None, lun: int = None, read_only: bool = None, target_wwns: List[str] = None, wwids: List[str] = None
     ):
-        super().__init__(
-            fs_type=fs_type,
-            lun=lun,
-            read_only=read_only,
-            target_wwns=target_wwns,
-            wwids=wwids,
-        )
+        super().__init__(fs_type=fs_type, lun=lun, read_only=read_only, target_wwns=target_wwns, wwids=wwids)
 
 
 class FlexPersistentVolumeSource(KubernetesObject):
@@ -1561,13 +1374,7 @@ class FlexPersistentVolumeSource(KubernetesObject):
         read_only: bool = None,
         secret_ref: SecretReference = None,
     ):
-        super().__init__(
-            driver=driver,
-            fs_type=fs_type,
-            options=options,
-            read_only=read_only,
-            secret_ref=secret_ref,
-        )
+        super().__init__(driver=driver, fs_type=fs_type, options=options, read_only=read_only, secret_ref=secret_ref)
 
 
 class FlexVolumeSource(KubernetesObject):
@@ -1592,13 +1399,7 @@ class FlexVolumeSource(KubernetesObject):
         read_only: bool = None,
         secret_ref: LocalObjectReference = None,
     ):
-        super().__init__(
-            driver=driver,
-            fs_type=fs_type,
-            options=options,
-            read_only=read_only,
-            secret_ref=secret_ref,
-        )
+        super().__init__(driver=driver, fs_type=fs_type, options=options, read_only=read_only, secret_ref=secret_ref)
 
 
 class FlockerVolumeSource(KubernetesObject):
@@ -1634,16 +1435,8 @@ class GCEPersistentDiskVolumeSource(KubernetesObject):
     pd_name: str
     read_only: bool
 
-    def __init__(
-        self,
-        fs_type: str = None,
-        partition: int = None,
-        pd_name: str = None,
-        read_only: bool = None,
-    ):
-        super().__init__(
-            fs_type=fs_type, partition=partition, pd_name=pd_name, read_only=read_only
-        )
+    def __init__(self, fs_type: str = None, partition: int = None, pd_name: str = None, read_only: bool = None):
+        super().__init__(fs_type=fs_type, partition=partition, pd_name=pd_name, read_only=read_only)
 
 
 class GitRepoVolumeSource(KubernetesObject):
@@ -1658,9 +1451,7 @@ class GitRepoVolumeSource(KubernetesObject):
     repository: str
     revision: str
 
-    def __init__(
-        self, directory: str = None, repository: str = None, revision: str = None
-    ):
+    def __init__(self, directory: str = None, repository: str = None, revision: str = None):
         super().__init__(directory=directory, repository=repository, revision=revision)
 
 
@@ -1677,19 +1468,8 @@ class GlusterfsPersistentVolumeSource(KubernetesObject):
     path: str
     read_only: bool
 
-    def __init__(
-        self,
-        endpoints: str = None,
-        endpoints_namespace: str = None,
-        path: str = None,
-        read_only: bool = None,
-    ):
-        super().__init__(
-            endpoints=endpoints,
-            endpoints_namespace=endpoints_namespace,
-            path=path,
-            read_only=read_only,
-        )
+    def __init__(self, endpoints: str = None, endpoints_namespace: str = None, path: str = None, read_only: bool = None):
+        super().__init__(endpoints=endpoints, endpoints_namespace=endpoints_namespace, path=path, read_only=read_only)
 
 
 class GlusterfsVolumeSource(KubernetesObject):
@@ -1883,15 +1663,14 @@ class NamespaceSpec(KubernetesObject):
 class Namespace(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Namespace"
     _group_ = "core"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: NamespaceSpec
 
-    def __init__(
-        self, name: str, metadata: meta.ObjectMeta = None, spec: NamespaceSpec = None
-    ):
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: NamespaceSpec = None):
         super().__init__("v1", "Namespace", name, "", metadata=metadata, spec=spec)
 
 
@@ -1983,9 +1762,7 @@ class PortworxVolumeSource(KubernetesObject):
     read_only: bool
     volume_id: str
 
-    def __init__(
-        self, fs_type: str = None, read_only: bool = None, volume_id: str = None
-    ):
+    def __init__(self, fs_type: str = None, read_only: bool = None, volume_id: str = None):
         super().__init__(fs_type=fs_type, read_only=read_only, volume_id=volume_id)
 
 
@@ -2005,22 +1782,9 @@ class QuobyteVolumeSource(KubernetesObject):
     volume: str
 
     def __init__(
-        self,
-        group: str = None,
-        read_only: bool = None,
-        registry: str = None,
-        tenant: str = None,
-        user: str = None,
-        volume: str = None,
+        self, group: str = None, read_only: bool = None, registry: str = None, tenant: str = None, user: str = None, volume: str = None
     ):
-        super().__init__(
-            group=group,
-            read_only=read_only,
-            registry=registry,
-            tenant=tenant,
-            user=user,
-            volume=volume,
-        )
+        super().__init__(group=group, read_only=read_only, registry=registry, tenant=tenant, user=user, volume=volume)
 
 
 class RBDPersistentVolumeSource(KubernetesObject):
@@ -2130,11 +1894,7 @@ class StorageOSPersistentVolumeSource(KubernetesObject):
         volume_namespace: str = None,
     ):
         super().__init__(
-            fs_type=fs_type,
-            read_only=read_only,
-            secret_ref=secret_ref,
-            volume_name=volume_name,
-            volume_namespace=volume_namespace,
+            fs_type=fs_type, read_only=read_only, secret_ref=secret_ref, volume_name=volume_name, volume_namespace=volume_namespace
         )
 
 
@@ -2158,18 +1918,9 @@ class VsphereVirtualDiskVolumeSource(KubernetesObject):
     storage_policy_name: str
     volume_path: str
 
-    def __init__(
-        self,
-        fs_type: str = None,
-        storage_policy_id: str = None,
-        storage_policy_name: str = None,
-        volume_path: str = None,
-    ):
+    def __init__(self, fs_type: str = None, storage_policy_id: str = None, storage_policy_name: str = None, volume_path: str = None):
         super().__init__(
-            fs_type=fs_type,
-            storage_policy_id=storage_policy_id,
-            storage_policy_name=storage_policy_name,
-            volume_path=volume_path,
+            fs_type=fs_type, storage_policy_id=storage_policy_id, storage_policy_name=storage_policy_name, volume_path=volume_path
         )
 
 
@@ -2287,42 +2038,29 @@ class PersistentVolumeSpec(KubernetesObject):
 class PersistentVolume(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "PersistentVolume"
     _group_ = "core"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: PersistentVolumeSpec
 
-    def __init__(
-        self,
-        name: str,
-        metadata: meta.ObjectMeta = None,
-        spec: PersistentVolumeSpec = None,
-    ):
-        super().__init__(
-            "v1", "PersistentVolume", name, "", metadata=metadata, spec=spec
-        )
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: PersistentVolumeSpec = None):
+        super().__init__("v1", "PersistentVolume", name, "", metadata=metadata, spec=spec)
 
 
 class PersistentVolumeClaim(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "PersistentVolumeClaim"
     _group_ = "core"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: PersistentVolumeClaimSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: PersistentVolumeClaimSpec = None,
-    ):
-        super().__init__(
-            "v1", "PersistentVolumeClaim", name, namespace, metadata=metadata, spec=spec
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PersistentVolumeClaimSpec = None):
+        super().__init__("v1", "PersistentVolumeClaim", name, namespace, metadata=metadata, spec=spec)
 
 
 class PersistentVolumeClaimVolumeSource(KubernetesObject):
@@ -2363,12 +2101,7 @@ class PodDNSConfig(KubernetesObject):
     options: List[PodDNSConfigOption]
     searches: List[str]
 
-    def __init__(
-        self,
-        nameservers: List[str] = None,
-        options: List[PodDNSConfigOption] = None,
-        searches: List[str] = None,
-    ):
+    def __init__(self, nameservers: List[str] = None, options: List[PodDNSConfigOption] = None, searches: List[str] = None):
         super().__init__(nameservers=nameservers, options=options, searches=searches)
 
 
@@ -2457,21 +2190,8 @@ class Toleration(KubernetesObject):
     toleration_seconds: int
     value: str
 
-    def __init__(
-        self,
-        effect: str = None,
-        key: str = None,
-        operator: str = None,
-        toleration_seconds: int = None,
-        value: str = None,
-    ):
-        super().__init__(
-            effect=effect,
-            key=key,
-            operator=operator,
-            toleration_seconds=toleration_seconds,
-            value=value,
-        )
+    def __init__(self, effect: str = None, key: str = None, operator: str = None, toleration_seconds: int = None, value: str = None):
+        super().__init__(effect=effect, key=key, operator=operator, toleration_seconds=toleration_seconds, value=value)
 
 
 class TopologySpreadConstraint(KubernetesObject):
@@ -2488,18 +2208,9 @@ class TopologySpreadConstraint(KubernetesObject):
     when_unsatisfiable: str
 
     def __init__(
-        self,
-        label_selector: meta.LabelSelector = None,
-        max_skew: int = None,
-        topology_key: str = None,
-        when_unsatisfiable: str = None,
+        self, label_selector: meta.LabelSelector = None, max_skew: int = None, topology_key: str = None, when_unsatisfiable: str = None
     ):
-        super().__init__(
-            label_selector=label_selector,
-            max_skew=max_skew,
-            topology_key=topology_key,
-            when_unsatisfiable=when_unsatisfiable,
-        )
+        super().__init__(label_selector=label_selector, max_skew=max_skew, topology_key=topology_key, when_unsatisfiable=when_unsatisfiable)
 
 
 class SecretProjection(KubernetesObject):
@@ -2512,9 +2223,7 @@ class SecretProjection(KubernetesObject):
     name: str
     optional: bool
 
-    def __init__(
-        self, items: List[KeyToPath] = None, name: str = None, optional: bool = None
-    ):
+    def __init__(self, items: List[KeyToPath] = None, name: str = None, optional: bool = None):
         super().__init__(items=items, name=name, optional=optional)
 
 
@@ -2530,12 +2239,8 @@ class ServiceAccountTokenProjection(KubernetesObject):
     expiration_seconds: int
     path: str
 
-    def __init__(
-        self, audience: str = None, expiration_seconds: int = None, path: str = None
-    ):
-        super().__init__(
-            audience=audience, expiration_seconds=expiration_seconds, path=path
-        )
+    def __init__(self, audience: str = None, expiration_seconds: int = None, path: str = None):
+        super().__init__(audience=audience, expiration_seconds=expiration_seconds, path=path)
 
 
 class VolumeProjection(KubernetesObject):
@@ -2563,12 +2268,7 @@ class VolumeProjection(KubernetesObject):
         secret: SecretProjection = None,
         service_account_token: ServiceAccountTokenProjection = None,
     ):
-        super().__init__(
-            config_map=config_map,
-            downward_api=downward_api,
-            secret=secret,
-            service_account_token=service_account_token,
-        )
+        super().__init__(config_map=config_map, downward_api=downward_api, secret=secret, service_account_token=service_account_token)
 
 
 class ProjectedVolumeSource(KubernetesObject):
@@ -2580,9 +2280,7 @@ class ProjectedVolumeSource(KubernetesObject):
     default_mode: int
     sources: List[VolumeProjection]
 
-    def __init__(
-        self, default_mode: int = None, sources: List[VolumeProjection] = None
-    ):
+    def __init__(self, default_mode: int = None, sources: List[VolumeProjection] = None):
         super().__init__(default_mode=default_mode, sources=sources)
 
 
@@ -2683,19 +2381,8 @@ class SecretVolumeSource(KubernetesObject):
     optional: bool
     secret_name: str
 
-    def __init__(
-        self,
-        default_mode: int = None,
-        items: List[KeyToPath] = None,
-        optional: bool = None,
-        secret_name: str = None,
-    ):
-        super().__init__(
-            default_mode=default_mode,
-            items=items,
-            optional=optional,
-            secret_name=secret_name,
-        )
+    def __init__(self, default_mode: int = None, items: List[KeyToPath] = None, optional: bool = None, secret_name: str = None):
+        super().__init__(default_mode=default_mode, items=items, optional=optional, secret_name=secret_name)
 
 
 class StorageOSVolumeSource(KubernetesObject):
@@ -2719,11 +2406,7 @@ class StorageOSVolumeSource(KubernetesObject):
         volume_namespace: str = None,
     ):
         super().__init__(
-            fs_type=fs_type,
-            read_only=read_only,
-            secret_ref=secret_ref,
-            volume_name=volume_name,
-            volume_namespace=volume_namespace,
+            fs_type=fs_type, read_only=read_only, secret_ref=secret_ref, volume_name=volume_name, volume_namespace=volume_namespace
         )
 
 
@@ -2999,9 +2682,7 @@ class ScopedResourceSelectorRequirement(KubernetesObject):
     scope_name: str
     values: List[str]
 
-    def __init__(
-        self, operator: str = None, scope_name: str = None, values: List[str] = None
-    ):
+    def __init__(self, operator: str = None, scope_name: str = None, values: List[str] = None):
         super().__init__(operator=operator, scope_name=scope_name, values=values)
 
 
@@ -3013,9 +2694,7 @@ class ScopeSelector(KubernetesObject):
 
     match_expressions: List[ScopedResourceSelectorRequirement]
 
-    def __init__(
-        self, match_expressions: List[ScopedResourceSelectorRequirement] = None
-    ):
+    def __init__(self, match_expressions: List[ScopedResourceSelectorRequirement] = None):
         super().__init__(match_expressions=match_expressions)
 
 
@@ -3029,39 +2708,28 @@ class ResourceQuotaSpec(KubernetesObject):
     scope_selector: ScopeSelector
     scopes: List[str]
 
-    def __init__(
-        self,
-        hard: Dict[str, Quantity] = None,
-        scope_selector: ScopeSelector = None,
-        scopes: List[str] = None,
-    ):
+    def __init__(self, hard: Dict[str, Quantity] = None, scope_selector: ScopeSelector = None, scopes: List[str] = None):
         super().__init__(hard=hard, scope_selector=scope_selector, scopes=scopes)
 
 
 class ResourceQuota(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "ResourceQuota"
     _group_ = "core"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: ResourceQuotaSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: ResourceQuotaSpec = None,
-    ):
-        super().__init__(
-            "v1", "ResourceQuota", name, namespace, metadata=metadata, spec=spec
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ResourceQuotaSpec = None):
+        super().__init__("v1", "ResourceQuota", name, namespace, metadata=metadata, spec=spec)
 
 
 class Secret(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Secret"
     _group_ = "core"
     _version_ = "v1"
 
@@ -3082,15 +2750,7 @@ class Secret(KubernetesApiResource):
         type: str = None,
     ):
         super().__init__(
-            "v1",
-            "Secret",
-            name,
-            namespace,
-            data=data,
-            immutable=immutable,
-            metadata=metadata,
-            string_data=string_data,
-            type=type,
+            "v1", "Secret", name, namespace, data=data, immutable=immutable, metadata=metadata, string_data=string_data, type=type
         )
 
 
@@ -3118,14 +2778,7 @@ class ServicePort(KubernetesObject):
         protocol: str = None,
         target_port: IntOrString = None,
     ):
-        super().__init__(
-            app_protocol=app_protocol,
-            name=name,
-            node_port=node_port,
-            port=port,
-            protocol=protocol,
-            target_port=target_port,
-        )
+        super().__init__(app_protocol=app_protocol, name=name, node_port=node_port, port=port, protocol=protocol, target_port=target_port)
 
 
 class SessionAffinityConfig(KubernetesObject):
@@ -3233,25 +2886,21 @@ class ServiceSpec(KubernetesObject):
 class Service(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Service"
     _group_ = "core"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     spec: ServiceSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: ServiceSpec = None,
-    ):
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ServiceSpec = None):
         super().__init__("v1", "Service", name, namespace, metadata=metadata, spec=spec)
 
 
 class ServiceAccount(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "ServiceAccount"
     _group_ = "core"
     _version_ = "v1"
 
@@ -3304,7 +2953,5 @@ class TopologySelectorTerm(KubernetesObject):
 
     match_label_expressions: List[TopologySelectorLabelRequirement]
 
-    def __init__(
-        self, match_label_expressions: List[TopologySelectorLabelRequirement] = None
-    ):
+    def __init__(self, match_label_expressions: List[TopologySelectorLabelRequirement] = None):
         super().__init__(match_label_expressions=match_label_expressions)

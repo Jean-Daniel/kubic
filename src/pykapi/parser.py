@@ -16,9 +16,7 @@ from .types import (
     NamedProperty,
 )
 
-TimeType = TypeAlias(
-    QualifiedName("Time", "meta", "v1"), "str", description="ISO date-time"
-)
+TimeType = TypeAlias(QualifiedName("Time", "meta", "v1"), "str", description="ISO date-time")
 
 QuantityType = TypeAlias(
     QualifiedName("Quantity", "core", "v1"),
@@ -32,9 +30,7 @@ IntOrStringType = TypeAlias(
     GenericType("Union", ["str", "int"]),
     description="IntOrString is a type that can hold an int32 or a string.",
 )
-IDNHostname = TypeAlias(
-    QualifiedName("IDNHostname", "core", "v1"), "str", description=""
-)
+IDNHostname = TypeAlias(QualifiedName("IDNHostname", "core", "v1"), "str", description="")
 Base64Type = TypeAlias(
     QualifiedName("Base64", "core", "v1"),
     "str",
@@ -295,17 +291,13 @@ class Parser:
 
         return self.import_complex_property(obj_type, prop_name, schema)
 
-    def import_base_property(
-        self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str
-    ) -> Type:
+    def import_base_property(self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str) -> Type:
         if prop_type == "object":
             # if no properties, this is just an alias for generic object
             if "properties" in schema:
                 assert isinstance(obj_type, ObjectType)
                 # this is an anonymous type -> register it for parsing later
-                ty = AnonymousType.with_property(
-                    schema.get("_type_name_", prop_name), obj_type
-                )
+                ty = AnonymousType.with_property(schema.get("_type_name_", prop_name), obj_type)
                 ty.description = schema.get("description")
                 self._register_type(ty, schema)
                 return ty
@@ -315,13 +307,7 @@ class Parser:
                 if "_type_name_" in schema:
                     details["_type_name_"] = schema["_type_name_"]
                 vtype = self.import_property(obj_type, prop_name, details)
-                return GenericType(
-                    "Dict",
-                    (
-                        "str",
-                        vtype,
-                    ),
-                )
+                return GenericType("Dict", ("str", vtype))
 
             return GenericType("Dict", ("str", "Any"))
 

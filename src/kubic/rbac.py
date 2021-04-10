@@ -46,17 +46,14 @@ class PolicyRule(KubernetesObject):
         verbs: List[str] = None,
     ):
         super().__init__(
-            api_groups=api_groups,
-            non_resource_urls=non_resource_urls,
-            resource_names=resource_names,
-            resources=resources,
-            verbs=verbs,
+            api_groups=api_groups, non_resource_urls=non_resource_urls, resource_names=resource_names, resources=resources, verbs=verbs
         )
 
 
 class ClusterRole(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "ClusterRole"
     _group_ = "rbac.authorization.k8s.io"
     _version_ = "v1"
 
@@ -65,20 +62,10 @@ class ClusterRole(KubernetesApiResource):
     rules: List[PolicyRule]
 
     def __init__(
-        self,
-        name: str,
-        aggregation_rule: AggregationRule = None,
-        metadata: meta.ObjectMeta = None,
-        rules: List[PolicyRule] = None,
+        self, name: str, aggregation_rule: AggregationRule = None, metadata: meta.ObjectMeta = None, rules: List[PolicyRule] = None
     ):
         super().__init__(
-            "rbac.authorization.k8s.io/v1",
-            "ClusterRole",
-            name,
-            "",
-            aggregation_rule=aggregation_rule,
-            metadata=metadata,
-            rules=rules,
+            "rbac.authorization.k8s.io/v1", "ClusterRole", name, "", aggregation_rule=aggregation_rule, metadata=metadata, rules=rules
         )
 
 
@@ -111,19 +98,14 @@ class Subject(KubernetesObject):
     name: str
     namespace: str
 
-    def __init__(
-        self,
-        api_group: str = None,
-        kind: str = None,
-        name: str = None,
-        namespace: str = None,
-    ):
+    def __init__(self, api_group: str = None, kind: str = None, name: str = None, namespace: str = None):
         super().__init__(api_group=api_group, kind=kind, name=name, namespace=namespace)
 
 
 class ClusterRoleBinding(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "ClusterRoleBinding"
     _group_ = "rbac.authorization.k8s.io"
     _version_ = "v1"
 
@@ -133,53 +115,30 @@ class ClusterRoleBinding(KubernetesApiResource):
     role_ref: RoleRef
     subjects: List[Subject]
 
-    def __init__(
-        self,
-        name: str,
-        metadata: meta.ObjectMeta = None,
-        role_ref: RoleRef = None,
-        subjects: List[Subject] = None,
-    ):
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: List[Subject] = None):
         super().__init__(
-            "rbac.authorization.k8s.io/v1",
-            "ClusterRoleBinding",
-            name,
-            "",
-            metadata=metadata,
-            role_ref=role_ref,
-            subjects=subjects,
+            "rbac.authorization.k8s.io/v1", "ClusterRoleBinding", name, "", metadata=metadata, role_ref=role_ref, subjects=subjects
         )
 
 
 class Role(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Role"
     _group_ = "rbac.authorization.k8s.io"
     _version_ = "v1"
 
     metadata: meta.ObjectMeta
     rules: List[PolicyRule]
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        rules: List[PolicyRule] = None,
-    ):
-        super().__init__(
-            "rbac.authorization.k8s.io/v1",
-            "Role",
-            name,
-            namespace,
-            metadata=metadata,
-            rules=rules,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, rules: List[PolicyRule] = None):
+        super().__init__("rbac.authorization.k8s.io/v1", "Role", name, namespace, metadata=metadata, rules=rules)
 
 
 class RoleBinding(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "RoleBinding"
     _group_ = "rbac.authorization.k8s.io"
     _version_ = "v1"
 
@@ -190,19 +149,8 @@ class RoleBinding(KubernetesApiResource):
     subjects: List[Subject]
 
     def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        role_ref: RoleRef = None,
-        subjects: List[Subject] = None,
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: List[Subject] = None
     ):
         super().__init__(
-            "rbac.authorization.k8s.io/v1",
-            "RoleBinding",
-            name,
-            namespace,
-            metadata=metadata,
-            role_ref=role_ref,
-            subjects=subjects,
+            "rbac.authorization.k8s.io/v1", "RoleBinding", name, namespace, metadata=metadata, role_ref=role_ref, subjects=subjects
         )

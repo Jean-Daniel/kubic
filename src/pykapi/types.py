@@ -139,11 +139,7 @@ class AnonymousType(ObjectType):
         return self.parent.fqn.name + self._basename
 
     def __eq__(self, other):
-        return (
-            type(self) == type(other)
-            and self.name == other.name
-            and super().__eq__(other)
-        )
+        return type(self) == type(other) and self.name == other.name and super().__eq__(other)
 
     def __str__(self):
         return self.name
@@ -155,9 +151,7 @@ class AnonymousType(ObjectType):
         # To avoid having a lot of conflicting Spec types -> use fullname by default.
         if base_name == "Spec":
             base_name = parent.name + base_name
-        return AnonymousType(
-            QualifiedName(base_name, parent.group, parent.version), parent, prop_name
-        )
+        return AnonymousType(QualifiedName(base_name, parent.group, parent.version), parent, prop_name)
 
 
 Type = Union[str, ApiType, GenericType]

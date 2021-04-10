@@ -35,34 +35,18 @@ class VerticalPodAutoscalerSpec(KubernetesObject):
         target_ref: autoscaling.CrossVersionObjectReference = None,
         update_policy: UpdatePolicy = None,
     ):
-        super().__init__(
-            resource_policy=resource_policy,
-            target_ref=target_ref,
-            update_policy=update_policy,
-        )
+        super().__init__(resource_policy=resource_policy, target_ref=target_ref, update_policy=update_policy)
 
 
 class VerticalPodAutoscaler(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "VerticalPodAutoscaler"
     _group_ = "autoscaling.k8s.io"
     _version_ = "v1beta2"
 
     metadata: meta.ObjectMeta
     spec: VerticalPodAutoscalerSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VerticalPodAutoscalerSpec = None,
-    ):
-        super().__init__(
-            "autoscaling.k8s.io/v1beta2",
-            "VerticalPodAutoscaler",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VerticalPodAutoscalerSpec = None):
+        super().__init__("autoscaling.k8s.io/v1beta2", "VerticalPodAutoscaler", name, namespace, metadata=metadata, spec=spec)

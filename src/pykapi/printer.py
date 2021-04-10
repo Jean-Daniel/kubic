@@ -87,6 +87,9 @@ class TypePrinter:
         stream.write("    __slots__ = ()\n")
 
         if not isinstance(ty, AnonymousType):
+            if isinstance(ty, ApiResourceType):
+                if ty.kind:
+                    stream.write(f'\n    _kind_ = "{ty.kind}"')
             if ty.group:
                 stream.write(f'\n    _group_ = "{ty.group}"\n')
             if ty.version:

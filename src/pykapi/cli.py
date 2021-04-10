@@ -20,9 +20,7 @@ def import_k8s_api(args, annotations):
     version = args.version
     file = os.path.join(args.schemas, f"{version}.json")
     if not os.path.exists(file):
-        tmp, headers = urlretrieve(
-            f"https://github.com/kubernetes/kubernetes/raw/release-{version}/api/openapi-spec/swagger.json"
-        )
+        tmp, headers = urlretrieve(f"https://github.com/kubernetes/kubernetes/raw/release-{version}/api/openapi-spec/swagger.json")
         with open(tmp, "rb") as f:
             data = json.load(f)
         data.pop("paths", None)
@@ -111,9 +109,7 @@ def import_crd_files(paths: List[str], annotations: str, output: str):
                     openapi = spec["validation"]["openAPIV3Schema"]
 
                 if "x-kubernetes-group-version-kind" not in openapi:
-                    openapi["x-kubernetes-group-version-kind"] = [
-                        {"group": group, "kind": kind, "version": version}
-                    ]
+                    openapi["x-kubernetes-group-version-kind"] = [{"group": group, "kind": kind, "version": version}]
                 openapi["x-scoped"] = spec.get("scope") == "Namespaced"
 
                 crds.append(CRD(QualifiedName(kind, group, version), openapi))
@@ -126,9 +122,7 @@ def import_crd_files(paths: List[str], annotations: str, output: str):
     print_groups(groups, output, api_module="..")
 
 
-def import_custom_resources(
-    schema_dir: str, crds: List[str], annotations: str, output: str
-):
+def import_custom_resources(schema_dir: str, crds: List[str], annotations: str, output: str):
     files = []
     for crd in crds:
         filename, ext = os.path.splitext(crd)
@@ -164,9 +158,7 @@ SCHEMA_DIR = os.path.join(os.path.dirname(__file__), "schemas")
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        "pykapi", description="Generate python API for Kubernetes Objects"
-    )
+    parser = argparse.ArgumentParser("pykapi", description="Generate python API for Kubernetes Objects")
     parser.add_argument("-o", "--output", type=str, default="-")
     parser.add_argument("-s", "--schemas", type=str, default=SCHEMA_DIR)
     parser.add_argument("--version", type=str, default="1.21")

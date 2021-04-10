@@ -20,22 +20,9 @@ class CustomResourceColumnDefinition(KubernetesObject):
     type: str
 
     def __init__(
-        self,
-        description: str = None,
-        format: str = None,
-        json_path: str = None,
-        name: str = None,
-        priority: int = None,
-        type: str = None,
+        self, description: str = None, format: str = None, json_path: str = None, name: str = None, priority: int = None, type: str = None
     ):
-        super().__init__(
-            description=description,
-            format=format,
-            json_path=json_path,
-            name=name,
-            priority=priority,
-            type=type,
-        )
+        super().__init__(description=description, format=format, json_path=json_path, name=name, priority=priority, type=type)
 
 
 class ServiceReference(KubernetesObject):
@@ -51,13 +38,7 @@ class ServiceReference(KubernetesObject):
     path: str
     port: int
 
-    def __init__(
-        self,
-        name: str = None,
-        namespace: str = None,
-        path: str = None,
-        port: int = None,
-    ):
+    def __init__(self, name: str = None, namespace: str = None, path: str = None, port: int = None):
         super().__init__(name=name, namespace=namespace, path=path, port=port)
 
 
@@ -71,12 +52,7 @@ class WebhookClientConfig(KubernetesObject):
     service: ServiceReference
     url: str
 
-    def __init__(
-        self,
-        ca_bundle: core.Base64 = None,
-        service: ServiceReference = None,
-        url: str = None,
-    ):
+    def __init__(self, ca_bundle: core.Base64 = None, service: ServiceReference = None, url: str = None):
         super().__init__(ca_bundle=ca_bundle, service=service, url=url)
 
 
@@ -91,15 +67,8 @@ class WebhookConversion(KubernetesObject):
     client_config: WebhookClientConfig
     conversion_review_versions: List[str]
 
-    def __init__(
-        self,
-        client_config: WebhookClientConfig = None,
-        conversion_review_versions: List[str] = None,
-    ):
-        super().__init__(
-            client_config=client_config,
-            conversion_review_versions=conversion_review_versions,
-        )
+    def __init__(self, client_config: WebhookClientConfig = None, conversion_review_versions: List[str] = None):
+        super().__init__(client_config=client_config, conversion_review_versions=conversion_review_versions)
 
 
 class CustomResourceConversion(KubernetesObject):
@@ -141,14 +110,7 @@ class CustomResourceDefinitionNames(KubernetesObject):
         short_names: List[str] = None,
         singular: str = None,
     ):
-        super().__init__(
-            categories=categories,
-            kind=kind,
-            list_kind=list_kind,
-            plural=plural,
-            short_names=short_names,
-            singular=singular,
-        )
+        super().__init__(categories=categories, kind=kind, list_kind=list_kind, plural=plural, short_names=short_names, singular=singular)
 
 
 class ExternalDocumentation(KubernetesObject):
@@ -360,16 +322,9 @@ class CustomResourceSubresourceScale(KubernetesObject):
     spec_replicas_path: str
     status_replicas_path: str
 
-    def __init__(
-        self,
-        label_selector_path: str = None,
-        spec_replicas_path: str = None,
-        status_replicas_path: str = None,
-    ):
+    def __init__(self, label_selector_path: str = None, spec_replicas_path: str = None, status_replicas_path: str = None):
         super().__init__(
-            label_selector_path=label_selector_path,
-            spec_replicas_path=spec_replicas_path,
-            status_replicas_path=status_replicas_path,
+            label_selector_path=label_selector_path, spec_replicas_path=spec_replicas_path, status_replicas_path=status_replicas_path
         )
 
 
@@ -385,11 +340,7 @@ class CustomResourceSubresources(KubernetesObject):
     scale: CustomResourceSubresourceScale
     status: CustomResourceSubresourceStatus
 
-    def __init__(
-        self,
-        scale: CustomResourceSubresourceScale = None,
-        status: CustomResourceSubresourceStatus = None,
-    ):
+    def __init__(self, scale: CustomResourceSubresourceScale = None, status: CustomResourceSubresourceStatus = None):
         super().__init__(scale=scale, status=status)
 
 
@@ -458,18 +409,14 @@ class CustomResourceDefinitionSpec(KubernetesObject):
         versions: List[CustomResourceDefinitionVersion] = None,
     ):
         super().__init__(
-            conversion=conversion,
-            group=group,
-            names=names,
-            preserve_unknown_fields=preserve_unknown_fields,
-            scope=scope,
-            versions=versions,
+            conversion=conversion, group=group, names=names, preserve_unknown_fields=preserve_unknown_fields, scope=scope, versions=versions
         )
 
 
 class CustomResourceDefinition(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "CustomResourceDefinition"
     _group_ = "apiextensions.k8s.io"
     _version_ = "v1"
 
@@ -478,17 +425,5 @@ class CustomResourceDefinition(KubernetesApiResource):
     metadata: meta.ObjectMeta
     spec: CustomResourceDefinitionSpec
 
-    def __init__(
-        self,
-        name: str,
-        metadata: meta.ObjectMeta = None,
-        spec: CustomResourceDefinitionSpec = None,
-    ):
-        super().__init__(
-            "apiextensions.k8s.io/v1",
-            "CustomResourceDefinition",
-            name,
-            "",
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: CustomResourceDefinitionSpec = None):
+        super().__init__("apiextensions.k8s.io/v1", "CustomResourceDefinition", name, "", metadata=metadata, spec=spec)

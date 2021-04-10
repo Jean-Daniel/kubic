@@ -7,24 +7,12 @@ from .. import meta
 class SealedSecret(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "SealedSecret"
     _group_ = "bitnami.com"
     _version_ = "v1alpha1"
 
     metadata: meta.ObjectMeta
     spec: Dict[str, Any]
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: Dict[str, Any] = None,
-    ):
-        super().__init__(
-            "bitnami.com/v1alpha1",
-            "SealedSecret",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: Dict[str, Any] = None):
+        super().__init__("bitnami.com/v1alpha1", "SealedSecret", name, namespace, metadata=metadata, spec=spec)

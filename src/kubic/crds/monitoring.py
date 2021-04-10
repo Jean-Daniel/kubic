@@ -10,11 +10,7 @@ class BasicAuth(KubernetesObject):
     password: core.SecretKeySelector
     username: core.ConfigMapKeySelector
 
-    def __init__(
-        self,
-        password: core.SecretKeySelector = None,
-        username: core.ConfigMapKeySelector = None,
-    ):
+    def __init__(self, password: core.SecretKeySelector = None, username: core.ConfigMapKeySelector = None):
         super().__init__(password=password, username=username)
 
 
@@ -24,11 +20,7 @@ class CA(KubernetesObject):
     config_map: core.ConfigMapKeySelector
     secret: core.SecretKeySelector
 
-    def __init__(
-        self,
-        config_map: core.ConfigMapKeySelector = None,
-        secret: core.SecretKeySelector = None,
-    ):
+    def __init__(self, config_map: core.ConfigMapKeySelector = None, secret: core.SecretKeySelector = None):
         super().__init__(config_map=config_map, secret=secret)
 
 
@@ -38,11 +30,7 @@ class Cert(KubernetesObject):
     config_map: core.ConfigMapKeySelector
     secret: core.SecretKeySelector
 
-    def __init__(
-        self,
-        config_map: core.ConfigMapKeySelector = None,
-        secret: core.SecretKeySelector = None,
-    ):
+    def __init__(self, config_map: core.ConfigMapKeySelector = None, secret: core.SecretKeySelector = None):
         super().__init__(config_map=config_map, secret=secret)
 
 
@@ -101,11 +89,7 @@ class APIserverConfig(KubernetesObject):
         tls_config: APIserverConfigTLSConfig = None,
     ):
         super().__init__(
-            basic_auth=basic_auth,
-            bearer_token=bearer_token,
-            bearer_token_file=bearer_token_file,
-            host=host,
-            tls_config=tls_config,
+            basic_auth=basic_auth, bearer_token=bearer_token, bearer_token_file=bearer_token_file, host=host, tls_config=tls_config
         )
 
 
@@ -116,17 +100,8 @@ class Alert(KubernetesObject):
     for_outage_tolerance: str
     resend_delay: str
 
-    def __init__(
-        self,
-        for_grace_period: str = None,
-        for_outage_tolerance: str = None,
-        resend_delay: str = None,
-    ):
-        super().__init__(
-            for_grace_period=for_grace_period,
-            for_outage_tolerance=for_outage_tolerance,
-            resend_delay=resend_delay,
-        )
+    def __init__(self, for_grace_period: str = None, for_outage_tolerance: str = None, resend_delay: str = None):
+        super().__init__(for_grace_period=for_grace_period, for_outage_tolerance=for_outage_tolerance, resend_delay=resend_delay)
 
 
 class AlertmanagerTLSConfig(KubernetesObject):
@@ -222,12 +197,7 @@ class PodMetadata(KubernetesObject):
     labels: Dict[str, str]
     name: str
 
-    def __init__(
-        self,
-        annotations: Dict[str, str] = None,
-        labels: Dict[str, str] = None,
-        name: str = None,
-    ):
+    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None, name: str = None):
         super().__init__(annotations=annotations, labels=labels, name=name)
 
 
@@ -244,11 +214,7 @@ class Storage(KubernetesObject):
         empty_dir: core.EmptyDirVolumeSource = None,
         volume_claim_template: core.PersistentVolumeClaim = None,
     ):
-        super().__init__(
-            disable_mount_sub_path=disable_mount_sub_path,
-            empty_dir=empty_dir,
-            volume_claim_template=volume_claim_template,
-        )
+        super().__init__(disable_mount_sub_path=disable_mount_sub_path, empty_dir=empty_dir, volume_claim_template=volume_claim_template)
 
 
 class AlertmanagerSpec(KubernetesObject):
@@ -432,15 +398,8 @@ class ResourceFieldRef(KubernetesObject):
     divisor: core.IntOrString
     resource: str
 
-    def __init__(
-        self,
-        container_name: str = None,
-        divisor: core.IntOrString = None,
-        resource: str = None,
-    ):
-        super().__init__(
-            container_name=container_name, divisor=divisor, resource=resource
-        )
+    def __init__(self, container_name: str = None, divisor: core.IntOrString = None, resource: str = None):
+        super().__init__(container_name=container_name, divisor=divisor, resource=resource)
 
 
 class ValueFrom(KubernetesObject):
@@ -459,10 +418,7 @@ class ValueFrom(KubernetesObject):
         secret_key_ref: core.SecretKeySelector = None,
     ):
         super().__init__(
-            config_map_key_ref=config_map_key_ref,
-            field_ref=field_ref,
-            resource_field_ref=resource_field_ref,
-            secret_key_ref=secret_key_ref,
+            config_map_key_ref=config_map_key_ref, field_ref=field_ref, resource_field_ref=resource_field_ref, secret_key_ref=secret_key_ref
         )
 
 
@@ -475,9 +431,7 @@ class ENV(KubernetesObject):
     value: str
     value_from: ValueFrom
 
-    def __init__(
-        self, name: str = None, value: str = None, value_from: ValueFrom = None
-    ):
+    def __init__(self, name: str = None, value: str = None, value_from: ValueFrom = None):
         super().__init__(name=name, value=value, value_from=value_from)
 
 
@@ -498,15 +452,8 @@ class EnvFrom(KubernetesObject):
     prefix: str
     secret_ref: SecretRef
 
-    def __init__(
-        self,
-        config_map_ref: ConfigMapRef = None,
-        prefix: str = None,
-        secret_ref: SecretRef = None,
-    ):
-        super().__init__(
-            config_map_ref=config_map_ref, prefix=prefix, secret_ref=secret_ref
-        )
+    def __init__(self, config_map_ref: ConfigMapRef = None, prefix: str = None, secret_ref: SecretRef = None):
+        super().__init__(config_map_ref=config_map_ref, prefix=prefix, secret_ref=secret_ref)
 
 
 class Exec(KubernetesObject):
@@ -542,16 +489,9 @@ class HttpGet(KubernetesObject):
     scheme: str
 
     def __init__(
-        self,
-        host: str = None,
-        http_headers: List[HttpHeader] = None,
-        path: str = None,
-        port: core.IntOrString = None,
-        scheme: str = None,
+        self, host: str = None, http_headers: List[HttpHeader] = None, path: str = None, port: core.IntOrString = None, scheme: str = None
     ):
-        super().__init__(
-            host=host, http_headers=http_headers, path=path, port=port, scheme=scheme
-        )
+        super().__init__(host=host, http_headers=http_headers, path=path, port=port, scheme=scheme)
 
 
 class TcpSocket(KubernetesObject):
@@ -573,9 +513,7 @@ class PostStart(KubernetesObject):
     http_get: HttpGet
     tcp_socket: TcpSocket
 
-    def __init__(
-        self, exec: Exec = None, http_get: HttpGet = None, tcp_socket: TcpSocket = None
-    ):
+    def __init__(self, exec: Exec = None, http_get: HttpGet = None, tcp_socket: TcpSocket = None):
         super().__init__(exec=exec, http_get=http_get, tcp_socket=tcp_socket)
 
 
@@ -586,9 +524,7 @@ class PreStop(KubernetesObject):
     http_get: HttpGet
     tcp_socket: TcpSocket
 
-    def __init__(
-        self, exec: Exec = None, http_get: HttpGet = None, tcp_socket: TcpSocket = None
-    ):
+    def __init__(self, exec: Exec = None, http_get: HttpGet = None, tcp_socket: TcpSocket = None):
         super().__init__(exec=exec, http_get=http_get, tcp_socket=tcp_socket)
 
 
@@ -655,21 +591,8 @@ class Port(KubernetesObject):
     name: str
     protocol: str
 
-    def __init__(
-        self,
-        container_port: int = None,
-        host_ip: str = None,
-        host_port: int = None,
-        name: str = None,
-        protocol: str = None,
-    ):
-        super().__init__(
-            container_port=container_port,
-            host_ip=host_ip,
-            host_port=host_port,
-            name=name,
-            protocol=protocol,
-        )
+    def __init__(self, container_port: int = None, host_ip: str = None, host_port: int = None, name: str = None, protocol: str = None):
+        super().__init__(container_port=container_port, host_ip=host_ip, host_port=host_port, name=name, protocol=protocol)
 
 
 class ReadinessProbe(KubernetesObject):
@@ -713,11 +636,7 @@ class Resource(KubernetesObject):
     limits: Dict[str, core.IntOrString]
     requests: Dict[str, core.IntOrString]
 
-    def __init__(
-        self,
-        limits: Dict[str, core.IntOrString] = None,
-        requests: Dict[str, core.IntOrString] = None,
-    ):
+    def __init__(self, limits: Dict[str, core.IntOrString] = None, requests: Dict[str, core.IntOrString] = None):
         super().__init__(limits=limits, requests=requests)
 
 
@@ -729,9 +648,7 @@ class SeLinuxOption(KubernetesObject):
     type: str
     user: str
 
-    def __init__(
-        self, level: str = None, role: str = None, type: str = None, user: str = None
-    ):
+    def __init__(self, level: str = None, role: str = None, type: str = None, user: str = None):
         super().__init__(level=level, role=role, type=type, user=user)
 
 
@@ -742,12 +659,7 @@ class WindowsOption(KubernetesObject):
     gmsa_credential_spec_name: str
     run_as_user_name: str
 
-    def __init__(
-        self,
-        gmsa_credential_spec: str = None,
-        gmsa_credential_spec_name: str = None,
-        run_as_user_name: str = None,
-    ):
+    def __init__(self, gmsa_credential_spec: str = None, gmsa_credential_spec_name: str = None, run_as_user_name: str = None):
         super().__init__(
             gmsa_credential_spec=gmsa_credential_spec,
             gmsa_credential_spec_name=gmsa_credential_spec_name,
@@ -1136,14 +1048,7 @@ class GroupRule(KubernetesObject):
         labels: Dict[str, str] = None,
         record: str = None,
     ):
-        super().__init__(
-            alert=alert,
-            annotations=annotations,
-            expr=expr,
-            for_=for_,
-            labels=labels,
-            record=record,
-        )
+        super().__init__(alert=alert, annotations=annotations, expr=expr, for_=for_, labels=labels, record=record)
 
 
 class Group(KubernetesObject):
@@ -1160,19 +1065,8 @@ class Group(KubernetesObject):
     partial_response_strategy: str
     rules: List[GroupRule]
 
-    def __init__(
-        self,
-        interval: str = None,
-        name: str = None,
-        partial_response_strategy: str = None,
-        rules: List[GroupRule] = None,
-    ):
-        super().__init__(
-            interval=interval,
-            name=name,
-            partial_response_strategy=partial_response_strategy,
-            rules=rules,
-        )
+    def __init__(self, interval: str = None, name: str = None, partial_response_strategy: str = None, rules: List[GroupRule] = None):
+        super().__init__(interval=interval, name=name, partial_response_strategy=partial_response_strategy, rules=rules)
 
 
 class GrpcServerTlsConfig(KubernetesObject):
@@ -1265,11 +1159,7 @@ class Ingress(KubernetesObject):
         relabeling_configs: List[RelabelingConfig] = None,
         selector: meta.LabelSelector = None,
     ):
-        super().__init__(
-            namespace_selector=namespace_selector,
-            relabeling_configs=relabeling_configs,
-            selector=selector,
-        )
+        super().__init__(namespace_selector=namespace_selector, relabeling_configs=relabeling_configs, selector=selector)
 
 
 class PodMetricsEndpointTLSConfig(KubernetesObject):
@@ -1289,13 +1179,7 @@ class PodMetricsEndpointTLSConfig(KubernetesObject):
         key_secret: core.SecretKeySelector = None,
         server_name: str = None,
     ):
-        super().__init__(
-            ca=ca,
-            cert=cert,
-            insecure_skip_verify=insecure_skip_verify,
-            key_secret=key_secret,
-            server_name=server_name,
-        )
+        super().__init__(ca=ca, cert=cert, insecure_skip_verify=insecure_skip_verify, key_secret=key_secret, server_name=server_name)
 
 
 class PodMetricsEndpoint(KubernetesObject):
@@ -1391,6 +1275,7 @@ class PodMonitorSpec(KubernetesObject):
 class PodMonitor(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "PodMonitor"
     _group_ = "monitoring.coreos.com"
     _version_ = "v1"
 
@@ -1399,21 +1284,8 @@ class PodMonitor(KubernetesApiResource):
     metadata: meta.ObjectMeta
     spec: PodMonitorSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: PodMonitorSpec = None,
-    ):
-        super().__init__(
-            "monitoring.coreos.com/v1",
-            "PodMonitor",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PodMonitorSpec = None):
+        super().__init__("monitoring.coreos.com/v1", "PodMonitor", name, namespace, metadata=metadata, spec=spec)
 
 
 class Prober(KubernetesObject):
@@ -1468,19 +1340,13 @@ class ProbeSpec(KubernetesObject):
         scrape_timeout: str = None,
         targets: Target = None,
     ):
-        super().__init__(
-            interval=interval,
-            job_name=job_name,
-            module=module,
-            prober=prober,
-            scrape_timeout=scrape_timeout,
-            targets=targets,
-        )
+        super().__init__(interval=interval, job_name=job_name, module=module, prober=prober, scrape_timeout=scrape_timeout, targets=targets)
 
 
 class Probe(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Probe"
     _group_ = "monitoring.coreos.com"
     _version_ = "v1"
 
@@ -1489,21 +1355,8 @@ class Probe(KubernetesApiResource):
     metadata: meta.ObjectMeta
     spec: ProbeSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: ProbeSpec = None,
-    ):
-        super().__init__(
-            "monitoring.coreos.com/v1",
-            "Probe",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ProbeSpec = None):
+        super().__init__("monitoring.coreos.com/v1", "Probe", name, namespace, metadata=metadata, spec=spec)
 
 
 class PrometheusRulesExcludedFromEnforce(KubernetesObject):
@@ -1526,19 +1379,8 @@ class Query(KubernetesObject):
     max_samples: int
     timeout: str
 
-    def __init__(
-        self,
-        lookback_delta: str = None,
-        max_concurrency: int = None,
-        max_samples: int = None,
-        timeout: str = None,
-    ):
-        super().__init__(
-            lookback_delta=lookback_delta,
-            max_concurrency=max_concurrency,
-            max_samples=max_samples,
-            timeout=timeout,
-        )
+    def __init__(self, lookback_delta: str = None, max_concurrency: int = None, max_samples: int = None, timeout: str = None):
+        super().__init__(lookback_delta=lookback_delta, max_concurrency=max_concurrency, max_samples=max_samples, timeout=timeout)
 
 
 class RemoteReadTLSConfig(KubernetesObject):
@@ -1962,9 +1804,7 @@ class PrometheusSpec(KubernetesObject):
         probe_namespace_selector: meta.LabelSelector = None,
         probe_selector: meta.LabelSelector = None,
         prometheus_external_label_name: str = None,
-        prometheus_rules_excluded_from_enforce: List[
-            PrometheusRulesExcludedFromEnforce
-        ] = None,
+        prometheus_rules_excluded_from_enforce: List[PrometheusRulesExcludedFromEnforce] = None,
         query: Query = None,
         query_log_file: str = None,
         remote_read: List[RemoteRead] = None,
@@ -2076,13 +1916,7 @@ class PrometheusSpec(KubernetesObject):
 class Status(KubernetesObject):
     __slots__ = ()
 
-    _required_ = [
-        "available_replicas",
-        "paused",
-        "replicas",
-        "unavailable_replicas",
-        "updated_replicas",
-    ]
+    _required_ = ["available_replicas", "paused", "replicas", "unavailable_replicas", "updated_replicas"]
 
     available_replicas: int
     paused: bool
@@ -2110,6 +1944,7 @@ class Status(KubernetesObject):
 class Prometheus(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "Prometheus"
     _group_ = "monitoring.coreos.com"
     _version_ = "v1"
 
@@ -2120,22 +1955,9 @@ class Prometheus(KubernetesApiResource):
     status: Status
 
     def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: PrometheusSpec = None,
-        status: Status = None,
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PrometheusSpec = None, status: Status = None
     ):
-        super().__init__(
-            "monitoring.coreos.com/v1",
-            "Prometheus",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("monitoring.coreos.com/v1", "Prometheus", name, namespace, metadata=metadata, spec=spec, status=status)
 
 
 class PrometheusRuleSpec(KubernetesObject):
@@ -2150,6 +1972,7 @@ class PrometheusRuleSpec(KubernetesObject):
 class PrometheusRule(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "PrometheusRule"
     _group_ = "monitoring.coreos.com"
     _version_ = "v1"
 
@@ -2158,21 +1981,8 @@ class PrometheusRule(KubernetesApiResource):
     metadata: meta.ObjectMeta
     spec: PrometheusRuleSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: PrometheusRuleSpec = None,
-    ):
-        super().__init__(
-            "monitoring.coreos.com/v1",
-            "PrometheusRule",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PrometheusRuleSpec = None):
+        super().__init__("monitoring.coreos.com/v1", "PrometheusRule", name, namespace, metadata=metadata, spec=spec)
 
 
 class ServiceMonitorSpec(KubernetesObject):
@@ -2215,6 +2025,7 @@ class ServiceMonitorSpec(KubernetesObject):
 class ServiceMonitor(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "ServiceMonitor"
     _group_ = "monitoring.coreos.com"
     _version_ = "v1"
 
@@ -2223,21 +2034,8 @@ class ServiceMonitor(KubernetesApiResource):
     metadata: meta.ObjectMeta
     spec: ServiceMonitorSpec
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: ServiceMonitorSpec = None,
-    ):
-        super().__init__(
-            "monitoring.coreos.com/v1",
-            "ServiceMonitor",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ServiceMonitorSpec = None):
+        super().__init__("monitoring.coreos.com/v1", "ServiceMonitor", name, namespace, metadata=metadata, spec=spec)
 
 
 class ThanosRulerSpec(KubernetesObject):
@@ -2310,9 +2108,7 @@ class ThanosRulerSpec(KubernetesObject):
         pod_metadata: PodMetadata = None,
         port_name: str = None,
         priority_class_name: str = None,
-        prometheus_rules_excluded_from_enforce: List[
-            PrometheusRulesExcludedFromEnforce
-        ] = None,
+        prometheus_rules_excluded_from_enforce: List[PrometheusRulesExcludedFromEnforce] = None,
         query_config: core.ConfigMapKeySelector = None,
         query_endpoints: List[str] = None,
         replicas: int = None,
@@ -2376,6 +2172,7 @@ class ThanosRulerSpec(KubernetesObject):
 class ThanosRuler(KubernetesApiResource):
     __slots__ = ()
 
+    _kind_ = "ThanosRuler"
     _group_ = "monitoring.coreos.com"
     _version_ = "v1"
 
@@ -2386,19 +2183,6 @@ class ThanosRuler(KubernetesApiResource):
     status: Status
 
     def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: ThanosRulerSpec = None,
-        status: Status = None,
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ThanosRulerSpec = None, status: Status = None
     ):
-        super().__init__(
-            "monitoring.coreos.com/v1",
-            "ThanosRuler",
-            name,
-            namespace,
-            metadata=metadata,
-            spec=spec,
-            status=status,
-        )
+        super().__init__("monitoring.coreos.com/v1", "ThanosRuler", name, namespace, metadata=metadata, spec=spec, status=status)

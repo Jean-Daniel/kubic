@@ -76,9 +76,7 @@ class ApiParser(Parser):
         return group
 
     def annotations_for_type(self, obj_type: ObjectType) -> Optional[dict]:
-        return self.annotations.get(
-            f"{obj_type.group}.{obj_type.version}.{obj_type.name}"
-        )
+        return self.annotations.get(f"{obj_type.group}.{obj_type.version}.{obj_type.name}")
 
     def import_types(self, names: Iterable[str]) -> List[ApiGroup]:
         # register builtin types
@@ -152,15 +150,11 @@ class ApiParser(Parser):
             gvk = schema.get("x-kubernetes-group-version-kind")
             if gvk:
                 # dirty schema fixup
-                assert (
-                    fqn.name == gvk[0]["kind"]
-                ), f"extract kind {fqn.name} does not match type declared kind {gvk[0]['kind']}"
+                assert fqn.name == gvk[0]["kind"], f"extract kind {fqn.name} does not match type declared kind {gvk[0]['kind']}"
                 group = gvk[0]["group"]
                 if not group and fqn.group in ("core", "meta"):
                     group = fqn.group
-                assert fqn.group == (
-                    group
-                ), f"extract group '{fqn.group}' does not match type declared group '{gvk[0]['group']}': {ref}"
+                assert fqn.group == (group), f"extract group '{fqn.group}' does not match type declared group '{gvk[0]['group']}': {ref}"
                 assert (
                     fqn.version == gvk[0]["version"]
                 ), f"extract version {fqn.version} does not match type declared version {gvk[0]['version']}"
@@ -184,8 +178,6 @@ class ApiParser(Parser):
         return alias
 
 
-def import_api_types(
-    schema: Union[str, dict], annotations: dict, *names
-) -> List[ApiGroup]:
+def import_api_types(schema: Union[str, dict], annotations: dict, *names) -> List[ApiGroup]:
     parser = ApiParser(schema, annotations)
     return parser.import_types(names)
