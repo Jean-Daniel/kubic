@@ -8,7 +8,7 @@ set CRDS sealedsecrets.bitnami.com \
          schemas/victoriametrics-operator.crds.yaml
 
 
-for crd in $CRDS;
+for crd in schemas/crds/*;
   echo "  Processing $crd"
   python3 src/kubegen.py --schemas ./schemas -o src/kubic/crds/ $crd
 end

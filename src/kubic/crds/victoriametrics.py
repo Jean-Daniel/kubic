@@ -858,27 +858,6 @@ class VMAgentSpec(KubernetesObject):
         )
 
 
-class VMAgentStatus(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["available_replicas", "replicas", "unavailable_replicas", "updated_replicas"]
-
-    available_replicas: int
-    replicas: int
-    unavailable_replicas: int
-    updated_replicas: int
-
-    def __init__(
-        self, available_replicas: int = None, replicas: int = None, unavailable_replicas: int = None, updated_replicas: int = None
-    ):
-        super().__init__(
-            available_replicas=available_replicas,
-            replicas=replicas,
-            unavailable_replicas=unavailable_replicas,
-            updated_replicas=updated_replicas,
-        )
-
-
 class VMAgent(KubernetesApiResource):
     __slots__ = ()
 
@@ -887,12 +866,9 @@ class VMAgent(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     spec: VMAgentSpec
-    status: VMAgentStatus
 
-    def __init__(
-        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMAgentSpec = None, status: VMAgentStatus = None
-    ):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMAgent", name, namespace, metadata=metadata, spec=spec, status=status)
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMAgentSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMAgent", name, namespace, metadata=metadata, spec=spec)
 
 
 class VMAlertSpecRemoteWrite(KubernetesObject):
@@ -1068,27 +1044,6 @@ class VMAlertSpec(KubernetesObject):
         )
 
 
-class VMAlertStatus(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["available_replicas", "replicas", "unavailable_replicas", "updated_replicas"]
-
-    available_replicas: int
-    replicas: int
-    unavailable_replicas: int
-    updated_replicas: int
-
-    def __init__(
-        self, available_replicas: int = None, replicas: int = None, unavailable_replicas: int = None, updated_replicas: int = None
-    ):
-        super().__init__(
-            available_replicas=available_replicas,
-            replicas=replicas,
-            unavailable_replicas=unavailable_replicas,
-            updated_replicas=updated_replicas,
-        )
-
-
 class VMAlert(KubernetesApiResource):
     __slots__ = ()
 
@@ -1097,12 +1052,9 @@ class VMAlert(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     spec: VMAlertSpec
-    status: VMAlertStatus
 
-    def __init__(
-        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMAlertSpec = None, status: VMAlertStatus = None
-    ):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMAlert", name, namespace, metadata=metadata, spec=spec, status=status)
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMAlertSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMAlert", name, namespace, metadata=metadata, spec=spec)
 
 
 class VMAlertmanagerSpec(KubernetesObject):
@@ -1237,34 +1189,6 @@ class VMAlertmanagerSpec(KubernetesObject):
         )
 
 
-class VMAlertmanagerStatus(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["available_replicas", "paused", "replicas", "unavailable_replicas", "updated_replicas"]
-
-    available_replicas: int
-    paused: bool
-    replicas: int
-    unavailable_replicas: int
-    updated_replicas: int
-
-    def __init__(
-        self,
-        available_replicas: int = None,
-        paused: bool = None,
-        replicas: int = None,
-        unavailable_replicas: int = None,
-        updated_replicas: int = None,
-    ):
-        super().__init__(
-            available_replicas=available_replicas,
-            paused=paused,
-            replicas=replicas,
-            unavailable_replicas=unavailable_replicas,
-            updated_replicas=updated_replicas,
-        )
-
-
 class VMAlertmanager(KubernetesApiResource):
     __slots__ = ()
 
@@ -1275,19 +1199,9 @@ class VMAlertmanager(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     spec: VMAlertmanagerSpec
-    status: VMAlertmanagerStatus
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        metadata: meta.ObjectMeta = None,
-        spec: VMAlertmanagerSpec = None,
-        status: VMAlertmanagerStatus = None,
-    ):
-        super().__init__(
-            "operator.victoriametrics.com/v1beta1", "VMAlertmanager", name, namespace, metadata=metadata, spec=spec, status=status
-        )
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMAlertmanagerSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMAlertmanager", name, namespace, metadata=metadata, spec=spec)
 
 
 class VMInsert(KubernetesObject):
@@ -1716,20 +1630,6 @@ class VMClusterSpec(KubernetesObject):
         )
 
 
-class VMClusterStatus(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["cluster_status", "update_fail_count"]
-
-    cluster_status: str
-    last_sync: str
-    reason: str
-    update_fail_count: int
-
-    def __init__(self, cluster_status: str = None, last_sync: str = None, reason: str = None, update_fail_count: int = None):
-        super().__init__(cluster_status=cluster_status, last_sync=last_sync, reason=reason, update_fail_count=update_fail_count)
-
-
 class VMCluster(KubernetesApiResource):
     __slots__ = ()
 
@@ -1740,12 +1640,9 @@ class VMCluster(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     spec: VMClusterSpec
-    status: VMClusterStatus
 
-    def __init__(
-        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMClusterSpec = None, status: VMClusterStatus = None
-    ):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMCluster", name, namespace, metadata=metadata, spec=spec, status=status)
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMClusterSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMCluster", name, namespace, metadata=metadata, spec=spec)
 
 
 class VMNodeScrapeSpec(KubernetesObject):
@@ -2132,27 +2029,6 @@ class VMSingleSpec(KubernetesObject):
         )
 
 
-class VMSingleStatus(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["available_replicas", "replicas", "unavailable_replicas", "updated_replicas"]
-
-    available_replicas: int
-    replicas: int
-    unavailable_replicas: int
-    updated_replicas: int
-
-    def __init__(
-        self, available_replicas: int = None, replicas: int = None, unavailable_replicas: int = None, updated_replicas: int = None
-    ):
-        super().__init__(
-            available_replicas=available_replicas,
-            replicas=replicas,
-            unavailable_replicas=unavailable_replicas,
-            updated_replicas=updated_replicas,
-        )
-
-
 class VMSingle(KubernetesApiResource):
     __slots__ = ()
 
@@ -2161,12 +2037,9 @@ class VMSingle(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     spec: VMSingleSpec
-    status: VMSingleStatus
 
-    def __init__(
-        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMSingleSpec = None, status: VMSingleStatus = None
-    ):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMSingle", name, namespace, metadata=metadata, spec=spec, status=status)
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMSingleSpec = None):
+        super().__init__("operator.victoriametrics.com/v1beta1", "VMSingle", name, namespace, metadata=metadata, spec=spec)
 
 
 class VMStaticScrapeSpec(KubernetesObject):

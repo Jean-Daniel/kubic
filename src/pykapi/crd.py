@@ -60,9 +60,10 @@ class CRDParser(Parser):
     def import_resource(self, obj_type: ObjectType, schema: dict):
         # on CRD, remove status only if defined as a generic object
         if isinstance(obj_type, ApiResourceType):
-            status = schema["properties"].get("status")
-            if status and "properties" not in status:
-                schema["properties"].pop("status", None)
+            schema["properties"].pop("status", None)
+            # status = schema["properties"].get("status")
+            # if status and "properties" not in status:
+            #     schema["properties"].pop("status", None)
 
         super().import_resource(obj_type, schema)
 

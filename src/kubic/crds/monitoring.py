@@ -1911,34 +1911,6 @@ class PrometheusSpec(KubernetesObject):
         )
 
 
-class Status(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["available_replicas", "paused", "replicas", "unavailable_replicas", "updated_replicas"]
-
-    available_replicas: int
-    paused: bool
-    replicas: int
-    unavailable_replicas: int
-    updated_replicas: int
-
-    def __init__(
-        self,
-        available_replicas: int = None,
-        paused: bool = None,
-        replicas: int = None,
-        unavailable_replicas: int = None,
-        updated_replicas: int = None,
-    ):
-        super().__init__(
-            available_replicas=available_replicas,
-            paused=paused,
-            replicas=replicas,
-            unavailable_replicas=unavailable_replicas,
-            updated_replicas=updated_replicas,
-        )
-
-
 class Prometheus(KubernetesApiResource):
     __slots__ = ()
 
@@ -1949,12 +1921,9 @@ class Prometheus(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     spec: PrometheusSpec
-    status: Status
 
-    def __init__(
-        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PrometheusSpec = None, status: Status = None
-    ):
-        super().__init__("monitoring.coreos.com/v1", "Prometheus", name, namespace, metadata=metadata, spec=spec, status=status)
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PrometheusSpec = None):
+        super().__init__("monitoring.coreos.com/v1", "Prometheus", name, namespace, metadata=metadata, spec=spec)
 
 
 class PrometheusRuleSpec(KubernetesObject):
@@ -2174,9 +2143,6 @@ class ThanosRuler(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     spec: ThanosRulerSpec
-    status: Status
 
-    def __init__(
-        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ThanosRulerSpec = None, status: Status = None
-    ):
-        super().__init__("monitoring.coreos.com/v1", "ThanosRuler", name, namespace, metadata=metadata, spec=spec, status=status)
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ThanosRulerSpec = None):
+        super().__init__("monitoring.coreos.com/v1", "ThanosRuler", name, namespace, metadata=metadata, spec=spec)
