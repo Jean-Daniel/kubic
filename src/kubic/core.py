@@ -2691,17 +2691,21 @@ class ServiceSpec(KubernetesObject):
 
     _field_names_ = {
         "cluster_ip": "clusterIP",
+        "cluster_ips": "clusterIPs",
+        "external_ips": "externalIPs",
         "load_balancer_ip": "loadBalancerIP",
     }
     _revfield_names_ = {
         "clusterIP": "cluster_ip",
+        "clusterIPs": "cluster_ips",
+        "externalIPs": "external_ips",
         "loadBalancerIP": "load_balancer_ip",
     }
 
     allocate_load_balancer_node_ports: bool
     cluster_ip: str
-    cluster_i_ps: List[str]
-    external_i_ps: List[str]
+    cluster_ips: List[str]
+    external_ips: List[str]
     external_name: str
     external_traffic_policy: str
     health_check_node_port: int
@@ -2723,8 +2727,8 @@ class ServiceSpec(KubernetesObject):
         self,
         allocate_load_balancer_node_ports: bool = None,
         cluster_ip: str = None,
-        cluster_i_ps: List[str] = None,
-        external_i_ps: List[str] = None,
+        cluster_ips: List[str] = None,
+        external_ips: List[str] = None,
         external_name: str = None,
         external_traffic_policy: str = None,
         health_check_node_port: int = None,
@@ -2745,8 +2749,8 @@ class ServiceSpec(KubernetesObject):
         super().__init__(
             allocate_load_balancer_node_ports=allocate_load_balancer_node_ports,
             cluster_ip=cluster_ip,
-            cluster_i_ps=cluster_i_ps,
-            external_i_ps=external_i_ps,
+            cluster_ips=cluster_ips,
+            external_ips=external_ips,
             external_name=external_name,
             external_traffic_policy=external_traffic_policy,
             health_check_node_port=health_check_node_port,

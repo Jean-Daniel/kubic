@@ -102,9 +102,6 @@ def module_for_group(group) -> str:
     return MODULE_NAMES.get(group) or group.split(".", maxsplit=1)[0].replace("-", "_")
 
 
-# used to fix camel_to_snake edge cases (URLs -> _url_s for instance)
-PLURALS = {"URLs": "_urls", "WWNs": "_wwns", "CIDRs": "_cidrs", "SMs": "_sms"}
-
 KEYWORDS = {
     "if",
     "not",
@@ -118,14 +115,18 @@ KEYWORDS = {
     "continue",
 }
 
+# used to fix camel_to_snake edge cases (URLs -> _url_s for instance)
+PLURALS = re.compile("(.*?)([A-Z]+s)")
+
 
 @cache
 def camel_to_snake(name: str):
     # cilium node for instance uses '-' in vars
     snake = name.replace("-", "_")
     # edge cases
-    for orig, replace in PLURALS.items():
-        snake = snake.replace(orig, replace)
+    if name[-1] == "s" and name[-2].isupper():
+        prefix, suffix = PLURALS.match(snake).groups()
+        snake = prefix + "_" + suffix.lower()
 
     snake = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", snake)
     snake = re.sub("([a-z0-9])([A-Z])", r"\1_\2", snake).lower()
