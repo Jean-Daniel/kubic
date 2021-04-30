@@ -121,6 +121,15 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
             if value is not None:
                 setattr(self, key, value)
 
+    def __contains__(self, item):
+        if super().__contains__(item):
+            return True
+        # check if this is a managed field.
+        self._item_hint(item)
+        # convert the python field name into kubernetes name
+        camel_name = self._field_names_.get(item) or snake_to_camel(item)
+        return super().__contains__(camel_name)
+
     def __getattr__(self, item):
         # check if this is a managed field.
         hint = self._item_hint(item)
