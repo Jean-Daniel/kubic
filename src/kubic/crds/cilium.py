@@ -303,19 +303,19 @@ class Egress(KubernetesObject):
     _field_names_ = {
         "to_cidr": "toCIDR",
         "to_cidr_set": "toCIDRSet",
-        "to_fqd_ns": "toFQDNs",
+        "to_fqdns": "toFQDNs",
     }
     _revfield_names_ = {
         "toCIDR": "to_cidr",
         "toCIDRSet": "to_cidr_set",
-        "toFQDNs": "to_fqd_ns",
+        "toFQDNs": "to_fqdns",
     }
 
     to_cidr: List[str]
     to_cidr_set: List[networking.IPBlock]
     to_endpoints: List[meta.LabelSelector]
     to_entities: List[str]
-    to_fqd_ns: List[ToFQDN]
+    to_fqdns: List[ToFQDN]
     to_groups: List[ToGroup]
     to_ports: List[EgressToPort]
     to_requires: List[meta.LabelSelector]
@@ -327,7 +327,7 @@ class Egress(KubernetesObject):
         to_cidr_set: List[networking.IPBlock] = None,
         to_endpoints: List[meta.LabelSelector] = None,
         to_entities: List[str] = None,
-        to_fqd_ns: List[ToFQDN] = None,
+        to_fqdns: List[ToFQDN] = None,
         to_groups: List[ToGroup] = None,
         to_ports: List[EgressToPort] = None,
         to_requires: List[meta.LabelSelector] = None,
@@ -338,7 +338,7 @@ class Egress(KubernetesObject):
             to_cidr_set=to_cidr_set,
             to_endpoints=to_endpoints,
             to_entities=to_entities,
-            to_fqd_ns=to_fqd_ns,
+            to_fqdns=to_fqdns,
             to_groups=to_groups,
             to_ports=to_ports,
             to_requires=to_requires,

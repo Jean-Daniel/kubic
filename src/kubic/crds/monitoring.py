@@ -1304,10 +1304,11 @@ class StaticConfig(KubernetesObject):
     __slots__ = ()
 
     labels: Dict[str, str]
+    relabeling_configs: List[RelabelingConfig]
     static: List[str]
 
-    def __init__(self, labels: Dict[str, str] = None, static: List[str] = None):
-        super().__init__(labels=labels, static=static)
+    def __init__(self, labels: Dict[str, str] = None, relabeling_configs: List[RelabelingConfig] = None, static: List[str] = None):
+        super().__init__(labels=labels, relabeling_configs=relabeling_configs, static=static)
 
 
 class Target(KubernetesObject):
@@ -1569,6 +1570,7 @@ class RemoteWrite(KubernetesObject):
     basic_auth: BasicAuth
     bearer_token: str
     bearer_token_file: str
+    headers: Dict[str, str]
     name: str
     proxy_url: str
     queue_config: QueueConfig
@@ -1582,6 +1584,7 @@ class RemoteWrite(KubernetesObject):
         basic_auth: BasicAuth = None,
         bearer_token: str = None,
         bearer_token_file: str = None,
+        headers: Dict[str, str] = None,
         name: str = None,
         proxy_url: str = None,
         queue_config: QueueConfig = None,
@@ -1594,6 +1597,7 @@ class RemoteWrite(KubernetesObject):
             basic_auth=basic_auth,
             bearer_token=bearer_token,
             bearer_token_file=bearer_token_file,
+            headers=headers,
             name=name,
             proxy_url=proxy_url,
             queue_config=queue_config,
