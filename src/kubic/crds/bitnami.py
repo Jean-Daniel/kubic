@@ -8,10 +8,20 @@ class Metadata(KubernetesObject):
     __slots__ = ()
 
     annotations: Dict[str, str]
+    creation_timestamp: meta.Time
     labels: Dict[str, str]
+    name: str
+    namespace: str
 
-    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None):
-        super().__init__(annotations=annotations, labels=labels)
+    def __init__(
+        self,
+        annotations: Dict[str, str] = None,
+        creation_timestamp: meta.Time = None,
+        labels: Dict[str, str] = None,
+        name: str = None,
+        namespace: str = None,
+    ):
+        super().__init__(annotations=annotations, creation_timestamp=creation_timestamp, labels=labels, name=name, namespace=namespace)
 
 
 class Template(KubernetesObject):
