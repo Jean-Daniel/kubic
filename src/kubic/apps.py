@@ -63,6 +63,7 @@ class DaemonSet(KubernetesApiResource):
 
     _api_version_ = "apps/v1"
     _kind_ = "DaemonSet"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: DaemonSetSpec
@@ -139,6 +140,7 @@ class Deployment(KubernetesApiResource):
 
     _api_version_ = "apps/v1"
     _kind_ = "Deployment"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: DeploymentSpec
@@ -214,6 +216,7 @@ class StatefulSet(KubernetesApiResource):
 
     _api_version_ = "apps/v1"
     _kind_ = "StatefulSet"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: StatefulSetSpec

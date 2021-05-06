@@ -7,6 +7,7 @@ class PriorityClass(KubernetesApiResource):
 
     _api_version_ = "scheduling.k8s.io/v1"
     _kind_ = "PriorityClass"
+    _scope_ = "cluster"
 
     _required_ = ["value"]
 

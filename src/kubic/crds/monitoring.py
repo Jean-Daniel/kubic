@@ -1277,6 +1277,7 @@ class PodMonitor(KubernetesApiResource):
 
     _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "PodMonitor"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -1348,6 +1349,7 @@ class Probe(KubernetesApiResource):
 
     _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "Probe"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -1920,6 +1922,7 @@ class Prometheus(KubernetesApiResource):
 
     _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "Prometheus"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -1944,6 +1947,7 @@ class PrometheusRule(KubernetesApiResource):
 
     _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "PrometheusRule"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -1996,6 +2000,7 @@ class ServiceMonitor(KubernetesApiResource):
 
     _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "ServiceMonitor"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -2142,6 +2147,7 @@ class ThanosRuler(KubernetesApiResource):
 
     _api_version_ = "monitoring.coreos.com/v1"
     _kind_ = "ThanosRuler"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 

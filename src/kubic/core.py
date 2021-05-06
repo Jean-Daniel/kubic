@@ -477,6 +477,7 @@ class ConfigMap(KubernetesApiResource):
 
     _api_version_ = "v1"
     _kind_ = "ConfigMap"
+    _scope_ = "namespace"
 
     binary_data: Dict[str, Base64]
     data: Dict[str, str]
@@ -1588,6 +1589,7 @@ class Namespace(KubernetesApiResource):
 
     _api_version_ = "v1"
     _kind_ = "Namespace"
+    _scope_ = "cluster"
 
     metadata: meta.ObjectMeta
     spec: NamespaceSpec
@@ -1952,6 +1954,7 @@ class PersistentVolume(KubernetesApiResource):
 
     _api_version_ = "v1"
     _kind_ = "PersistentVolume"
+    _scope_ = "cluster"
 
     metadata: meta.ObjectMeta
     spec: PersistentVolumeSpec
@@ -1965,6 +1968,7 @@ class PersistentVolumeClaim(KubernetesApiResource):
 
     _api_version_ = "v1"
     _kind_ = "PersistentVolumeClaim"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: PersistentVolumeClaimSpec
@@ -2605,6 +2609,7 @@ class ResourceQuota(KubernetesApiResource):
 
     _api_version_ = "v1"
     _kind_ = "ResourceQuota"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: ResourceQuotaSpec
@@ -2618,6 +2623,7 @@ class Secret(KubernetesApiResource):
 
     _api_version_ = "v1"
     _kind_ = "Secret"
+    _scope_ = "namespace"
 
     data: Dict[str, Base64]
     immutable: bool
@@ -2775,6 +2781,7 @@ class Service(KubernetesApiResource):
 
     _api_version_ = "v1"
     _kind_ = "Service"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: ServiceSpec
@@ -2788,6 +2795,7 @@ class ServiceAccount(KubernetesApiResource):
 
     _api_version_ = "v1"
     _kind_ = "ServiceAccount"
+    _scope_ = "namespace"
 
     automount_service_account_token: bool
     image_pull_secrets: List[LocalObjectReference]

@@ -100,6 +100,7 @@ class CronJob(KubernetesApiResource):
 
     _api_version_ = "batch/v1"
     _kind_ = "CronJob"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: CronJobSpec
@@ -113,6 +114,7 @@ class Job(KubernetesApiResource):
 
     _api_version_ = "batch/v1"
     _kind_ = "Job"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: JobSpec

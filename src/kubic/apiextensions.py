@@ -405,6 +405,7 @@ class CustomResourceDefinition(KubernetesApiResource):
 
     _api_version_ = "apiextensions.k8s.io/v1"
     _kind_ = "CustomResourceDefinition"
+    _scope_ = "cluster"
 
     _required_ = ["spec"]
 

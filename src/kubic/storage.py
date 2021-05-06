@@ -9,6 +9,7 @@ class StorageClass(KubernetesApiResource):
 
     _api_version_ = "storage.k8s.io/v1"
     _kind_ = "StorageClass"
+    _scope_ = "cluster"
 
     _required_ = ["provisioner"]
 
@@ -81,6 +82,7 @@ class VolumeAttachment(KubernetesApiResource):
 
     _api_version_ = "storage.k8s.io/v1"
     _kind_ = "VolumeAttachment"
+    _scope_ = "cluster"
 
     _required_ = ["spec"]
 

@@ -67,6 +67,7 @@ class DNSEndpoint(KubernetesApiResource):
 
     _api_version_ = "externaldns.k8s.io/v1alpha1"
     _kind_ = "DNSEndpoint"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: DNSEndpointSpec

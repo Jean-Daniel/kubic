@@ -137,6 +137,7 @@ class Ingress(KubernetesApiResource):
 
     _api_version_ = "networking.k8s.io/v1"
     _kind_ = "Ingress"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: IngressSpec
@@ -179,6 +180,7 @@ class IngressClass(KubernetesApiResource):
 
     _api_version_ = "networking.k8s.io/v1"
     _kind_ = "IngressClass"
+    _scope_ = "cluster"
 
     metadata: meta.ObjectMeta
     spec: IngressClassSpec
@@ -268,6 +270,7 @@ class NetworkPolicy(KubernetesApiResource):
 
     _api_version_ = "networking.k8s.io/v1"
     _kind_ = "NetworkPolicy"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: NetworkPolicySpec

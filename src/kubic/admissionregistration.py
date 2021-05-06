@@ -108,6 +108,7 @@ class MutatingWebhookConfiguration(KubernetesApiResource):
 
     _api_version_ = "admissionregistration.k8s.io/v1"
     _kind_ = "MutatingWebhookConfiguration"
+    _scope_ = "cluster"
 
     metadata: meta.ObjectMeta
     webhooks: List[MutatingWebhook]
@@ -166,6 +167,7 @@ class ValidatingWebhookConfiguration(KubernetesApiResource):
 
     _api_version_ = "admissionregistration.k8s.io/v1"
     _kind_ = "ValidatingWebhookConfiguration"
+    _scope_ = "cluster"
 
     metadata: meta.ObjectMeta
     webhooks: List[ValidatingWebhook]

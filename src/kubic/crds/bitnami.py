@@ -49,6 +49,7 @@ class SealedSecret(KubernetesApiResource):
 
     _api_version_ = "bitnami.com/v1alpha1"
     _kind_ = "SealedSecret"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: SealedSecretSpec

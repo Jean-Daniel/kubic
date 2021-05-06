@@ -647,6 +647,7 @@ class Certificate(KubernetesApiResource):
 
     _api_version_ = "cert-manager.io/v1"
     _kind_ = "Certificate"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -709,6 +710,7 @@ class CertificateRequest(KubernetesApiResource):
 
     _api_version_ = "cert-manager.io/v1"
     _kind_ = "CertificateRequest"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -771,6 +773,7 @@ class Challenge(KubernetesApiResource):
 
     _api_version_ = "acme.cert-manager.io/v1"
     _kind_ = "Challenge"
+    _scope_ = "namespace"
 
     _required_ = ["metadata", "spec"]
 
@@ -872,6 +875,7 @@ class ClusterIssuer(KubernetesApiResource):
 
     _api_version_ = "cert-manager.io/v1"
     _kind_ = "ClusterIssuer"
+    _scope_ = "cluster"
 
     _required_ = ["spec"]
 
@@ -900,6 +904,7 @@ class Issuer(KubernetesApiResource):
 
     _api_version_ = "cert-manager.io/v1"
     _kind_ = "Issuer"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -946,6 +951,7 @@ class Order(KubernetesApiResource):
 
     _api_version_ = "acme.cert-manager.io/v1"
     _kind_ = "Order"
+    _scope_ = "namespace"
 
     _required_ = ["metadata", "spec"]
 

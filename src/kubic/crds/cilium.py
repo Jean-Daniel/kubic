@@ -560,6 +560,7 @@ class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
 
     _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumClusterwideNetworkPolicy"
+    _scope_ = "cluster"
 
     _required_ = ["metadata"]
 
@@ -582,6 +583,7 @@ class CiliumEndpoint(KubernetesApiResource):
 
     _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumEndpoint"
+    _scope_ = "namespace"
 
     _required_ = ["metadata"]
 
@@ -615,6 +617,7 @@ class CiliumExternalWorkload(KubernetesApiResource):
 
     _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumExternalWorkload"
+    _scope_ = "cluster"
 
     _required_ = ["metadata"]
 
@@ -630,6 +633,7 @@ class CiliumIdentity(KubernetesApiResource):
 
     _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumIdentity"
+    _scope_ = "cluster"
 
     _required_ = ["metadata", "security_labels"]
 
@@ -726,6 +730,7 @@ class CiliumLocalRedirectPolicy(KubernetesApiResource):
 
     _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumLocalRedirectPolicy"
+    _scope_ = "namespace"
 
     _required_ = ["metadata"]
 
@@ -776,6 +781,7 @@ class CiliumNetworkPolicy(KubernetesApiResource):
 
     _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumNetworkPolicy"
+    _scope_ = "namespace"
 
     _required_ = ["metadata"]
 
@@ -990,6 +996,7 @@ class CiliumNode(KubernetesApiResource):
 
     _api_version_ = "cilium.io/v2"
     _kind_ = "CiliumNode"
+    _scope_ = "cluster"
 
     _required_ = ["metadata", "spec"]
 

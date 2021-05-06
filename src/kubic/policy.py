@@ -102,6 +102,7 @@ class PodDisruptionBudget(KubernetesApiResource):
 
     _api_version_ = "policy/v1"
     _kind_ = "PodDisruptionBudget"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: PodDisruptionBudgetSpec
@@ -281,6 +282,7 @@ class PodSecurityPolicy(KubernetesApiResource):
 
     _api_version_ = "policy/v1beta1"
     _kind_ = "PodSecurityPolicy"
+    _scope_ = "cluster"
 
     metadata: meta.ObjectMeta
     spec: PodSecurityPolicySpec

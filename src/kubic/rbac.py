@@ -53,6 +53,7 @@ class ClusterRole(KubernetesApiResource):
 
     _api_version_ = "rbac.authorization.k8s.io/v1"
     _kind_ = "ClusterRole"
+    _scope_ = "cluster"
 
     aggregation_rule: AggregationRule
     metadata: meta.ObjectMeta
@@ -102,6 +103,7 @@ class ClusterRoleBinding(KubernetesApiResource):
 
     _api_version_ = "rbac.authorization.k8s.io/v1"
     _kind_ = "ClusterRoleBinding"
+    _scope_ = "cluster"
 
     _required_ = ["role_ref"]
 
@@ -120,6 +122,7 @@ class Role(KubernetesApiResource):
 
     _api_version_ = "rbac.authorization.k8s.io/v1"
     _kind_ = "Role"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     rules: List[PolicyRule]
@@ -133,6 +136,7 @@ class RoleBinding(KubernetesApiResource):
 
     _api_version_ = "rbac.authorization.k8s.io/v1"
     _kind_ = "RoleBinding"
+    _scope_ = "namespace"
 
     _required_ = ["role_ref"]
 

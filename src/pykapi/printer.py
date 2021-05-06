@@ -91,7 +91,8 @@ class TypePrinter:
             if isinstance(ty, ApiResourceType):
                 if ty.kind:
                     stream.write(f'    _kind_ = "{ty.kind}"\n')
-
+                scope = "namespace" if ty.scoped else "cluster"
+                stream.write(f'    _scope_ = "{scope}"\n')
         required = [prop.snake_name for prop in ty.required_properties]
         if required:
             stream.write('\n    _required_ = ["')

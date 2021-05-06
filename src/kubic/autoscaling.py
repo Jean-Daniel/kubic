@@ -218,6 +218,7 @@ class HorizontalPodAutoscaler(KubernetesApiResource):
 
     _api_version_ = "autoscaling/v2beta2"
     _kind_ = "HorizontalPodAutoscaler"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: HorizontalPodAutoscalerSpec

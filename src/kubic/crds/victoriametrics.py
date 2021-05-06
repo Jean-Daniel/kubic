@@ -863,6 +863,7 @@ class VMAgent(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMAgent"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: VMAgentSpec
@@ -1049,6 +1050,7 @@ class VMAlert(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMAlert"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: VMAlertSpec
@@ -1194,6 +1196,7 @@ class VMAlertmanager(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMAlertmanager"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -1635,6 +1638,7 @@ class VMCluster(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMCluster"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -1725,6 +1729,7 @@ class VMNodeScrape(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMNodeScrape"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: VMNodeScrapeSpec
@@ -1769,6 +1774,7 @@ class VMPodScrape(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMPodScrape"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: VMPodScrapeSpec
@@ -1826,6 +1832,7 @@ class VMProbe(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMProbe"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -1852,6 +1859,7 @@ class VMRule(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMRule"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -1904,6 +1912,7 @@ class VMServiceScrape(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMServiceScrape"
+    _scope_ = "namespace"
 
     _required_ = ["spec"]
 
@@ -2034,6 +2043,7 @@ class VMSingle(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMSingle"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: VMSingleSpec
@@ -2060,6 +2070,7 @@ class VMStaticScrape(KubernetesApiResource):
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
     _kind_ = "VMStaticScrape"
+    _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
     spec: VMStaticScrapeSpec
