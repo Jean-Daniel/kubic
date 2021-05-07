@@ -96,6 +96,9 @@ crds:
       topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
       storage:
         type_name: "StorageSpec"
+      livenessProbe: "io.k8s.api.core.v1.Probe"
+      readinessProbe: "io.k8s.api.core.v1.Probe"
+      startupProbe: "io.k8s.api.core.v1.Probe"
 
     "ServiceSpec":
       spec: "io.k8s.api.core.v1.ServiceSpec"
@@ -126,6 +129,13 @@ crds:
       additionalScrapeConfigs: "io.k8s.api.core.v1.SecretKeySelector"
       extraEnvs: "io.k8s.api.core.v1.EnvVar"
       rollingUpdate: "io.k8s.api.apps.v1.RollingUpdateDeployment"
+      livenessProbe: "io.k8s.api.core.v1.Probe"
+      readinessProbe: "io.k8s.api.core.v1.Probe"
+      startupProbe: "io.k8s.api.core.v1.Probe"
+      inlineRelabelConfig: "RelabelConfig"
+
+    "VMAgentSpecRemoteWrite":
+      inlineUrlRelabelConfig: "RelabelConfig"
 
     "VMAlertSpec":
       imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
@@ -139,6 +149,9 @@ crds:
       initContainers: "io.k8s.api.core.v1.Container"
       topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
       extraEnvs: "io.k8s.api.core.v1.EnvVar"
+      livenessProbe: "io.k8s.api.core.v1.Probe"
+      readinessProbe: "io.k8s.api.core.v1.Probe"
+      startupProbe: "io.k8s.api.core.v1.Probe"
 
     "VMSingleSpec":
       imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
@@ -154,6 +167,9 @@ crds:
       initContainers: "io.k8s.api.core.v1.Container"
       topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
       extraEnvs: "io.k8s.api.core.v1.EnvVar"
+      livenessProbe: "io.k8s.api.core.v1.Probe"
+      readinessProbe: "io.k8s.api.core.v1.Probe"
+      startupProbe: "io.k8s.api.core.v1.Probe"
 
     "VMClusterSpec":
       imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
@@ -172,6 +188,9 @@ crds:
       initContainers: "io.k8s.api.core.v1.Container"
       topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
       extraEnvs: "io.k8s.api.core.v1.EnvVar"
+      livenessProbe: "io.k8s.api.core.v1.Probe"
+      readinessProbe: "io.k8s.api.core.v1.Probe"
+      startupProbe: "io.k8s.api.core.v1.Probe"
 
     "VMSelect":
       volumes: "io.k8s.api.core.v1.Volume"
@@ -186,6 +205,9 @@ crds:
       persistentVolume: "StorageSpec"
       storage: "StorageSpec"
       extraEnvs: "io.k8s.api.core.v1.EnvVar"
+      livenessProbe: "io.k8s.api.core.v1.Probe"
+      readinessProbe: "io.k8s.api.core.v1.Probe"
+      startupProbe: "io.k8s.api.core.v1.Probe"
 
     "VMStorage":
       volumes: "io.k8s.api.core.v1.Volume"
@@ -199,6 +221,9 @@ crds:
       topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
       storage: "StorageSpec"
       extraEnvs: "io.k8s.api.core.v1.EnvVar"
+      livenessProbe: "io.k8s.api.core.v1.Probe"
+      readinessProbe: "io.k8s.api.core.v1.Probe"
+      startupProbe: "io.k8s.api.core.v1.Probe"
 
     "RelabelConfig":
       source_labels:

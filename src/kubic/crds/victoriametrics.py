@@ -639,6 +639,7 @@ class VMAgentSpecRemoteWrite(KubernetesObject):
 
     basic_auth: BasicAuth
     bearer_token_secret: core.ConfigMapKeySelector
+    inline_url_relabel_config: List[RelabelConfig]
     label: Dict[str, str]
     send_timeout: str
     tls_config: TLSConfig
@@ -649,6 +650,7 @@ class VMAgentSpecRemoteWrite(KubernetesObject):
         self,
         basic_auth: BasicAuth = None,
         bearer_token_secret: core.ConfigMapKeySelector = None,
+        inline_url_relabel_config: List[RelabelConfig] = None,
         label: Dict[str, str] = None,
         send_timeout: str = None,
         tls_config: TLSConfig = None,
@@ -658,6 +660,7 @@ class VMAgentSpecRemoteWrite(KubernetesObject):
         super().__init__(
             basic_auth=basic_auth,
             bearer_token_secret=bearer_token_secret,
+            inline_url_relabel_config=inline_url_relabel_config,
             label=label,
             send_timeout=send_timeout,
             tls_config=tls_config,
@@ -696,7 +699,10 @@ class VMAgentSpec(KubernetesObject):
     image: Image
     image_pull_secrets: List[core.LocalObjectReference]
     init_containers: List[core.Container]
+    inline_relabel_config: List[RelabelConfig]
+    inline_scrape_config: str
     insert_ports: InsertPort
+    liveness_probe: core.Probe
     log_format: str
     log_level: str
     node_scrape_namespace_selector: meta.LabelSelector
@@ -712,6 +718,7 @@ class VMAgentSpec(KubernetesObject):
     priority_class_name: str
     probe_namespace_selector: meta.LabelSelector
     probe_selector: meta.LabelSelector
+    readiness_probe: core.Probe
     relabel_config: core.ConfigMapKeySelector
     remote_write: List[VMAgentSpecRemoteWrite]
     remote_write_settings: RemoteWriteSetting
@@ -728,6 +735,7 @@ class VMAgentSpec(KubernetesObject):
     service_scrape_selector: meta.LabelSelector
     service_spec: ServiceSpec
     shard_count: int
+    startup_probe: core.Probe
     static_scrape_namespace_selector: meta.LabelSelector
     static_scrape_selector: meta.LabelSelector
     tolerations: List[core.Toleration]
@@ -756,7 +764,10 @@ class VMAgentSpec(KubernetesObject):
         image: Image = None,
         image_pull_secrets: List[core.LocalObjectReference] = None,
         init_containers: List[core.Container] = None,
+        inline_relabel_config: List[RelabelConfig] = None,
+        inline_scrape_config: str = None,
         insert_ports: InsertPort = None,
+        liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
         node_scrape_namespace_selector: meta.LabelSelector = None,
@@ -772,6 +783,7 @@ class VMAgentSpec(KubernetesObject):
         priority_class_name: str = None,
         probe_namespace_selector: meta.LabelSelector = None,
         probe_selector: meta.LabelSelector = None,
+        readiness_probe: core.Probe = None,
         relabel_config: core.ConfigMapKeySelector = None,
         remote_write: List[VMAgentSpecRemoteWrite] = None,
         remote_write_settings: RemoteWriteSetting = None,
@@ -788,6 +800,7 @@ class VMAgentSpec(KubernetesObject):
         service_scrape_selector: meta.LabelSelector = None,
         service_spec: ServiceSpec = None,
         shard_count: int = None,
+        startup_probe: core.Probe = None,
         static_scrape_namespace_selector: meta.LabelSelector = None,
         static_scrape_selector: meta.LabelSelector = None,
         tolerations: List[core.Toleration] = None,
@@ -815,7 +828,10 @@ class VMAgentSpec(KubernetesObject):
             image=image,
             image_pull_secrets=image_pull_secrets,
             init_containers=init_containers,
+            inline_relabel_config=inline_relabel_config,
+            inline_scrape_config=inline_scrape_config,
             insert_ports=insert_ports,
+            liveness_probe=liveness_probe,
             log_format=log_format,
             log_level=log_level,
             node_scrape_namespace_selector=node_scrape_namespace_selector,
@@ -831,6 +847,7 @@ class VMAgentSpec(KubernetesObject):
             priority_class_name=priority_class_name,
             probe_namespace_selector=probe_namespace_selector,
             probe_selector=probe_selector,
+            readiness_probe=readiness_probe,
             relabel_config=relabel_config,
             remote_write=remote_write,
             remote_write_settings=remote_write_settings,
@@ -847,6 +864,7 @@ class VMAgentSpec(KubernetesObject):
             service_scrape_selector=service_scrape_selector,
             service_spec=service_spec,
             shard_count=shard_count,
+            startup_probe=startup_probe,
             static_scrape_namespace_selector=static_scrape_namespace_selector,
             static_scrape_selector=static_scrape_selector,
             tolerations=tolerations,
@@ -925,6 +943,7 @@ class VMAlertSpec(KubernetesObject):
     image: Image
     image_pull_secrets: List[core.LocalObjectReference]
     init_containers: List[core.Container]
+    liveness_probe: core.Probe
     log_format: str
     log_level: str
     notifier: Notifier
@@ -934,6 +953,7 @@ class VMAlertSpec(KubernetesObject):
     pod_security_policy_name: str
     port: str
     priority_class_name: str
+    readiness_probe: core.Probe
     remote_read: RemoteRead
     remote_write: VMAlertSpecRemoteWrite
     replica_count: int
@@ -948,6 +968,7 @@ class VMAlertSpec(KubernetesObject):
     security_context: core.PodSecurityContext
     service_account_name: str
     service_spec: ServiceSpec
+    startup_probe: core.Probe
     tolerations: List[core.Toleration]
     topology_spread_constraints: List[core.TopologySpreadConstraint]
     update_strategy: str
@@ -970,6 +991,7 @@ class VMAlertSpec(KubernetesObject):
         image: Image = None,
         image_pull_secrets: List[core.LocalObjectReference] = None,
         init_containers: List[core.Container] = None,
+        liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
         notifier: Notifier = None,
@@ -979,6 +1001,7 @@ class VMAlertSpec(KubernetesObject):
         pod_security_policy_name: str = None,
         port: str = None,
         priority_class_name: str = None,
+        readiness_probe: core.Probe = None,
         remote_read: RemoteRead = None,
         remote_write: VMAlertSpecRemoteWrite = None,
         replica_count: int = None,
@@ -993,6 +1016,7 @@ class VMAlertSpec(KubernetesObject):
         security_context: core.PodSecurityContext = None,
         service_account_name: str = None,
         service_spec: ServiceSpec = None,
+        startup_probe: core.Probe = None,
         tolerations: List[core.Toleration] = None,
         topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
         update_strategy: str = None,
@@ -1014,6 +1038,7 @@ class VMAlertSpec(KubernetesObject):
             image=image,
             image_pull_secrets=image_pull_secrets,
             init_containers=init_containers,
+            liveness_probe=liveness_probe,
             log_format=log_format,
             log_level=log_level,
             notifier=notifier,
@@ -1023,6 +1048,7 @@ class VMAlertSpec(KubernetesObject):
             pod_security_policy_name=pod_security_policy_name,
             port=port,
             priority_class_name=priority_class_name,
+            readiness_probe=readiness_probe,
             remote_read=remote_read,
             remote_write=remote_write,
             replica_count=replica_count,
@@ -1037,6 +1063,7 @@ class VMAlertSpec(KubernetesObject):
             security_context=security_context,
             service_account_name=service_account_name,
             service_spec=service_spec,
+            startup_probe=startup_probe,
             tolerations=tolerations,
             topology_spread_constraints=topology_spread_constraints,
             update_strategy=update_strategy,
@@ -1083,6 +1110,7 @@ class VMAlertmanagerSpec(KubernetesObject):
     image_pull_secrets: List[core.LocalObjectReference]
     init_containers: List[core.Container]
     listen_local: bool
+    liveness_probe: core.Probe
     log_format: str
     log_level: str
     node_selector: Dict[str, str]
@@ -1092,6 +1120,7 @@ class VMAlertmanagerSpec(KubernetesObject):
     pod_security_policy_name: str
     port_name: str
     priority_class_name: str
+    readiness_probe: core.Probe
     replica_count: int
     resources: core.ResourceRequirements
     retention: str
@@ -1102,6 +1131,7 @@ class VMAlertmanagerSpec(KubernetesObject):
     security_context: core.PodSecurityContext
     service_account_name: str
     service_spec: ServiceSpec
+    startup_probe: core.Probe
     storage: StorageSpec
     tolerations: List[core.Toleration]
     topology_spread_constraints: List[core.TopologySpreadConstraint]
@@ -1124,6 +1154,7 @@ class VMAlertmanagerSpec(KubernetesObject):
         image_pull_secrets: List[core.LocalObjectReference] = None,
         init_containers: List[core.Container] = None,
         listen_local: bool = None,
+        liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
         node_selector: Dict[str, str] = None,
@@ -1133,6 +1164,7 @@ class VMAlertmanagerSpec(KubernetesObject):
         pod_security_policy_name: str = None,
         port_name: str = None,
         priority_class_name: str = None,
+        readiness_probe: core.Probe = None,
         replica_count: int = None,
         resources: core.ResourceRequirements = None,
         retention: str = None,
@@ -1143,6 +1175,7 @@ class VMAlertmanagerSpec(KubernetesObject):
         security_context: core.PodSecurityContext = None,
         service_account_name: str = None,
         service_spec: ServiceSpec = None,
+        startup_probe: core.Probe = None,
         storage: StorageSpec = None,
         tolerations: List[core.Toleration] = None,
         topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
@@ -1164,6 +1197,7 @@ class VMAlertmanagerSpec(KubernetesObject):
             image_pull_secrets=image_pull_secrets,
             init_containers=init_containers,
             listen_local=listen_local,
+            liveness_probe=liveness_probe,
             log_format=log_format,
             log_level=log_level,
             node_selector=node_selector,
@@ -1173,6 +1207,7 @@ class VMAlertmanagerSpec(KubernetesObject):
             pod_security_policy_name=pod_security_policy_name,
             port_name=port_name,
             priority_class_name=priority_class_name,
+            readiness_probe=readiness_probe,
             replica_count=replica_count,
             resources=resources,
             retention=retention,
@@ -1183,6 +1218,7 @@ class VMAlertmanagerSpec(KubernetesObject):
             security_context=security_context,
             service_account_name=service_account_name,
             service_spec=service_spec,
+            startup_probe=startup_probe,
             storage=storage,
             tolerations=tolerations,
             topology_spread_constraints=topology_spread_constraints,
@@ -1222,6 +1258,7 @@ class VMInsert(KubernetesObject):
     image: Image
     init_containers: List[core.Container]
     insert_ports: InsertPort
+    liveness_probe: core.Probe
     log_format: str
     log_level: str
     name: str
@@ -1229,6 +1266,7 @@ class VMInsert(KubernetesObject):
     pod_metadata: PodMetadata
     port: str
     priority_class_name: str
+    readiness_probe: core.Probe
     replica_count: int
     resources: core.ResourceRequirements
     rolling_update: RollingUpdate
@@ -1237,6 +1275,7 @@ class VMInsert(KubernetesObject):
     secrets: List[str]
     security_context: core.PodSecurityContext
     service_spec: ServiceSpec
+    startup_probe: core.Probe
     tolerations: List[core.Toleration]
     topology_spread_constraints: List[core.TopologySpreadConstraint]
     update_strategy: str
@@ -1255,6 +1294,7 @@ class VMInsert(KubernetesObject):
         image: Image = None,
         init_containers: List[core.Container] = None,
         insert_ports: InsertPort = None,
+        liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
         name: str = None,
@@ -1262,6 +1302,7 @@ class VMInsert(KubernetesObject):
         pod_metadata: PodMetadata = None,
         port: str = None,
         priority_class_name: str = None,
+        readiness_probe: core.Probe = None,
         replica_count: int = None,
         resources: core.ResourceRequirements = None,
         rolling_update: RollingUpdate = None,
@@ -1270,6 +1311,7 @@ class VMInsert(KubernetesObject):
         secrets: List[str] = None,
         security_context: core.PodSecurityContext = None,
         service_spec: ServiceSpec = None,
+        startup_probe: core.Probe = None,
         tolerations: List[core.Toleration] = None,
         topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
         update_strategy: str = None,
@@ -1287,6 +1329,7 @@ class VMInsert(KubernetesObject):
             image=image,
             init_containers=init_containers,
             insert_ports=insert_ports,
+            liveness_probe=liveness_probe,
             log_format=log_format,
             log_level=log_level,
             name=name,
@@ -1294,6 +1337,7 @@ class VMInsert(KubernetesObject):
             pod_metadata=pod_metadata,
             port=port,
             priority_class_name=priority_class_name,
+            readiness_probe=readiness_probe,
             replica_count=replica_count,
             resources=resources,
             rolling_update=rolling_update,
@@ -1302,6 +1346,7 @@ class VMInsert(KubernetesObject):
             secrets=secrets,
             security_context=security_context,
             service_spec=service_spec,
+            startup_probe=startup_probe,
             tolerations=tolerations,
             topology_spread_constraints=topology_spread_constraints,
             update_strategy=update_strategy,
@@ -1325,6 +1370,7 @@ class VMSelect(KubernetesObject):
     host_network: bool
     image: Image
     init_containers: List[core.Container]
+    liveness_probe: core.Probe
     log_format: str
     log_level: str
     name: str
@@ -1333,6 +1379,7 @@ class VMSelect(KubernetesObject):
     pod_metadata: PodMetadata
     port: str
     priority_class_name: str
+    readiness_probe: core.Probe
     replica_count: int
     resources: core.ResourceRequirements
     runtime_class_name: str
@@ -1340,6 +1387,7 @@ class VMSelect(KubernetesObject):
     secrets: List[str]
     security_context: core.PodSecurityContext
     service_spec: ServiceSpec
+    startup_probe: core.Probe
     storage: StorageSpec
     tolerations: List[core.Toleration]
     topology_spread_constraints: List[core.TopologySpreadConstraint]
@@ -1358,6 +1406,7 @@ class VMSelect(KubernetesObject):
         host_network: bool = None,
         image: Image = None,
         init_containers: List[core.Container] = None,
+        liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
         name: str = None,
@@ -1366,6 +1415,7 @@ class VMSelect(KubernetesObject):
         pod_metadata: PodMetadata = None,
         port: str = None,
         priority_class_name: str = None,
+        readiness_probe: core.Probe = None,
         replica_count: int = None,
         resources: core.ResourceRequirements = None,
         runtime_class_name: str = None,
@@ -1373,6 +1423,7 @@ class VMSelect(KubernetesObject):
         secrets: List[str] = None,
         security_context: core.PodSecurityContext = None,
         service_spec: ServiceSpec = None,
+        startup_probe: core.Probe = None,
         storage: StorageSpec = None,
         tolerations: List[core.Toleration] = None,
         topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
@@ -1390,6 +1441,7 @@ class VMSelect(KubernetesObject):
             host_network=host_network,
             image=image,
             init_containers=init_containers,
+            liveness_probe=liveness_probe,
             log_format=log_format,
             log_level=log_level,
             name=name,
@@ -1398,6 +1450,7 @@ class VMSelect(KubernetesObject):
             pod_metadata=pod_metadata,
             port=port,
             priority_class_name=priority_class_name,
+            readiness_probe=readiness_probe,
             replica_count=replica_count,
             resources=resources,
             runtime_class_name=runtime_class_name,
@@ -1405,6 +1458,7 @@ class VMSelect(KubernetesObject):
             secrets=secrets,
             security_context=security_context,
             service_spec=service_spec,
+            startup_probe=startup_probe,
             storage=storage,
             tolerations=tolerations,
             topology_spread_constraints=topology_spread_constraints,
@@ -1486,6 +1540,15 @@ class VMStorage(KubernetesObject):
 
     _required_ = ["replica_count"]
 
+    _field_names_ = {
+        "maintenance_insert_node_ids": "maintenanceInsertNodeIDs",
+        "maintenance_select_node_ids": "maintenanceSelectNodeIDs",
+    }
+    _revfield_names_ = {
+        "maintenanceInsertNodeIDs": "maintenance_insert_node_ids",
+        "maintenanceSelectNodeIDs": "maintenance_select_node_ids",
+    }
+
     affinity: core.Affinity
     config_maps: List[str]
     containers: List[core.Container]
@@ -1495,13 +1558,17 @@ class VMStorage(KubernetesObject):
     host_network: bool
     image: Image
     init_containers: List[core.Container]
+    liveness_probe: core.Probe
     log_format: str
     log_level: str
+    maintenance_insert_node_ids: List[int]
+    maintenance_select_node_ids: List[int]
     name: str
     pod_disruption_budget: PodDisruptionBudget
     pod_metadata: PodMetadata
     port: str
     priority_class_name: str
+    readiness_probe: core.Probe
     replica_count: int
     resources: core.ResourceRequirements
     runtime_class_name: str
@@ -1509,6 +1576,7 @@ class VMStorage(KubernetesObject):
     secrets: List[str]
     security_context: core.PodSecurityContext
     service_spec: ServiceSpec
+    startup_probe: core.Probe
     storage: StorageSpec
     storage_data_path: str
     termination_grace_period_seconds: int
@@ -1531,13 +1599,17 @@ class VMStorage(KubernetesObject):
         host_network: bool = None,
         image: Image = None,
         init_containers: List[core.Container] = None,
+        liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
+        maintenance_insert_node_ids: List[int] = None,
+        maintenance_select_node_ids: List[int] = None,
         name: str = None,
         pod_disruption_budget: PodDisruptionBudget = None,
         pod_metadata: PodMetadata = None,
         port: str = None,
         priority_class_name: str = None,
+        readiness_probe: core.Probe = None,
         replica_count: int = None,
         resources: core.ResourceRequirements = None,
         runtime_class_name: str = None,
@@ -1545,6 +1617,7 @@ class VMStorage(KubernetesObject):
         secrets: List[str] = None,
         security_context: core.PodSecurityContext = None,
         service_spec: ServiceSpec = None,
+        startup_probe: core.Probe = None,
         storage: StorageSpec = None,
         storage_data_path: str = None,
         termination_grace_period_seconds: int = None,
@@ -1566,13 +1639,17 @@ class VMStorage(KubernetesObject):
             host_network=host_network,
             image=image,
             init_containers=init_containers,
+            liveness_probe=liveness_probe,
             log_format=log_format,
             log_level=log_level,
+            maintenance_insert_node_ids=maintenance_insert_node_ids,
+            maintenance_select_node_ids=maintenance_select_node_ids,
             name=name,
             pod_disruption_budget=pod_disruption_budget,
             pod_metadata=pod_metadata,
             port=port,
             priority_class_name=priority_class_name,
+            readiness_probe=readiness_probe,
             replica_count=replica_count,
             resources=resources,
             runtime_class_name=runtime_class_name,
@@ -1580,6 +1657,7 @@ class VMStorage(KubernetesObject):
             secrets=secrets,
             security_context=security_context,
             service_spec=service_spec,
+            startup_probe=startup_probe,
             storage=storage,
             storage_data_path=storage_data_path,
             termination_grace_period_seconds=termination_grace_period_seconds,
@@ -1940,12 +2018,14 @@ class VMSingleSpec(KubernetesObject):
     image_pull_secrets: List[core.LocalObjectReference]
     init_containers: List[core.Container]
     insert_ports: InsertPort
+    liveness_probe: core.Probe
     log_format: str
     log_level: str
     pod_metadata: PodMetadata
     pod_security_policy_name: str
     port: str
     priority_class_name: str
+    readiness_probe: core.Probe
     remove_pvc_after_delete: bool
     replica_count: int
     resources: core.ResourceRequirements
@@ -1956,6 +2036,7 @@ class VMSingleSpec(KubernetesObject):
     security_context: core.PodSecurityContext
     service_account_name: str
     service_spec: ServiceSpec
+    startup_probe: core.Probe
     storage: core.PersistentVolumeClaimSpec
     tolerations: List[core.Toleration]
     topology_spread_constraints: List[core.TopologySpreadConstraint]
@@ -1977,12 +2058,14 @@ class VMSingleSpec(KubernetesObject):
         image_pull_secrets: List[core.LocalObjectReference] = None,
         init_containers: List[core.Container] = None,
         insert_ports: InsertPort = None,
+        liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
         pod_metadata: PodMetadata = None,
         pod_security_policy_name: str = None,
         port: str = None,
         priority_class_name: str = None,
+        readiness_probe: core.Probe = None,
         remove_pvc_after_delete: bool = None,
         replica_count: int = None,
         resources: core.ResourceRequirements = None,
@@ -1993,6 +2076,7 @@ class VMSingleSpec(KubernetesObject):
         security_context: core.PodSecurityContext = None,
         service_account_name: str = None,
         service_spec: ServiceSpec = None,
+        startup_probe: core.Probe = None,
         storage: core.PersistentVolumeClaimSpec = None,
         tolerations: List[core.Toleration] = None,
         topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
@@ -2013,12 +2097,14 @@ class VMSingleSpec(KubernetesObject):
             image_pull_secrets=image_pull_secrets,
             init_containers=init_containers,
             insert_ports=insert_ports,
+            liveness_probe=liveness_probe,
             log_format=log_format,
             log_level=log_level,
             pod_metadata=pod_metadata,
             pod_security_policy_name=pod_security_policy_name,
             port=port,
             priority_class_name=priority_class_name,
+            readiness_probe=readiness_probe,
             remove_pvc_after_delete=remove_pvc_after_delete,
             replica_count=replica_count,
             resources=resources,
@@ -2029,6 +2115,7 @@ class VMSingleSpec(KubernetesObject):
             security_context=security_context,
             service_account_name=service_account_name,
             service_spec=service_spec,
+            startup_probe=startup_probe,
             storage=storage,
             tolerations=tolerations,
             topology_spread_constraints=topology_spread_constraints,
