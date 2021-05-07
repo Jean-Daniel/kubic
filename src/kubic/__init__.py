@@ -274,3 +274,7 @@ class KubernetesApiResource(KubernetesObject):
         # Cluster objects don't need namespace.
         if namespace:
             self.metadata.namespace = namespace
+
+    @property
+    def has_namespace(self) -> bool:
+        return getattr(type(self), "_scope_", None) == "namespace"
