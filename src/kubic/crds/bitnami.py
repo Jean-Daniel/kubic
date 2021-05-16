@@ -4,34 +4,15 @@ from .. import KubernetesApiResource, KubernetesObject
 from .. import core, meta
 
 
-class Metadata(KubernetesObject):
-    __slots__ = ()
-
-    annotations: Dict[str, str]
-    creation_timestamp: meta.Time
-    labels: Dict[str, str]
-    name: str
-    namespace: str
-
-    def __init__(
-        self,
-        annotations: Dict[str, str] = None,
-        creation_timestamp: meta.Time = None,
-        labels: Dict[str, str] = None,
-        name: str = None,
-        namespace: str = None,
-    ):
-        super().__init__(annotations=annotations, creation_timestamp=creation_timestamp, labels=labels, name=name, namespace=namespace)
-
-
 class Template(KubernetesObject):
     __slots__ = ()
 
-    metadata: Metadata
+    data: Dict[str, str]
+    metadata: meta.ObjectMeta
     type: str
 
-    def __init__(self, metadata: Metadata = None, type: str = None):
-        super().__init__(metadata=metadata, type=type)
+    def __init__(self, data: Dict[str, str] = None, metadata: meta.ObjectMeta = None, type: str = None):
+        super().__init__(data=data, metadata=metadata, type=type)
 
 
 class SealedSecretSpec(KubernetesObject):

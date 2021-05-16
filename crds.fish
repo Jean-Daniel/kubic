@@ -1,13 +1,5 @@
 #!/usr/local/bin/fish
 
-set CRDS sealedsecrets.bitnami.com \
-         verticalpodautoscaler.autoscaling.k8s.io \
-         schemas/cilium.crds.yaml \
-         schemas/cert-manager.crds.yaml \
-         schemas/prometheus-operator.crds.yaml\
-         schemas/victoriametrics-operator.crds.yaml
-
-
 for crd in schemas/crds/*;
   echo "  Processing $crd"
   python3 src/kubegen.py --schemas ./schemas -o src/kubic/crds/ $crd
