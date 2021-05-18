@@ -187,7 +187,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         self._item_hint(item)  # check key validity
 
         camel_name = self._field_names_.get(item) or snake_to_camel(item)
-        del self[camel_name]
+        super().pop(camel_name, None)
 
     def __dir__(self):
         return dir(type(self)) + list(self._hints_().keys())

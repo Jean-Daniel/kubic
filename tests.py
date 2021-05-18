@@ -101,8 +101,9 @@ class ResourceTest(unittest.TestCase):
     def test_set_none(self):
         obj = BaseType()
         self.assertFalse("spec" in obj)
+        obj.spec = None
 
-        # accessing spec create it
+        # accessing spec recreate it (after it was set to None)
         obj.spec.leaves += None
         self.assertTrue("spec" in obj)
         # but appending None to a Typed array is a noop
