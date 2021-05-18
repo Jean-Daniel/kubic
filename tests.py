@@ -46,7 +46,6 @@ class SpecialProperty(KubernetesObject):
 
 
 class ResourceTest(unittest.TestCase):
-
     def test_dir(self):
         obj = SpecialProperty()
 
@@ -98,6 +97,20 @@ class ResourceTest(unittest.TestCase):
         self.assertTrue(len(obj.spec.leaves) == 1)
         self.assertIsInstance(obj.spec.leaves[0], LeaveType)
         self.assertEqual(obj.spec.leaves[0].value, "hello")
+
+    def test_set_none(self):
+        obj = BaseType()
+        self.assertFalse("spec" in obj)
+
+        # accessing spec create it
+        obj.spec.leaves += None
+        self.assertTrue("spec" in obj)
+        # but appending None to a Typed array is a noop
+        self.assertEqual(0, len(obj.spec.leaves))
+
+        # setting prop to None delete it
+        obj.spec = None
+        self.assertFalse("spec" in obj)
 
     def test_update(self):
         obj = BaseType()

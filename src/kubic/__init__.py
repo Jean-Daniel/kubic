@@ -56,10 +56,12 @@ class _TypedList(list):
         return self.type().update(obj)
 
     def append(self, obj):
-        super().append(self._cast(obj))
+        if obj is not None:
+            super().append(self._cast(obj))
 
     def insert(self, index: int, obj):
-        super().insert(index, self._cast(obj))
+        if obj is not None:
+            super().insert(index, self._cast(obj))
 
     def extend(self, values: typing.Iterable):
         if not values:
@@ -80,6 +82,9 @@ class _TypedList(list):
         return result
 
     def __iadd__(self, other):
+        if other is None:
+            return
+
         # convenient method to add a single item
         if isinstance(other, self.type):
             super().append(other)
@@ -89,9 +94,6 @@ class _TypedList(list):
             for item in other:
                 self.append(item)
         return self
-
-
-UNDEFINED_VALUE = "!__undefined__!"
 
 
 def _create_generic_type(hint):
@@ -136,10 +138,11 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         # convert the python field name into kubernetes name
         camel_name = self._field_names_.get(item) or snake_to_camel(item)
         # fetch the stored value
-        value = self.get(camel_name, UNDEFINED_VALUE)
-        # value explicitly set to None should always return None
-        if value is not UNDEFINED_VALUE:
-            return value
+        try:
+            return self[camel_name]
+        except KeyError:
+            # value not set yet
+            pass
 
         value = None
         # Handle generic types
@@ -157,6 +160,11 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         return value
 
     def __setattr__(self, key, value):
+        # kubernetes does not uses the concept of null value.
+        # So instead of setting to None, remove the entry.
+        if value is None:
+            return self.__delattr__(key)
+
         hint = self._item_hint(key)  # check key validity
 
         origin = getattr(hint, "__origin__", None)
