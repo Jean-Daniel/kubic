@@ -57,6 +57,60 @@ class Addresse(KubernetesObject):
         super().__init__(ip=ip, type=type)
 
 
+class AlibabaCloud(KubernetesObject):
+    __slots__ = ()
+
+    _field_names_ = {
+        "availability_zone": "availability-zone",
+        "cidr_block": "cidr-block",
+        "instance_type": "instance-type",
+        "security_group_tags": "security-group-tags",
+        "security_groups": "security-groups",
+        "vpc_id": "vpc-id",
+        "vswitch_tags": "vswitch-tags",
+    }
+    _revfield_names_ = {
+        "availability-zone": "availability_zone",
+        "cidr-block": "cidr_block",
+        "instance-type": "instance_type",
+        "security-group-tags": "security_group_tags",
+        "security-groups": "security_groups",
+        "vpc-id": "vpc_id",
+        "vswitch-tags": "vswitch_tags",
+    }
+
+    availability_zone: str
+    cidr_block: str
+    instance_type: str
+    security_group_tags: Dict[str, str]
+    security_groups: List[str]
+    vpc_id: str
+    vswitch_tags: Dict[str, str]
+    vswitches: List[str]
+
+    def __init__(
+        self,
+        availability_zone: str = None,
+        cidr_block: str = None,
+        instance_type: str = None,
+        security_group_tags: Dict[str, str] = None,
+        security_groups: List[str] = None,
+        vpc_id: str = None,
+        vswitch_tags: Dict[str, str] = None,
+        vswitches: List[str] = None,
+    ):
+        super().__init__(
+            availability_zone=availability_zone,
+            cidr_block=cidr_block,
+            instance_type=instance_type,
+            security_group_tags=security_group_tags,
+            security_groups=security_groups,
+            vpc_id=vpc_id,
+            vswitch_tags=vswitch_tags,
+            vswitches=vswitches,
+        )
+
+
 class Azure(KubernetesObject):
     __slots__ = ()
 
@@ -297,7 +351,7 @@ class ToService(KubernetesObject):
         super().__init__(k8s_service=k8s_service, k8s_service_selector=k8s_service_selector)
 
 
-class Egress(KubernetesObject):
+class CiliumClusterwideNetworkPolicySpecEgress(KubernetesObject):
     __slots__ = ()
 
     _field_names_ = {
@@ -524,7 +578,7 @@ class CiliumClusterwideNetworkPolicySpec(KubernetesObject):
     __slots__ = ()
 
     description: str
-    egress: List[Egress]
+    egress: List[CiliumClusterwideNetworkPolicySpecEgress]
     egress_deny: List[EgressDeny]
     endpoint_selector: meta.LabelSelector
     ingress: List[Ingress]
@@ -535,7 +589,7 @@ class CiliumClusterwideNetworkPolicySpec(KubernetesObject):
     def __init__(
         self,
         description: str = None,
-        egress: List[Egress] = None,
+        egress: List[CiliumClusterwideNetworkPolicySpecEgress] = None,
         egress_deny: List[EgressDeny] = None,
         endpoint_selector: meta.LabelSelector = None,
         ingress: List[Ingress] = None,
@@ -576,6 +630,56 @@ class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
         specs: List[CiliumClusterwideNetworkPolicySpec] = None,
     ):
         super().__init__("cilium.io/v2", "CiliumClusterwideNetworkPolicy", name, "", metadata=metadata, spec=spec, specs=specs)
+
+
+class CiliumEgressNATPolicySpecEgress(KubernetesObject):
+    __slots__ = ()
+
+    namespace_selector: meta.LabelSelector
+    pod_selector: meta.LabelSelector
+
+    def __init__(self, namespace_selector: meta.LabelSelector = None, pod_selector: meta.LabelSelector = None):
+        super().__init__(namespace_selector=namespace_selector, pod_selector=pod_selector)
+
+
+class CiliumEgressNATPolicySpec(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["destination_cidrs", "egress", "egress_source_ip"]
+
+    _field_names_ = {
+        "destination_cidrs": "destinationCIDRs",
+        "egress_source_ip": "egressSourceIP",
+    }
+    _revfield_names_ = {
+        "destinationCIDRs": "destination_cidrs",
+        "egressSourceIP": "egress_source_ip",
+    }
+
+    destination_cidrs: List[str]
+    egress: List[CiliumEgressNATPolicySpecEgress]
+    egress_source_ip: str
+
+    def __init__(
+        self, destination_cidrs: List[str] = None, egress: List[CiliumEgressNATPolicySpecEgress] = None, egress_source_ip: str = None
+    ):
+        super().__init__(destination_cidrs=destination_cidrs, egress=egress, egress_source_ip=egress_source_ip)
+
+
+class CiliumEgressNATPolicy(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "cilium.io/v2alpha1"
+    _kind_ = "CiliumEgressNATPolicy"
+    _scope_ = "cluster"
+
+    _required_ = ["metadata"]
+
+    metadata: meta.ObjectMeta
+    spec: CiliumEgressNATPolicySpec
+
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: CiliumEgressNATPolicySpec = None):
+        super().__init__("cilium.io/v2alpha1", "CiliumEgressNATPolicy", name, "", metadata=metadata, spec=spec)
 
 
 class CiliumEndpoint(KubernetesApiResource):
@@ -741,11 +845,60 @@ class CiliumLocalRedirectPolicy(KubernetesApiResource):
         super().__init__("cilium.io/v2", "CiliumLocalRedirectPolicy", name, namespace, metadata=metadata, spec=spec)
 
 
+class CiliumNetworkPolicySpecEgress(KubernetesObject):
+    __slots__ = ()
+
+    _field_names_ = {
+        "to_cidr": "toCIDR",
+        "to_cidr_set": "toCIDRSet",
+        "to_fqdns": "toFQDNs",
+    }
+    _revfield_names_ = {
+        "toCIDR": "to_cidr",
+        "toCIDRSet": "to_cidr_set",
+        "toFQDNs": "to_fqdns",
+    }
+
+    to_cidr: List[str]
+    to_cidr_set: List[networking.IPBlock]
+    to_endpoints: List[meta.LabelSelector]
+    to_entities: List[str]
+    to_fqdns: List[ToFQDN]
+    to_groups: List[ToGroup]
+    to_ports: List[EgressToPort]
+    to_requires: List[meta.LabelSelector]
+    to_services: List[ToService]
+
+    def __init__(
+        self,
+        to_cidr: List[str] = None,
+        to_cidr_set: List[networking.IPBlock] = None,
+        to_endpoints: List[meta.LabelSelector] = None,
+        to_entities: List[str] = None,
+        to_fqdns: List[ToFQDN] = None,
+        to_groups: List[ToGroup] = None,
+        to_ports: List[EgressToPort] = None,
+        to_requires: List[meta.LabelSelector] = None,
+        to_services: List[ToService] = None,
+    ):
+        super().__init__(
+            to_cidr=to_cidr,
+            to_cidr_set=to_cidr_set,
+            to_endpoints=to_endpoints,
+            to_entities=to_entities,
+            to_fqdns=to_fqdns,
+            to_groups=to_groups,
+            to_ports=to_ports,
+            to_requires=to_requires,
+            to_services=to_services,
+        )
+
+
 class CiliumNetworkPolicySpec(KubernetesObject):
     __slots__ = ()
 
     description: str
-    egress: List[Egress]
+    egress: List[CiliumNetworkPolicySpecEgress]
     egress_deny: List[EgressDeny]
     endpoint_selector: meta.LabelSelector
     ingress: List[Ingress]
@@ -756,7 +909,7 @@ class CiliumNetworkPolicySpec(KubernetesObject):
     def __init__(
         self,
         description: str = None,
-        egress: List[Egress] = None,
+        egress: List[CiliumNetworkPolicySpecEgress] = None,
         egress_deny: List[EgressDeny] = None,
         endpoint_selector: meta.LabelSelector = None,
         ingress: List[Ingress] = None,
@@ -953,13 +1106,16 @@ class CiliumNodeSpec(KubernetesObject):
     __slots__ = ()
 
     _field_names_ = {
+        "alibaba_cloud": "alibaba-cloud",
         "instance_id": "instance-id",
     }
     _revfield_names_ = {
+        "alibaba-cloud": "alibaba_cloud",
         "instance-id": "instance_id",
     }
 
     addresses: List[Addresse]
+    alibaba_cloud: AlibabaCloud
     azure: Azure
     encryption: Encryption
     eni: ENI
@@ -971,6 +1127,7 @@ class CiliumNodeSpec(KubernetesObject):
     def __init__(
         self,
         addresses: List[Addresse] = None,
+        alibaba_cloud: AlibabaCloud = None,
         azure: Azure = None,
         encryption: Encryption = None,
         eni: ENI = None,
@@ -981,6 +1138,7 @@ class CiliumNodeSpec(KubernetesObject):
     ):
         super().__init__(
             addresses=addresses,
+            alibaba_cloud=alibaba_cloud,
             azure=azure,
             encryption=encryption,
             eni=eni,

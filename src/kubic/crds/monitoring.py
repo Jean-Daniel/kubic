@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from .. import KubernetesApiResource, KubernetesObject
 from .. import core, meta
@@ -91,6 +91,46 @@ class APIserverConfig(KubernetesObject):
         super().__init__(
             basic_auth=basic_auth, bearer_token=bearer_token, bearer_token_file=bearer_token_file, host=host, tls_config=tls_config
         )
+
+
+class Confirm(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["text"]
+
+    dismiss_text: str
+    ok_text: str
+    text: str
+    title: str
+
+    def __init__(self, dismiss_text: str = None, ok_text: str = None, text: str = None, title: str = None):
+        super().__init__(dismiss_text=dismiss_text, ok_text=ok_text, text=text, title=title)
+
+
+class Action(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["text", "type"]
+
+    confirm: Confirm
+    name: str
+    style: str
+    text: str
+    type: str
+    url: str
+    value: str
+
+    def __init__(
+        self,
+        confirm: Confirm = None,
+        name: str = None,
+        style: str = None,
+        text: str = None,
+        type: str = None,
+        url: str = None,
+        value: str = None,
+    ):
+        super().__init__(confirm=confirm, name=name, style=style, text=text, type=type, url=url, value=value)
 
 
 class Alert(KubernetesObject):
@@ -188,6 +228,719 @@ class Alerting(KubernetesObject):
 
     def __init__(self, alertmanagers: List[Alertmanager] = None):
         super().__init__(alertmanagers=alertmanagers)
+
+
+class SourceMatch(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["name"]
+
+    name: str
+    regex: bool
+    value: str
+
+    def __init__(self, name: str = None, regex: bool = None, value: str = None):
+        super().__init__(name=name, regex=regex, value=value)
+
+
+class TargetMatch(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["name"]
+
+    name: str
+    regex: bool
+    value: str
+
+    def __init__(self, name: str = None, regex: bool = None, value: str = None):
+        super().__init__(name=name, regex=regex, value=value)
+
+
+class InhibitRule(KubernetesObject):
+    __slots__ = ()
+
+    equal: List[str]
+    source_match: List[SourceMatch]
+    target_match: List[TargetMatch]
+
+    def __init__(self, equal: List[str] = None, source_match: List[SourceMatch] = None, target_match: List[TargetMatch] = None):
+        super().__init__(equal=equal, source_match=source_match, target_match=target_match)
+
+
+class Header(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["key", "value"]
+
+    key: str
+    value: str
+
+    def __init__(self, key: str = None, value: str = None):
+        super().__init__(key=key, value=value)
+
+
+class EmailConfigTLSConfig(KubernetesObject):
+    __slots__ = ()
+
+    ca: CA
+    cert: Cert
+    insecure_skip_verify: bool
+    key_secret: core.SecretKeySelector
+    server_name: str
+
+    def __init__(
+        self,
+        ca: CA = None,
+        cert: Cert = None,
+        insecure_skip_verify: bool = None,
+        key_secret: core.SecretKeySelector = None,
+        server_name: str = None,
+    ):
+        super().__init__(ca=ca, cert=cert, insecure_skip_verify=insecure_skip_verify, key_secret=key_secret, server_name=server_name)
+
+
+class EmailConfig(KubernetesObject):
+    __slots__ = ()
+
+    _field_names_ = {
+        "require_tls": "requireTLS",
+    }
+    _revfield_names_ = {
+        "from": "from_",
+        "requireTLS": "require_tls",
+    }
+
+    auth_identity: str
+    auth_password: core.ConfigMapKeySelector
+    auth_secret: core.ConfigMapKeySelector
+    auth_username: str
+    from_: str
+    headers: List[Header]
+    hello: str
+    html: str
+    require_tls: bool
+    send_resolved: bool
+    smarthost: str
+    text: str
+    tls_config: EmailConfigTLSConfig
+    to: str
+
+    def __init__(
+        self,
+        auth_identity: str = None,
+        auth_password: core.ConfigMapKeySelector = None,
+        auth_secret: core.ConfigMapKeySelector = None,
+        auth_username: str = None,
+        from_: str = None,
+        headers: List[Header] = None,
+        hello: str = None,
+        html: str = None,
+        require_tls: bool = None,
+        send_resolved: bool = None,
+        smarthost: str = None,
+        text: str = None,
+        tls_config: EmailConfigTLSConfig = None,
+        to: str = None,
+    ):
+        super().__init__(
+            auth_identity=auth_identity,
+            auth_password=auth_password,
+            auth_secret=auth_secret,
+            auth_username=auth_username,
+            from_=from_,
+            headers=headers,
+            hello=hello,
+            html=html,
+            require_tls=require_tls,
+            send_resolved=send_resolved,
+            smarthost=smarthost,
+            text=text,
+            tls_config=tls_config,
+            to=to,
+        )
+
+
+class Detail(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["key", "value"]
+
+    key: str
+    value: str
+
+    def __init__(self, key: str = None, value: str = None):
+        super().__init__(key=key, value=value)
+
+
+class HttpConfigTLSConfig(KubernetesObject):
+    __slots__ = ()
+
+    ca: CA
+    cert: Cert
+    insecure_skip_verify: bool
+    key_secret: core.SecretKeySelector
+    server_name: str
+
+    def __init__(
+        self,
+        ca: CA = None,
+        cert: Cert = None,
+        insecure_skip_verify: bool = None,
+        key_secret: core.SecretKeySelector = None,
+        server_name: str = None,
+    ):
+        super().__init__(ca=ca, cert=cert, insecure_skip_verify=insecure_skip_verify, key_secret=key_secret, server_name=server_name)
+
+
+class HttpConfig(KubernetesObject):
+    __slots__ = ()
+
+    _field_names_ = {
+        "proxy_url": "proxyURL",
+    }
+    _revfield_names_ = {
+        "proxyURL": "proxy_url",
+    }
+
+    basic_auth: BasicAuth
+    bearer_token_secret: core.ConfigMapKeySelector
+    proxy_url: str
+    tls_config: HttpConfigTLSConfig
+
+    def __init__(
+        self,
+        basic_auth: BasicAuth = None,
+        bearer_token_secret: core.ConfigMapKeySelector = None,
+        proxy_url: str = None,
+        tls_config: HttpConfigTLSConfig = None,
+    ):
+        super().__init__(basic_auth=basic_auth, bearer_token_secret=bearer_token_secret, proxy_url=proxy_url, tls_config=tls_config)
+
+
+class Responder(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["type"]
+
+    id: str
+    name: str
+    type: str
+    username: str
+
+    def __init__(self, id: str = None, name: str = None, type: str = None, username: str = None):
+        super().__init__(id=id, name=name, type=type, username=username)
+
+
+class OpsgenieConfig(KubernetesObject):
+    __slots__ = ()
+
+    _field_names_ = {
+        "api_url": "apiURL",
+    }
+    _revfield_names_ = {
+        "apiURL": "api_url",
+    }
+
+    api_key: core.ConfigMapKeySelector
+    api_url: str
+    description: str
+    details: List[Detail]
+    http_config: HttpConfig
+    message: str
+    note: str
+    priority: str
+    responders: List[Responder]
+    send_resolved: bool
+    source: str
+    tags: str
+
+    def __init__(
+        self,
+        api_key: core.ConfigMapKeySelector = None,
+        api_url: str = None,
+        description: str = None,
+        details: List[Detail] = None,
+        http_config: HttpConfig = None,
+        message: str = None,
+        note: str = None,
+        priority: str = None,
+        responders: List[Responder] = None,
+        send_resolved: bool = None,
+        source: str = None,
+        tags: str = None,
+    ):
+        super().__init__(
+            api_key=api_key,
+            api_url=api_url,
+            description=description,
+            details=details,
+            http_config=http_config,
+            message=message,
+            note=note,
+            priority=priority,
+            responders=responders,
+            send_resolved=send_resolved,
+            source=source,
+            tags=tags,
+        )
+
+
+class PagerdutyConfig(KubernetesObject):
+    __slots__ = ()
+
+    _field_names_ = {
+        "client_url": "clientURL",
+    }
+    _revfield_names_ = {
+        "class": "class_",
+        "clientURL": "client_url",
+    }
+
+    class_: str
+    client: str
+    client_url: str
+    component: str
+    description: str
+    details: List[Detail]
+    group: str
+    http_config: HttpConfig
+    routing_key: core.ConfigMapKeySelector
+    send_resolved: bool
+    service_key: core.ConfigMapKeySelector
+    severity: str
+    url: str
+
+    def __init__(
+        self,
+        class_: str = None,
+        client: str = None,
+        client_url: str = None,
+        component: str = None,
+        description: str = None,
+        details: List[Detail] = None,
+        group: str = None,
+        http_config: HttpConfig = None,
+        routing_key: core.ConfigMapKeySelector = None,
+        send_resolved: bool = None,
+        service_key: core.ConfigMapKeySelector = None,
+        severity: str = None,
+        url: str = None,
+    ):
+        super().__init__(
+            class_=class_,
+            client=client,
+            client_url=client_url,
+            component=component,
+            description=description,
+            details=details,
+            group=group,
+            http_config=http_config,
+            routing_key=routing_key,
+            send_resolved=send_resolved,
+            service_key=service_key,
+            severity=severity,
+            url=url,
+        )
+
+
+class PushoverConfig(KubernetesObject):
+    __slots__ = ()
+
+    expire: str
+    html: bool
+    http_config: HttpConfig
+    message: str
+    priority: str
+    retry: str
+    send_resolved: bool
+    sound: str
+    title: str
+    token: core.ConfigMapKeySelector
+    url: str
+    url_title: str
+    user_key: core.ConfigMapKeySelector
+
+    def __init__(
+        self,
+        expire: str = None,
+        html: bool = None,
+        http_config: HttpConfig = None,
+        message: str = None,
+        priority: str = None,
+        retry: str = None,
+        send_resolved: bool = None,
+        sound: str = None,
+        title: str = None,
+        token: core.ConfigMapKeySelector = None,
+        url: str = None,
+        url_title: str = None,
+        user_key: core.ConfigMapKeySelector = None,
+    ):
+        super().__init__(
+            expire=expire,
+            html=html,
+            http_config=http_config,
+            message=message,
+            priority=priority,
+            retry=retry,
+            send_resolved=send_resolved,
+            sound=sound,
+            title=title,
+            token=token,
+            url=url,
+            url_title=url_title,
+            user_key=user_key,
+        )
+
+
+class Field(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["title", "value"]
+
+    short: bool
+    title: str
+    value: str
+
+    def __init__(self, short: bool = None, title: str = None, value: str = None):
+        super().__init__(short=short, title=title, value=value)
+
+
+class SlackConfig(KubernetesObject):
+    __slots__ = ()
+
+    _field_names_ = {
+        "api_url": "apiURL",
+        "icon_url": "iconURL",
+        "image_url": "imageURL",
+        "thumb_url": "thumbURL",
+    }
+    _revfield_names_ = {
+        "apiURL": "api_url",
+        "iconURL": "icon_url",
+        "imageURL": "image_url",
+        "thumbURL": "thumb_url",
+    }
+
+    actions: List[Action]
+    api_url: core.ConfigMapKeySelector
+    callback_id: str
+    channel: str
+    color: str
+    fallback: str
+    fields: List[Field]
+    footer: str
+    http_config: HttpConfig
+    icon_emoji: str
+    icon_url: str
+    image_url: str
+    link_names: bool
+    mrkdwn_in: List[str]
+    pretext: str
+    send_resolved: bool
+    short_fields: bool
+    text: str
+    thumb_url: str
+    title: str
+    title_link: str
+    username: str
+
+    def __init__(
+        self,
+        actions: List[Action] = None,
+        api_url: core.ConfigMapKeySelector = None,
+        callback_id: str = None,
+        channel: str = None,
+        color: str = None,
+        fallback: str = None,
+        fields: List[Field] = None,
+        footer: str = None,
+        http_config: HttpConfig = None,
+        icon_emoji: str = None,
+        icon_url: str = None,
+        image_url: str = None,
+        link_names: bool = None,
+        mrkdwn_in: List[str] = None,
+        pretext: str = None,
+        send_resolved: bool = None,
+        short_fields: bool = None,
+        text: str = None,
+        thumb_url: str = None,
+        title: str = None,
+        title_link: str = None,
+        username: str = None,
+    ):
+        super().__init__(
+            actions=actions,
+            api_url=api_url,
+            callback_id=callback_id,
+            channel=channel,
+            color=color,
+            fallback=fallback,
+            fields=fields,
+            footer=footer,
+            http_config=http_config,
+            icon_emoji=icon_emoji,
+            icon_url=icon_url,
+            image_url=image_url,
+            link_names=link_names,
+            mrkdwn_in=mrkdwn_in,
+            pretext=pretext,
+            send_resolved=send_resolved,
+            short_fields=short_fields,
+            text=text,
+            thumb_url=thumb_url,
+            title=title,
+            title_link=title_link,
+            username=username,
+        )
+
+
+class CustomField(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["key", "value"]
+
+    key: str
+    value: str
+
+    def __init__(self, key: str = None, value: str = None):
+        super().__init__(key=key, value=value)
+
+
+class VictoropsConfig(KubernetesObject):
+    __slots__ = ()
+
+    api_key: core.ConfigMapKeySelector
+    api_url: str
+    custom_fields: List[CustomField]
+    entity_display_name: str
+    http_config: HttpConfig
+    message_type: str
+    monitoring_tool: str
+    routing_key: str
+    send_resolved: bool
+    state_message: str
+
+    def __init__(
+        self,
+        api_key: core.ConfigMapKeySelector = None,
+        api_url: str = None,
+        custom_fields: List[CustomField] = None,
+        entity_display_name: str = None,
+        http_config: HttpConfig = None,
+        message_type: str = None,
+        monitoring_tool: str = None,
+        routing_key: str = None,
+        send_resolved: bool = None,
+        state_message: str = None,
+    ):
+        super().__init__(
+            api_key=api_key,
+            api_url=api_url,
+            custom_fields=custom_fields,
+            entity_display_name=entity_display_name,
+            http_config=http_config,
+            message_type=message_type,
+            monitoring_tool=monitoring_tool,
+            routing_key=routing_key,
+            send_resolved=send_resolved,
+            state_message=state_message,
+        )
+
+
+class WebhookConfig(KubernetesObject):
+    __slots__ = ()
+
+    http_config: HttpConfig
+    max_alerts: int
+    send_resolved: bool
+    url: str
+    url_secret: core.ConfigMapKeySelector
+
+    def __init__(
+        self,
+        http_config: HttpConfig = None,
+        max_alerts: int = None,
+        send_resolved: bool = None,
+        url: str = None,
+        url_secret: core.ConfigMapKeySelector = None,
+    ):
+        super().__init__(http_config=http_config, max_alerts=max_alerts, send_resolved=send_resolved, url=url, url_secret=url_secret)
+
+
+class WechatConfig(KubernetesObject):
+    __slots__ = ()
+
+    _field_names_ = {
+        "agent_id": "agentID",
+        "api_url": "apiURL",
+        "corp_id": "corpID",
+    }
+    _revfield_names_ = {
+        "agentID": "agent_id",
+        "apiURL": "api_url",
+        "corpID": "corp_id",
+    }
+
+    agent_id: str
+    api_secret: core.ConfigMapKeySelector
+    api_url: str
+    corp_id: str
+    http_config: HttpConfig
+    message: str
+    message_type: str
+    send_resolved: bool
+    to_party: str
+    to_tag: str
+    to_user: str
+
+    def __init__(
+        self,
+        agent_id: str = None,
+        api_secret: core.ConfigMapKeySelector = None,
+        api_url: str = None,
+        corp_id: str = None,
+        http_config: HttpConfig = None,
+        message: str = None,
+        message_type: str = None,
+        send_resolved: bool = None,
+        to_party: str = None,
+        to_tag: str = None,
+        to_user: str = None,
+    ):
+        super().__init__(
+            agent_id=agent_id,
+            api_secret=api_secret,
+            api_url=api_url,
+            corp_id=corp_id,
+            http_config=http_config,
+            message=message,
+            message_type=message_type,
+            send_resolved=send_resolved,
+            to_party=to_party,
+            to_tag=to_tag,
+            to_user=to_user,
+        )
+
+
+class Receiver(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["name"]
+
+    email_configs: List[EmailConfig]
+    name: str
+    opsgenie_configs: List[OpsgenieConfig]
+    pagerduty_configs: List[PagerdutyConfig]
+    pushover_configs: List[PushoverConfig]
+    slack_configs: List[SlackConfig]
+    victorops_configs: List[VictoropsConfig]
+    webhook_configs: List[WebhookConfig]
+    wechat_configs: List[WechatConfig]
+
+    def __init__(
+        self,
+        email_configs: List[EmailConfig] = None,
+        name: str = None,
+        opsgenie_configs: List[OpsgenieConfig] = None,
+        pagerduty_configs: List[PagerdutyConfig] = None,
+        pushover_configs: List[PushoverConfig] = None,
+        slack_configs: List[SlackConfig] = None,
+        victorops_configs: List[VictoropsConfig] = None,
+        webhook_configs: List[WebhookConfig] = None,
+        wechat_configs: List[WechatConfig] = None,
+    ):
+        super().__init__(
+            email_configs=email_configs,
+            name=name,
+            opsgenie_configs=opsgenie_configs,
+            pagerduty_configs=pagerduty_configs,
+            pushover_configs=pushover_configs,
+            slack_configs=slack_configs,
+            victorops_configs=victorops_configs,
+            webhook_configs=webhook_configs,
+            wechat_configs=wechat_configs,
+        )
+
+
+class Matcher(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["name"]
+
+    name: str
+    regex: bool
+    value: str
+
+    def __init__(self, name: str = None, regex: bool = None, value: str = None):
+        super().__init__(name=name, regex=regex, value=value)
+
+
+class Route(KubernetesObject):
+    __slots__ = ()
+
+    _revfield_names_ = {
+        "continue": "continue_",
+    }
+
+    continue_: bool
+    group_by: List[str]
+    group_interval: str
+    group_wait: str
+    matchers: List[Matcher]
+    receiver: str
+    repeat_interval: str
+    routes: List[Any]
+
+    def __init__(
+        self,
+        continue_: bool = None,
+        group_by: List[str] = None,
+        group_interval: str = None,
+        group_wait: str = None,
+        matchers: List[Matcher] = None,
+        receiver: str = None,
+        repeat_interval: str = None,
+        routes: List[Any] = None,
+    ):
+        super().__init__(
+            continue_=continue_,
+            group_by=group_by,
+            group_interval=group_interval,
+            group_wait=group_wait,
+            matchers=matchers,
+            receiver=receiver,
+            repeat_interval=repeat_interval,
+            routes=routes,
+        )
+
+
+class AlertmanagerConfigSpec(KubernetesObject):
+    __slots__ = ()
+
+    inhibit_rules: List[InhibitRule]
+    receivers: List[Receiver]
+    route: Route
+
+    def __init__(self, inhibit_rules: List[InhibitRule] = None, receivers: List[Receiver] = None, route: Route = None):
+        super().__init__(inhibit_rules=inhibit_rules, receivers=receivers, route=route)
+
+
+class AlertmanagerConfig(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "monitoring.coreos.com/v1alpha1"
+    _kind_ = "AlertmanagerConfig"
+    _scope_ = "namespace"
+
+    _required_ = ["spec"]
+
+    metadata: meta.ObjectMeta
+    spec: AlertmanagerConfigSpec
+
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: AlertmanagerConfigSpec = None):
+        super().__init__("monitoring.coreos.com/v1alpha1", "AlertmanagerConfig", name, namespace, metadata=metadata, spec=spec)
 
 
 class PodMetadata(KubernetesObject):

@@ -122,14 +122,16 @@ def is_key_selector(schema: dict) -> bool:
 def import_crds(annotations, *crds: Tuple[QualifiedName, dict]) -> List[ApiGroup]:
     groups = annotations.get("groups") or {}
     # in case there is CRDs from many groups/versions.
+    # FIXME: disable group by version as some CRDs have etherogenous version (cilium)
     crds_by_groups = defaultdict(list)
     for fqn, schema in crds:
         group = groups.get(fqn.group, fqn.group)
-        crds_by_groups[(group, fqn.version)].append((fqn, schema))
+        crds_by_groups[group].append((fqn, schema))
+        # crds_by_groups[(group, fqn.version)].append((fqn, schema))
 
     groups = []
-    for (group, version), crds in crds_by_groups.items():
-        parser = CRDParser(group, version, annotations.get(group))
+    for group, crds in crds_by_groups.items():
+        parser = CRDParser(group, "", annotations.get(group))
         groups.append(parser.process(*crds))
 
     return groups
