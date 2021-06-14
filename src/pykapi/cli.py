@@ -17,7 +17,7 @@ from .parser import ApiGroup
 from .printer import TypePrinter
 
 
-def import_k8s_api(args, annotations):
+def import_k8s_api(args):
     # import kubernetes types
     version = args.version
     file = os.path.join(args.schemas, f"{version}.json")
@@ -31,9 +31,12 @@ def import_k8s_api(args, annotations):
         with open(file, "w") as f:
             json.dump(data, f, indent="  ", sort_keys=True)
 
-    if annotations:
-        with open(annotations, "rb") as f:
+    try:
+        with open(args.annotations or os.path.join(args.schema, "annotations.yaml"), "rb") as f:
             annotations = yaml.load(f, CSafeLoader)
+    except FileNotFoundError:
+        if args.annotations:
+            raise
 
     groups = import_api_types(
         file,
@@ -88,7 +91,7 @@ class CRD(NamedTuple):
     schema: dict
 
 
-def import_crd_files(paths: List[str], annotations: str, output: str, api_module):
+def import_crd_files(paths: List[str], annotations: dict, output: str, api_module):
     crds = []
 
     for path in paths:
@@ -116,15 +119,12 @@ def import_crd_files(paths: List[str], annotations: str, output: str, api_module
 
                 crds.append(CRD(QualifiedName(kind, group, version), openapi))
 
-    with open(annotations, "rb") as f:
-        annotations = yaml.load(f, CSafeLoader).get("crds")
-
     groups = import_crds(annotations, *crds)
 
     print_groups(groups, output, api_module=api_module)
 
 
-def import_custom_resources(schema_dir: str, crds: List[str], annotations: str, output: str, api_module: str):
+def import_custom_resources(args, crds: List[str]):
     files = []
     for crd in crds:
         filename, ext = os.path.splitext(crd)
@@ -132,7 +132,7 @@ def import_custom_resources(schema_dir: str, crds: List[str], annotations: str, 
             files.append(crd)
             continue
 
-        cached = os.path.join(schema_dir, crd + ".json")
+        cached = os.path.join(args.schemas, crd + ".json")
         if os.path.exists(cached):
             files.append(cached)
             continue
@@ -153,7 +153,14 @@ def import_custom_resources(schema_dir: str, crds: List[str], annotations: str, 
 
         files.append(cached)
 
-    import_crd_files(files, annotations, output, api_module)
+    try:
+        with open(args.annotations or os.path.join(args.schema, "annotations.yaml"), "rb") as f:
+            annotations = yaml.load(f, CSafeLoader)
+    except FileNotFoundError:
+        if args.annotations:
+            raise
+
+    import_crd_files(files, annotations, args.output, args.api_module)
 
 
 SCHEMA_DIR = os.path.join(os.path.dirname(__file__), "schemas")
@@ -166,6 +173,7 @@ def main():
     parser = argparse.ArgumentParser("pykapi", description="Generate python API for Kubernetes Objects")
     parser.add_argument("-o", "--output", type=str, default="-")
     parser.add_argument("-s", "--schemas", type=str, default=SCHEMA_DIR)
+    parser.add_argument("--annotations", type=str)
     parser.add_argument("--api_module", type=str, default="kubic")
     parser.add_argument("--version", type=str, default="1.21")
     parser.add_argument("crds", nargs="*", type=str)
@@ -174,11 +182,7 @@ def main():
 
     if args.crds:
         import_custom_resources(
-            args.schemas,
-            args.crds,
-            os.path.join(args.schemas, "annotations.yaml"),
-            args.output,
-            args.api_module
-        )
+            args,
+            args.crds)
     else:
-        import_k8s_api(args, os.path.join(args.schemas, "annotations.yaml"))
+        import_k8s_api(args)
