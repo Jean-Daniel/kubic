@@ -1,7 +1,9 @@
 import argparse
 import json
+import logging
 import os
 import subprocess
+import sys
 from typing import List, NamedTuple
 from urllib.request import urlretrieve
 
@@ -86,7 +88,7 @@ class CRD(NamedTuple):
     schema: dict
 
 
-def import_crd_files(paths: List[str], annotations: str, output: str):
+def import_crd_files(paths: List[str], annotations: str, output: str, api_module):
     crds = []
 
     for path in paths:
@@ -119,10 +121,10 @@ def import_crd_files(paths: List[str], annotations: str, output: str):
 
     groups = import_crds(annotations, *crds)
 
-    print_groups(groups, output, api_module="..")
+    print_groups(groups, output, api_module=api_module)
 
 
-def import_custom_resources(schema_dir: str, crds: List[str], annotations: str, output: str):
+def import_custom_resources(schema_dir: str, crds: List[str], annotations: str, output: str, api_module: str):
     files = []
     for crd in crds:
         filename, ext = os.path.splitext(crd)
@@ -151,16 +153,20 @@ def import_custom_resources(schema_dir: str, crds: List[str], annotations: str, 
 
         files.append(cached)
 
-    import_crd_files(files, annotations, output)
+    import_crd_files(files, annotations, output, api_module)
 
 
 SCHEMA_DIR = os.path.join(os.path.dirname(__file__), "schemas")
 
 
 def main():
+    logging.root.addHandler(logging.StreamHandler(sys.stderr))
+    logging.root.setLevel(logging.INFO)
+
     parser = argparse.ArgumentParser("pykapi", description="Generate python API for Kubernetes Objects")
     parser.add_argument("-o", "--output", type=str, default="-")
     parser.add_argument("-s", "--schemas", type=str, default=SCHEMA_DIR)
+    parser.add_argument("--api_module", type=str, default="kubic")
     parser.add_argument("--version", type=str, default="1.21")
     parser.add_argument("crds", nargs="*", type=str)
 
@@ -172,6 +178,7 @@ def main():
             args.crds,
             os.path.join(args.schemas, "annotations.yaml"),
             args.output,
+            args.api_module
         )
     else:
         import_k8s_api(args, os.path.join(args.schemas, "annotations.yaml"))
