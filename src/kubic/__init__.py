@@ -53,6 +53,9 @@ class _TypedList(list):
     def _cast(self, obj):
         if isinstance(obj, self.type):
             return obj
+        # required to workaround dubious StatefulSet persistent volume claim declaration.
+        if issubclass(self.type, KubernetesApiResource):
+            return self.type("").update(obj)
         return self.type().update(obj)
 
     def append(self, obj):
