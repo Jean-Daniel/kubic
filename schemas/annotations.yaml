@@ -7,7 +7,12 @@
 crds:
   # Map CRD group name
   groups:
+    # cert manager
     "acme.cert-manager.io": "cert-manager.io"
+    # rook
+    "ceph.rook.io": "rook.io"
+    "objectbucket.io": "rook.io"
+    "replication.storage.openshift.io": "rook.io"
 
   "cilium.io":
     Egress:
@@ -286,3 +291,15 @@ crds:
       tolerations: "io.k8s.api.core.v1.Toleration"
       topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
       volumes: "io.k8s.api.core.v1.Volume"
+
+  "rook.io":
+    StretchClusterZone:
+      volumeClaimTemplate: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+    CephClusterSpecMON:
+      volumeClaimTemplate: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+    Node:
+      volumeClaimTemplates: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+    StorageClassDeviceSet:
+      volumeClaimTemplates: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+    Storage:
+      volumeClaimTemplates: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"

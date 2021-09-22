@@ -176,7 +176,7 @@ def main():
     parser.add_argument("-s", "--schemas", type=str, default=SCHEMA_DIR)
     parser.add_argument("--annotations", type=str)
     parser.add_argument("--api_module", type=str, default="kubic")
-    parser.add_argument("--version", type=str, default="1.21")
+    parser.add_argument("--version", type=str, default="1.22")
     parser.add_argument("crds", nargs="*", type=str)
 
     args = parser.parse_args()

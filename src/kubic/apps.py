@@ -179,6 +179,7 @@ class StatefulSetSpec(KubernetesObject):
 
     _required_ = ["selector", "service_name", "template"]
 
+    min_ready_seconds: int
     pod_management_policy: str
     replicas: int
     revision_history_limit: int
@@ -190,6 +191,7 @@ class StatefulSetSpec(KubernetesObject):
 
     def __init__(
         self,
+        min_ready_seconds: int = None,
         pod_management_policy: str = None,
         replicas: int = None,
         revision_history_limit: int = None,
@@ -200,6 +202,7 @@ class StatefulSetSpec(KubernetesObject):
         volume_claim_templates: List[core.PersistentVolumeClaim] = None,
     ):
         super().__init__(
+            min_ready_seconds=min_ready_seconds,
             pod_management_policy=pod_management_policy,
             replicas=replicas,
             revision_history_limit=revision_history_limit,

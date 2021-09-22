@@ -871,12 +871,20 @@ class WindowsSecurityContextOptions(KubernetesObject):
 
     gmsa_credential_spec: str
     gmsa_credential_spec_name: str
+    host_process: bool
     run_as_user_name: str
 
-    def __init__(self, gmsa_credential_spec: str = None, gmsa_credential_spec_name: str = None, run_as_user_name: str = None):
+    def __init__(
+        self,
+        gmsa_credential_spec: str = None,
+        gmsa_credential_spec_name: str = None,
+        host_process: bool = None,
+        run_as_user_name: str = None,
+    ):
         super().__init__(
             gmsa_credential_spec=gmsa_credential_spec,
             gmsa_credential_spec_name=gmsa_credential_spec_name,
+            host_process=host_process,
             run_as_user_name=run_as_user_name,
         )
 
@@ -1214,6 +1222,7 @@ class PersistentVolumeClaimSpec(KubernetesObject):
 
     access_modes: List[str]
     data_source: TypedLocalObjectReference
+    data_source_ref: TypedLocalObjectReference
     resources: ResourceRequirements
     selector: meta.LabelSelector
     storage_class_name: str
@@ -1224,6 +1233,7 @@ class PersistentVolumeClaimSpec(KubernetesObject):
         self,
         access_modes: List[str] = None,
         data_source: TypedLocalObjectReference = None,
+        data_source_ref: TypedLocalObjectReference = None,
         resources: ResourceRequirements = None,
         selector: meta.LabelSelector = None,
         storage_class_name: str = None,
@@ -1233,6 +1243,7 @@ class PersistentVolumeClaimSpec(KubernetesObject):
         super().__init__(
             access_modes=access_modes,
             data_source=data_source,
+            data_source_ref=data_source_ref,
             resources=resources,
             selector=selector,
             storage_class_name=storage_class_name,
@@ -2726,7 +2737,6 @@ class ServiceSpec(KubernetesObject):
     selector: Dict[str, str]
     session_affinity: str
     session_affinity_config: SessionAffinityConfig
-    topology_keys: List[str]
     type: str
 
     def __init__(
@@ -2749,7 +2759,6 @@ class ServiceSpec(KubernetesObject):
         selector: Dict[str, str] = None,
         session_affinity: str = None,
         session_affinity_config: SessionAffinityConfig = None,
-        topology_keys: List[str] = None,
         type: str = None,
     ):
         super().__init__(
@@ -2771,7 +2780,6 @@ class ServiceSpec(KubernetesObject):
             selector=selector,
             session_affinity=session_affinity,
             session_affinity_config=session_affinity_config,
-            topology_keys=topology_keys,
             type=type,
         )
 

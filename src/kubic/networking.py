@@ -47,7 +47,7 @@ class HTTPIngressPath(KubernetesObject):
 
     _api_version_ = "networking.k8s.io/v1"
 
-    _required_ = ["backend"]
+    _required_ = ["backend", "path_type"]
 
     backend: IngressBackend
     path: str
