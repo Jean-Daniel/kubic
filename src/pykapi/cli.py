@@ -156,7 +156,7 @@ def import_custom_resources(args, crds: List[str]):
     annotations = {}
     try:
         with open(args.annotations or os.path.join(args.schemas, "annotations.yaml"), "rb") as f:
-            annotations = yaml.load(f, CSafeLoader)
+            annotations = yaml.load(f, CSafeLoader).get("crds")
     except FileNotFoundError:
         if args.annotations:
             raise
