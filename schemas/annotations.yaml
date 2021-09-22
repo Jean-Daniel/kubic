@@ -284,6 +284,7 @@ crds:
 
     ThanosRulerSpec:
       affinity: "io.k8s.api.core.v1.Affinity"
+      containers: "io.k8s.api.core.v1.Container"
       imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
       initContainers: "io.k8s.api.core.v1.Container"
       resources: "io.k8s.api.core.v1.ResourceRequirements"
