@@ -112,6 +112,7 @@ KEYWORDS = {
     "import",
     "except",
     "break",
+    "global",
     "continue",
 }
 

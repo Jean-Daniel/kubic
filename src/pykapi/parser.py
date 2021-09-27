@@ -84,6 +84,7 @@ class ApiGroup:
         if isinstance(api_type, AnonymousType):
             self._anonymous[api_type.name].append(api_type)
         else:
+            assert api_type.name not in self._types
             self._types[api_type.name] = api_type
 
     @property
@@ -111,10 +112,15 @@ class ApiGroup:
         for name, items in self._anonymous.items():
             base = items[0]
             if len(items) == 1:
-                self._types[base.name] = base
+                if base.name in self._types:
+                    # a base type with this name already exists
+                    self._rename(items)
+                else:
+                    self._types[base.name] = base
                 continue
 
             for duplicated in items[1:]:
+                # lookup one object not matching the original one
                 if duplicated != base:
                     # Mark all items as conflicting and fix the output type list
                     self._rename(items)

@@ -296,11 +296,89 @@ crds:
   "rook.io":
     StretchClusterZone:
       volumeClaimTemplate: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+    CephClusterSpec:
+      resources: { type: object, additionalProperties: { $ref: "io.k8s.api.core.v1.ResourceRequirements" } }
     CephClusterSpecMON:
       volumeClaimTemplate: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+    CephClusterSpecHealthCheck:
+      livenessProbe: { type: object, additionalProperties: { $ref: "io.k8s.api.core.v1.Probe" } }
+    CephObjectStoreSpecHealthCheck:
+      livenessProbe: "io.k8s.api.core.v1.Probe"
+    CephFilesystemMirrorSpec:
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+    CephFilesystemSpec:
+      dataPools: CephBlockPoolSpec
+      metadataPool: CephBlockPoolSpec
+    CephObjectStoreSpec:
+      dataPool: CephBlockPoolSpec
+      metadataPool: CephBlockPoolSpec
+    CephObjectZoneSpec:
+      dataPool: CephBlockPoolSpec
+      metadataPool: CephBlockPoolSpec
+    CephRBDMirrorSpec:
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+    Gateway:
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+    MetadataServer:
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
     Node:
       volumeClaimTemplates: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+    Placement:
+      tolerations: "io.k8s.api.core.v1.Toleration"
+    Server:
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
     StorageClassDeviceSet:
       volumeClaimTemplates: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+      preparePlacement: "Placement"
     Storage:
       volumeClaimTemplates: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+
+  "postgres-operator.crunchydata.com":
+    Config:
+      files: "io.k8s.api.core.v1.VolumeProjection"
+    RepoHost:
+      affinity: "io.k8s.api.core.v1.Affinity"
+      sshSecret: "io.k8s.api.core.v1.SecretProjection"
+      sshConfigMap: "io.k8s.api.core.v1.SecretProjection"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+      tolerations: "io.k8s.api.core.v1.Toleration"
+    RepoVolume:
+      volumeClaimSpec: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
+    Restore:
+      affinity: "io.k8s.api.core.v1.Affinity"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+      tolerations: "io.k8s.api.core.v1.Toleration"
+    DataSourcePostgresCluster:
+      affinity: "io.k8s.api.core.v1.Affinity"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+      tolerations: "io.k8s.api.core.v1.Toleration"
+    Instance:
+      affinity: "io.k8s.api.core.v1.Affinity"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+      dataVolumeClaimSpec: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
+      walVolumeClaimSpec: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
+      tolerations: "io.k8s.api.core.v1.Toleration"
+    PgBouncer:
+      affinity: "io.k8s.api.core.v1.Affinity"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+      customTLSSecret: "io.k8s.api.core.v1.SecretProjection"
+      tolerations: "io.k8s.api.core.v1.Toleration"
+    PgbouncerConfig:
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+    SidecarPgbackrest:
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+    BackupPgbackrest:
+      configuration: "io.k8s.api.core.v1.VolumeProjection"
+    Exporter:
+      configuration: "io.k8s.api.core.v1.VolumeProjection"
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+    ReplicaCertCopy:
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+    JOB:
+      resources: "io.k8s.api.core.v1.ResourceRequirements"
+    PostgresClusterSpec:
+      customReplicationTLSSecret: "io.k8s.api.core.v1.SecretProjection"
+      customTLSSecret: "io.k8s.api.core.v1.SecretProjection"
+      imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
