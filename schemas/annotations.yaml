@@ -350,6 +350,8 @@ crds:
       affinity: "io.k8s.api.core.v1.Affinity"
       resources: "io.k8s.api.core.v1.ResourceRequirements"
       tolerations: "io.k8s.api.core.v1.Toleration"
+    Dedicated:
+      affinity: "io.k8s.api.core.v1.Affinity"
     DataSourcePostgresCluster:
       affinity: "io.k8s.api.core.v1.Affinity"
       resources: "io.k8s.api.core.v1.ResourceRequirements"

@@ -4,7 +4,6 @@ from .. import KubernetesApiResource, KubernetesObject
 from .. import core, meta
 
 
-
 class Attachment(KubernetesObject):
     __slots__ = ()
 
@@ -17,8 +16,18 @@ class Attachment(KubernetesObject):
     pod_namespace: str
     read_only: bool
 
-    def __init__(self, cluster_name: str = None, mount_dir: str = None, node: str = None, pod_name: str = None, pod_namespace: str = None, read_only: bool = None):
-        super().__init__(cluster_name=cluster_name, mount_dir=mount_dir, node=node, pod_name=pod_name, pod_namespace=pod_namespace, read_only=read_only)
+    def __init__(
+        self,
+        cluster_name: str = None,
+        mount_dir: str = None,
+        node: str = None,
+        pod_name: str = None,
+        pod_namespace: str = None,
+        read_only: bool = None,
+    ):
+        super().__init__(
+            cluster_name=cluster_name, mount_dir=mount_dir, node=node, pod_name=pod_name, pod_namespace=pod_namespace, read_only=read_only
+        )
 
 
 class Bucket(KubernetesObject):
@@ -125,8 +134,23 @@ class Replicated(KubernetesObject):
     sub_failure_domain: str
     target_size_ratio: int
 
-    def __init__(self, hybrid_storage: HybridStorage = None, replicas_per_failure_domain: int = None, require_safe_replica_size: bool = None, size: int = None, sub_failure_domain: str = None, target_size_ratio: int = None):
-        super().__init__(hybrid_storage=hybrid_storage, replicas_per_failure_domain=replicas_per_failure_domain, require_safe_replica_size=require_safe_replica_size, size=size, sub_failure_domain=sub_failure_domain, target_size_ratio=target_size_ratio)
+    def __init__(
+        self,
+        hybrid_storage: HybridStorage = None,
+        replicas_per_failure_domain: int = None,
+        require_safe_replica_size: bool = None,
+        size: int = None,
+        sub_failure_domain: str = None,
+        target_size_ratio: int = None,
+    ):
+        super().__init__(
+            hybrid_storage=hybrid_storage,
+            replicas_per_failure_domain=replicas_per_failure_domain,
+            require_safe_replica_size=require_safe_replica_size,
+            size=size,
+            sub_failure_domain=sub_failure_domain,
+            target_size_ratio=target_size_ratio,
+        )
 
 
 class Mirror(KubernetesObject):
@@ -171,8 +195,33 @@ class CephBlockPoolSpec(KubernetesObject):
     replicated: Replicated
     status_check: StatusCheck
 
-    def __init__(self, compression_mode: str = None, crush_root: str = None, device_class: str = None, enable_rbd_stats: bool = None, erasure_coded: ErasureCoded = None, failure_domain: str = None, mirroring: CephBlockPoolSpecMirroring = None, parameters: Dict[str, str] = None, quotas: CephBlockPoolSpecQuota = None, replicated: Replicated = None, status_check: StatusCheck = None):
-        super().__init__(compression_mode=compression_mode, crush_root=crush_root, device_class=device_class, enable_rbd_stats=enable_rbd_stats, erasure_coded=erasure_coded, failure_domain=failure_domain, mirroring=mirroring, parameters=parameters, quotas=quotas, replicated=replicated, status_check=status_check)
+    def __init__(
+        self,
+        compression_mode: str = None,
+        crush_root: str = None,
+        device_class: str = None,
+        enable_rbd_stats: bool = None,
+        erasure_coded: ErasureCoded = None,
+        failure_domain: str = None,
+        mirroring: CephBlockPoolSpecMirroring = None,
+        parameters: Dict[str, str] = None,
+        quotas: CephBlockPoolSpecQuota = None,
+        replicated: Replicated = None,
+        status_check: StatusCheck = None,
+    ):
+        super().__init__(
+            compression_mode=compression_mode,
+            crush_root=crush_root,
+            device_class=device_class,
+            enable_rbd_stats=enable_rbd_stats,
+            erasure_coded=erasure_coded,
+            failure_domain=failure_domain,
+            mirroring=mirroring,
+            parameters=parameters,
+            quotas=quotas,
+            replicated=replicated,
+            status_check=status_check,
+        )
 
 
 class CephBlockPool(KubernetesApiResource):
@@ -248,7 +297,9 @@ class CleanupPolicy(KubernetesObject):
     sanitize_disks: SanitizeDisk
 
     def __init__(self, allow_uninstall_with_volumes: bool = None, confirmation: str = None, sanitize_disks: SanitizeDisk = None):
-        super().__init__(allow_uninstall_with_volumes=allow_uninstall_with_volumes, confirmation=confirmation, sanitize_disks=sanitize_disks)
+        super().__init__(
+            allow_uninstall_with_volumes=allow_uninstall_with_volumes, confirmation=confirmation, sanitize_disks=sanitize_disks
+        )
 
 
 class CrashCollector(KubernetesObject):
@@ -282,8 +333,21 @@ class DisruptionManagement(KubernetesObject):
     osd_maintenance_timeout: int
     pg_health_check_timeout: int
 
-    def __init__(self, machine_disruption_budget_namespace: str = None, manage_machine_disruption_budgets: bool = None, manage_pod_budgets: bool = None, osd_maintenance_timeout: int = None, pg_health_check_timeout: int = None):
-        super().__init__(machine_disruption_budget_namespace=machine_disruption_budget_namespace, manage_machine_disruption_budgets=manage_machine_disruption_budgets, manage_pod_budgets=manage_pod_budgets, osd_maintenance_timeout=osd_maintenance_timeout, pg_health_check_timeout=pg_health_check_timeout)
+    def __init__(
+        self,
+        machine_disruption_budget_namespace: str = None,
+        manage_machine_disruption_budgets: bool = None,
+        manage_pod_budgets: bool = None,
+        osd_maintenance_timeout: int = None,
+        pg_health_check_timeout: int = None,
+    ):
+        super().__init__(
+            machine_disruption_budget_namespace=machine_disruption_budget_namespace,
+            manage_machine_disruption_budgets=manage_machine_disruption_budgets,
+            manage_pod_budgets=manage_pod_budgets,
+            osd_maintenance_timeout=osd_maintenance_timeout,
+            pg_health_check_timeout=pg_health_check_timeout,
+        )
 
 
 class External(KubernetesObject):
@@ -410,8 +474,19 @@ class CephClusterSpecMON(KubernetesObject):
     stretch_cluster: StretchCluster
     volume_claim_template: core.PersistentVolumeClaimTemplate
 
-    def __init__(self, allow_multiple_per_node: bool = None, count: int = None, stretch_cluster: StretchCluster = None, volume_claim_template: core.PersistentVolumeClaimTemplate = None):
-        super().__init__(allow_multiple_per_node=allow_multiple_per_node, count=count, stretch_cluster=stretch_cluster, volume_claim_template=volume_claim_template)
+    def __init__(
+        self,
+        allow_multiple_per_node: bool = None,
+        count: int = None,
+        stretch_cluster: StretchCluster = None,
+        volume_claim_template: core.PersistentVolumeClaimTemplate = None,
+    ):
+        super().__init__(
+            allow_multiple_per_node=allow_multiple_per_node,
+            count=count,
+            stretch_cluster=stretch_cluster,
+            volume_claim_template=volume_claim_template,
+        )
 
 
 class TargetRef(KubernetesObject):
@@ -425,8 +500,25 @@ class TargetRef(KubernetesObject):
     resource_version: str
     uid: str
 
-    def __init__(self, api_version: str = None, field_path: str = None, kind: str = None, name: str = None, namespace: str = None, resource_version: str = None, uid: str = None):
-        super().__init__(api_version=api_version, field_path=field_path, kind=kind, name=name, namespace=namespace, resource_version=resource_version, uid=uid)
+    def __init__(
+        self,
+        api_version: str = None,
+        field_path: str = None,
+        kind: str = None,
+        name: str = None,
+        namespace: str = None,
+        resource_version: str = None,
+        uid: str = None,
+    ):
+        super().__init__(
+            api_version=api_version,
+            field_path=field_path,
+            kind=kind,
+            name=name,
+            namespace=namespace,
+            resource_version=resource_version,
+            uid=uid,
+        )
 
 
 class ExternalMgrEndpoint(KubernetesObject):
@@ -451,8 +543,19 @@ class Monitoring(KubernetesObject):
     external_mgr_prometheus_port: int
     rules_namespace: str
 
-    def __init__(self, enabled: bool = None, external_mgr_endpoints: List[ExternalMgrEndpoint] = None, external_mgr_prometheus_port: int = None, rules_namespace: str = None):
-        super().__init__(enabled=enabled, external_mgr_endpoints=external_mgr_endpoints, external_mgr_prometheus_port=external_mgr_prometheus_port, rules_namespace=rules_namespace)
+    def __init__(
+        self,
+        enabled: bool = None,
+        external_mgr_endpoints: List[ExternalMgrEndpoint] = None,
+        external_mgr_prometheus_port: int = None,
+        rules_namespace: str = None,
+    ):
+        super().__init__(
+            enabled=enabled,
+            external_mgr_endpoints=external_mgr_endpoints,
+            external_mgr_prometheus_port=external_mgr_prometheus_port,
+            rules_namespace=rules_namespace,
+        )
 
 
 class Network(KubernetesObject):
@@ -464,7 +567,14 @@ class Network(KubernetesObject):
     provider: str
     selectors: Dict[str, str]
 
-    def __init__(self, dual_stack: bool = None, host_network: bool = None, ip_family: str = None, provider: str = None, selectors: Dict[str, str] = None):
+    def __init__(
+        self,
+        dual_stack: bool = None,
+        host_network: bool = None,
+        ip_family: str = None,
+        provider: str = None,
+        selectors: Dict[str, str] = None,
+    ):
         super().__init__(dual_stack=dual_stack, host_network=host_network, ip_family=ip_family, provider=provider, selectors=selectors)
 
 
@@ -543,8 +653,15 @@ class NodeAffinity(KubernetesObject):
     preferred_during_scheduling_ignored_during_execution: List[NodeAffinityPreferredDuringSchedulingIgnoredDuringExecution]
     required_during_scheduling_ignored_during_execution: NodeAffinityRequiredDuringSchedulingIgnoredDuringExecution
 
-    def __init__(self, preferred_during_scheduling_ignored_during_execution: List[NodeAffinityPreferredDuringSchedulingIgnoredDuringExecution] = None, required_during_scheduling_ignored_during_execution: NodeAffinityRequiredDuringSchedulingIgnoredDuringExecution = None):
-        super().__init__(preferred_during_scheduling_ignored_during_execution=preferred_during_scheduling_ignored_during_execution, required_during_scheduling_ignored_during_execution=required_during_scheduling_ignored_during_execution)
+    def __init__(
+        self,
+        preferred_during_scheduling_ignored_during_execution: List[NodeAffinityPreferredDuringSchedulingIgnoredDuringExecution] = None,
+        required_during_scheduling_ignored_during_execution: NodeAffinityRequiredDuringSchedulingIgnoredDuringExecution = None,
+    ):
+        super().__init__(
+            preferred_during_scheduling_ignored_during_execution=preferred_during_scheduling_ignored_during_execution,
+            required_during_scheduling_ignored_during_execution=required_during_scheduling_ignored_during_execution,
+        )
 
 
 class PodAffinityTerm(KubernetesObject):
@@ -557,8 +674,16 @@ class PodAffinityTerm(KubernetesObject):
     namespaces: List[str]
     topology_key: str
 
-    def __init__(self, label_selector: meta.LabelSelector = None, namespace_selector: meta.LabelSelector = None, namespaces: List[str] = None, topology_key: str = None):
-        super().__init__(label_selector=label_selector, namespace_selector=namespace_selector, namespaces=namespaces, topology_key=topology_key)
+    def __init__(
+        self,
+        label_selector: meta.LabelSelector = None,
+        namespace_selector: meta.LabelSelector = None,
+        namespaces: List[str] = None,
+        topology_key: str = None,
+    ):
+        super().__init__(
+            label_selector=label_selector, namespace_selector=namespace_selector, namespaces=namespaces, topology_key=topology_key
+        )
 
 
 class PodAffinityPreferredDuringSchedulingIgnoredDuringExecution(KubernetesObject):
@@ -583,8 +708,16 @@ class PodAffinityRequiredDuringSchedulingIgnoredDuringExecution(KubernetesObject
     namespaces: List[str]
     topology_key: str
 
-    def __init__(self, label_selector: meta.LabelSelector = None, namespace_selector: meta.LabelSelector = None, namespaces: List[str] = None, topology_key: str = None):
-        super().__init__(label_selector=label_selector, namespace_selector=namespace_selector, namespaces=namespaces, topology_key=topology_key)
+    def __init__(
+        self,
+        label_selector: meta.LabelSelector = None,
+        namespace_selector: meta.LabelSelector = None,
+        namespaces: List[str] = None,
+        topology_key: str = None,
+    ):
+        super().__init__(
+            label_selector=label_selector, namespace_selector=namespace_selector, namespaces=namespaces, topology_key=topology_key
+        )
 
 
 class PodAffinity(KubernetesObject):
@@ -593,8 +726,15 @@ class PodAffinity(KubernetesObject):
     preferred_during_scheduling_ignored_during_execution: List[PodAffinityPreferredDuringSchedulingIgnoredDuringExecution]
     required_during_scheduling_ignored_during_execution: List[PodAffinityRequiredDuringSchedulingIgnoredDuringExecution]
 
-    def __init__(self, preferred_during_scheduling_ignored_during_execution: List[PodAffinityPreferredDuringSchedulingIgnoredDuringExecution] = None, required_during_scheduling_ignored_during_execution: List[PodAffinityRequiredDuringSchedulingIgnoredDuringExecution] = None):
-        super().__init__(preferred_during_scheduling_ignored_during_execution=preferred_during_scheduling_ignored_during_execution, required_during_scheduling_ignored_during_execution=required_during_scheduling_ignored_during_execution)
+    def __init__(
+        self,
+        preferred_during_scheduling_ignored_during_execution: List[PodAffinityPreferredDuringSchedulingIgnoredDuringExecution] = None,
+        required_during_scheduling_ignored_during_execution: List[PodAffinityRequiredDuringSchedulingIgnoredDuringExecution] = None,
+    ):
+        super().__init__(
+            preferred_during_scheduling_ignored_during_execution=preferred_during_scheduling_ignored_during_execution,
+            required_during_scheduling_ignored_during_execution=required_during_scheduling_ignored_during_execution,
+        )
 
 
 class PodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecution(KubernetesObject):
@@ -619,8 +759,16 @@ class PodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecution(KubernetesOb
     namespaces: List[str]
     topology_key: str
 
-    def __init__(self, label_selector: meta.LabelSelector = None, namespace_selector: meta.LabelSelector = None, namespaces: List[str] = None, topology_key: str = None):
-        super().__init__(label_selector=label_selector, namespace_selector=namespace_selector, namespaces=namespaces, topology_key=topology_key)
+    def __init__(
+        self,
+        label_selector: meta.LabelSelector = None,
+        namespace_selector: meta.LabelSelector = None,
+        namespaces: List[str] = None,
+        topology_key: str = None,
+    ):
+        super().__init__(
+            label_selector=label_selector, namespace_selector=namespace_selector, namespaces=namespaces, topology_key=topology_key
+        )
 
 
 class PodAntiAffinity(KubernetesObject):
@@ -629,8 +777,15 @@ class PodAntiAffinity(KubernetesObject):
     preferred_during_scheduling_ignored_during_execution: List[PodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecution]
     required_during_scheduling_ignored_during_execution: List[PodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecution]
 
-    def __init__(self, preferred_during_scheduling_ignored_during_execution: List[PodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecution] = None, required_during_scheduling_ignored_during_execution: List[PodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecution] = None):
-        super().__init__(preferred_during_scheduling_ignored_during_execution=preferred_during_scheduling_ignored_during_execution, required_during_scheduling_ignored_during_execution=required_during_scheduling_ignored_during_execution)
+    def __init__(
+        self,
+        preferred_during_scheduling_ignored_during_execution: List[PodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecution] = None,
+        required_during_scheduling_ignored_during_execution: List[PodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecution] = None,
+    ):
+        super().__init__(
+            preferred_during_scheduling_ignored_during_execution=preferred_during_scheduling_ignored_during_execution,
+            required_during_scheduling_ignored_during_execution=required_during_scheduling_ignored_during_execution,
+        )
 
 
 class TopologySpreadConstraint(KubernetesObject):
@@ -643,7 +798,9 @@ class TopologySpreadConstraint(KubernetesObject):
     topology_key: str
     when_unsatisfiable: str
 
-    def __init__(self, label_selector: meta.LabelSelector = None, max_skew: int = None, topology_key: str = None, when_unsatisfiable: str = None):
+    def __init__(
+        self, label_selector: meta.LabelSelector = None, max_skew: int = None, topology_key: str = None, when_unsatisfiable: str = None
+    ):
         super().__init__(label_selector=label_selector, max_skew=max_skew, topology_key=topology_key, when_unsatisfiable=when_unsatisfiable)
 
 
@@ -656,8 +813,21 @@ class Placement(KubernetesObject):
     tolerations: List[core.Toleration]
     topology_spread_constraints: List[TopologySpreadConstraint]
 
-    def __init__(self, node_affinity: NodeAffinity = None, pod_affinity: PodAffinity = None, pod_anti_affinity: PodAntiAffinity = None, tolerations: List[core.Toleration] = None, topology_spread_constraints: List[TopologySpreadConstraint] = None):
-        super().__init__(node_affinity=node_affinity, pod_affinity=pod_affinity, pod_anti_affinity=pod_anti_affinity, tolerations=tolerations, topology_spread_constraints=topology_spread_constraints)
+    def __init__(
+        self,
+        node_affinity: NodeAffinity = None,
+        pod_affinity: PodAffinity = None,
+        pod_anti_affinity: PodAntiAffinity = None,
+        tolerations: List[core.Toleration] = None,
+        topology_spread_constraints: List[TopologySpreadConstraint] = None,
+    ):
+        super().__init__(
+            node_affinity=node_affinity,
+            pod_affinity=pod_affinity,
+            pod_anti_affinity=pod_anti_affinity,
+            tolerations=tolerations,
+            topology_spread_constraints=topology_spread_constraints,
+        )
 
 
 class KMS(KubernetesObject):
@@ -702,8 +872,27 @@ class Node(KubernetesObject):
     use_all_devices: bool
     volume_claim_templates: List[core.PersistentVolumeClaimTemplate]
 
-    def __init__(self, config: Dict[str, str] = None, device_filter: str = None, device_path_filter: str = None, devices: List[Device] = None, name: str = None, resources: core.ResourceRequirements = None, use_all_devices: bool = None, volume_claim_templates: List[core.PersistentVolumeClaimTemplate] = None):
-        super().__init__(config=config, device_filter=device_filter, device_path_filter=device_path_filter, devices=devices, name=name, resources=resources, use_all_devices=use_all_devices, volume_claim_templates=volume_claim_templates)
+    def __init__(
+        self,
+        config: Dict[str, str] = None,
+        device_filter: str = None,
+        device_path_filter: str = None,
+        devices: List[Device] = None,
+        name: str = None,
+        resources: core.ResourceRequirements = None,
+        use_all_devices: bool = None,
+        volume_claim_templates: List[core.PersistentVolumeClaimTemplate] = None,
+    ):
+        super().__init__(
+            config=config,
+            device_filter=device_filter,
+            device_path_filter=device_path_filter,
+            devices=devices,
+            name=name,
+            resources=resources,
+            use_all_devices=use_all_devices,
+            volume_claim_templates=volume_claim_templates,
+        )
 
 
 class StorageClassDeviceSet(KubernetesObject):
@@ -724,8 +913,35 @@ class StorageClassDeviceSet(KubernetesObject):
     tune_fast_device_class: bool
     volume_claim_templates: List[core.PersistentVolumeClaimTemplate]
 
-    def __init__(self, config: Dict[str, str] = None, count: int = None, encrypted: bool = None, name: str = None, placement: Placement = None, portable: bool = None, prepare_placement: Placement = None, resources: core.ResourceRequirements = None, scheduler_name: str = None, tune_device_class: bool = None, tune_fast_device_class: bool = None, volume_claim_templates: List[core.PersistentVolumeClaimTemplate] = None):
-        super().__init__(config=config, count=count, encrypted=encrypted, name=name, placement=placement, portable=portable, prepare_placement=prepare_placement, resources=resources, scheduler_name=scheduler_name, tune_device_class=tune_device_class, tune_fast_device_class=tune_fast_device_class, volume_claim_templates=volume_claim_templates)
+    def __init__(
+        self,
+        config: Dict[str, str] = None,
+        count: int = None,
+        encrypted: bool = None,
+        name: str = None,
+        placement: Placement = None,
+        portable: bool = None,
+        prepare_placement: Placement = None,
+        resources: core.ResourceRequirements = None,
+        scheduler_name: str = None,
+        tune_device_class: bool = None,
+        tune_fast_device_class: bool = None,
+        volume_claim_templates: List[core.PersistentVolumeClaimTemplate] = None,
+    ):
+        super().__init__(
+            config=config,
+            count=count,
+            encrypted=encrypted,
+            name=name,
+            placement=placement,
+            portable=portable,
+            prepare_placement=prepare_placement,
+            resources=resources,
+            scheduler_name=scheduler_name,
+            tune_device_class=tune_device_class,
+            tune_fast_device_class=tune_fast_device_class,
+            volume_claim_templates=volume_claim_templates,
+        )
 
 
 class Storage(KubernetesObject):
@@ -749,8 +965,31 @@ class Storage(KubernetesObject):
     use_all_nodes: bool
     volume_claim_templates: List[core.PersistentVolumeClaimTemplate]
 
-    def __init__(self, config: Dict[str, str] = None, device_filter: str = None, device_path_filter: str = None, devices: List[Device] = None, nodes: List[Node] = None, only_apply_osd_placement: bool = None, storage_class_device_sets: List[StorageClassDeviceSet] = None, use_all_devices: bool = None, use_all_nodes: bool = None, volume_claim_templates: List[core.PersistentVolumeClaimTemplate] = None):
-        super().__init__(config=config, device_filter=device_filter, device_path_filter=device_path_filter, devices=devices, nodes=nodes, only_apply_osd_placement=only_apply_osd_placement, storage_class_device_sets=storage_class_device_sets, use_all_devices=use_all_devices, use_all_nodes=use_all_nodes, volume_claim_templates=volume_claim_templates)
+    def __init__(
+        self,
+        config: Dict[str, str] = None,
+        device_filter: str = None,
+        device_path_filter: str = None,
+        devices: List[Device] = None,
+        nodes: List[Node] = None,
+        only_apply_osd_placement: bool = None,
+        storage_class_device_sets: List[StorageClassDeviceSet] = None,
+        use_all_devices: bool = None,
+        use_all_nodes: bool = None,
+        volume_claim_templates: List[core.PersistentVolumeClaimTemplate] = None,
+    ):
+        super().__init__(
+            config=config,
+            device_filter=device_filter,
+            device_path_filter=device_path_filter,
+            devices=devices,
+            nodes=nodes,
+            only_apply_osd_placement=only_apply_osd_placement,
+            storage_class_device_sets=storage_class_device_sets,
+            use_all_devices=use_all_devices,
+            use_all_nodes=use_all_nodes,
+            volume_claim_templates=volume_claim_templates,
+        )
 
 
 class CephClusterSpec(KubernetesObject):
@@ -790,8 +1029,59 @@ class CephClusterSpec(KubernetesObject):
     storage: Storage
     wait_timeout_for_healthy_osd_in_minutes: int
 
-    def __init__(self, annotations: Dict[str, Dict[str, str]] = None, ceph_version: CephVersion = None, cleanup_policy: CleanupPolicy = None, continue_upgrade_after_checks_even_if_not_healthy: bool = None, crash_collector: CrashCollector = None, dashboard: Dashboard = None, data_dir_host_path: str = None, disruption_management: DisruptionManagement = None, external: External = None, health_check: CephClusterSpecHealthCheck = None, labels: Dict[str, Dict[str, str]] = None, log_collector: LogCollector = None, mgr: MGR = None, mon: CephClusterSpecMON = None, monitoring: Monitoring = None, network: Network = None, placement: Dict[str, Placement] = None, priority_class_names: Dict[str, str] = None, remove_os_ds_if_out_and_safe_to_remove: bool = None, resources: Dict[str, core.ResourceRequirements] = None, security: Security = None, skip_upgrade_checks: bool = None, storage: Storage = None, wait_timeout_for_healthy_osd_in_minutes: int = None):
-        super().__init__(annotations=annotations, ceph_version=ceph_version, cleanup_policy=cleanup_policy, continue_upgrade_after_checks_even_if_not_healthy=continue_upgrade_after_checks_even_if_not_healthy, crash_collector=crash_collector, dashboard=dashboard, data_dir_host_path=data_dir_host_path, disruption_management=disruption_management, external=external, health_check=health_check, labels=labels, log_collector=log_collector, mgr=mgr, mon=mon, monitoring=monitoring, network=network, placement=placement, priority_class_names=priority_class_names, remove_os_ds_if_out_and_safe_to_remove=remove_os_ds_if_out_and_safe_to_remove, resources=resources, security=security, skip_upgrade_checks=skip_upgrade_checks, storage=storage, wait_timeout_for_healthy_osd_in_minutes=wait_timeout_for_healthy_osd_in_minutes)
+    def __init__(
+        self,
+        annotations: Dict[str, Dict[str, str]] = None,
+        ceph_version: CephVersion = None,
+        cleanup_policy: CleanupPolicy = None,
+        continue_upgrade_after_checks_even_if_not_healthy: bool = None,
+        crash_collector: CrashCollector = None,
+        dashboard: Dashboard = None,
+        data_dir_host_path: str = None,
+        disruption_management: DisruptionManagement = None,
+        external: External = None,
+        health_check: CephClusterSpecHealthCheck = None,
+        labels: Dict[str, Dict[str, str]] = None,
+        log_collector: LogCollector = None,
+        mgr: MGR = None,
+        mon: CephClusterSpecMON = None,
+        monitoring: Monitoring = None,
+        network: Network = None,
+        placement: Dict[str, Placement] = None,
+        priority_class_names: Dict[str, str] = None,
+        remove_os_ds_if_out_and_safe_to_remove: bool = None,
+        resources: Dict[str, core.ResourceRequirements] = None,
+        security: Security = None,
+        skip_upgrade_checks: bool = None,
+        storage: Storage = None,
+        wait_timeout_for_healthy_osd_in_minutes: int = None,
+    ):
+        super().__init__(
+            annotations=annotations,
+            ceph_version=ceph_version,
+            cleanup_policy=cleanup_policy,
+            continue_upgrade_after_checks_even_if_not_healthy=continue_upgrade_after_checks_even_if_not_healthy,
+            crash_collector=crash_collector,
+            dashboard=dashboard,
+            data_dir_host_path=data_dir_host_path,
+            disruption_management=disruption_management,
+            external=external,
+            health_check=health_check,
+            labels=labels,
+            log_collector=log_collector,
+            mgr=mgr,
+            mon=mon,
+            monitoring=monitoring,
+            network=network,
+            placement=placement,
+            priority_class_names=priority_class_names,
+            remove_os_ds_if_out_and_safe_to_remove=remove_os_ds_if_out_and_safe_to_remove,
+            resources=resources,
+            security=security,
+            skip_upgrade_checks=skip_upgrade_checks,
+            storage=storage,
+            wait_timeout_for_healthy_osd_in_minutes=wait_timeout_for_healthy_osd_in_minutes,
+        )
 
 
 class CephCluster(KubernetesApiResource):
@@ -823,8 +1113,25 @@ class MetadataServer(KubernetesObject):
     priority_class_name: str
     resources: core.ResourceRequirements
 
-    def __init__(self, active_count: int = None, active_standby: bool = None, annotations: Dict[str, str] = None, labels: Dict[str, str] = None, placement: Placement = None, priority_class_name: str = None, resources: core.ResourceRequirements = None):
-        super().__init__(active_count=active_count, active_standby=active_standby, annotations=annotations, labels=labels, placement=placement, priority_class_name=priority_class_name, resources=resources)
+    def __init__(
+        self,
+        active_count: int = None,
+        active_standby: bool = None,
+        annotations: Dict[str, str] = None,
+        labels: Dict[str, str] = None,
+        placement: Placement = None,
+        priority_class_name: str = None,
+        resources: core.ResourceRequirements = None,
+    ):
+        super().__init__(
+            active_count=active_count,
+            active_standby=active_standby,
+            annotations=annotations,
+            labels=labels,
+            placement=placement,
+            priority_class_name=priority_class_name,
+            resources=resources,
+        )
 
 
 class SnapshotRetention(KubernetesObject):
@@ -845,7 +1152,13 @@ class CephFilesystemSpecMirroring(KubernetesObject):
     snapshot_retention: List[SnapshotRetention]
     snapshot_schedules: List[SnapshotSchedule]
 
-    def __init__(self, enabled: bool = None, peers: Peer = None, snapshot_retention: List[SnapshotRetention] = None, snapshot_schedules: List[SnapshotSchedule] = None):
+    def __init__(
+        self,
+        enabled: bool = None,
+        peers: Peer = None,
+        snapshot_retention: List[SnapshotRetention] = None,
+        snapshot_schedules: List[SnapshotSchedule] = None,
+    ):
         super().__init__(enabled=enabled, peers=peers, snapshot_retention=snapshot_retention, snapshot_schedules=snapshot_schedules)
 
 
@@ -862,8 +1175,25 @@ class CephFilesystemSpec(KubernetesObject):
     preserve_pools_on_delete: bool
     status_check: StatusCheck
 
-    def __init__(self, data_pools: List[CephBlockPoolSpec] = None, metadata_pool: CephBlockPoolSpec = None, metadata_server: MetadataServer = None, mirroring: CephFilesystemSpecMirroring = None, preserve_filesystem_on_delete: bool = None, preserve_pools_on_delete: bool = None, status_check: StatusCheck = None):
-        super().__init__(data_pools=data_pools, metadata_pool=metadata_pool, metadata_server=metadata_server, mirroring=mirroring, preserve_filesystem_on_delete=preserve_filesystem_on_delete, preserve_pools_on_delete=preserve_pools_on_delete, status_check=status_check)
+    def __init__(
+        self,
+        data_pools: List[CephBlockPoolSpec] = None,
+        metadata_pool: CephBlockPoolSpec = None,
+        metadata_server: MetadataServer = None,
+        mirroring: CephFilesystemSpecMirroring = None,
+        preserve_filesystem_on_delete: bool = None,
+        preserve_pools_on_delete: bool = None,
+        status_check: StatusCheck = None,
+    ):
+        super().__init__(
+            data_pools=data_pools,
+            metadata_pool=metadata_pool,
+            metadata_server=metadata_server,
+            mirroring=mirroring,
+            preserve_filesystem_on_delete=preserve_filesystem_on_delete,
+            preserve_pools_on_delete=preserve_pools_on_delete,
+            status_check=status_check,
+        )
 
 
 class CephFilesystem(KubernetesApiResource):
@@ -891,8 +1221,17 @@ class CephFilesystemMirrorSpec(KubernetesObject):
     priority_class_name: str
     resources: core.ResourceRequirements
 
-    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None, placement: Placement = None, priority_class_name: str = None, resources: core.ResourceRequirements = None):
-        super().__init__(annotations=annotations, labels=labels, placement=placement, priority_class_name=priority_class_name, resources=resources)
+    def __init__(
+        self,
+        annotations: Dict[str, str] = None,
+        labels: Dict[str, str] = None,
+        placement: Placement = None,
+        priority_class_name: str = None,
+        resources: core.ResourceRequirements = None,
+    ):
+        super().__init__(
+            annotations=annotations, labels=labels, placement=placement, priority_class_name=priority_class_name, resources=resources
+        )
 
 
 class CephFilesystemMirror(KubernetesApiResource):
@@ -936,8 +1275,25 @@ class Server(KubernetesObject):
     priority_class_name: str
     resources: core.ResourceRequirements
 
-    def __init__(self, active: int = None, annotations: Dict[str, str] = None, labels: Dict[str, str] = None, log_level: str = None, placement: Placement = None, priority_class_name: str = None, resources: core.ResourceRequirements = None):
-        super().__init__(active=active, annotations=annotations, labels=labels, log_level=log_level, placement=placement, priority_class_name=priority_class_name, resources=resources)
+    def __init__(
+        self,
+        active: int = None,
+        annotations: Dict[str, str] = None,
+        labels: Dict[str, str] = None,
+        log_level: str = None,
+        placement: Placement = None,
+        priority_class_name: str = None,
+        resources: core.ResourceRequirements = None,
+    ):
+        super().__init__(
+            active=active,
+            annotations=annotations,
+            labels=labels,
+            log_level=log_level,
+            placement=placement,
+            priority_class_name=priority_class_name,
+            resources=resources,
+        )
 
 
 class CephNFSSpec(KubernetesObject):
@@ -1045,8 +1401,35 @@ class Gateway(KubernetesObject):
     service: Service
     ssl_certificate_ref: str
 
-    def __init__(self, annotations: Dict[str, str] = None, ca_bundle_ref: str = None, external_rgw_endpoints: List[ExternalRgwEndpoint] = None, instances: int = None, labels: Dict[str, str] = None, placement: Placement = None, port: int = None, priority_class_name: str = None, resources: core.ResourceRequirements = None, secure_port: int = None, service: Service = None, ssl_certificate_ref: str = None):
-        super().__init__(annotations=annotations, ca_bundle_ref=ca_bundle_ref, external_rgw_endpoints=external_rgw_endpoints, instances=instances, labels=labels, placement=placement, port=port, priority_class_name=priority_class_name, resources=resources, secure_port=secure_port, service=service, ssl_certificate_ref=ssl_certificate_ref)
+    def __init__(
+        self,
+        annotations: Dict[str, str] = None,
+        ca_bundle_ref: str = None,
+        external_rgw_endpoints: List[ExternalRgwEndpoint] = None,
+        instances: int = None,
+        labels: Dict[str, str] = None,
+        placement: Placement = None,
+        port: int = None,
+        priority_class_name: str = None,
+        resources: core.ResourceRequirements = None,
+        secure_port: int = None,
+        service: Service = None,
+        ssl_certificate_ref: str = None,
+    ):
+        super().__init__(
+            annotations=annotations,
+            ca_bundle_ref=ca_bundle_ref,
+            external_rgw_endpoints=external_rgw_endpoints,
+            instances=instances,
+            labels=labels,
+            placement=placement,
+            port=port,
+            priority_class_name=priority_class_name,
+            resources=resources,
+            secure_port=secure_port,
+            service=service,
+            ssl_certificate_ref=ssl_certificate_ref,
+        )
 
 
 class CephObjectStoreSpecHealthCheck(KubernetesObject):
@@ -1081,8 +1464,25 @@ class CephObjectStoreSpec(KubernetesObject):
     security: Security
     zone: CephObjectStoreSpecZone
 
-    def __init__(self, data_pool: CephBlockPoolSpec = None, gateway: Gateway = None, health_check: CephObjectStoreSpecHealthCheck = None, metadata_pool: CephBlockPoolSpec = None, preserve_pools_on_delete: bool = None, security: Security = None, zone: CephObjectStoreSpecZone = None):
-        super().__init__(data_pool=data_pool, gateway=gateway, health_check=health_check, metadata_pool=metadata_pool, preserve_pools_on_delete=preserve_pools_on_delete, security=security, zone=zone)
+    def __init__(
+        self,
+        data_pool: CephBlockPoolSpec = None,
+        gateway: Gateway = None,
+        health_check: CephObjectStoreSpecHealthCheck = None,
+        metadata_pool: CephBlockPoolSpec = None,
+        preserve_pools_on_delete: bool = None,
+        security: Security = None,
+        zone: CephObjectStoreSpecZone = None,
+    ):
+        super().__init__(
+            data_pool=data_pool,
+            gateway=gateway,
+            health_check=health_check,
+            metadata_pool=metadata_pool,
+            preserve_pools_on_delete=preserve_pools_on_delete,
+            security=security,
+            zone=zone,
+        )
 
 
 class CephObjectStore(KubernetesApiResource):
@@ -1120,7 +1520,9 @@ class CephObjectStoreUserSpec(KubernetesObject):
     quotas: CephObjectStoreUserSpecQuota
     store: str
 
-    def __init__(self, capabilities: Capabilitie = None, display_name: str = None, quotas: CephObjectStoreUserSpecQuota = None, store: str = None):
+    def __init__(
+        self, capabilities: Capabilitie = None, display_name: str = None, quotas: CephObjectStoreUserSpecQuota = None, store: str = None
+    ):
         super().__init__(capabilities=capabilities, display_name=display_name, quotas=quotas, store=store)
 
 
@@ -1209,8 +1611,25 @@ class CephRBDMirrorSpec(KubernetesObject):
     priority_class_name: str
     resources: core.ResourceRequirements
 
-    def __init__(self, annotations: Dict[str, str] = None, count: int = None, labels: Dict[str, str] = None, peers: Peer = None, placement: Placement = None, priority_class_name: str = None, resources: core.ResourceRequirements = None):
-        super().__init__(annotations=annotations, count=count, labels=labels, peers=peers, placement=placement, priority_class_name=priority_class_name, resources=resources)
+    def __init__(
+        self,
+        annotations: Dict[str, str] = None,
+        count: int = None,
+        labels: Dict[str, str] = None,
+        peers: Peer = None,
+        placement: Placement = None,
+        priority_class_name: str = None,
+        resources: core.ResourceRequirements = None,
+    ):
+        super().__init__(
+            annotations=annotations,
+            count=count,
+            labels=labels,
+            peers=peers,
+            placement=placement,
+            priority_class_name=priority_class_name,
+            resources=resources,
+        )
 
 
 class CephRBDMirror(KubernetesApiResource):
@@ -1252,8 +1671,23 @@ class Endpoint(KubernetesObject):
     region: str
     sub_region: str
 
-    def __init__(self, additional_config: Dict[str, Any] = None, bucket_host: str = None, bucket_name: str = None, bucket_port: int = None, region: str = None, sub_region: str = None):
-        super().__init__(additional_config=additional_config, bucket_host=bucket_host, bucket_name=bucket_name, bucket_port=bucket_port, region=region, sub_region=sub_region)
+    def __init__(
+        self,
+        additional_config: Dict[str, Any] = None,
+        bucket_host: str = None,
+        bucket_name: str = None,
+        bucket_port: int = None,
+        region: str = None,
+        sub_region: str = None,
+    ):
+        super().__init__(
+            additional_config=additional_config,
+            bucket_host=bucket_host,
+            bucket_name=bucket_name,
+            bucket_port=bucket_port,
+            region=region,
+            sub_region=sub_region,
+        )
 
 
 class ObjectBucketSpec(KubernetesObject):
@@ -1266,8 +1700,23 @@ class ObjectBucketSpec(KubernetesObject):
     reclaim_policy: str
     storage_class_name: str
 
-    def __init__(self, additional_state: Dict[str, Any] = None, authentication: Dict[str, Any] = None, claim_ref: Dict[str, Any] = None, endpoint: Endpoint = None, reclaim_policy: str = None, storage_class_name: str = None):
-        super().__init__(additional_state=additional_state, authentication=authentication, claim_ref=claim_ref, endpoint=endpoint, reclaim_policy=reclaim_policy, storage_class_name=storage_class_name)
+    def __init__(
+        self,
+        additional_state: Dict[str, Any] = None,
+        authentication: Dict[str, Any] = None,
+        claim_ref: Dict[str, Any] = None,
+        endpoint: Endpoint = None,
+        reclaim_policy: str = None,
+        storage_class_name: str = None,
+    ):
+        super().__init__(
+            additional_state=additional_state,
+            authentication=authentication,
+            claim_ref=claim_ref,
+            endpoint=endpoint,
+            reclaim_policy=reclaim_policy,
+            storage_class_name=storage_class_name,
+        )
 
 
 class ObjectBucket(KubernetesApiResource):
@@ -1293,8 +1742,21 @@ class ObjectBucketClaimSpec(KubernetesObject):
     object_bucket_name: str
     storage_class_name: str
 
-    def __init__(self, additional_config: Dict[str, Any] = None, bucket_name: str = None, generate_bucket_name: str = None, object_bucket_name: str = None, storage_class_name: str = None):
-        super().__init__(additional_config=additional_config, bucket_name=bucket_name, generate_bucket_name=generate_bucket_name, object_bucket_name=object_bucket_name, storage_class_name=storage_class_name)
+    def __init__(
+        self,
+        additional_config: Dict[str, Any] = None,
+        bucket_name: str = None,
+        generate_bucket_name: str = None,
+        object_bucket_name: str = None,
+        storage_class_name: str = None,
+    ):
+        super().__init__(
+            additional_config=additional_config,
+            bucket_name=bucket_name,
+            generate_bucket_name=generate_bucket_name,
+            object_bucket_name=object_bucket_name,
+            storage_class_name=storage_class_name,
+        )
 
 
 class ObjectBucketClaim(KubernetesApiResource):
@@ -1378,5 +1840,3 @@ class VolumeReplicationClass(KubernetesApiResource):
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: VolumeReplicationClassSpec = None):
         super().__init__("replication.storage.openshift.io/v1alpha1", "VolumeReplicationClass", name, "", metadata=metadata, spec=spec)
-
-

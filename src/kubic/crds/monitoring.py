@@ -179,7 +179,7 @@ class AlertmanagerTLSConfig(KubernetesObject):
         )
 
 
-class Alertmanager(KubernetesObject):
+class AlertingAlertmanager(KubernetesObject):
     __slots__ = ()
 
     _required_ = ["name", "namespace", "port"]
@@ -224,10 +224,184 @@ class Alerting(KubernetesObject):
 
     _required_ = ["alertmanagers"]
 
-    alertmanagers: List[Alertmanager]
+    alertmanagers: List[AlertingAlertmanager]
 
-    def __init__(self, alertmanagers: List[Alertmanager] = None):
+    def __init__(self, alertmanagers: List[AlertingAlertmanager] = None):
         super().__init__(alertmanagers=alertmanagers)
+
+
+class PodMetadata(KubernetesObject):
+    __slots__ = ()
+
+    annotations: Dict[str, str]
+    labels: Dict[str, str]
+    name: str
+
+    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None, name: str = None):
+        super().__init__(annotations=annotations, labels=labels, name=name)
+
+
+class Storage(KubernetesObject):
+    __slots__ = ()
+
+    disable_mount_sub_path: bool
+    empty_dir: core.EmptyDirVolumeSource
+    volume_claim_template: core.PersistentVolumeClaim
+
+    def __init__(
+        self,
+        disable_mount_sub_path: bool = None,
+        empty_dir: core.EmptyDirVolumeSource = None,
+        volume_claim_template: core.PersistentVolumeClaim = None,
+    ):
+        super().__init__(disable_mount_sub_path=disable_mount_sub_path, empty_dir=empty_dir, volume_claim_template=volume_claim_template)
+
+
+class AlertmanagerSpec(KubernetesObject):
+    __slots__ = ()
+
+    additional_peers: List[str]
+    affinity: core.Affinity
+    alertmanager_config_namespace_selector: meta.LabelSelector
+    alertmanager_config_selector: meta.LabelSelector
+    base_image: str
+    cluster_advertise_address: str
+    cluster_gossip_interval: str
+    cluster_peer_timeout: str
+    cluster_pushpull_interval: str
+    config_maps: List[str]
+    config_secret: str
+    containers: List[core.Container]
+    external_url: str
+    force_enable_cluster_mode: bool
+    image: str
+    image_pull_secrets: List[core.LocalObjectReference]
+    init_containers: List[core.Container]
+    listen_local: bool
+    log_format: str
+    log_level: str
+    node_selector: Dict[str, str]
+    paused: bool
+    pod_metadata: PodMetadata
+    port_name: str
+    priority_class_name: str
+    replicas: int
+    resources: core.ResourceRequirements
+    retention: str
+    route_prefix: str
+    secrets: List[str]
+    security_context: core.PodSecurityContext
+    service_account_name: str
+    sha: str
+    storage: Storage
+    tag: str
+    tolerations: List[core.Toleration]
+    topology_spread_constraints: List[core.TopologySpreadConstraint]
+    version: str
+    volume_mounts: List[core.VolumeMount]
+    volumes: List[core.Volume]
+
+    def __init__(
+        self,
+        additional_peers: List[str] = None,
+        affinity: core.Affinity = None,
+        alertmanager_config_namespace_selector: meta.LabelSelector = None,
+        alertmanager_config_selector: meta.LabelSelector = None,
+        base_image: str = None,
+        cluster_advertise_address: str = None,
+        cluster_gossip_interval: str = None,
+        cluster_peer_timeout: str = None,
+        cluster_pushpull_interval: str = None,
+        config_maps: List[str] = None,
+        config_secret: str = None,
+        containers: List[core.Container] = None,
+        external_url: str = None,
+        force_enable_cluster_mode: bool = None,
+        image: str = None,
+        image_pull_secrets: List[core.LocalObjectReference] = None,
+        init_containers: List[core.Container] = None,
+        listen_local: bool = None,
+        log_format: str = None,
+        log_level: str = None,
+        node_selector: Dict[str, str] = None,
+        paused: bool = None,
+        pod_metadata: PodMetadata = None,
+        port_name: str = None,
+        priority_class_name: str = None,
+        replicas: int = None,
+        resources: core.ResourceRequirements = None,
+        retention: str = None,
+        route_prefix: str = None,
+        secrets: List[str] = None,
+        security_context: core.PodSecurityContext = None,
+        service_account_name: str = None,
+        sha: str = None,
+        storage: Storage = None,
+        tag: str = None,
+        tolerations: List[core.Toleration] = None,
+        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        version: str = None,
+        volume_mounts: List[core.VolumeMount] = None,
+        volumes: List[core.Volume] = None,
+    ):
+        super().__init__(
+            additional_peers=additional_peers,
+            affinity=affinity,
+            alertmanager_config_namespace_selector=alertmanager_config_namespace_selector,
+            alertmanager_config_selector=alertmanager_config_selector,
+            base_image=base_image,
+            cluster_advertise_address=cluster_advertise_address,
+            cluster_gossip_interval=cluster_gossip_interval,
+            cluster_peer_timeout=cluster_peer_timeout,
+            cluster_pushpull_interval=cluster_pushpull_interval,
+            config_maps=config_maps,
+            config_secret=config_secret,
+            containers=containers,
+            external_url=external_url,
+            force_enable_cluster_mode=force_enable_cluster_mode,
+            image=image,
+            image_pull_secrets=image_pull_secrets,
+            init_containers=init_containers,
+            listen_local=listen_local,
+            log_format=log_format,
+            log_level=log_level,
+            node_selector=node_selector,
+            paused=paused,
+            pod_metadata=pod_metadata,
+            port_name=port_name,
+            priority_class_name=priority_class_name,
+            replicas=replicas,
+            resources=resources,
+            retention=retention,
+            route_prefix=route_prefix,
+            secrets=secrets,
+            security_context=security_context,
+            service_account_name=service_account_name,
+            sha=sha,
+            storage=storage,
+            tag=tag,
+            tolerations=tolerations,
+            topology_spread_constraints=topology_spread_constraints,
+            version=version,
+            volume_mounts=volume_mounts,
+            volumes=volumes,
+        )
+
+
+class Alertmanager(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "monitoring.coreos.com/v1"
+    _kind_ = "Alertmanager"
+    _scope_ = "namespace"
+
+    _required_ = ["spec"]
+
+    metadata: meta.ObjectMeta
+    spec: AlertmanagerSpec
+
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: AlertmanagerSpec = None):
+        super().__init__("monitoring.coreos.com/v1", "Alertmanager", name, namespace, metadata=metadata, spec=spec)
 
 
 class SourceMatch(KubernetesObject):
@@ -941,164 +1115,6 @@ class AlertmanagerConfig(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: AlertmanagerConfigSpec = None):
         super().__init__("monitoring.coreos.com/v1alpha1", "AlertmanagerConfig", name, namespace, metadata=metadata, spec=spec)
-
-
-class PodMetadata(KubernetesObject):
-    __slots__ = ()
-
-    annotations: Dict[str, str]
-    labels: Dict[str, str]
-    name: str
-
-    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None, name: str = None):
-        super().__init__(annotations=annotations, labels=labels, name=name)
-
-
-class Storage(KubernetesObject):
-    __slots__ = ()
-
-    disable_mount_sub_path: bool
-    empty_dir: core.EmptyDirVolumeSource
-    volume_claim_template: core.PersistentVolumeClaim
-
-    def __init__(
-        self,
-        disable_mount_sub_path: bool = None,
-        empty_dir: core.EmptyDirVolumeSource = None,
-        volume_claim_template: core.PersistentVolumeClaim = None,
-    ):
-        super().__init__(disable_mount_sub_path=disable_mount_sub_path, empty_dir=empty_dir, volume_claim_template=volume_claim_template)
-
-
-class AlertmanagerSpec(KubernetesObject):
-    __slots__ = ()
-
-    additional_peers: List[str]
-    affinity: core.Affinity
-    alertmanager_config_namespace_selector: meta.LabelSelector
-    alertmanager_config_selector: meta.LabelSelector
-    base_image: str
-    cluster_advertise_address: str
-    cluster_gossip_interval: str
-    cluster_peer_timeout: str
-    cluster_pushpull_interval: str
-    config_maps: List[str]
-    config_secret: str
-    containers: List[core.Container]
-    external_url: str
-    force_enable_cluster_mode: bool
-    image: str
-    image_pull_secrets: List[core.LocalObjectReference]
-    init_containers: List[core.Container]
-    listen_local: bool
-    log_format: str
-    log_level: str
-    node_selector: Dict[str, str]
-    paused: bool
-    pod_metadata: PodMetadata
-    port_name: str
-    priority_class_name: str
-    replicas: int
-    resources: core.ResourceRequirements
-    retention: str
-    route_prefix: str
-    secrets: List[str]
-    security_context: core.PodSecurityContext
-    service_account_name: str
-    sha: str
-    storage: Storage
-    tag: str
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
-    version: str
-    volume_mounts: List[core.VolumeMount]
-    volumes: List[core.Volume]
-
-    def __init__(
-        self,
-        additional_peers: List[str] = None,
-        affinity: core.Affinity = None,
-        alertmanager_config_namespace_selector: meta.LabelSelector = None,
-        alertmanager_config_selector: meta.LabelSelector = None,
-        base_image: str = None,
-        cluster_advertise_address: str = None,
-        cluster_gossip_interval: str = None,
-        cluster_peer_timeout: str = None,
-        cluster_pushpull_interval: str = None,
-        config_maps: List[str] = None,
-        config_secret: str = None,
-        containers: List[core.Container] = None,
-        external_url: str = None,
-        force_enable_cluster_mode: bool = None,
-        image: str = None,
-        image_pull_secrets: List[core.LocalObjectReference] = None,
-        init_containers: List[core.Container] = None,
-        listen_local: bool = None,
-        log_format: str = None,
-        log_level: str = None,
-        node_selector: Dict[str, str] = None,
-        paused: bool = None,
-        pod_metadata: PodMetadata = None,
-        port_name: str = None,
-        priority_class_name: str = None,
-        replicas: int = None,
-        resources: core.ResourceRequirements = None,
-        retention: str = None,
-        route_prefix: str = None,
-        secrets: List[str] = None,
-        security_context: core.PodSecurityContext = None,
-        service_account_name: str = None,
-        sha: str = None,
-        storage: Storage = None,
-        tag: str = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
-        version: str = None,
-        volume_mounts: List[core.VolumeMount] = None,
-        volumes: List[core.Volume] = None,
-    ):
-        super().__init__(
-            additional_peers=additional_peers,
-            affinity=affinity,
-            alertmanager_config_namespace_selector=alertmanager_config_namespace_selector,
-            alertmanager_config_selector=alertmanager_config_selector,
-            base_image=base_image,
-            cluster_advertise_address=cluster_advertise_address,
-            cluster_gossip_interval=cluster_gossip_interval,
-            cluster_peer_timeout=cluster_peer_timeout,
-            cluster_pushpull_interval=cluster_pushpull_interval,
-            config_maps=config_maps,
-            config_secret=config_secret,
-            containers=containers,
-            external_url=external_url,
-            force_enable_cluster_mode=force_enable_cluster_mode,
-            image=image,
-            image_pull_secrets=image_pull_secrets,
-            init_containers=init_containers,
-            listen_local=listen_local,
-            log_format=log_format,
-            log_level=log_level,
-            node_selector=node_selector,
-            paused=paused,
-            pod_metadata=pod_metadata,
-            port_name=port_name,
-            priority_class_name=priority_class_name,
-            replicas=replicas,
-            resources=resources,
-            retention=retention,
-            route_prefix=route_prefix,
-            secrets=secrets,
-            security_context=security_context,
-            service_account_name=service_account_name,
-            sha=sha,
-            storage=storage,
-            tag=tag,
-            tolerations=tolerations,
-            topology_spread_constraints=topology_spread_constraints,
-            version=version,
-            volume_mounts=volume_mounts,
-            volumes=volumes,
-        )
 
 
 class ArbitraryFSAccessThroughSM(KubernetesObject):
