@@ -344,6 +344,7 @@ crds:
       sshConfigMap: "io.k8s.api.core.v1.SecretProjection"
       resources: "io.k8s.api.core.v1.ResourceRequirements"
       tolerations: "io.k8s.api.core.v1.Toleration"
+      topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
     RepoVolume:
       volumeClaimSpec: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
     Restore:
@@ -362,11 +363,13 @@ crds:
       dataVolumeClaimSpec: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
       walVolumeClaimSpec: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
       tolerations: "io.k8s.api.core.v1.Toleration"
+      topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
     PgBouncer:
       affinity: "io.k8s.api.core.v1.Affinity"
       resources: "io.k8s.api.core.v1.ResourceRequirements"
       customTLSSecret: "io.k8s.api.core.v1.SecretProjection"
       tolerations: "io.k8s.api.core.v1.Toleration"
+      topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
     PgbouncerConfig:
       resources: "io.k8s.api.core.v1.ResourceRequirements"
     SidecarPgbackrest:
