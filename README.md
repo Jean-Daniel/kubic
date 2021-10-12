@@ -21,3 +21,12 @@ with open("manifest.yaml", "w") as f:
   yaml.dump(d, f, yaml.SafeDumper)
 
 ```
+
+## K8S API
+
+This project include most of Kubernetes 1.22 objects.
+
+
+## CRDs
+
+This project is also designed to generate python API from Kubernetes CRDs. It includes a bunch of common CRDs.
