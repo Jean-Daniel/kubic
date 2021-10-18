@@ -4,7 +4,6 @@ from .. import KubernetesApiResource, KubernetesObject
 from .. import core, meta
 
 
-
 class Azure(KubernetesObject):
     __slots__ = ()
 
@@ -59,8 +58,25 @@ class RepoHost(KubernetesObject):
     tolerations: List[core.Toleration]
     topology_spread_constraints: List[core.TopologySpreadConstraint]
 
-    def __init__(self, affinity: core.Affinity = None, priority_class_name: str = None, resources: core.ResourceRequirements = None, ssh_config_map: core.SecretProjection = None, ssh_secret: core.SecretProjection = None, tolerations: List[core.Toleration] = None, topology_spread_constraints: List[core.TopologySpreadConstraint] = None):
-        super().__init__(affinity=affinity, priority_class_name=priority_class_name, resources=resources, ssh_config_map=ssh_config_map, ssh_secret=ssh_secret, tolerations=tolerations, topology_spread_constraints=topology_spread_constraints)
+    def __init__(
+        self,
+        affinity: core.Affinity = None,
+        priority_class_name: str = None,
+        resources: core.ResourceRequirements = None,
+        ssh_config_map: core.SecretProjection = None,
+        ssh_secret: core.SecretProjection = None,
+        tolerations: List[core.Toleration] = None,
+        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+    ):
+        super().__init__(
+            affinity=affinity,
+            priority_class_name=priority_class_name,
+            resources=resources,
+            ssh_config_map=ssh_config_map,
+            ssh_secret=ssh_secret,
+            tolerations=tolerations,
+            topology_spread_constraints=topology_spread_constraints,
+        )
 
 
 class GCS(KubernetesObject):
@@ -121,7 +137,9 @@ class Repo(KubernetesObject):
     schedules: Schedule
     volume: RepoVolume
 
-    def __init__(self, azure: Azure = None, gcs: GCS = None, name: str = None, s3: S3 = None, schedules: Schedule = None, volume: RepoVolume = None):
+    def __init__(
+        self, azure: Azure = None, gcs: GCS = None, name: str = None, s3: S3 = None, schedules: Schedule = None, volume: RepoVolume = None
+    ):
         super().__init__(azure=azure, gcs=gcs, name=name, s3=s3, schedules=schedules, volume=volume)
 
 
@@ -140,8 +158,29 @@ class Restore(KubernetesObject):
     resources: core.ResourceRequirements
     tolerations: List[core.Toleration]
 
-    def __init__(self, affinity: core.Affinity = None, cluster_name: str = None, cluster_namespace: str = None, enabled: bool = None, options: List[str] = None, priority_class_name: str = None, repo_name: str = None, resources: core.ResourceRequirements = None, tolerations: List[core.Toleration] = None):
-        super().__init__(affinity=affinity, cluster_name=cluster_name, cluster_namespace=cluster_namespace, enabled=enabled, options=options, priority_class_name=priority_class_name, repo_name=repo_name, resources=resources, tolerations=tolerations)
+    def __init__(
+        self,
+        affinity: core.Affinity = None,
+        cluster_name: str = None,
+        cluster_namespace: str = None,
+        enabled: bool = None,
+        options: List[str] = None,
+        priority_class_name: str = None,
+        repo_name: str = None,
+        resources: core.ResourceRequirements = None,
+        tolerations: List[core.Toleration] = None,
+    ):
+        super().__init__(
+            affinity=affinity,
+            cluster_name=cluster_name,
+            cluster_namespace=cluster_namespace,
+            enabled=enabled,
+            options=options,
+            priority_class_name=priority_class_name,
+            repo_name=repo_name,
+            resources=resources,
+            tolerations=tolerations,
+        )
 
 
 class SidecarPgbackrest(KubernetesObject):
@@ -182,8 +221,31 @@ class BackupPgbackrest(KubernetesObject):
     restore: Restore
     sidecars: PgbackrestSidecar
 
-    def __init__(self, configuration: List[core.VolumeProjection] = None, global_: Dict[str, str] = None, image: str = None, jobs: JOB = None, manual: Manual = None, metadata: Metadata = None, repo_host: RepoHost = None, repos: List[Repo] = None, restore: Restore = None, sidecars: PgbackrestSidecar = None):
-        super().__init__(configuration=configuration, global_=global_, image=image, jobs=jobs, manual=manual, metadata=metadata, repo_host=repo_host, repos=repos, restore=restore, sidecars=sidecars)
+    def __init__(
+        self,
+        configuration: List[core.VolumeProjection] = None,
+        global_: Dict[str, str] = None,
+        image: str = None,
+        jobs: JOB = None,
+        manual: Manual = None,
+        metadata: Metadata = None,
+        repo_host: RepoHost = None,
+        repos: List[Repo] = None,
+        restore: Restore = None,
+        sidecars: PgbackrestSidecar = None,
+    ):
+        super().__init__(
+            configuration=configuration,
+            global_=global_,
+            image=image,
+            jobs=jobs,
+            manual=manual,
+            metadata=metadata,
+            repo_host=repo_host,
+            repos=repos,
+            restore=restore,
+            sidecars=sidecars,
+        )
 
 
 class Backup(KubernetesObject):
@@ -209,7 +271,13 @@ class Config(KubernetesObject):
     global_: Dict[str, str]
     users: Dict[str, str]
 
-    def __init__(self, databases: Dict[str, str] = None, files: List[core.VolumeProjection] = None, global_: Dict[str, str] = None, users: Dict[str, str] = None):
+    def __init__(
+        self,
+        databases: Dict[str, str] = None,
+        files: List[core.VolumeProjection] = None,
+        global_: Dict[str, str] = None,
+        users: Dict[str, str] = None,
+    ):
         super().__init__(databases=databases, files=files, global_=global_, users=users)
 
 
@@ -227,8 +295,27 @@ class DataSourcePostgresCluster(KubernetesObject):
     resources: core.ResourceRequirements
     tolerations: List[core.Toleration]
 
-    def __init__(self, affinity: core.Affinity = None, cluster_name: str = None, cluster_namespace: str = None, options: List[str] = None, priority_class_name: str = None, repo_name: str = None, resources: core.ResourceRequirements = None, tolerations: List[core.Toleration] = None):
-        super().__init__(affinity=affinity, cluster_name=cluster_name, cluster_namespace=cluster_namespace, options=options, priority_class_name=priority_class_name, repo_name=repo_name, resources=resources, tolerations=tolerations)
+    def __init__(
+        self,
+        affinity: core.Affinity = None,
+        cluster_name: str = None,
+        cluster_namespace: str = None,
+        options: List[str] = None,
+        priority_class_name: str = None,
+        repo_name: str = None,
+        resources: core.ResourceRequirements = None,
+        tolerations: List[core.Toleration] = None,
+    ):
+        super().__init__(
+            affinity=affinity,
+            cluster_name=cluster_name,
+            cluster_namespace=cluster_namespace,
+            options=options,
+            priority_class_name=priority_class_name,
+            repo_name=repo_name,
+            resources=resources,
+            tolerations=tolerations,
+        )
 
 
 class PgBackRestVolume(KubernetesObject):
@@ -281,7 +368,9 @@ class DataSourceVolume(KubernetesObject):
     pg_data_volume: PgDataVolume
     pg_wal_volume: PgWALVolume
 
-    def __init__(self, pg_back_rest_volume: PgBackRestVolume = None, pg_data_volume: PgDataVolume = None, pg_wal_volume: PgWALVolume = None):
+    def __init__(
+        self, pg_back_rest_volume: PgBackRestVolume = None, pg_data_volume: PgDataVolume = None, pg_wal_volume: PgWALVolume = None
+    ):
         super().__init__(pg_back_rest_volume=pg_back_rest_volume, pg_data_volume=pg_data_volume, pg_wal_volume=pg_wal_volume)
 
 
@@ -353,8 +442,33 @@ class Instance(KubernetesObject):
     topology_spread_constraints: List[core.TopologySpreadConstraint]
     wal_volume_claim_spec: core.PersistentVolumeClaimSpec
 
-    def __init__(self, affinity: core.Affinity = None, data_volume_claim_spec: core.PersistentVolumeClaimSpec = None, metadata: Metadata = None, name: str = None, priority_class_name: str = None, replicas: int = None, resources: core.ResourceRequirements = None, sidecars: InstanceSidecar = None, tolerations: List[core.Toleration] = None, topology_spread_constraints: List[core.TopologySpreadConstraint] = None, wal_volume_claim_spec: core.PersistentVolumeClaimSpec = None):
-        super().__init__(affinity=affinity, data_volume_claim_spec=data_volume_claim_spec, metadata=metadata, name=name, priority_class_name=priority_class_name, replicas=replicas, resources=resources, sidecars=sidecars, tolerations=tolerations, topology_spread_constraints=topology_spread_constraints, wal_volume_claim_spec=wal_volume_claim_spec)
+    def __init__(
+        self,
+        affinity: core.Affinity = None,
+        data_volume_claim_spec: core.PersistentVolumeClaimSpec = None,
+        metadata: Metadata = None,
+        name: str = None,
+        priority_class_name: str = None,
+        replicas: int = None,
+        resources: core.ResourceRequirements = None,
+        sidecars: InstanceSidecar = None,
+        tolerations: List[core.Toleration] = None,
+        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        wal_volume_claim_spec: core.PersistentVolumeClaimSpec = None,
+    ):
+        super().__init__(
+            affinity=affinity,
+            data_volume_claim_spec=data_volume_claim_spec,
+            metadata=metadata,
+            name=name,
+            priority_class_name=priority_class_name,
+            replicas=replicas,
+            resources=resources,
+            sidecars=sidecars,
+            tolerations=tolerations,
+            topology_spread_constraints=topology_spread_constraints,
+            wal_volume_claim_spec=wal_volume_claim_spec,
+        )
 
 
 class Pgmonitor(KubernetesObject):
@@ -383,8 +497,19 @@ class Patroni(KubernetesObject):
     port: int
     sync_period_seconds: int
 
-    def __init__(self, dynamic_configuration: Dict[str, Any] = None, leader_lease_duration_seconds: int = None, port: int = None, sync_period_seconds: int = None):
-        super().__init__(dynamic_configuration=dynamic_configuration, leader_lease_duration_seconds=leader_lease_duration_seconds, port=port, sync_period_seconds=sync_period_seconds)
+    def __init__(
+        self,
+        dynamic_configuration: Dict[str, Any] = None,
+        leader_lease_duration_seconds: int = None,
+        port: int = None,
+        sync_period_seconds: int = None,
+    ):
+        super().__init__(
+            dynamic_configuration=dynamic_configuration,
+            leader_lease_duration_seconds=leader_lease_duration_seconds,
+            port=port,
+            sync_period_seconds=sync_period_seconds,
+        )
 
 
 class Service(KubernetesObject):
@@ -440,8 +565,37 @@ class PgBouncer(KubernetesObject):
     tolerations: List[core.Toleration]
     topology_spread_constraints: List[core.TopologySpreadConstraint]
 
-    def __init__(self, affinity: core.Affinity = None, config: Config = None, custom_tls_secret: core.SecretProjection = None, image: str = None, metadata: Metadata = None, port: int = None, priority_class_name: str = None, replicas: int = None, resources: core.ResourceRequirements = None, service: Service = None, sidecars: PgBouncerSidecar = None, tolerations: List[core.Toleration] = None, topology_spread_constraints: List[core.TopologySpreadConstraint] = None):
-        super().__init__(affinity=affinity, config=config, custom_tls_secret=custom_tls_secret, image=image, metadata=metadata, port=port, priority_class_name=priority_class_name, replicas=replicas, resources=resources, service=service, sidecars=sidecars, tolerations=tolerations, topology_spread_constraints=topology_spread_constraints)
+    def __init__(
+        self,
+        affinity: core.Affinity = None,
+        config: Config = None,
+        custom_tls_secret: core.SecretProjection = None,
+        image: str = None,
+        metadata: Metadata = None,
+        port: int = None,
+        priority_class_name: str = None,
+        replicas: int = None,
+        resources: core.ResourceRequirements = None,
+        service: Service = None,
+        sidecars: PgBouncerSidecar = None,
+        tolerations: List[core.Toleration] = None,
+        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+    ):
+        super().__init__(
+            affinity=affinity,
+            config=config,
+            custom_tls_secret=custom_tls_secret,
+            image=image,
+            metadata=metadata,
+            port=port,
+            priority_class_name=priority_class_name,
+            replicas=replicas,
+            resources=resources,
+            service=service,
+            sidecars=sidecars,
+            tolerations=tolerations,
+            topology_spread_constraints=topology_spread_constraints,
+        )
 
 
 class Proxy(KubernetesObject):
@@ -522,8 +676,57 @@ class PostgresClusterSpec(KubernetesObject):
     supplemental_groups: List[int]
     users: List[User]
 
-    def __init__(self, backups: Backup = None, custom_replication_tls_secret: core.SecretProjection = None, custom_tls_secret: core.SecretProjection = None, data_source: DataSource = None, database_init_sql: DatabaseInitSQL = None, disable_default_pod_scheduling: bool = None, image: str = None, image_pull_policy: str = None, image_pull_secrets: List[core.LocalObjectReference] = None, instances: List[Instance] = None, metadata: Metadata = None, monitoring: Monitoring = None, openshift: bool = None, patroni: Patroni = None, port: int = None, post_gis_version: str = None, postgres_version: int = None, proxy: Proxy = None, service: Service = None, shutdown: bool = None, standby: Standby = None, supplemental_groups: List[int] = None, users: List[User] = None):
-        super().__init__(backups=backups, custom_replication_tls_secret=custom_replication_tls_secret, custom_tls_secret=custom_tls_secret, data_source=data_source, database_init_sql=database_init_sql, disable_default_pod_scheduling=disable_default_pod_scheduling, image=image, image_pull_policy=image_pull_policy, image_pull_secrets=image_pull_secrets, instances=instances, metadata=metadata, monitoring=monitoring, openshift=openshift, patroni=patroni, port=port, post_gis_version=post_gis_version, postgres_version=postgres_version, proxy=proxy, service=service, shutdown=shutdown, standby=standby, supplemental_groups=supplemental_groups, users=users)
+    def __init__(
+        self,
+        backups: Backup = None,
+        custom_replication_tls_secret: core.SecretProjection = None,
+        custom_tls_secret: core.SecretProjection = None,
+        data_source: DataSource = None,
+        database_init_sql: DatabaseInitSQL = None,
+        disable_default_pod_scheduling: bool = None,
+        image: str = None,
+        image_pull_policy: str = None,
+        image_pull_secrets: List[core.LocalObjectReference] = None,
+        instances: List[Instance] = None,
+        metadata: Metadata = None,
+        monitoring: Monitoring = None,
+        openshift: bool = None,
+        patroni: Patroni = None,
+        port: int = None,
+        post_gis_version: str = None,
+        postgres_version: int = None,
+        proxy: Proxy = None,
+        service: Service = None,
+        shutdown: bool = None,
+        standby: Standby = None,
+        supplemental_groups: List[int] = None,
+        users: List[User] = None,
+    ):
+        super().__init__(
+            backups=backups,
+            custom_replication_tls_secret=custom_replication_tls_secret,
+            custom_tls_secret=custom_tls_secret,
+            data_source=data_source,
+            database_init_sql=database_init_sql,
+            disable_default_pod_scheduling=disable_default_pod_scheduling,
+            image=image,
+            image_pull_policy=image_pull_policy,
+            image_pull_secrets=image_pull_secrets,
+            instances=instances,
+            metadata=metadata,
+            monitoring=monitoring,
+            openshift=openshift,
+            patroni=patroni,
+            port=port,
+            post_gis_version=post_gis_version,
+            postgres_version=postgres_version,
+            proxy=proxy,
+            service=service,
+            shutdown=shutdown,
+            standby=standby,
+            supplemental_groups=supplemental_groups,
+            users=users,
+        )
 
 
 class PostgresCluster(KubernetesApiResource):
@@ -538,5 +741,3 @@ class PostgresCluster(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PostgresClusterSpec = None):
         super().__init__("postgres-operator.crunchydata.com/v1beta1", "PostgresCluster", name, namespace, metadata=metadata, spec=spec)
-
-

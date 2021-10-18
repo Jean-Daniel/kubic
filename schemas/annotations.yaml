@@ -42,9 +42,9 @@ crds:
     PodTemplateSpec:
       affinity: "io.k8s.api.core.v1.Affinity"
       tolerations: "io.k8s.api.core.v1.Toleration"
+    ClusterIssuer:
+      spec: IssuerSpec
     IssuerSpecAcme:
-      privateKeySecretRef: SecretRef
-    ClusterIssuerSpecAcme:
       privateKeySecretRef: SecretRef
     ExternalAccountBinding:
       keySecretRef: SecretRef

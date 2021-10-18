@@ -857,7 +857,7 @@ class Venafi(KubernetesObject):
         super().__init__(cloud=cloud, tpp=tpp, zone=zone)
 
 
-class ClusterIssuerSpec(KubernetesObject):
+class IssuerSpec(KubernetesObject):
     __slots__ = ()
 
     acme: Acme
@@ -880,23 +880,10 @@ class ClusterIssuer(KubernetesApiResource):
     _required_ = ["spec"]
 
     metadata: meta.ObjectMeta
-    spec: ClusterIssuerSpec
+    spec: IssuerSpec
 
-    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: ClusterIssuerSpec = None):
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: IssuerSpec = None):
         super().__init__("cert-manager.io/v1", "ClusterIssuer", name, "", metadata=metadata, spec=spec)
-
-
-class IssuerSpec(KubernetesObject):
-    __slots__ = ()
-
-    acme: Acme
-    ca: CA
-    self_signed: SelfSigned
-    vault: Vault
-    venafi: Venafi
-
-    def __init__(self, acme: Acme = None, ca: CA = None, self_signed: SelfSigned = None, vault: Vault = None, venafi: Venafi = None):
-        super().__init__(acme=acme, ca=ca, self_signed=self_signed, vault=vault, venafi=venafi)
 
 
 class Issuer(KubernetesApiResource):
