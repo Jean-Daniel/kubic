@@ -156,8 +156,11 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
                 self[camel_name] = value
             return value
 
+        # workaround broken PersistentVolumeClaim used as subresource.
+        if issubclass(hint, KubernetesApiResource):
+            self[camel_name] = value = hint(name="")
         # handle resource instances
-        if issubclass(hint, KubernetesObject):
+        elif issubclass(hint, KubernetesObject):
             self[camel_name] = value = hint()
 
         return value
