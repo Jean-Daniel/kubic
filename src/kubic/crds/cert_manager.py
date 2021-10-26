@@ -19,7 +19,7 @@ class SecretRef(KubernetesObject):
 class ExternalAccountBinding(KubernetesObject):
     __slots__ = ()
 
-    _required_ = ["key_algorithm", "key_id", "key_secret_ref"]
+    _required_ = ["key_id", "key_secret_ref"]
 
     _field_names_ = {
         "key_id": "keyID",
@@ -73,6 +73,25 @@ class Akamai(KubernetesObject):
         )
 
 
+class ManagedIdentity(KubernetesObject):
+    __slots__ = ()
+
+    _field_names_ = {
+        "client_id": "clientID",
+        "resource_id": "resourceID",
+    }
+    _revfield_names_ = {
+        "clientID": "client_id",
+        "resourceID": "resource_id",
+    }
+
+    client_id: str
+    resource_id: str
+
+    def __init__(self, client_id: str = None, resource_id: str = None):
+        super().__init__(client_id=client_id, resource_id=resource_id)
+
+
 class AzureDNS(KubernetesObject):
     __slots__ = ()
 
@@ -93,6 +112,7 @@ class AzureDNS(KubernetesObject):
     client_secret_secret_ref: SecretRef
     environment: str
     hosted_zone_name: str
+    managed_identity: ManagedIdentity
     resource_group_name: str
     subscription_id: str
     tenant_id: str
@@ -103,6 +123,7 @@ class AzureDNS(KubernetesObject):
         client_secret_secret_ref: SecretRef = None,
         environment: str = None,
         hosted_zone_name: str = None,
+        managed_identity: ManagedIdentity = None,
         resource_group_name: str = None,
         subscription_id: str = None,
         tenant_id: str = None,
@@ -112,6 +133,7 @@ class AzureDNS(KubernetesObject):
             client_secret_secret_ref=client_secret_secret_ref,
             environment=environment,
             hosted_zone_name=hosted_zone_name,
+            managed_identity=managed_identity,
             resource_group_name=resource_group_name,
             subscription_id=subscription_id,
             tenant_id=tenant_id,
@@ -273,6 +295,16 @@ class Dns01(KubernetesObject):
         )
 
 
+class GatewayHTTPRoute(KubernetesObject):
+    __slots__ = ()
+
+    labels: Dict[str, str]
+    service_type: str
+
+    def __init__(self, labels: Dict[str, str] = None, service_type: str = None):
+        super().__init__(labels=labels, service_type=service_type)
+
+
 class Metadata(KubernetesObject):
     __slots__ = ()
 
@@ -355,10 +387,18 @@ class Ingress(KubernetesObject):
 class Http01(KubernetesObject):
     __slots__ = ()
 
+    _field_names_ = {
+        "gateway_http_route": "gatewayHTTPRoute",
+    }
+    _revfield_names_ = {
+        "gatewayHTTPRoute": "gateway_http_route",
+    }
+
+    gateway_http_route: GatewayHTTPRoute
     ingress: Ingress
 
-    def __init__(self, ingress: Ingress = None):
-        super().__init__(ingress=ingress)
+    def __init__(self, gateway_http_route: GatewayHTTPRoute = None, ingress: Ingress = None):
+        super().__init__(gateway_http_route=gateway_http_route, ingress=ingress)
 
 
 class Selector(KubernetesObject):
@@ -539,6 +579,16 @@ class PrivateKey(KubernetesObject):
         super().__init__(algorithm=algorithm, encoding=encoding, rotation_policy=rotation_policy, size=size)
 
 
+class SecretTemplate(KubernetesObject):
+    __slots__ = ()
+
+    annotations: Dict[str, str]
+    labels: Dict[str, str]
+
+    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None):
+        super().__init__(annotations=annotations, labels=labels)
+
+
 class Subject(KubernetesObject):
     __slots__ = ()
 
@@ -599,6 +649,7 @@ class CertificateSpec(KubernetesObject):
     renew_before: str
     revision_history_limit: int
     secret_name: str
+    secret_template: SecretTemplate
     subject: Subject
     uris: List[str]
     usages: List[str]
@@ -618,6 +669,7 @@ class CertificateSpec(KubernetesObject):
         renew_before: str = None,
         revision_history_limit: int = None,
         secret_name: str = None,
+        secret_template: SecretTemplate = None,
         subject: Subject = None,
         uris: List[str] = None,
         usages: List[str] = None,
@@ -636,6 +688,7 @@ class CertificateSpec(KubernetesObject):
             renew_before=renew_before,
             revision_history_limit=revision_history_limit,
             secret_name=secret_name,
+            secret_template=secret_template,
             subject=subject,
             uris=uris,
             usages=usages,
