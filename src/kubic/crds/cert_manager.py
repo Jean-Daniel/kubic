@@ -470,6 +470,17 @@ class Acme(KubernetesObject):
         )
 
 
+class AdditionalOutputFormat(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["type"]
+
+    type: str
+
+    def __init__(self, type: str = None):
+        super().__init__(type=type)
+
+
 class AppRole(KubernetesObject):
     __slots__ = ()
 
@@ -636,6 +647,7 @@ class CertificateSpec(KubernetesObject):
         "isCA": "is_ca",
     }
 
+    additional_output_formats: List[AdditionalOutputFormat]
     common_name: str
     dns_names: List[str]
     duration: str
@@ -656,6 +668,7 @@ class CertificateSpec(KubernetesObject):
 
     def __init__(
         self,
+        additional_output_formats: List[AdditionalOutputFormat] = None,
         common_name: str = None,
         dns_names: List[str] = None,
         duration: str = None,
@@ -675,6 +688,7 @@ class CertificateSpec(KubernetesObject):
         usages: List[str] = None,
     ):
         super().__init__(
+            additional_output_formats=additional_output_formats,
             common_name=common_name,
             dns_names=dns_names,
             duration=duration,
