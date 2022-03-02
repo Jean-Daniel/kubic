@@ -735,7 +735,7 @@ class TCPSocketAction(KubernetesObject):
         super().__init__(host=host, port=port)
 
 
-class Handler(KubernetesObject):
+class LifecycleHandler(KubernetesObject):
     __slots__ = ()
 
     _api_version_ = "v1"
@@ -753,11 +753,25 @@ class Lifecycle(KubernetesObject):
 
     _api_version_ = "v1"
 
-    post_start: Handler
-    pre_stop: Handler
+    post_start: LifecycleHandler
+    pre_stop: LifecycleHandler
 
-    def __init__(self, post_start: Handler = None, pre_stop: Handler = None):
+    def __init__(self, post_start: LifecycleHandler = None, pre_stop: LifecycleHandler = None):
         super().__init__(post_start=post_start, pre_stop=pre_stop)
+
+
+class GRPCAction(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["port"]
+
+    port: int
+    service: str
+
+    def __init__(self, port: int = None, service: str = None):
+        super().__init__(port=port, service=service)
 
 
 class Probe(KubernetesObject):
@@ -767,6 +781,7 @@ class Probe(KubernetesObject):
 
     exec: ExecAction
     failure_threshold: int
+    grpc: GRPCAction
     http_get: HTTPGetAction
     initial_delay_seconds: int
     period_seconds: int
@@ -779,6 +794,7 @@ class Probe(KubernetesObject):
         self,
         exec: ExecAction = None,
         failure_threshold: int = None,
+        grpc: GRPCAction = None,
         http_get: HTTPGetAction = None,
         initial_delay_seconds: int = None,
         period_seconds: int = None,
@@ -790,6 +806,7 @@ class Probe(KubernetesObject):
         super().__init__(
             exec=exec,
             failure_threshold=failure_threshold,
+            grpc=grpc,
             http_get=http_get,
             initial_delay_seconds=initial_delay_seconds,
             period_seconds=period_seconds,
@@ -2027,6 +2044,19 @@ class PodDNSConfig(KubernetesObject):
         super().__init__(nameservers=nameservers, options=options, searches=searches)
 
 
+class PodOS(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["name"]
+
+    name: str
+
+    def __init__(self, name: str = None):
+        super().__init__(name=name)
+
+
 class PodReadinessGate(KubernetesObject):
     __slots__ = ()
 
@@ -2468,6 +2498,7 @@ class PodSpec(KubernetesObject):
     init_containers: List[Container]
     node_name: str
     node_selector: Dict[str, str]
+    os: PodOS
     overhead: Dict[str, Quantity]
     preemption_policy: str
     priority: int
@@ -2506,6 +2537,7 @@ class PodSpec(KubernetesObject):
         init_containers: List[Container] = None,
         node_name: str = None,
         node_selector: Dict[str, str] = None,
+        os: PodOS = None,
         overhead: Dict[str, Quantity] = None,
         preemption_policy: str = None,
         priority: int = None,
@@ -2543,6 +2575,7 @@ class PodSpec(KubernetesObject):
             init_containers=init_containers,
             node_name=node_name,
             node_selector=node_selector,
+            os=os,
             overhead=overhead,
             preemption_policy=preemption_policy,
             priority=priority,

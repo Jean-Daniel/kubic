@@ -22,7 +22,7 @@ QuantityType = TypeAlias(
     QualifiedName("Quantity", "core", "v1"),
     GenericType("Union", ["str", "int", "float"]),
     description="Quantity is a fixed-point representation of a number. "
-    "It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.",
+                "It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.",
 )
 
 IntOrStringType = TypeAlias(
@@ -99,36 +99,57 @@ class ApiGroup:
     def refs(self) -> Iterable[str]:
         return self._refs
 
-    def _rename(self, items):
-        for item in items:
-            item.fqn = QualifiedName(item.fullname, item.group, item.version)
-            if (item.name in self._types and self._types[item.name] != item) or (
-                item.name in self._anonymous and self._anonymous[item.name] != item
-            ):
-                raise ValueError(f"{item.name} still conflicting")
-            self._types[item.name] = item
+    def _rename(self, item):
+        item.fqn = QualifiedName(item.fullname, item.group, item.version)
+        assert item.name not in self._types
+        self._types[item.name] = item
+
+    def rename_duplicated(self, items: List[AnonymousType]):
+        types: List[List[AnonymousType]] = []
+
+        for duplicated in items:
+            # Try to group items by matching type
+            for atypes in types:
+                if atypes[0] == duplicated:
+                    atypes.append(duplicated)
+                    break
+            else:
+                types.append([duplicated])
+
+        # all types match
+        if len(types) == 1:
+            # no conflict, add type
+            base = types[0][0]
+            assert base.name not in self._types
+            self._types[base.name] = base
+        else:
+            types.sort(key=lambda i: len(i), reverse=True)
+            for idx, ty in enumerate(types):
+                if len(ty) > 1:
+                    base = ty[0]
+                    # For the type with most matching types -> use the original name
+                    if idx > 0 or base.name in self._types:
+                        name = f"{base.name}{idx + 1}"
+                        for t in ty:
+                            t.fqn = QualifiedName(name, base.group, base.version)
+                    assert base.name not in self._types
+                    self._types[base.name] = base
+                else:
+                    self._rename(ty[0])
 
     def finalize(self):
         for name, items in self._anonymous.items():
-            base = items[0]
             if len(items) == 1:
-                if base.name in self._types:
+                item = items[0]
+                if item.name in self._types:
                     # a base type with this name already exists
-                    self._rename(items)
+                    self._rename(item)
                 else:
-                    self._types[base.name] = base
+                    assert item.name not in self._types
+                    self._types[item.name] = item
                 continue
 
-            for duplicated in items[1:]:
-                # lookup one object not matching the original one
-                if duplicated != base:
-                    # Mark all items as conflicting and fix the output type list
-                    self._rename(items)
-                    # We are done for this conflict
-                    break
-            else:
-                # no conflict, add type
-                self._types[base.name] = base
+            self.rename_duplicated(items)
 
         # Sort types by dependency
         types = []
@@ -278,7 +299,7 @@ class Parser:
                 if len(overwrite) > special:
                     # make sure array are replaced by array
                     assert (
-                        value.get("type") != "array" or overwrite.get("type") == "array"
+                            value.get("type") != "array" or overwrite.get("type") == "array"
                     ), f"{obj_type.name}.{prop}: {value.get('type')} ≠ {overwrite.get('type')}"
                     value = overwrite
             prop_type = self.import_property(obj_type, prop, value)

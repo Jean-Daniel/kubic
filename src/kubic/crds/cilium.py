@@ -22,7 +22,7 @@ class AWS(KubernetesObject):
         super().__init__(labels=labels, region=region, security_groups_ids=security_groups_ids, security_groups_names=security_groups_names)
 
 
-class AddressMatcherToPort(KubernetesObject):
+class ToPort3(KubernetesObject):
     __slots__ = ()
 
     _required_ = ["port", "protocol"]
@@ -41,9 +41,9 @@ class AddressMatcher(KubernetesObject):
     _required_ = ["ip", "to_ports"]
 
     ip: str
-    to_ports: List[AddressMatcherToPort]
+    to_ports: List[ToPort3]
 
-    def __init__(self, ip: str = None, to_ports: List[AddressMatcherToPort] = None):
+    def __init__(self, ip: str = None, to_ports: List[ToPort3] = None):
         super().__init__(ip=ip, to_ports=to_ports)
 
 
@@ -296,7 +296,7 @@ class TerminatingTLS(KubernetesObject):
         super().__init__(certificate=certificate, private_key=private_key, secret=secret, trusted_ca=trusted_ca)
 
 
-class EgressToPort(KubernetesObject):
+class ToPort2(KubernetesObject):
     __slots__ = ()
 
     _field_names_ = {
@@ -351,7 +351,7 @@ class ToService(KubernetesObject):
         super().__init__(k8s_service=k8s_service, k8s_service_selector=k8s_service_selector)
 
 
-class CiliumClusterwideNetworkPolicySpecEgress(KubernetesObject):
+class Egress(KubernetesObject):
     __slots__ = ()
 
     _field_names_ = {
@@ -371,7 +371,7 @@ class CiliumClusterwideNetworkPolicySpecEgress(KubernetesObject):
     to_entities: List[str]
     to_fqdns: List[ToFQDN]
     to_groups: List[ToGroup]
-    to_ports: List[EgressToPort]
+    to_ports: List[ToPort2]
     to_requires: List[meta.LabelSelector]
     to_services: List[ToService]
 
@@ -383,7 +383,7 @@ class CiliumClusterwideNetworkPolicySpecEgress(KubernetesObject):
         to_entities: List[str] = None,
         to_fqdns: List[ToFQDN] = None,
         to_groups: List[ToGroup] = None,
-        to_ports: List[EgressToPort] = None,
+        to_ports: List[ToPort2] = None,
         to_requires: List[meta.LabelSelector] = None,
         to_services: List[ToService] = None,
     ):
@@ -400,7 +400,7 @@ class CiliumClusterwideNetworkPolicySpecEgress(KubernetesObject):
         )
 
 
-class EgressDenyToPort(KubernetesObject):
+class ToPort(KubernetesObject):
     __slots__ = ()
 
     ports: List[Port]
@@ -426,7 +426,7 @@ class EgressDeny(KubernetesObject):
     to_endpoints: List[meta.LabelSelector]
     to_entities: List[str]
     to_groups: List[ToGroup]
-    to_ports: List[EgressDenyToPort]
+    to_ports: List[ToPort]
     to_requires: List[meta.LabelSelector]
     to_services: List[ToService]
 
@@ -437,7 +437,7 @@ class EgressDeny(KubernetesObject):
         to_endpoints: List[meta.LabelSelector] = None,
         to_entities: List[str] = None,
         to_groups: List[ToGroup] = None,
-        to_ports: List[EgressDenyToPort] = None,
+        to_ports: List[ToPort] = None,
         to_requires: List[meta.LabelSelector] = None,
         to_services: List[ToService] = None,
     ):
@@ -451,29 +451,6 @@ class EgressDeny(KubernetesObject):
             to_requires=to_requires,
             to_services=to_services,
         )
-
-
-class IngressToPort(KubernetesObject):
-    __slots__ = ()
-
-    _field_names_ = {
-        "originating_tls": "originatingTLS",
-        "terminating_tls": "terminatingTLS",
-    }
-    _revfield_names_ = {
-        "originatingTLS": "originating_tls",
-        "terminatingTLS": "terminating_tls",
-    }
-
-    originating_tls: OriginatingTLS
-    ports: List[Port]
-    rules: Rule
-    terminating_tls: TerminatingTLS
-
-    def __init__(
-        self, originating_tls: OriginatingTLS = None, ports: List[Port] = None, rules: Rule = None, terminating_tls: TerminatingTLS = None
-    ):
-        super().__init__(originating_tls=originating_tls, ports=ports, rules=rules, terminating_tls=terminating_tls)
 
 
 class Ingress(KubernetesObject):
@@ -493,7 +470,7 @@ class Ingress(KubernetesObject):
     from_endpoints: List[meta.LabelSelector]
     from_entities: List[str]
     from_requires: List[meta.LabelSelector]
-    to_ports: List[IngressToPort]
+    to_ports: List[ToPort2]
 
     def __init__(
         self,
@@ -502,7 +479,7 @@ class Ingress(KubernetesObject):
         from_endpoints: List[meta.LabelSelector] = None,
         from_entities: List[str] = None,
         from_requires: List[meta.LabelSelector] = None,
-        to_ports: List[IngressToPort] = None,
+        to_ports: List[ToPort2] = None,
     ):
         super().__init__(
             from_cidr=from_cidr,
@@ -512,15 +489,6 @@ class Ingress(KubernetesObject):
             from_requires=from_requires,
             to_ports=to_ports,
         )
-
-
-class IngressDenyToPort(KubernetesObject):
-    __slots__ = ()
-
-    ports: List[Port]
-
-    def __init__(self, ports: List[Port] = None):
-        super().__init__(ports=ports)
 
 
 class IngressDeny(KubernetesObject):
@@ -540,7 +508,7 @@ class IngressDeny(KubernetesObject):
     from_endpoints: List[meta.LabelSelector]
     from_entities: List[str]
     from_requires: List[meta.LabelSelector]
-    to_ports: List[IngressDenyToPort]
+    to_ports: List[ToPort]
 
     def __init__(
         self,
@@ -549,7 +517,7 @@ class IngressDeny(KubernetesObject):
         from_endpoints: List[meta.LabelSelector] = None,
         from_entities: List[str] = None,
         from_requires: List[meta.LabelSelector] = None,
-        to_ports: List[IngressDenyToPort] = None,
+        to_ports: List[ToPort] = None,
     ):
         super().__init__(
             from_cidr=from_cidr,
@@ -578,7 +546,7 @@ class CiliumClusterwideNetworkPolicySpec(KubernetesObject):
     __slots__ = ()
 
     description: str
-    egress: List[CiliumClusterwideNetworkPolicySpecEgress]
+    egress: List[Egress]
     egress_deny: List[EgressDeny]
     endpoint_selector: meta.LabelSelector
     ingress: List[Ingress]
@@ -589,7 +557,7 @@ class CiliumClusterwideNetworkPolicySpec(KubernetesObject):
     def __init__(
         self,
         description: str = None,
-        egress: List[CiliumClusterwideNetworkPolicySpecEgress] = None,
+        egress: List[Egress] = None,
         egress_deny: List[EgressDeny] = None,
         endpoint_selector: meta.LabelSelector = None,
         ingress: List[Ingress] = None,
@@ -755,42 +723,16 @@ class CiliumIdentity(KubernetesApiResource):
         super().__init__("cilium.io/v2", "CiliumIdentity", name, "", metadata=metadata, security_labels=security_labels)
 
 
-class RedirectBackendToPort(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["port", "protocol"]
-
-    name: str
-    port: str
-    protocol: str
-
-    def __init__(self, name: str = None, port: str = None, protocol: str = None):
-        super().__init__(name=name, port=port, protocol=protocol)
-
-
 class RedirectBackend(KubernetesObject):
     __slots__ = ()
 
     _required_ = ["local_endpoint_selector", "to_ports"]
 
     local_endpoint_selector: meta.LabelSelector
-    to_ports: List[RedirectBackendToPort]
+    to_ports: List[ToPort3]
 
-    def __init__(self, local_endpoint_selector: meta.LabelSelector = None, to_ports: List[RedirectBackendToPort] = None):
+    def __init__(self, local_endpoint_selector: meta.LabelSelector = None, to_ports: List[ToPort3] = None):
         super().__init__(local_endpoint_selector=local_endpoint_selector, to_ports=to_ports)
-
-
-class ServiceMatcherToPort(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["port", "protocol"]
-
-    name: str
-    port: str
-    protocol: str
-
-    def __init__(self, name: str = None, port: str = None, protocol: str = None):
-        super().__init__(name=name, port=port, protocol=protocol)
 
 
 class ServiceMatcher(KubernetesObject):
@@ -800,9 +742,9 @@ class ServiceMatcher(KubernetesObject):
 
     namespace: str
     service_name: str
-    to_ports: List[ServiceMatcherToPort]
+    to_ports: List[ToPort3]
 
-    def __init__(self, namespace: str = None, service_name: str = None, to_ports: List[ServiceMatcherToPort] = None):
+    def __init__(self, namespace: str = None, service_name: str = None, to_ports: List[ToPort3] = None):
         super().__init__(namespace=namespace, service_name=service_name, to_ports=to_ports)
 
 
@@ -845,60 +787,11 @@ class CiliumLocalRedirectPolicy(KubernetesApiResource):
         super().__init__("cilium.io/v2", "CiliumLocalRedirectPolicy", name, namespace, metadata=metadata, spec=spec)
 
 
-class CiliumNetworkPolicySpecEgress(KubernetesObject):
-    __slots__ = ()
-
-    _field_names_ = {
-        "to_cidr": "toCIDR",
-        "to_cidr_set": "toCIDRSet",
-        "to_fqdns": "toFQDNs",
-    }
-    _revfield_names_ = {
-        "toCIDR": "to_cidr",
-        "toCIDRSet": "to_cidr_set",
-        "toFQDNs": "to_fqdns",
-    }
-
-    to_cidr: List[str]
-    to_cidr_set: List[networking.IPBlock]
-    to_endpoints: List[meta.LabelSelector]
-    to_entities: List[str]
-    to_fqdns: List[ToFQDN]
-    to_groups: List[ToGroup]
-    to_ports: List[EgressToPort]
-    to_requires: List[meta.LabelSelector]
-    to_services: List[ToService]
-
-    def __init__(
-        self,
-        to_cidr: List[str] = None,
-        to_cidr_set: List[networking.IPBlock] = None,
-        to_endpoints: List[meta.LabelSelector] = None,
-        to_entities: List[str] = None,
-        to_fqdns: List[ToFQDN] = None,
-        to_groups: List[ToGroup] = None,
-        to_ports: List[EgressToPort] = None,
-        to_requires: List[meta.LabelSelector] = None,
-        to_services: List[ToService] = None,
-    ):
-        super().__init__(
-            to_cidr=to_cidr,
-            to_cidr_set=to_cidr_set,
-            to_endpoints=to_endpoints,
-            to_entities=to_entities,
-            to_fqdns=to_fqdns,
-            to_groups=to_groups,
-            to_ports=to_ports,
-            to_requires=to_requires,
-            to_services=to_services,
-        )
-
-
 class CiliumNetworkPolicySpec(KubernetesObject):
     __slots__ = ()
 
     description: str
-    egress: List[CiliumNetworkPolicySpecEgress]
+    egress: List[Egress]
     egress_deny: List[EgressDeny]
     endpoint_selector: meta.LabelSelector
     ingress: List[Ingress]
@@ -909,7 +802,7 @@ class CiliumNetworkPolicySpec(KubernetesObject):
     def __init__(
         self,
         description: str = None,
-        egress: List[CiliumNetworkPolicySpecEgress] = None,
+        egress: List[Egress] = None,
         egress_deny: List[EgressDeny] = None,
         endpoint_selector: meta.LabelSelector = None,
         ingress: List[Ingress] = None,

@@ -1,0 +1,52 @@
+patches:
+  Config:
+    files: "io.k8s.api.core.v1.VolumeProjection"
+  RepoHost:
+    affinity: "io.k8s.api.core.v1.Affinity"
+    sshSecret: "io.k8s.api.core.v1.SecretProjection"
+    sshConfigMap: "io.k8s.api.core.v1.SecretProjection"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+    topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+  RepoVolume:
+    volumeClaimSpec: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
+  Restore:
+    affinity: "io.k8s.api.core.v1.Affinity"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+  Dedicated:
+    affinity: "io.k8s.api.core.v1.Affinity"
+  DataSourcePostgresCluster:
+    affinity: "io.k8s.api.core.v1.Affinity"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+  Instance:
+    affinity: "io.k8s.api.core.v1.Affinity"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    dataVolumeClaimSpec: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
+    walVolumeClaimSpec: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+    topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+  PgBouncer:
+    affinity: "io.k8s.api.core.v1.Affinity"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    customTLSSecret: "io.k8s.api.core.v1.SecretProjection"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+    topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+  PgbouncerConfig:
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+  SidecarPgbackrest:
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+  BackupPgbackrest:
+    configuration: "io.k8s.api.core.v1.VolumeProjection"
+  Exporter:
+    configuration: "io.k8s.api.core.v1.VolumeProjection"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+  ReplicaCertCopy:
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+  JOB:
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+  PostgresClusterSpec:
+    customReplicationTLSSecret: "io.k8s.api.core.v1.SecretProjection"
+    customTLSSecret: "io.k8s.api.core.v1.SecretProjection"
+    imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"

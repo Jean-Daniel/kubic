@@ -1,0 +1,13 @@
+patches:
+  Egress:
+    toCIDRSet: "io.k8s.api.networking.v1.IPBlock"
+  EgressDeny:
+    toCIDRSet: "io.k8s.api.networking.v1.IPBlock"
+  Ingress:
+    fromCIDRSet: "io.k8s.api.networking.v1.IPBlock"
+  IngressDeny:
+    fromCIDRSet: "io.k8s.api.networking.v1.IPBlock"
+
+  CiliumNodeStatus:
+    eni:
+      type_name: ENIStatus

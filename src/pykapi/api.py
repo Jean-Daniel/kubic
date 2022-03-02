@@ -1,4 +1,6 @@
 import logging
+import os
+import pathlib
 from collections import defaultdict
 from typing import Dict, Union, Iterable, List, Optional, Set
 
@@ -38,7 +40,7 @@ class ApiParser(Parser):
         self.annotations = annotations
         self._groups: Dict[str, ApiGroup] = {}
 
-        if isinstance(schema, str):
+        if isinstance(schema, (str, os.PathLike)):
             with open(schema) as f:
                 schema = yaml.load(f, yaml.CSafeLoader)
 
@@ -129,7 +131,7 @@ class ApiParser(Parser):
 
         return super().import_property(obj_type, prop_name, schema)
 
-    def import_ref(self, ref: str) -> ApiType:
+    def import_ref(self, ref: str) -> Type:
         fqn = QualifiedName.parse(ref)
         group = self.group_for_type(fqn)
 
@@ -154,9 +156,9 @@ class ApiParser(Parser):
                 group = gvk[0]["group"]
                 if not group and fqn.group in ("core", "meta"):
                     group = fqn.group
-                assert fqn.group == (group), f"extract group '{fqn.group}' does not match type declared group '{gvk[0]['group']}': {ref}"
+                assert fqn.group == group, f"extract group '{fqn.group}' does not match type declared group '{gvk[0]['group']}': {ref}"
                 assert (
-                    fqn.version == gvk[0]["version"]
+                        fqn.version == gvk[0]["version"]
                 ), f"extract version {fqn.version} does not match type declared version {gvk[0]['version']}"
                 typedecl = ApiResourceType(
                     fqn,
@@ -170,14 +172,23 @@ class ApiParser(Parser):
             return typedecl
 
         # Type Alias
-
-        # Create alias type
         alias = TypeAlias(fqn, "", schema.get("description"))
         alias.type = self.import_property(alias, fqn.name, schema)
         group.add(alias)
         return alias
 
 
-def import_api_types(schema: Union[str, dict], annotations: dict, *names) -> List[ApiGroup]:
+def import_api_types(schema: str, annotations: dict, *names) -> List[ApiGroup]:
+    if annotations is None:
+        # Default API Annotations
+        annotations = {
+            "meta.v1.ObjectMeta": {
+                "managedFields": None
+            },
+            "apiextensions.k8s.io.v1.CustomResourceValidation": {
+                "openAPIV3Schema": {"snake_name": "openapi_v3_schema"}
+            }
+        }
+
     parser = ApiParser(schema, annotations)
     return parser.import_types(names)

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Mapping
 
 from .k8s import QualifiedName
 from .parser import Parser, ApiGroup
@@ -113,25 +113,30 @@ def is_key_selector(schema: dict) -> bool:
         return False
 
     return (
-        properties["key"].get("type") == "string"
-        and properties["name"].get("type") == "string"
-        and properties["optional"].get("type") == "boolean"
+            properties["key"].get("type") == "string"
+            and properties["name"].get("type") == "string"
+            and properties["optional"].get("type") == "boolean"
     )
 
 
-def import_crds(annotations, *crds: Tuple[QualifiedName, dict]) -> List[ApiGroup]:
-    groups = annotations.get("groups") or {}
+def import_crds(crds: List[Tuple[QualifiedName, dict]], annotations: Mapping[str, dict]) -> List[ApiGroup]:
     # in case there is CRDs from many groups/versions.
     # FIXME: disable group by version as some CRDs have etherogenous version (cilium)
     crds_by_groups = defaultdict(list)
+    patches_by_group = defaultdict(dict)
     for fqn, schema in crds:
-        group = groups.get(fqn.group, fqn.group)
+        a = annotations[fqn.group]
+        group = a.get("module", fqn.group)
         crds_by_groups[group].append((fqn, schema))
+        # merge all patches into a single map
+        patches = a.get("patches")
+        if patches:
+            patches_by_group[group].update(patches)
         # crds_by_groups[(group, fqn.version)].append((fqn, schema))
 
     groups = []
     for group, crds in crds_by_groups.items():
-        parser = CRDParser(group, "", annotations.get(group))
+        parser = CRDParser(group, "", patches_by_group[group])
         groups.append(parser.process(*crds))
 
     return groups

@@ -4,6 +4,17 @@ from .. import KubernetesApiResource, KubernetesObject
 from .. import core, meta
 
 
+class Authorization2(KubernetesObject):
+    __slots__ = ()
+
+    credentials: core.ConfigMapKeySelector
+    credentials_file: str
+    type: str
+
+    def __init__(self, credentials: core.ConfigMapKeySelector = None, credentials_file: str = None, type: str = None):
+        super().__init__(credentials=credentials, credentials_file=credentials_file, type=type)
+
+
 class BasicAuth(KubernetesObject):
     __slots__ = ()
 
@@ -34,7 +45,7 @@ class Cert(KubernetesObject):
         super().__init__(config_map=config_map, secret=secret)
 
 
-class APIserverConfigTLSConfig(KubernetesObject):
+class TLSConfig2(KubernetesObject):
     __slots__ = ()
 
     ca: CA
@@ -74,22 +85,29 @@ class APIserverConfig(KubernetesObject):
 
     _required_ = ["host"]
 
+    authorization: Authorization2
     basic_auth: BasicAuth
     bearer_token: str
     bearer_token_file: str
     host: str
-    tls_config: APIserverConfigTLSConfig
+    tls_config: TLSConfig2
 
     def __init__(
         self,
+        authorization: Authorization2 = None,
         basic_auth: BasicAuth = None,
         bearer_token: str = None,
         bearer_token_file: str = None,
         host: str = None,
-        tls_config: APIserverConfigTLSConfig = None,
+        tls_config: TLSConfig2 = None,
     ):
         super().__init__(
-            basic_auth=basic_auth, bearer_token=bearer_token, bearer_token_file=bearer_token_file, host=host, tls_config=tls_config
+            authorization=authorization,
+            basic_auth=basic_auth,
+            bearer_token=bearer_token,
+            bearer_token_file=bearer_token_file,
+            host=host,
+            tls_config=tls_config,
         )
 
 
@@ -144,39 +162,14 @@ class Alert(KubernetesObject):
         super().__init__(for_grace_period=for_grace_period, for_outage_tolerance=for_outage_tolerance, resend_delay=resend_delay)
 
 
-class AlertmanagerTLSConfig(KubernetesObject):
+class Authorization(KubernetesObject):
     __slots__ = ()
 
-    ca: CA
-    ca_file: str
-    cert: Cert
-    cert_file: str
-    insecure_skip_verify: bool
-    key_file: str
-    key_secret: core.SecretKeySelector
-    server_name: str
+    credentials: core.ConfigMapKeySelector
+    type: str
 
-    def __init__(
-        self,
-        ca: CA = None,
-        ca_file: str = None,
-        cert: Cert = None,
-        cert_file: str = None,
-        insecure_skip_verify: bool = None,
-        key_file: str = None,
-        key_secret: core.SecretKeySelector = None,
-        server_name: str = None,
-    ):
-        super().__init__(
-            ca=ca,
-            ca_file=ca_file,
-            cert=cert,
-            cert_file=cert_file,
-            insecure_skip_verify=insecure_skip_verify,
-            key_file=key_file,
-            key_secret=key_secret,
-            server_name=server_name,
-        )
+    def __init__(self, credentials: core.ConfigMapKeySelector = None, type: str = None):
+        super().__init__(credentials=credentials, type=type)
 
 
 class AlertingAlertmanager(KubernetesObject):
@@ -185,6 +178,7 @@ class AlertingAlertmanager(KubernetesObject):
     _required_ = ["name", "namespace", "port"]
 
     api_version: str
+    authorization: Authorization
     bearer_token_file: str
     name: str
     namespace: str
@@ -192,11 +186,12 @@ class AlertingAlertmanager(KubernetesObject):
     port: core.IntOrString
     scheme: str
     timeout: str
-    tls_config: AlertmanagerTLSConfig
+    tls_config: TLSConfig2
 
     def __init__(
         self,
         api_version: str = None,
+        authorization: Authorization = None,
         bearer_token_file: str = None,
         name: str = None,
         namespace: str = None,
@@ -204,10 +199,11 @@ class AlertingAlertmanager(KubernetesObject):
         port: core.IntOrString = None,
         scheme: str = None,
         timeout: str = None,
-        tls_config: AlertmanagerTLSConfig = None,
+        tls_config: TLSConfig2 = None,
     ):
         super().__init__(
             api_version=api_version,
+            authorization=authorization,
             bearer_token_file=bearer_token_file,
             name=name,
             namespace=namespace,
@@ -246,15 +242,22 @@ class Storage(KubernetesObject):
 
     disable_mount_sub_path: bool
     empty_dir: core.EmptyDirVolumeSource
+    ephemeral: core.EphemeralVolumeSource
     volume_claim_template: core.PersistentVolumeClaim
 
     def __init__(
         self,
         disable_mount_sub_path: bool = None,
         empty_dir: core.EmptyDirVolumeSource = None,
+        ephemeral: core.EphemeralVolumeSource = None,
         volume_claim_template: core.PersistentVolumeClaim = None,
     ):
-        super().__init__(disable_mount_sub_path=disable_mount_sub_path, empty_dir=empty_dir, volume_claim_template=volume_claim_template)
+        super().__init__(
+            disable_mount_sub_path=disable_mount_sub_path,
+            empty_dir=empty_dir,
+            ephemeral=ephemeral,
+            volume_claim_template=volume_claim_template,
+        )
 
 
 class AlertmanagerSpec(KubernetesObject):
@@ -280,6 +283,7 @@ class AlertmanagerSpec(KubernetesObject):
     listen_local: bool
     log_format: str
     log_level: str
+    min_ready_seconds: int
     node_selector: Dict[str, str]
     paused: bool
     pod_metadata: PodMetadata
@@ -323,6 +327,7 @@ class AlertmanagerSpec(KubernetesObject):
         listen_local: bool = None,
         log_format: str = None,
         log_level: str = None,
+        min_ready_seconds: int = None,
         node_selector: Dict[str, str] = None,
         paused: bool = None,
         pod_metadata: PodMetadata = None,
@@ -365,6 +370,7 @@ class AlertmanagerSpec(KubernetesObject):
             listen_local=listen_local,
             log_format=log_format,
             log_level=log_level,
+            min_ready_seconds=min_ready_seconds,
             node_selector=node_selector,
             paused=paused,
             pod_metadata=pod_metadata,
@@ -409,12 +415,13 @@ class SourceMatch(KubernetesObject):
 
     _required_ = ["name"]
 
+    match_type: str
     name: str
     regex: bool
     value: str
 
-    def __init__(self, name: str = None, regex: bool = None, value: str = None):
-        super().__init__(name=name, regex=regex, value=value)
+    def __init__(self, match_type: str = None, name: str = None, regex: bool = None, value: str = None):
+        super().__init__(match_type=match_type, name=name, regex=regex, value=value)
 
 
 class TargetMatch(KubernetesObject):
@@ -422,12 +429,13 @@ class TargetMatch(KubernetesObject):
 
     _required_ = ["name"]
 
+    match_type: str
     name: str
     regex: bool
     value: str
 
-    def __init__(self, name: str = None, regex: bool = None, value: str = None):
-        super().__init__(name=name, regex=regex, value=value)
+    def __init__(self, match_type: str = None, name: str = None, regex: bool = None, value: str = None):
+        super().__init__(match_type=match_type, name=name, regex=regex, value=value)
 
 
 class InhibitRule(KubernetesObject):
@@ -439,6 +447,56 @@ class InhibitRule(KubernetesObject):
 
     def __init__(self, equal: List[str] = None, source_match: List[SourceMatch] = None, target_match: List[TargetMatch] = None):
         super().__init__(equal=equal, source_match=source_match, target_match=target_match)
+
+
+class DaysOfMonth(KubernetesObject):
+    __slots__ = ()
+
+    end: int
+    start: int
+
+    def __init__(self, end: int = None, start: int = None):
+        super().__init__(end=end, start=start)
+
+
+class Time(KubernetesObject):
+    __slots__ = ()
+
+    end_time: str
+    start_time: str
+
+    def __init__(self, end_time: str = None, start_time: str = None):
+        super().__init__(end_time=end_time, start_time=start_time)
+
+
+class TimeInterval(KubernetesObject):
+    __slots__ = ()
+
+    days_of_month: List[DaysOfMonth]
+    months: List[str]
+    times: List[Time]
+    weekdays: List[str]
+    years: List[str]
+
+    def __init__(
+        self,
+        days_of_month: List[DaysOfMonth] = None,
+        months: List[str] = None,
+        times: List[Time] = None,
+        weekdays: List[str] = None,
+        years: List[str] = None,
+    ):
+        super().__init__(days_of_month=days_of_month, months=months, times=times, weekdays=weekdays, years=years)
+
+
+class MuteTimeInterval(KubernetesObject):
+    __slots__ = ()
+
+    name: str
+    time_intervals: List[TimeInterval]
+
+    def __init__(self, name: str = None, time_intervals: List[TimeInterval] = None):
+        super().__init__(name=name, time_intervals=time_intervals)
 
 
 class Header(KubernetesObject):
@@ -453,7 +511,7 @@ class Header(KubernetesObject):
         super().__init__(key=key, value=value)
 
 
-class EmailConfigTLSConfig(KubernetesObject):
+class TLSConfig(KubernetesObject):
     __slots__ = ()
 
     ca: CA
@@ -496,7 +554,7 @@ class EmailConfig(KubernetesObject):
     send_resolved: bool
     smarthost: str
     text: str
-    tls_config: EmailConfigTLSConfig
+    tls_config: TLSConfig
     to: str
 
     def __init__(
@@ -513,7 +571,7 @@ class EmailConfig(KubernetesObject):
         send_resolved: bool = None,
         smarthost: str = None,
         text: str = None,
-        tls_config: EmailConfigTLSConfig = None,
+        tls_config: TLSConfig = None,
         to: str = None,
     ):
         super().__init__(
@@ -546,26 +604,6 @@ class Detail(KubernetesObject):
         super().__init__(key=key, value=value)
 
 
-class HttpConfigTLSConfig(KubernetesObject):
-    __slots__ = ()
-
-    ca: CA
-    cert: Cert
-    insecure_skip_verify: bool
-    key_secret: core.SecretKeySelector
-    server_name: str
-
-    def __init__(
-        self,
-        ca: CA = None,
-        cert: Cert = None,
-        insecure_skip_verify: bool = None,
-        key_secret: core.SecretKeySelector = None,
-        server_name: str = None,
-    ):
-        super().__init__(ca=ca, cert=cert, insecure_skip_verify=insecure_skip_verify, key_secret=key_secret, server_name=server_name)
-
-
 class HttpConfig(KubernetesObject):
     __slots__ = ()
 
@@ -576,19 +614,27 @@ class HttpConfig(KubernetesObject):
         "proxyURL": "proxy_url",
     }
 
+    authorization: Authorization
     basic_auth: BasicAuth
     bearer_token_secret: core.ConfigMapKeySelector
     proxy_url: str
-    tls_config: HttpConfigTLSConfig
+    tls_config: TLSConfig
 
     def __init__(
         self,
+        authorization: Authorization = None,
         basic_auth: BasicAuth = None,
         bearer_token_secret: core.ConfigMapKeySelector = None,
         proxy_url: str = None,
-        tls_config: HttpConfigTLSConfig = None,
+        tls_config: TLSConfig = None,
     ):
-        super().__init__(basic_auth=basic_auth, bearer_token_secret=bearer_token_secret, proxy_url=proxy_url, tls_config=tls_config)
+        super().__init__(
+            authorization=authorization,
+            basic_auth=basic_auth,
+            bearer_token_secret=bearer_token_secret,
+            proxy_url=proxy_url,
+            tls_config=tls_config,
+        )
 
 
 class Responder(KubernetesObject):
@@ -659,6 +705,27 @@ class OpsgenieConfig(KubernetesObject):
         )
 
 
+class PagerDutyImageConfig(KubernetesObject):
+    __slots__ = ()
+
+    alt: str
+    href: str
+    src: str
+
+    def __init__(self, alt: str = None, href: str = None, src: str = None):
+        super().__init__(alt=alt, href=href, src=src)
+
+
+class PagerDutyLinkConfig(KubernetesObject):
+    __slots__ = ()
+
+    alt: str
+    href: str
+
+    def __init__(self, alt: str = None, href: str = None):
+        super().__init__(alt=alt, href=href)
+
+
 class PagerdutyConfig(KubernetesObject):
     __slots__ = ()
 
@@ -678,6 +745,8 @@ class PagerdutyConfig(KubernetesObject):
     details: List[Detail]
     group: str
     http_config: HttpConfig
+    pager_duty_image_configs: List[PagerDutyImageConfig]
+    pager_duty_link_configs: List[PagerDutyLinkConfig]
     routing_key: core.ConfigMapKeySelector
     send_resolved: bool
     service_key: core.ConfigMapKeySelector
@@ -694,6 +763,8 @@ class PagerdutyConfig(KubernetesObject):
         details: List[Detail] = None,
         group: str = None,
         http_config: HttpConfig = None,
+        pager_duty_image_configs: List[PagerDutyImageConfig] = None,
+        pager_duty_link_configs: List[PagerDutyLinkConfig] = None,
         routing_key: core.ConfigMapKeySelector = None,
         send_resolved: bool = None,
         service_key: core.ConfigMapKeySelector = None,
@@ -709,6 +780,8 @@ class PagerdutyConfig(KubernetesObject):
             details=details,
             group=group,
             http_config=http_config,
+            pager_duty_image_configs=pager_duty_image_configs,
+            pager_duty_link_configs=pager_duty_link_configs,
             routing_key=routing_key,
             send_resolved=send_resolved,
             service_key=service_key,
@@ -1043,12 +1116,13 @@ class Matcher(KubernetesObject):
 
     _required_ = ["name"]
 
+    match_type: str
     name: str
     regex: bool
     value: str
 
-    def __init__(self, name: str = None, regex: bool = None, value: str = None):
-        super().__init__(name=name, regex=regex, value=value)
+    def __init__(self, match_type: str = None, name: str = None, regex: bool = None, value: str = None):
+        super().__init__(match_type=match_type, name=name, regex=regex, value=value)
 
 
 class Route(KubernetesObject):
@@ -1063,6 +1137,7 @@ class Route(KubernetesObject):
     group_interval: str
     group_wait: str
     matchers: List[Matcher]
+    mute_time_intervals: List[str]
     receiver: str
     repeat_interval: str
     routes: List[Any]
@@ -1074,6 +1149,7 @@ class Route(KubernetesObject):
         group_interval: str = None,
         group_wait: str = None,
         matchers: List[Matcher] = None,
+        mute_time_intervals: List[str] = None,
         receiver: str = None,
         repeat_interval: str = None,
         routes: List[Any] = None,
@@ -1084,6 +1160,7 @@ class Route(KubernetesObject):
             group_interval=group_interval,
             group_wait=group_wait,
             matchers=matchers,
+            mute_time_intervals=mute_time_intervals,
             receiver=receiver,
             repeat_interval=repeat_interval,
             routes=routes,
@@ -1094,11 +1171,18 @@ class AlertmanagerConfigSpec(KubernetesObject):
     __slots__ = ()
 
     inhibit_rules: List[InhibitRule]
+    mute_time_intervals: List[MuteTimeInterval]
     receivers: List[Receiver]
     route: Route
 
-    def __init__(self, inhibit_rules: List[InhibitRule] = None, receivers: List[Receiver] = None, route: Route = None):
-        super().__init__(inhibit_rules=inhibit_rules, receivers=receivers, route=route)
+    def __init__(
+        self,
+        inhibit_rules: List[InhibitRule] = None,
+        mute_time_intervals: List[MuteTimeInterval] = None,
+        receivers: List[Receiver] = None,
+        route: Route = None,
+    ):
+        super().__init__(inhibit_rules=inhibit_rules, mute_time_intervals=mute_time_intervals, receivers=receivers, route=route)
 
 
 class AlertmanagerConfig(KubernetesApiResource):
@@ -1124,6 +1208,16 @@ class ArbitraryFSAccessThroughSM(KubernetesObject):
 
     def __init__(self, deny: bool = None):
         super().__init__(deny=deny)
+
+
+class ClientId(KubernetesObject):
+    __slots__ = ()
+
+    config_map: core.ConfigMapKeySelector
+    secret: core.SecretKeySelector
+
+    def __init__(self, config_map: core.ConfigMapKeySelector = None, secret: core.SecretKeySelector = None):
+        super().__init__(config_map=config_map, secret=secret)
 
 
 class MetricRelabeling(KubernetesObject):
@@ -1155,6 +1249,30 @@ class MetricRelabeling(KubernetesObject):
             separator=separator,
             source_labels=source_labels,
             target_label=target_label,
+        )
+
+
+class Oauth2(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["client_id", "client_secret", "token_url"]
+
+    client_id: ClientId
+    client_secret: core.ConfigMapKeySelector
+    endpoint_params: Dict[str, str]
+    scopes: List[str]
+    token_url: str
+
+    def __init__(
+        self,
+        client_id: ClientId = None,
+        client_secret: core.ConfigMapKeySelector = None,
+        endpoint_params: Dict[str, str] = None,
+        scopes: List[str] = None,
+        token_url: str = None,
+    ):
+        super().__init__(
+            client_id=client_id, client_secret=client_secret, endpoint_params=endpoint_params, scopes=scopes, token_url=token_url
         )
 
 
@@ -1190,44 +1308,10 @@ class Relabeling(KubernetesObject):
         )
 
 
-class EndpointTLSConfig(KubernetesObject):
-    __slots__ = ()
-
-    ca: CA
-    ca_file: str
-    cert: Cert
-    cert_file: str
-    insecure_skip_verify: bool
-    key_file: str
-    key_secret: core.SecretKeySelector
-    server_name: str
-
-    def __init__(
-        self,
-        ca: CA = None,
-        ca_file: str = None,
-        cert: Cert = None,
-        cert_file: str = None,
-        insecure_skip_verify: bool = None,
-        key_file: str = None,
-        key_secret: core.SecretKeySelector = None,
-        server_name: str = None,
-    ):
-        super().__init__(
-            ca=ca,
-            ca_file=ca_file,
-            cert=cert,
-            cert_file=cert_file,
-            insecure_skip_verify=insecure_skip_verify,
-            key_file=key_file,
-            key_secret=key_secret,
-            server_name=server_name,
-        )
-
-
 class Endpoint(KubernetesObject):
     __slots__ = ()
 
+    authorization: Authorization
     basic_auth: BasicAuth
     bearer_token_file: str
     bearer_token_secret: core.ConfigMapKeySelector
@@ -1235,6 +1319,7 @@ class Endpoint(KubernetesObject):
     honor_timestamps: bool
     interval: str
     metric_relabelings: List[MetricRelabeling]
+    oauth2: Oauth2
     params: Dict[str, List[str]]
     path: str
     port: str
@@ -1243,10 +1328,11 @@ class Endpoint(KubernetesObject):
     scheme: str
     scrape_timeout: str
     target_port: core.IntOrString
-    tls_config: EndpointTLSConfig
+    tls_config: TLSConfig2
 
     def __init__(
         self,
+        authorization: Authorization = None,
         basic_auth: BasicAuth = None,
         bearer_token_file: str = None,
         bearer_token_secret: core.ConfigMapKeySelector = None,
@@ -1254,6 +1340,7 @@ class Endpoint(KubernetesObject):
         honor_timestamps: bool = None,
         interval: str = None,
         metric_relabelings: List[MetricRelabeling] = None,
+        oauth2: Oauth2 = None,
         params: Dict[str, List[str]] = None,
         path: str = None,
         port: str = None,
@@ -1262,9 +1349,10 @@ class Endpoint(KubernetesObject):
         scheme: str = None,
         scrape_timeout: str = None,
         target_port: core.IntOrString = None,
-        tls_config: EndpointTLSConfig = None,
+        tls_config: TLSConfig2 = None,
     ):
         super().__init__(
+            authorization=authorization,
             basic_auth=basic_auth,
             bearer_token_file=bearer_token_file,
             bearer_token_secret=bearer_token_secret,
@@ -1272,6 +1360,7 @@ class Endpoint(KubernetesObject):
             honor_timestamps=honor_timestamps,
             interval=interval,
             metric_relabelings=metric_relabelings,
+            oauth2=oauth2,
             params=params,
             path=path,
             port=port,
@@ -1423,35 +1512,27 @@ class Ingress(KubernetesObject):
         super().__init__(namespace_selector=namespace_selector, relabeling_configs=relabeling_configs, selector=selector)
 
 
-class PodMetricsEndpointTLSConfig(KubernetesObject):
+class MetadataConfig(KubernetesObject):
     __slots__ = ()
 
-    ca: CA
-    cert: Cert
-    insecure_skip_verify: bool
-    key_secret: core.SecretKeySelector
-    server_name: str
+    send: bool
+    send_interval: str
 
-    def __init__(
-        self,
-        ca: CA = None,
-        cert: Cert = None,
-        insecure_skip_verify: bool = None,
-        key_secret: core.SecretKeySelector = None,
-        server_name: str = None,
-    ):
-        super().__init__(ca=ca, cert=cert, insecure_skip_verify=insecure_skip_verify, key_secret=key_secret, server_name=server_name)
+    def __init__(self, send: bool = None, send_interval: str = None):
+        super().__init__(send=send, send_interval=send_interval)
 
 
 class PodMetricsEndpoint(KubernetesObject):
     __slots__ = ()
 
+    authorization: Authorization
     basic_auth: BasicAuth
     bearer_token_secret: core.ConfigMapKeySelector
     honor_labels: bool
     honor_timestamps: bool
     interval: str
     metric_relabelings: List[MetricRelabeling]
+    oauth2: Oauth2
     params: Dict[str, List[str]]
     path: str
     port: str
@@ -1460,16 +1541,18 @@ class PodMetricsEndpoint(KubernetesObject):
     scheme: str
     scrape_timeout: str
     target_port: core.IntOrString
-    tls_config: PodMetricsEndpointTLSConfig
+    tls_config: TLSConfig
 
     def __init__(
         self,
+        authorization: Authorization = None,
         basic_auth: BasicAuth = None,
         bearer_token_secret: core.ConfigMapKeySelector = None,
         honor_labels: bool = None,
         honor_timestamps: bool = None,
         interval: str = None,
         metric_relabelings: List[MetricRelabeling] = None,
+        oauth2: Oauth2 = None,
         params: Dict[str, List[str]] = None,
         path: str = None,
         port: str = None,
@@ -1478,15 +1561,17 @@ class PodMetricsEndpoint(KubernetesObject):
         scheme: str = None,
         scrape_timeout: str = None,
         target_port: core.IntOrString = None,
-        tls_config: PodMetricsEndpointTLSConfig = None,
+        tls_config: TLSConfig = None,
     ):
         super().__init__(
+            authorization=authorization,
             basic_auth=basic_auth,
             bearer_token_secret=bearer_token_secret,
             honor_labels=honor_labels,
             honor_timestamps=honor_timestamps,
             interval=interval,
             metric_relabelings=metric_relabelings,
+            oauth2=oauth2,
             params=params,
             path=path,
             port=port,
@@ -1505,6 +1590,9 @@ class PodMonitorSpec(KubernetesObject):
     _required_ = ["pod_metrics_endpoints", "selector"]
 
     job_label: str
+    label_limit: int
+    label_name_length_limit: int
+    label_value_length_limit: int
     namespace_selector: NamespaceSelector
     pod_metrics_endpoints: List[PodMetricsEndpoint]
     pod_target_labels: List[str]
@@ -1515,6 +1603,9 @@ class PodMonitorSpec(KubernetesObject):
     def __init__(
         self,
         job_label: str = None,
+        label_limit: int = None,
+        label_name_length_limit: int = None,
+        label_value_length_limit: int = None,
         namespace_selector: NamespaceSelector = None,
         pod_metrics_endpoints: List[PodMetricsEndpoint] = None,
         pod_target_labels: List[str] = None,
@@ -1524,6 +1615,9 @@ class PodMonitorSpec(KubernetesObject):
     ):
         super().__init__(
             job_label=job_label,
+            label_limit=label_limit,
+            label_name_length_limit=label_name_length_limit,
+            label_value_length_limit=label_value_length_limit,
             namespace_selector=namespace_selector,
             pod_metrics_endpoints=pod_metrics_endpoints,
             pod_target_labels=pod_target_labels,
@@ -1555,11 +1649,12 @@ class Prober(KubernetesObject):
     _required_ = ["url"]
 
     path: str
+    proxy_url: str
     scheme: str
     url: str
 
-    def __init__(self, path: str = None, scheme: str = None, url: str = None):
-        super().__init__(path=path, scheme=scheme, url=url)
+    def __init__(self, path: str = None, proxy_url: str = None, scheme: str = None, url: str = None):
+        super().__init__(path=path, proxy_url=proxy_url, scheme=scheme, url=url)
 
 
 class StaticConfig(KubernetesObject):
@@ -1586,23 +1681,63 @@ class Target(KubernetesObject):
 class ProbeSpec(KubernetesObject):
     __slots__ = ()
 
+    authorization: Authorization
+    basic_auth: BasicAuth
+    bearer_token_secret: core.ConfigMapKeySelector
     interval: str
     job_name: str
+    label_limit: int
+    label_name_length_limit: int
+    label_value_length_limit: int
+    metric_relabelings: List[MetricRelabeling]
     module: str
+    oauth2: Oauth2
     prober: Prober
+    sample_limit: int
     scrape_timeout: str
+    target_limit: int
     targets: Target
+    tls_config: TLSConfig
 
     def __init__(
         self,
+        authorization: Authorization = None,
+        basic_auth: BasicAuth = None,
+        bearer_token_secret: core.ConfigMapKeySelector = None,
         interval: str = None,
         job_name: str = None,
+        label_limit: int = None,
+        label_name_length_limit: int = None,
+        label_value_length_limit: int = None,
+        metric_relabelings: List[MetricRelabeling] = None,
         module: str = None,
+        oauth2: Oauth2 = None,
         prober: Prober = None,
+        sample_limit: int = None,
         scrape_timeout: str = None,
+        target_limit: int = None,
         targets: Target = None,
+        tls_config: TLSConfig = None,
     ):
-        super().__init__(interval=interval, job_name=job_name, module=module, prober=prober, scrape_timeout=scrape_timeout, targets=targets)
+        super().__init__(
+            authorization=authorization,
+            basic_auth=basic_auth,
+            bearer_token_secret=bearer_token_secret,
+            interval=interval,
+            job_name=job_name,
+            label_limit=label_limit,
+            label_name_length_limit=label_name_length_limit,
+            label_value_length_limit=label_value_length_limit,
+            metric_relabelings=metric_relabelings,
+            module=module,
+            oauth2=oauth2,
+            prober=prober,
+            sample_limit=sample_limit,
+            scrape_timeout=scrape_timeout,
+            target_limit=target_limit,
+            targets=targets,
+            tls_config=tls_config,
+        )
 
 
 class Probe(KubernetesApiResource):
@@ -1645,75 +1780,49 @@ class Query(KubernetesObject):
         super().__init__(lookback_delta=lookback_delta, max_concurrency=max_concurrency, max_samples=max_samples, timeout=timeout)
 
 
-class RemoteReadTLSConfig(KubernetesObject):
-    __slots__ = ()
-
-    ca: CA
-    ca_file: str
-    cert: Cert
-    cert_file: str
-    insecure_skip_verify: bool
-    key_file: str
-    key_secret: core.SecretKeySelector
-    server_name: str
-
-    def __init__(
-        self,
-        ca: CA = None,
-        ca_file: str = None,
-        cert: Cert = None,
-        cert_file: str = None,
-        insecure_skip_verify: bool = None,
-        key_file: str = None,
-        key_secret: core.SecretKeySelector = None,
-        server_name: str = None,
-    ):
-        super().__init__(
-            ca=ca,
-            ca_file=ca_file,
-            cert=cert,
-            cert_file=cert_file,
-            insecure_skip_verify=insecure_skip_verify,
-            key_file=key_file,
-            key_secret=key_secret,
-            server_name=server_name,
-        )
-
-
 class RemoteRead(KubernetesObject):
     __slots__ = ()
 
     _required_ = ["url"]
 
+    authorization: Authorization2
     basic_auth: BasicAuth
     bearer_token: str
     bearer_token_file: str
+    headers: Dict[str, str]
     name: str
+    oauth2: Oauth2
     proxy_url: str
     read_recent: bool
     remote_timeout: str
     required_matchers: Dict[str, str]
-    tls_config: RemoteReadTLSConfig
+    tls_config: TLSConfig2
     url: str
 
     def __init__(
         self,
+        authorization: Authorization2 = None,
         basic_auth: BasicAuth = None,
         bearer_token: str = None,
         bearer_token_file: str = None,
+        headers: Dict[str, str] = None,
         name: str = None,
+        oauth2: Oauth2 = None,
         proxy_url: str = None,
         read_recent: bool = None,
         remote_timeout: str = None,
         required_matchers: Dict[str, str] = None,
-        tls_config: RemoteReadTLSConfig = None,
+        tls_config: TLSConfig2 = None,
         url: str = None,
     ):
         super().__init__(
+            authorization=authorization,
             basic_auth=basic_auth,
             bearer_token=bearer_token,
             bearer_token_file=bearer_token_file,
+            headers=headers,
             name=name,
+            oauth2=oauth2,
             proxy_url=proxy_url,
             read_recent=read_recent,
             remote_timeout=remote_timeout,
@@ -1734,6 +1843,7 @@ class QueueConfig(KubernetesObject):
     max_shards: int
     min_backoff: str
     min_shards: int
+    retry_on_rate_limit: bool
 
     def __init__(
         self,
@@ -1745,6 +1855,7 @@ class QueueConfig(KubernetesObject):
         max_shards: int = None,
         min_backoff: str = None,
         min_shards: int = None,
+        retry_on_rate_limit: bool = None,
     ):
         super().__init__(
             batch_send_deadline=batch_send_deadline,
@@ -1755,42 +1866,28 @@ class QueueConfig(KubernetesObject):
             max_shards=max_shards,
             min_backoff=min_backoff,
             min_shards=min_shards,
+            retry_on_rate_limit=retry_on_rate_limit,
         )
 
 
-class RemoteWriteTLSConfig(KubernetesObject):
+class Sigv4(KubernetesObject):
     __slots__ = ()
 
-    ca: CA
-    ca_file: str
-    cert: Cert
-    cert_file: str
-    insecure_skip_verify: bool
-    key_file: str
-    key_secret: core.SecretKeySelector
-    server_name: str
+    access_key: core.ConfigMapKeySelector
+    profile: str
+    region: str
+    role_arn: str
+    secret_key: core.SecretKeySelector
 
     def __init__(
         self,
-        ca: CA = None,
-        ca_file: str = None,
-        cert: Cert = None,
-        cert_file: str = None,
-        insecure_skip_verify: bool = None,
-        key_file: str = None,
-        key_secret: core.SecretKeySelector = None,
-        server_name: str = None,
+        access_key: core.ConfigMapKeySelector = None,
+        profile: str = None,
+        region: str = None,
+        role_arn: str = None,
+        secret_key: core.SecretKeySelector = None,
     ):
-        super().__init__(
-            ca=ca,
-            ca_file=ca_file,
-            cert=cert,
-            cert_file=cert_file,
-            insecure_skip_verify=insecure_skip_verify,
-            key_file=key_file,
-            key_secret=key_secret,
-            server_name=server_name,
-        )
+        super().__init__(access_key=access_key, profile=profile, region=region, role_arn=role_arn, secret_key=secret_key)
 
 
 class WriteRelabelConfig(KubernetesObject):
@@ -1830,41 +1927,56 @@ class RemoteWrite(KubernetesObject):
 
     _required_ = ["url"]
 
+    authorization: Authorization2
     basic_auth: BasicAuth
     bearer_token: str
     bearer_token_file: str
     headers: Dict[str, str]
+    metadata_config: MetadataConfig
     name: str
+    oauth2: Oauth2
     proxy_url: str
     queue_config: QueueConfig
     remote_timeout: str
-    tls_config: RemoteWriteTLSConfig
+    send_exemplars: bool
+    sigv4: Sigv4
+    tls_config: TLSConfig2
     url: str
     write_relabel_configs: List[WriteRelabelConfig]
 
     def __init__(
         self,
+        authorization: Authorization2 = None,
         basic_auth: BasicAuth = None,
         bearer_token: str = None,
         bearer_token_file: str = None,
         headers: Dict[str, str] = None,
+        metadata_config: MetadataConfig = None,
         name: str = None,
+        oauth2: Oauth2 = None,
         proxy_url: str = None,
         queue_config: QueueConfig = None,
         remote_timeout: str = None,
-        tls_config: RemoteWriteTLSConfig = None,
+        send_exemplars: bool = None,
+        sigv4: Sigv4 = None,
+        tls_config: TLSConfig2 = None,
         url: str = None,
         write_relabel_configs: List[WriteRelabelConfig] = None,
     ):
         super().__init__(
+            authorization=authorization,
             basic_auth=basic_auth,
             bearer_token=bearer_token,
             bearer_token_file=bearer_token_file,
             headers=headers,
+            metadata_config=metadata_config,
             name=name,
+            oauth2=oauth2,
             proxy_url=proxy_url,
             queue_config=queue_config,
             remote_timeout=remote_timeout,
+            send_exemplars=send_exemplars,
+            sigv4=sigv4,
             tls_config=tls_config,
             url=url,
             write_relabel_configs=write_relabel_configs,
@@ -1880,6 +1992,37 @@ class PrometheusSpecRule(KubernetesObject):
         super().__init__(alert=alert)
 
 
+class VolumeMount(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["mount_path", "name"]
+
+    mount_path: str
+    mount_propagation: str
+    name: str
+    read_only: bool
+    sub_path: str
+    sub_path_expr: str
+
+    def __init__(
+        self,
+        mount_path: str = None,
+        mount_propagation: str = None,
+        name: str = None,
+        read_only: bool = None,
+        sub_path: str = None,
+        sub_path_expr: str = None,
+    ):
+        super().__init__(
+            mount_path=mount_path,
+            mount_propagation=mount_propagation,
+            name=name,
+            read_only=read_only,
+            sub_path=sub_path,
+            sub_path_expr=sub_path_expr,
+        )
+
+
 class Thano(KubernetesObject):
     __slots__ = ()
 
@@ -1892,12 +2035,14 @@ class Thano(KubernetesObject):
     min_time: str
     object_storage_config: core.ConfigMapKeySelector
     object_storage_config_file: str
+    ready_timeout: str
     resources: core.ResourceRequirements
     sha: str
     tag: str
     tracing_config: core.ConfigMapKeySelector
     tracing_config_file: str
     version: str
+    volume_mounts: List[VolumeMount]
 
     def __init__(
         self,
@@ -1910,12 +2055,14 @@ class Thano(KubernetesObject):
         min_time: str = None,
         object_storage_config: core.ConfigMapKeySelector = None,
         object_storage_config_file: str = None,
+        ready_timeout: str = None,
         resources: core.ResourceRequirements = None,
         sha: str = None,
         tag: str = None,
         tracing_config: core.ConfigMapKeySelector = None,
         tracing_config_file: str = None,
         version: str = None,
+        volume_mounts: List[VolumeMount] = None,
     ):
         super().__init__(
             base_image=base_image,
@@ -1927,12 +2074,58 @@ class Thano(KubernetesObject):
             min_time=min_time,
             object_storage_config=object_storage_config,
             object_storage_config_file=object_storage_config_file,
+            ready_timeout=ready_timeout,
             resources=resources,
             sha=sha,
             tag=tag,
             tracing_config=tracing_config,
             tracing_config_file=tracing_config_file,
             version=version,
+            volume_mounts=volume_mounts,
+        )
+
+
+class WEBTLSConfig(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["cert", "key_secret"]
+
+    _field_names_ = {
+        "client_ca": "client_ca",
+    }
+
+    cert: Cert
+    cipher_suites: List[str]
+    client_auth_type: str
+    client_ca: CA
+    curve_preferences: List[str]
+    key_secret: core.SecretKeySelector
+    max_version: str
+    min_version: str
+    prefer_server_cipher_suites: bool
+
+    def __init__(
+        self,
+        cert: Cert = None,
+        cipher_suites: List[str] = None,
+        client_auth_type: str = None,
+        client_ca: CA = None,
+        curve_preferences: List[str] = None,
+        key_secret: core.SecretKeySelector = None,
+        max_version: str = None,
+        min_version: str = None,
+        prefer_server_cipher_suites: bool = None,
+    ):
+        super().__init__(
+            cert=cert,
+            cipher_suites=cipher_suites,
+            client_auth_type=client_auth_type,
+            client_ca=client_ca,
+            curve_preferences=curve_preferences,
+            key_secret=key_secret,
+            max_version=max_version,
+            min_version=min_version,
+            prefer_server_cipher_suites=prefer_server_cipher_suites,
         )
 
 
@@ -1940,9 +2133,10 @@ class WEB(KubernetesObject):
     __slots__ = ()
 
     page_title: str
+    tls_config: WEBTLSConfig
 
-    def __init__(self, page_title: str = None):
-        super().__init__(page_title=page_title)
+    def __init__(self, page_title: str = None, tls_config: WEBTLSConfig = None):
+        super().__init__(page_title=page_title, tls_config=tls_config)
 
 
 class PrometheusSpec(KubernetesObject):
@@ -1970,6 +2164,11 @@ class PrometheusSpec(KubernetesObject):
     containers: List[core.Container]
     disable_compaction: bool
     enable_admin_api: bool
+    enable_features: List[str]
+    enforced_body_size_limit: str
+    enforced_label_limit: int
+    enforced_label_name_length_limit: int
+    enforced_label_value_length_limit: int
     enforced_namespace_label: str
     enforced_sample_limit: int
     enforced_target_limit: int
@@ -1983,6 +2182,7 @@ class PrometheusSpec(KubernetesObject):
     listen_local: bool
     log_format: str
     log_level: str
+    min_ready_seconds: int
     node_selector: Dict[str, str]
     override_honor_labels: bool
     override_honor_timestamps: bool
@@ -2044,6 +2244,11 @@ class PrometheusSpec(KubernetesObject):
         containers: List[core.Container] = None,
         disable_compaction: bool = None,
         enable_admin_api: bool = None,
+        enable_features: List[str] = None,
+        enforced_body_size_limit: str = None,
+        enforced_label_limit: int = None,
+        enforced_label_name_length_limit: int = None,
+        enforced_label_value_length_limit: int = None,
         enforced_namespace_label: str = None,
         enforced_sample_limit: int = None,
         enforced_target_limit: int = None,
@@ -2057,6 +2262,7 @@ class PrometheusSpec(KubernetesObject):
         listen_local: bool = None,
         log_format: str = None,
         log_level: str = None,
+        min_ready_seconds: int = None,
         node_selector: Dict[str, str] = None,
         override_honor_labels: bool = None,
         override_honor_timestamps: bool = None,
@@ -2117,6 +2323,11 @@ class PrometheusSpec(KubernetesObject):
             containers=containers,
             disable_compaction=disable_compaction,
             enable_admin_api=enable_admin_api,
+            enable_features=enable_features,
+            enforced_body_size_limit=enforced_body_size_limit,
+            enforced_label_limit=enforced_label_limit,
+            enforced_label_name_length_limit=enforced_label_name_length_limit,
+            enforced_label_value_length_limit=enforced_label_value_length_limit,
             enforced_namespace_label=enforced_namespace_label,
             enforced_sample_limit=enforced_sample_limit,
             enforced_target_limit=enforced_target_limit,
@@ -2130,6 +2341,7 @@ class PrometheusSpec(KubernetesObject):
             listen_local=listen_local,
             log_format=log_format,
             log_level=log_level,
+            min_ready_seconds=min_ready_seconds,
             node_selector=node_selector,
             override_honor_labels=override_honor_labels,
             override_honor_timestamps=override_honor_timestamps,
@@ -2226,6 +2438,9 @@ class ServiceMonitorSpec(KubernetesObject):
 
     endpoints: List[Endpoint]
     job_label: str
+    label_limit: int
+    label_name_length_limit: int
+    label_value_length_limit: int
     namespace_selector: NamespaceSelector
     pod_target_labels: List[str]
     sample_limit: int
@@ -2237,6 +2452,9 @@ class ServiceMonitorSpec(KubernetesObject):
         self,
         endpoints: List[Endpoint] = None,
         job_label: str = None,
+        label_limit: int = None,
+        label_name_length_limit: int = None,
+        label_value_length_limit: int = None,
         namespace_selector: NamespaceSelector = None,
         pod_target_labels: List[str] = None,
         sample_limit: int = None,
@@ -2247,6 +2465,9 @@ class ServiceMonitorSpec(KubernetesObject):
         super().__init__(
             endpoints=endpoints,
             job_label=job_label,
+            label_limit=label_limit,
+            label_name_length_limit=label_name_length_limit,
+            label_value_length_limit=label_value_length_limit,
             namespace_selector=namespace_selector,
             pod_target_labels=pod_target_labels,
             sample_limit=sample_limit,
@@ -2278,6 +2499,8 @@ class ThanosRulerSpec(KubernetesObject):
     affinity: core.Affinity
     alert_drop_labels: List[str]
     alert_query_url: str
+    alert_relabel_config_file: str
+    alert_relabel_configs: core.ConfigMapKeySelector
     alertmanagers_config: core.ConfigMapKeySelector
     alertmanagers_url: List[str]
     containers: List[core.Container]
@@ -2292,6 +2515,7 @@ class ThanosRulerSpec(KubernetesObject):
     listen_local: bool
     log_format: str
     log_level: str
+    min_ready_seconds: int
     node_selector: Dict[str, str]
     object_storage_config: core.ConfigMapKeySelector
     object_storage_config_file: str
@@ -2321,6 +2545,8 @@ class ThanosRulerSpec(KubernetesObject):
         affinity: core.Affinity = None,
         alert_drop_labels: List[str] = None,
         alert_query_url: str = None,
+        alert_relabel_config_file: str = None,
+        alert_relabel_configs: core.ConfigMapKeySelector = None,
         alertmanagers_config: core.ConfigMapKeySelector = None,
         alertmanagers_url: List[str] = None,
         containers: List[core.Container] = None,
@@ -2335,6 +2561,7 @@ class ThanosRulerSpec(KubernetesObject):
         listen_local: bool = None,
         log_format: str = None,
         log_level: str = None,
+        min_ready_seconds: int = None,
         node_selector: Dict[str, str] = None,
         object_storage_config: core.ConfigMapKeySelector = None,
         object_storage_config_file: str = None,
@@ -2363,6 +2590,8 @@ class ThanosRulerSpec(KubernetesObject):
             affinity=affinity,
             alert_drop_labels=alert_drop_labels,
             alert_query_url=alert_query_url,
+            alert_relabel_config_file=alert_relabel_config_file,
+            alert_relabel_configs=alert_relabel_configs,
             alertmanagers_config=alertmanagers_config,
             alertmanagers_url=alertmanagers_url,
             containers=containers,
@@ -2377,6 +2606,7 @@ class ThanosRulerSpec(KubernetesObject):
             listen_local=listen_local,
             log_format=log_format,
             log_level=log_level,
+            min_ready_seconds=min_ready_seconds,
             node_selector=node_selector,
             object_storage_config=object_storage_config,
             object_storage_config_file=object_storage_config_file,

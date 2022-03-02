@@ -119,6 +119,20 @@ class ExternalDocumentation(KubernetesObject):
         super().__init__(description=description, url=url)
 
 
+class ValidationRule(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "apiextensions.k8s.io/v1"
+
+    _required_ = ["rule"]
+
+    message: str
+    rule: str
+
+    def __init__(self, message: str = None, rule: str = None):
+        super().__init__(message=message, rule=rule)
+
+
 class JSONSchemaProps(KubernetesObject):
     __slots__ = ()
 
@@ -133,6 +147,7 @@ class JSONSchemaProps(KubernetesObject):
         "x_kubernetes_list_type": "x-kubernetes-list-type",
         "x_kubernetes_map_type": "x-kubernetes-map-type",
         "x_kubernetes_preserve_unknown_fields": "x-kubernetes-preserve-unknown-fields",
+        "x_kubernetes_validations": "x-kubernetes-validations",
     }
     _revfield_names_ = {
         "$ref": "ref_",
@@ -144,6 +159,7 @@ class JSONSchemaProps(KubernetesObject):
         "x-kubernetes-list-type": "x_kubernetes_list_type",
         "x-kubernetes-map-type": "x_kubernetes_map_type",
         "x-kubernetes-preserve-unknown-fields": "x_kubernetes_preserve_unknown_fields",
+        "x-kubernetes-validations": "x_kubernetes_validations",
     }
 
     ref_: str
@@ -189,6 +205,7 @@ class JSONSchemaProps(KubernetesObject):
     x_kubernetes_list_type: str
     x_kubernetes_map_type: str
     x_kubernetes_preserve_unknown_fields: bool
+    x_kubernetes_validations: List[ValidationRule]
 
     def __init__(
         self,
@@ -235,6 +252,7 @@ class JSONSchemaProps(KubernetesObject):
         x_kubernetes_list_type: str = None,
         x_kubernetes_map_type: str = None,
         x_kubernetes_preserve_unknown_fields: bool = None,
+        x_kubernetes_validations: List[ValidationRule] = None,
     ):
         super().__init__(
             ref_=ref_,
@@ -280,6 +298,7 @@ class JSONSchemaProps(KubernetesObject):
             x_kubernetes_list_type=x_kubernetes_list_type,
             x_kubernetes_map_type=x_kubernetes_map_type,
             x_kubernetes_preserve_unknown_fields=x_kubernetes_preserve_unknown_fields,
+            x_kubernetes_validations=x_kubernetes_validations,
         )
 
 

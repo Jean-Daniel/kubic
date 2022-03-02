@@ -1,0 +1,165 @@
+patches:
+  BasicAuth:
+    username: "io.k8s.api.core.v1.SecretKeySelector"
+
+  VMAlertmanagerSpec:
+    imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
+    volumes: "io.k8s.api.core.v1.Volume"
+    volumeMounts: "io.k8s.api.core.v1.VolumeMount"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    affinity: "io.k8s.api.core.v1.Affinity"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+    securityContext: "io.k8s.api.core.v1.PodSecurityContext"
+    containers: "io.k8s.api.core.v1.Container"
+    initContainers: "io.k8s.api.core.v1.Container"
+    topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+    storage:
+      type_name: "StorageSpec"
+    livenessProbe: "io.k8s.api.core.v1.Probe"
+    readinessProbe: "io.k8s.api.core.v1.Probe"
+    startupProbe: "io.k8s.api.core.v1.Probe"
+
+  ServiceSpec:
+    spec: "io.k8s.api.core.v1.ServiceSpec"
+
+  StorageSpec:
+    emptyDir: "io.k8s.api.core.v1.EmptyDirVolumeSource"
+    volumeClaimTemplate:
+      type_name: EmbeddedPersistentVolumeClaim
+
+  EmbeddedPersistentVolumeClaim:
+    spec: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
+    status:
+
+  VMAgentSpec:
+    aPIServerConfig:
+      snake_name: api_server_config
+    imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
+    volumes: "io.k8s.api.core.v1.Volume"
+    volumeMounts: "io.k8s.api.core.v1.VolumeMount"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    affinity: "io.k8s.api.core.v1.Affinity"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+    securityContext: "io.k8s.api.core.v1.PodSecurityContext"
+    hostAliases: "io.k8s.api.core.v1.HostAlias"
+    containers: "io.k8s.api.core.v1.Container"
+    initContainers: "io.k8s.api.core.v1.Container"
+    topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+    additionalScrapeConfigs: "io.k8s.api.core.v1.SecretKeySelector"
+    extraEnvs: "io.k8s.api.core.v1.EnvVar"
+    rollingUpdate: "io.k8s.api.apps.v1.RollingUpdateDeployment"
+    livenessProbe: "io.k8s.api.core.v1.Probe"
+    readinessProbe: "io.k8s.api.core.v1.Probe"
+    startupProbe: "io.k8s.api.core.v1.Probe"
+    inlineRelabelConfig: "RelabelConfig"
+
+  VMAgentSpecRemoteWrite:
+    inlineUrlRelabelConfig: "RelabelConfig"
+
+  VMAlertSpec:
+    imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
+    volumes: "io.k8s.api.core.v1.Volume"
+    volumeMounts: "io.k8s.api.core.v1.VolumeMount"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    affinity: "io.k8s.api.core.v1.Affinity"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+    securityContext: "io.k8s.api.core.v1.PodSecurityContext"
+    containers: "io.k8s.api.core.v1.Container"
+    initContainers: "io.k8s.api.core.v1.Container"
+    topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+    extraEnvs: "io.k8s.api.core.v1.EnvVar"
+    livenessProbe: "io.k8s.api.core.v1.Probe"
+    readinessProbe: "io.k8s.api.core.v1.Probe"
+    startupProbe: "io.k8s.api.core.v1.Probe"
+
+  VMSingleSpec:
+    imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
+    storage: "io.k8s.api.core.v1.PersistentVolumeClaimSpec"
+    volumes: "io.k8s.api.core.v1.Volume"
+    volumeMounts: "io.k8s.api.core.v1.VolumeMount"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    affinity: "io.k8s.api.core.v1.Affinity"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+    securityContext: "io.k8s.api.core.v1.PodSecurityContext"
+    hostAliases: "io.k8s.api.core.v1.HostAlias"
+    containers: "io.k8s.api.core.v1.Container"
+    initContainers: "io.k8s.api.core.v1.Container"
+    topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+    extraEnvs: "io.k8s.api.core.v1.EnvVar"
+    livenessProbe: "io.k8s.api.core.v1.Probe"
+    readinessProbe: "io.k8s.api.core.v1.Probe"
+    startupProbe: "io.k8s.api.core.v1.Probe"
+
+  VMClusterSpec:
+    imagePullSecrets: "io.k8s.api.core.v1.LocalObjectReference"
+    vminsert: { type_name: VMInsert }
+    vmselect: { type_name: VMSelect }
+    vmstorage: { type_name: VMStorage }
+
+  VMInsert:
+    volumes: "io.k8s.api.core.v1.Volume"
+    volumeMounts: "io.k8s.api.core.v1.VolumeMount"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    affinity: "io.k8s.api.core.v1.Affinity"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+    securityContext: "io.k8s.api.core.v1.PodSecurityContext"
+    containers: "io.k8s.api.core.v1.Container"
+    initContainers: "io.k8s.api.core.v1.Container"
+    topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+    extraEnvs: "io.k8s.api.core.v1.EnvVar"
+    livenessProbe: "io.k8s.api.core.v1.Probe"
+    readinessProbe: "io.k8s.api.core.v1.Probe"
+    startupProbe: "io.k8s.api.core.v1.Probe"
+
+  VMSelect:
+    volumes: "io.k8s.api.core.v1.Volume"
+    volumeMounts: "io.k8s.api.core.v1.VolumeMount"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    affinity: "io.k8s.api.core.v1.Affinity"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+    securityContext: "io.k8s.api.core.v1.PodSecurityContext"
+    containers: "io.k8s.api.core.v1.Container"
+    initContainers: "io.k8s.api.core.v1.Container"
+    topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+    persistentVolume: "StorageSpec"
+    storage: "StorageSpec"
+    extraEnvs: "io.k8s.api.core.v1.EnvVar"
+    livenessProbe: "io.k8s.api.core.v1.Probe"
+    readinessProbe: "io.k8s.api.core.v1.Probe"
+    startupProbe: "io.k8s.api.core.v1.Probe"
+
+  VMStorage:
+    volumes: "io.k8s.api.core.v1.Volume"
+    volumeMounts: "io.k8s.api.core.v1.VolumeMount"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    affinity: "io.k8s.api.core.v1.Affinity"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+    securityContext: "io.k8s.api.core.v1.PodSecurityContext"
+    containers: "io.k8s.api.core.v1.Container"
+    initContainers: "io.k8s.api.core.v1.Container"
+    topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+    storage: "StorageSpec"
+    extraEnvs: "io.k8s.api.core.v1.EnvVar"
+    livenessProbe: "io.k8s.api.core.v1.Probe"
+    readinessProbe: "io.k8s.api.core.v1.Probe"
+    startupProbe: "io.k8s.api.core.v1.Probe"
+
+  RelabelConfig:
+    source_labels:
+    target_label:
+
+  VMNodeScrapeSpec:
+    metricRelabelConfigs: RelabelConfig
+    # relabelConfigs:
+  VMPodScrapeSpec:
+    podMetricsEndpoints: Endpoint
+
+  Endpoint:
+    metricRelabelConfigs: RelabelConfig
+    # relabel_configs: List[EndpointRelabelConfig]
+  TargetEndpoint:
+    metricRelabelConfigs: RelabelConfig
+  Ingress:
+    relabelingConfigs: RelabelConfig
+  StaticConfig:
+    relabelingConfigs: RelabelConfig

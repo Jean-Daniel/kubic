@@ -1,0 +1,51 @@
+patches:
+  Preference:
+    matchExpressions: "io.k8s.api.core.v1.NodeSelectorRequirement"
+  NodeSelectorTerm:
+    matchExpressions: "io.k8s.api.core.v1.NodeSelectorRequirement"
+  LabelSelector:
+    matchExpressions: "io.k8s.api.core.v1.NodeSelectorRequirement"
+  PodTemplateSpec:
+    affinity: "io.k8s.api.core.v1.Affinity"
+    tolerations: "io.k8s.api.core.v1.Toleration"
+  ClusterIssuer:
+    spec: IssuerSpec
+  IssuerSpecAcme:
+    privateKeySecretRef: SecretRef
+  ExternalAccountBinding:
+    keySecretRef: SecretRef
+  Cloud:
+    apiTokenSecretRef: SecretRef
+  Route53:
+    secretAccessKeySecretRef: SecretRef
+  CertificateRequest:
+    status: { type_name: CertificateRequestStatus }
+  CertificateRequestStatus:
+    conditions: { type_name: CertificateRequestStatusCondition }
+  Dns01:
+    rfc2136: { type_name: RFC2136 }
+  RFC2136:
+    tsigSecretSecretRef: SecretRef
+  Digitalocean:
+    tokenSecretRef: SecretRef
+  Cloudflare:
+    apiKeySecretRef: SecretRef
+    apiTokenSecretRef: SecretRef
+  CloudDNS:
+    serviceAccountSecretRef: SecretRef
+  Keystore:
+    pkcs12: { type_name: PKCS12 }
+  PKCS12:
+    passwordSecretRef: SecretRef
+  JKS:
+    passwordSecretRef: SecretRef
+  AzureDNS:
+    clientSecretSecretRef: SecretRef
+  Auth:
+    tokenSecretRef: SecretRef
+  Akamai:
+    accessTokenSecretRef: SecretRef
+    clientSecretSecretRef: SecretRef
+    clientTokenSecretRef: SecretRef
+  AcmeDNS:
+    accountSecretRef: SecretRef

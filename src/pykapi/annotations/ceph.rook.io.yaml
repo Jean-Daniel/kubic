@@ -1,0 +1,24 @@
+module: rook.io
+
+patches:
+  CephClusterSpec:
+    resources: { type: object, additionalProperties: { $ref: "io.k8s.api.core.v1.ResourceRequirements" } }
+  CephClusterSpecMON:
+    volumeClaimTemplate: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+  CephClusterSpecHealthCheck:
+    livenessProbe: { type: object, additionalProperties: { $ref: "io.k8s.api.core.v1.Probe" } }
+  CephObjectStoreSpecHealthCheck:
+    livenessProbe: "io.k8s.api.core.v1.Probe"
+  CephFilesystemMirrorSpec:
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+  CephFilesystemSpec:
+    dataPools: CephBlockPoolSpec
+    metadataPool: CephBlockPoolSpec
+  CephObjectStoreSpec:
+    dataPool: CephBlockPoolSpec
+    metadataPool: CephBlockPoolSpec
+  CephObjectZoneSpec:
+    dataPool: CephBlockPoolSpec
+    metadataPool: CephBlockPoolSpec
+  CephRBDMirrorSpec:
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
