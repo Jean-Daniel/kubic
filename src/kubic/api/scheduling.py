@@ -1,4 +1,4 @@
-from . import KubernetesApiResource
+from kubic import KubernetesApiResource
 from . import meta
 
 

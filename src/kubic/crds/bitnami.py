@@ -1,7 +1,7 @@
 from typing import Dict
 
-from .. import KubernetesApiResource, KubernetesObject
-from .. import core, meta
+from kubic import KubernetesApiResource, KubernetesObject
+from kubic.api import core, meta
 
 
 class Template(KubernetesObject):

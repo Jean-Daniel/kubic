@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from . import KubernetesObject
+from kubic import KubernetesObject
 
 
 class LabelSelectorRequirement(KubernetesObject):

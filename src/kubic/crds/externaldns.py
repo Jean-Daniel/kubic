@@ -1,7 +1,7 @@
 from typing import Dict, List
 
-from .. import KubernetesApiResource, KubernetesObject
-from .. import meta
+from kubic import KubernetesApiResource, KubernetesObject
+from kubic.api import meta
 
 
 class ProviderSpecific(KubernetesObject):

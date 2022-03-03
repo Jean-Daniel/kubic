@@ -1,7 +1,7 @@
 from typing import Dict, List
 
-from .. import KubernetesApiResource, KubernetesObject
-from .. import core, meta, networking
+from kubic import KubernetesApiResource, KubernetesObject
+from kubic.api import core, meta, networking
 
 
 class AWS(KubernetesObject):

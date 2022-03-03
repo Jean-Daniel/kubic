@@ -3,9 +3,10 @@ from collections.abc import MutableSequence
 from typing import List, Union
 
 from kubic import KubernetesObject, KubernetesApiResource
-from kubic.apps import Deployment
-from kubic.meta import ObjectMeta
-from kubic.reader import create_api_resource
+from kubic import crds
+from kubic.api.apps import Deployment
+from kubic.api.meta import ObjectMeta
+from kubic.reader import create_api_resource, register_modules
 
 
 class LeaveType(KubernetesObject):
@@ -167,6 +168,10 @@ class ResourceTest(unittest.TestCase):
 
 
 class LoaderTest(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        register_modules(crds.__spec__)
 
     def test_create(self):
         spec = {

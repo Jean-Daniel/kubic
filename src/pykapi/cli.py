@@ -227,7 +227,6 @@ def main():
 
     # API Command
     api = subparsers.add_parser("api")
-    api.add_argument("--api_module", type=str, default="kubic")
     group = api.add_mutually_exclusive_group()
     group.add_argument("--version", type=str, default="1.23")
     group.add_argument("-s", "--schema", type=pathlib.Path)
@@ -235,7 +234,7 @@ def main():
     api.add_argument("-o", "--output", type=str, default="-")
 
     crd = subparsers.add_parser("crd")
-    crd.add_argument("--api_module", type=str, default="..")
+    crd.add_argument("--api_module", type=str, default="kubic.api")
     crd.add_argument("--annotations", type=str, help="annotations directory")
     crd.add_argument("crds", nargs="*", type=str)
     crd.add_argument("-o", "--output", type=str, default="-")

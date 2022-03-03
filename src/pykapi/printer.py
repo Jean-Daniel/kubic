@@ -42,7 +42,7 @@ class TypePrinter:
             stream.write("\n\n")
 
         if group.base_types:
-            stream.write(f"from {self.api_module} import ")
+            stream.write(f"from kubic import ")
             stream.write(", ".join(sorted(group.base_types)))
             stream.write("\n")
 
