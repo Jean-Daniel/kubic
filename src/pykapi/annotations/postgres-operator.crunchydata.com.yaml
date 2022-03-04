@@ -20,6 +20,10 @@ patches:
     affinity: "io.k8s.api.core.v1.Affinity"
     resources: "io.k8s.api.core.v1.ResourceRequirements"
     tolerations: "io.k8s.api.core.v1.Toleration"
+  DataSourcePgbackrest:
+    affinity: "io.k8s.api.core.v1.Affinity"
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+    tolerations: "io.k8s.api.core.v1.Toleration"
   Instance:
     affinity: "io.k8s.api.core.v1.Affinity"
     resources: "io.k8s.api.core.v1.ResourceRequirements"
