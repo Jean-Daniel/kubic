@@ -101,7 +101,7 @@ class ApiGroup:
 
     def _rename(self, item):
         item.fqn = QualifiedName(item.fullname, item.group, item.version)
-        assert item.name not in self._types
+        assert item.name not in self._types, item.name
         self._types[item.name] = item
 
     def rename_duplicated(self, items: List[AnonymousType]):
@@ -120,12 +120,16 @@ class ApiGroup:
         if len(types) == 1:
             # no conflict, add type
             base = types[0][0]
-            assert base.name not in self._types
-            self._types[base.name] = base
+            if base.name in self._types:
+                # a base type with this name already exists
+                self._rename(base)
+            else:
+                self._types[base.name] = base
         else:
             types.sort(key=lambda i: len(i), reverse=True)
             for idx, ty in enumerate(types):
-                if len(ty) > 1:
+                # generate indexed names if names do not match.
+                if len(ty) > 1 and any(t.fullname != ty[0].fullname for t in ty):
                     base = ty[0]
                     # For the type with most matching types -> use the original name
                     if idx > 0 or base.name in self._types:
@@ -136,6 +140,8 @@ class ApiGroup:
                     self._types[base.name] = base
                 else:
                     self._rename(ty[0])
+                    for t in ty[1:]:
+                        t.fqn = ty[0].fqn
 
     def finalize(self):
         for name, items in self._anonymous.items():
@@ -145,7 +151,6 @@ class ApiGroup:
                     # a base type with this name already exists
                     self._rename(item)
                 else:
-                    assert item.name not in self._types
                     self._types[item.name] = item
                 continue
 
