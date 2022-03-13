@@ -41,7 +41,7 @@ class Bucket(KubernetesObject):
         super().__init__(disabled=disabled, interval=interval, timeout=timeout)
 
 
-class Capabilitie(KubernetesObject):
+class Capability(KubernetesObject):
     __slots__ = ()
 
     bucket: str
@@ -1289,13 +1289,13 @@ class CephObjectStoreUserSpecQuota(KubernetesObject):
 class CephObjectStoreUserSpec(KubernetesObject):
     __slots__ = ()
 
-    capabilities: Capabilitie
+    capabilities: Capability
     display_name: str
     quotas: CephObjectStoreUserSpecQuota
     store: str
 
     def __init__(
-        self, capabilities: Capabilitie = None, display_name: str = None, quotas: CephObjectStoreUserSpecQuota = None, store: str = None
+        self, capabilities: Capability = None, display_name: str = None, quotas: CephObjectStoreUserSpecQuota = None, store: str = None
     ):
         super().__init__(capabilities=capabilities, display_name=display_name, quotas=quotas, store=store)
 

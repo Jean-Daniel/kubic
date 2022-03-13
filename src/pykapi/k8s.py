@@ -157,6 +157,8 @@ def type_name_from_property_name(name: str):
         # just in case
         if len(name) <= 3:
             return name.upper()
+        if name.endswith("ie"):  # policies, entries, …
+            name = name[:-2] + "y"
 
     if "-" in name:
         parts = name.split("-")
@@ -164,5 +166,5 @@ def type_name_from_property_name(name: str):
 
     for ac in ACRONYMES:
         if name.startswith(ac):
-            return ac.upper() + name[len(ac) :]
+            return ac.upper() + name[len(ac):]
     return name[0].upper() + name[1:]
