@@ -735,7 +735,7 @@ class TCPSocketAction(KubernetesObject):
         super().__init__(host=host, port=port)
 
 
-class LifecycleHandler(KubernetesObject):
+class Handler(KubernetesObject):
     __slots__ = ()
 
     _api_version_ = "v1"
@@ -753,25 +753,11 @@ class Lifecycle(KubernetesObject):
 
     _api_version_ = "v1"
 
-    post_start: LifecycleHandler
-    pre_stop: LifecycleHandler
+    post_start: Handler
+    pre_stop: Handler
 
-    def __init__(self, post_start: LifecycleHandler = None, pre_stop: LifecycleHandler = None):
+    def __init__(self, post_start: Handler = None, pre_stop: Handler = None):
         super().__init__(post_start=post_start, pre_stop=pre_stop)
-
-
-class GRPCAction(KubernetesObject):
-    __slots__ = ()
-
-    _api_version_ = "v1"
-
-    _required_ = ["port"]
-
-    port: int
-    service: str
-
-    def __init__(self, port: int = None, service: str = None):
-        super().__init__(port=port, service=service)
 
 
 class Probe(KubernetesObject):
@@ -781,7 +767,6 @@ class Probe(KubernetesObject):
 
     exec: ExecAction
     failure_threshold: int
-    grpc: GRPCAction
     http_get: HTTPGetAction
     initial_delay_seconds: int
     period_seconds: int
@@ -794,7 +779,6 @@ class Probe(KubernetesObject):
         self,
         exec: ExecAction = None,
         failure_threshold: int = None,
-        grpc: GRPCAction = None,
         http_get: HTTPGetAction = None,
         initial_delay_seconds: int = None,
         period_seconds: int = None,
@@ -806,7 +790,6 @@ class Probe(KubernetesObject):
         super().__init__(
             exec=exec,
             failure_threshold=failure_threshold,
-            grpc=grpc,
             http_get=http_get,
             initial_delay_seconds=initial_delay_seconds,
             period_seconds=period_seconds,
@@ -1131,6 +1114,101 @@ class EmptyDirVolumeSource(KubernetesObject):
 
     def __init__(self, medium: str = None, size_limit: Quantity = None):
         super().__init__(medium=medium, size_limit=size_limit)
+
+
+class ObjectReference(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    api_version: str
+    field_path: str
+    kind: str
+    name: str
+    namespace: str
+    resource_version: str
+    uid: str
+
+    def __init__(
+        self,
+        api_version: str = None,
+        field_path: str = None,
+        kind: str = None,
+        name: str = None,
+        namespace: str = None,
+        resource_version: str = None,
+        uid: str = None,
+    ):
+        super().__init__(
+            api_version=api_version,
+            field_path=field_path,
+            kind=kind,
+            name=name,
+            namespace=namespace,
+            resource_version=resource_version,
+            uid=uid,
+        )
+
+
+class EndpointAddress(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["ip"]
+
+    hostname: str
+    ip: str
+    node_name: str
+    target_ref: ObjectReference
+
+    def __init__(self, hostname: str = None, ip: str = None, node_name: str = None, target_ref: ObjectReference = None):
+        super().__init__(hostname=hostname, ip=ip, node_name=node_name, target_ref=target_ref)
+
+
+class EndpointPort(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["port"]
+
+    app_protocol: str
+    name: str
+    port: int
+    protocol: str
+
+    def __init__(self, app_protocol: str = None, name: str = None, port: int = None, protocol: str = None):
+        super().__init__(app_protocol=app_protocol, name=name, port=port, protocol=protocol)
+
+
+class EndpointSubset(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    addresses: List[EndpointAddress]
+    not_ready_addresses: List[EndpointAddress]
+    ports: List[EndpointPort]
+
+    def __init__(
+        self, addresses: List[EndpointAddress] = None, not_ready_addresses: List[EndpointAddress] = None, ports: List[EndpointPort] = None
+    ):
+        super().__init__(addresses=addresses, not_ready_addresses=not_ready_addresses, ports=ports)
+
+
+class Endpoints(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+    _kind_ = "Endpoints"
+    _scope_ = "namespace"
+
+    metadata: meta.ObjectMeta
+    subsets: List[EndpointSubset]
+
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, subsets: List[EndpointSubset] = None):
+        super().__init__("v1", "Endpoints", name, namespace, metadata=metadata, subsets=subsets)
 
 
 class EphemeralContainer(KubernetesObject):
@@ -1626,40 +1704,6 @@ class Namespace(KubernetesApiResource):
         super().__init__("v1", "Namespace", name, "", metadata=metadata, spec=spec)
 
 
-class ObjectReference(KubernetesObject):
-    __slots__ = ()
-
-    _api_version_ = "v1"
-
-    api_version: str
-    field_path: str
-    kind: str
-    name: str
-    namespace: str
-    resource_version: str
-    uid: str
-
-    def __init__(
-        self,
-        api_version: str = None,
-        field_path: str = None,
-        kind: str = None,
-        name: str = None,
-        namespace: str = None,
-        resource_version: str = None,
-        uid: str = None,
-    ):
-        super().__init__(
-            api_version=api_version,
-            field_path=field_path,
-            kind=kind,
-            name=name,
-            namespace=namespace,
-            resource_version=resource_version,
-            uid=uid,
-        )
-
-
 class VolumeNodeAffinity(KubernetesObject):
     __slots__ = ()
 
@@ -2042,19 +2086,6 @@ class PodDNSConfig(KubernetesObject):
 
     def __init__(self, nameservers: List[str] = None, options: List[PodDNSConfigOption] = None, searches: List[str] = None):
         super().__init__(nameservers=nameservers, options=options, searches=searches)
-
-
-class PodOS(KubernetesObject):
-    __slots__ = ()
-
-    _api_version_ = "v1"
-
-    _required_ = ["name"]
-
-    name: str
-
-    def __init__(self, name: str = None):
-        super().__init__(name=name)
 
 
 class PodReadinessGate(KubernetesObject):
@@ -2498,7 +2529,6 @@ class PodSpec(KubernetesObject):
     init_containers: List[Container]
     node_name: str
     node_selector: Dict[str, str]
-    os: PodOS
     overhead: Dict[str, Quantity]
     preemption_policy: str
     priority: int
@@ -2537,7 +2567,6 @@ class PodSpec(KubernetesObject):
         init_containers: List[Container] = None,
         node_name: str = None,
         node_selector: Dict[str, str] = None,
-        os: PodOS = None,
         overhead: Dict[str, Quantity] = None,
         preemption_policy: str = None,
         priority: int = None,
@@ -2575,7 +2604,6 @@ class PodSpec(KubernetesObject):
             init_containers=init_containers,
             node_name=node_name,
             node_selector=node_selector,
-            os=os,
             overhead=overhead,
             preemption_policy=preemption_policy,
             priority=priority,

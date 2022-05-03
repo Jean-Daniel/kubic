@@ -75,6 +75,8 @@ def import_k8s_api(args):
             "MutatingWebhookConfiguration",
             "ValidatingWebhookConfiguration",
             "Service",
+            "Endpoints",
+            "EndpointSlice",
             "ServiceAccount",
             "Ingress",
             "IngressClass",
@@ -227,8 +229,8 @@ def main():
 
     # API Command
     api = subparsers.add_parser("api")
-    group = api.add_mutually_exclusive_group()
-    group.add_argument("--version", type=str, default="1.23")
+    group = api.add_mutually_exclusive_group(required=True)
+    group.add_argument("--version", type=str, help="Kubernetes release version (like 1.23)")
     group.add_argument("-s", "--schema", type=pathlib.Path)
     api.add_argument("--annotations", type=str)
     api.add_argument("-o", "--output", type=str, default="-")
