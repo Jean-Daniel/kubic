@@ -262,7 +262,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
 
     def _attribute_error(self, attr: str):
         raise AttributeError(
-            f"{type(self).__name__} does not has attribute {attr}. Available attributes are: {', '.join(self._hints_().keys())}"
+            f"{type(self).__name__} does not have attribute {attr}. Available attributes are: {', '.join(self._hints_().keys())}"
         )
 
     @classmethod

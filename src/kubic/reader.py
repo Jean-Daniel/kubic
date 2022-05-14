@@ -45,11 +45,11 @@ def register_modules(spec: ModuleSpec):
         register_module(mod)
 
 
-def create_api_resource(obj: dict) -> KubernetesApiResource:
+def create_api_resource(obj: dict, resolve: bool = True) -> KubernetesApiResource:
     api_version = obj.get("apiVersion")
     kind = obj.get("kind")
     obj.pop("status", None)
-    rsrc = _rsrc_index.get(_ObjID(api_version, kind))
+    rsrc = _rsrc_index.get(_ObjID(api_version, kind)) if resolve else None
     if not rsrc:
         return AnyApiResource(api_version, kind, "").update(obj)
     return rsrc("").update(obj)
