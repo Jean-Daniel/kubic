@@ -46,6 +46,9 @@ def register_modules(spec: ModuleSpec):
 
 
 def create_api_resource(obj: dict) -> KubernetesApiResource:
+    if isinstance(obj, KubernetesApiResource):
+        return obj
+
     api_version = obj.get("apiVersion")
     kind = obj.get("kind")
     obj.pop("status", None)
