@@ -6,8 +6,7 @@ from importlib.machinery import ModuleSpec
 from types import ModuleType
 from typing import NamedTuple
 
-from . import KubernetesApiResource
-from . import api
+from . import api, KubernetesObject, KubernetesApiResource, _TypedList
 from .api import meta
 
 
@@ -21,6 +20,24 @@ class AnyApiResource(KubernetesApiResource):
         super().__init__(version, kind, name, namespace)
         self.spec = {}
         self.spec.update(kwargs)
+
+
+class AnyResourceList(KubernetesApiResource):
+    __slots__ = ()
+
+    _revfield_names_ = {
+        "items": "items_",
+    }
+
+    items_: list
+    metadata: api.meta.ObjectMeta
+
+    def __init__(self, version: str, kind: str, name: str, namespace: str = None, items: typing.List[KubernetesApiResource] = None):
+        super().__init__(version, kind, name, namespace)
+        if items and isinstance(items[0], KubernetesObject):
+            self.items_ = _TypedList(type(items[0]), items)
+        else:
+            self.items_ = list(items)
 
 
 class _ObjID(NamedTuple):
@@ -54,6 +71,10 @@ def create_api_resource(obj: dict) -> KubernetesApiResource:
     obj.pop("status", None)
     rsrc = _rsrc_index.get(_ObjID(api_version, kind))
     if not rsrc:
+        # assuming that object that contains items instead of spec is a ResourceList (ConfigMapList, …)
+        items = obj.pop("items", None)
+        if items:
+            return AnyResourceList(api_version, kind, "", items=[create_api_resource(item) for item in items])
         return AnyApiResource(api_version, kind, "").update(obj)
     return rsrc("").update(obj)
 
