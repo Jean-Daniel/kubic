@@ -5,4 +5,4 @@ patches:
 
   CommunitySpec:
     communities:
-      type_name: BGPCommunity
+      type_name: CommunityAlias
