@@ -19,6 +19,8 @@ from .k8s import QualifiedName, module_for_group
 from .parser import ApiGroup
 from .printer import TypePrinter
 
+logger = logging.getLogger("cli")
+
 
 def download_schema(version: str, output: TextIO):
     tmp, headers = urlretrieve(f"https://github.com/kubernetes/kubernetes/raw/release-{version}/api/openapi-spec/swagger.json")
@@ -111,8 +113,17 @@ def create_crd(schema: dict) -> CRD:
     # default to using the storage version, ignoring other versions
     vers: Dict[str, Any] = {}
     if "versions" in spec:
-        vers = next(vers for vers in spec["versions"] if vers["storage"])
-        version = vers["name"]
+        # find best version
+        storage = None
+        version = None
+        for v in spec["versions"]:
+            if v["storage"]:
+                storage = v["name"]
+            if not version or version < v["name"]:
+                version = v["name"]
+                vers = v
+        if storage and storage != version:
+            logger.warning(f"[{group}.{kind}] latest version ({version}) is not defined as the storage version ({storage}).")
     else:
         version = spec["version"]
 
