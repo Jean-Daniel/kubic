@@ -4,30 +4,25 @@ from kubic import KubernetesApiResource, KubernetesObject
 from kubic.api import core, meta
 
 
-class Attachment(KubernetesObject):
+class Amqp(KubernetesObject):
     __slots__ = ()
 
-    _required_ = ["cluster_name", "mount_dir", "node", "pod_name", "pod_namespace", "read_only"]
+    _required_ = ["exchange", "uri"]
 
-    cluster_name: str
-    mount_dir: str
-    node: str
-    pod_name: str
-    pod_namespace: str
-    read_only: bool
+    _field_names_ = {
+        "disable_verify_ssl": "disableVerifySSL",
+    }
+    _revfield_names_ = {
+        "disableVerifySSL": "disable_verify_ssl",
+    }
 
-    def __init__(
-        self,
-        cluster_name: str = None,
-        mount_dir: str = None,
-        node: str = None,
-        pod_name: str = None,
-        pod_namespace: str = None,
-        read_only: bool = None,
-    ):
-        super().__init__(
-            cluster_name=cluster_name, mount_dir=mount_dir, node=node, pod_name=pod_name, pod_namespace=pod_namespace, read_only=read_only
-        )
+    ack_level: str
+    disable_verify_ssl: bool
+    exchange: str
+    uri: str
+
+    def __init__(self, ack_level: str = None, disable_verify_ssl: bool = None, exchange: str = None, uri: str = None):
+        super().__init__(ack_level=ack_level, disable_verify_ssl=disable_verify_ssl, exchange=exchange, uri=uri)
 
 
 class Bucket(KubernetesObject):
@@ -190,6 +185,7 @@ class CephBlockPoolSpec(KubernetesObject):
     erasure_coded: ErasureCoded
     failure_domain: str
     mirroring: CephBlockPoolSpecMirroring
+    name: str
     parameters: Dict[str, str]
     quotas: CephBlockPoolSpecQuota
     replicated: Replicated
@@ -204,6 +200,7 @@ class CephBlockPoolSpec(KubernetesObject):
         erasure_coded: ErasureCoded = None,
         failure_domain: str = None,
         mirroring: CephBlockPoolSpecMirroring = None,
+        name: str = None,
         parameters: Dict[str, str] = None,
         quotas: CephBlockPoolSpecQuota = None,
         replicated: Replicated = None,
@@ -217,6 +214,7 @@ class CephBlockPoolSpec(KubernetesObject):
             erasure_coded=erasure_coded,
             failure_domain=failure_domain,
             mirroring=mirroring,
+            name=name,
             parameters=parameters,
             quotas=quotas,
             replicated=replicated,
@@ -238,6 +236,185 @@ class CephBlockPool(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephBlockPoolSpec = None):
         super().__init__("ceph.rook.io/v1", "CephBlockPool", name, namespace, metadata=metadata, spec=spec)
+
+
+class CephBlockPoolRadosNamespaceSpec(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["block_pool_name"]
+
+    block_pool_name: str
+
+    def __init__(self, block_pool_name: str = None):
+        super().__init__(block_pool_name=block_pool_name)
+
+
+class CephBlockPoolRadosNamespace(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "ceph.rook.io/v1"
+    _kind_ = "CephBlockPoolRadosNamespace"
+    _scope_ = "namespace"
+
+    _required_ = ["metadata", "spec"]
+
+    metadata: meta.ObjectMeta
+    spec: CephBlockPoolRadosNamespaceSpec
+
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephBlockPoolRadosNamespaceSpec = None):
+        super().__init__("ceph.rook.io/v1", "CephBlockPoolRadosNamespace", name, namespace, metadata=metadata, spec=spec)
+
+
+class FilterItem(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["name", "value"]
+
+    name: str
+    value: str
+
+    def __init__(self, name: str = None, value: str = None):
+        super().__init__(name=name, value=value)
+
+
+class Filter(KubernetesObject):
+    __slots__ = ()
+
+    key_filters: List[FilterItem]
+    metadata_filters: List[FilterItem]
+    tag_filters: List[FilterItem]
+
+    def __init__(
+        self, key_filters: List[FilterItem] = None, metadata_filters: List[FilterItem] = None, tag_filters: List[FilterItem] = None
+    ):
+        super().__init__(key_filters=key_filters, metadata_filters=metadata_filters, tag_filters=tag_filters)
+
+
+class CephBucketNotificationSpec(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["topic"]
+
+    events: List[str]
+    filter: Filter
+    topic: str
+
+    def __init__(self, events: List[str] = None, filter: Filter = None, topic: str = None):
+        super().__init__(events=events, filter=filter, topic=topic)
+
+
+class CephBucketNotification(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "ceph.rook.io/v1"
+    _kind_ = "CephBucketNotification"
+    _scope_ = "namespace"
+
+    _required_ = ["metadata", "spec"]
+
+    metadata: meta.ObjectMeta
+    spec: CephBucketNotificationSpec
+
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephBucketNotificationSpec = None):
+        super().__init__("ceph.rook.io/v1", "CephBucketNotification", name, namespace, metadata=metadata, spec=spec)
+
+
+class Http(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["uri"]
+
+    _field_names_ = {
+        "disable_verify_ssl": "disableVerifySSL",
+    }
+    _revfield_names_ = {
+        "disableVerifySSL": "disable_verify_ssl",
+    }
+
+    disable_verify_ssl: bool
+    send_cloud_events: bool
+    uri: str
+
+    def __init__(self, disable_verify_ssl: bool = None, send_cloud_events: bool = None, uri: str = None):
+        super().__init__(disable_verify_ssl=disable_verify_ssl, send_cloud_events=send_cloud_events, uri=uri)
+
+
+class Kafka(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["uri"]
+
+    _field_names_ = {
+        "disable_verify_ssl": "disableVerifySSL",
+        "use_ssl": "useSSL",
+    }
+    _revfield_names_ = {
+        "disableVerifySSL": "disable_verify_ssl",
+        "useSSL": "use_ssl",
+    }
+
+    ack_level: str
+    disable_verify_ssl: bool
+    uri: str
+    use_ssl: bool
+
+    def __init__(self, ack_level: str = None, disable_verify_ssl: bool = None, uri: str = None, use_ssl: bool = None):
+        super().__init__(ack_level=ack_level, disable_verify_ssl=disable_verify_ssl, uri=uri, use_ssl=use_ssl)
+
+
+class CephBucketTopicSpecEndpoint(KubernetesObject):
+    __slots__ = ()
+
+    amqp: Amqp
+    http: Http
+    kafka: Kafka
+
+    def __init__(self, amqp: Amqp = None, http: Http = None, kafka: Kafka = None):
+        super().__init__(amqp=amqp, http=http, kafka=kafka)
+
+
+class CephBucketTopicSpec(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["endpoint", "object_store_name", "object_store_namespace"]
+
+    endpoint: CephBucketTopicSpecEndpoint
+    object_store_name: str
+    object_store_namespace: str
+    opaque_data: str
+    persistent: bool
+
+    def __init__(
+        self,
+        endpoint: CephBucketTopicSpecEndpoint = None,
+        object_store_name: str = None,
+        object_store_namespace: str = None,
+        opaque_data: str = None,
+        persistent: bool = None,
+    ):
+        super().__init__(
+            endpoint=endpoint,
+            object_store_name=object_store_name,
+            object_store_namespace=object_store_namespace,
+            opaque_data=opaque_data,
+            persistent=persistent,
+        )
+
+
+class CephBucketTopic(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "ceph.rook.io/v1"
+    _kind_ = "CephBucketTopic"
+    _scope_ = "namespace"
+
+    _required_ = ["metadata", "spec"]
+
+    metadata: meta.ObjectMeta
+    spec: CephBucketTopicSpec
+
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephBucketTopicSpec = None):
+        super().__init__("ceph.rook.io/v1", "CephBucketTopic", name, namespace, metadata=metadata, spec=spec)
 
 
 class CephClientSpec(KubernetesObject):
@@ -403,24 +580,36 @@ class DaemonHealth(KubernetesObject):
         super().__init__(mon=mon, osd=osd, status=status)
 
 
+class Probe(KubernetesObject):
+    __slots__ = ()
+
+    disabled: bool
+    probe: core.Probe
+
+    def __init__(self, disabled: bool = None, probe: core.Probe = None):
+        super().__init__(disabled=disabled, probe=probe)
+
+
 class CephClusterSpecHealthCheck(KubernetesObject):
     __slots__ = ()
 
     daemon_health: DaemonHealth
-    liveness_probe: Dict[str, core.Probe]
+    liveness_probe: Dict[str, Probe]
+    startup_probe: Dict[str, Probe]
 
-    def __init__(self, daemon_health: DaemonHealth = None, liveness_probe: Dict[str, core.Probe] = None):
-        super().__init__(daemon_health=daemon_health, liveness_probe=liveness_probe)
+    def __init__(self, daemon_health: DaemonHealth = None, liveness_probe: Dict[str, Probe] = None, startup_probe: Dict[str, Probe] = None):
+        super().__init__(daemon_health=daemon_health, liveness_probe=liveness_probe, startup_probe=startup_probe)
 
 
 class LogCollector(KubernetesObject):
     __slots__ = ()
 
     enabled: bool
+    max_log_size: core.IntOrString
     periodicity: str
 
-    def __init__(self, enabled: bool = None, periodicity: str = None):
-        super().__init__(enabled=enabled, periodicity=periodicity)
+    def __init__(self, enabled: bool = None, max_log_size: core.IntOrString = None, periodicity: str = None):
+        super().__init__(enabled=enabled, max_log_size=max_log_size, periodicity=periodicity)
 
 
 class Module(KubernetesObject):
@@ -541,26 +730,47 @@ class Monitoring(KubernetesObject):
     enabled: bool
     external_mgr_endpoints: List[ExternalMgrEndpoint]
     external_mgr_prometheus_port: int
-    rules_namespace: str
 
     def __init__(
-        self,
-        enabled: bool = None,
-        external_mgr_endpoints: List[ExternalMgrEndpoint] = None,
-        external_mgr_prometheus_port: int = None,
-        rules_namespace: str = None,
+        self, enabled: bool = None, external_mgr_endpoints: List[ExternalMgrEndpoint] = None, external_mgr_prometheus_port: int = None
     ):
         super().__init__(
-            enabled=enabled,
-            external_mgr_endpoints=external_mgr_endpoints,
-            external_mgr_prometheus_port=external_mgr_prometheus_port,
-            rules_namespace=rules_namespace,
+            enabled=enabled, external_mgr_endpoints=external_mgr_endpoints, external_mgr_prometheus_port=external_mgr_prometheus_port
         )
+
+
+class Compression(KubernetesObject):
+    __slots__ = ()
+
+    enabled: bool
+
+    def __init__(self, enabled: bool = None):
+        super().__init__(enabled=enabled)
+
+
+class Encryption(KubernetesObject):
+    __slots__ = ()
+
+    enabled: bool
+
+    def __init__(self, enabled: bool = None):
+        super().__init__(enabled=enabled)
+
+
+class Connection(KubernetesObject):
+    __slots__ = ()
+
+    compression: Compression
+    encryption: Encryption
+
+    def __init__(self, compression: Compression = None, encryption: Encryption = None):
+        super().__init__(compression=compression, encryption=encryption)
 
 
 class Network(KubernetesObject):
     __slots__ = ()
 
+    connections: Connection
     dual_stack: bool
     host_network: bool
     ip_family: str
@@ -569,13 +779,21 @@ class Network(KubernetesObject):
 
     def __init__(
         self,
+        connections: Connection = None,
         dual_stack: bool = None,
         host_network: bool = None,
         ip_family: str = None,
         provider: str = None,
         selectors: Dict[str, str] = None,
     ):
-        super().__init__(dual_stack=dual_stack, host_network=host_network, ip_family=ip_family, provider=provider, selectors=selectors)
+        super().__init__(
+            connections=connections,
+            dual_stack=dual_stack,
+            host_network=host_network,
+            ip_family=ip_family,
+            provider=provider,
+            selectors=selectors,
+        )
 
 
 class Placement(KubernetesObject):
@@ -614,7 +832,7 @@ class KMS(KubernetesObject):
         super().__init__(connection_details=connection_details, token_secret_name=token_secret_name)
 
 
-class Security(KubernetesObject):
+class CephClusterSpecSecurity(KubernetesObject):
     __slots__ = ()
 
     kms: KMS
@@ -798,7 +1016,7 @@ class CephClusterSpec(KubernetesObject):
     priority_class_names: Dict[str, str]
     remove_os_ds_if_out_and_safe_to_remove: bool
     resources: Dict[str, core.ResourceRequirements]
-    security: Security
+    security: CephClusterSpecSecurity
     skip_upgrade_checks: bool
     storage: Storage
     wait_timeout_for_healthy_osd_in_minutes: int
@@ -825,7 +1043,7 @@ class CephClusterSpec(KubernetesObject):
         priority_class_names: Dict[str, str] = None,
         remove_os_ds_if_out_and_safe_to_remove: bool = None,
         resources: Dict[str, core.ResourceRequirements] = None,
-        security: Security = None,
+        security: CephClusterSpecSecurity = None,
         skip_upgrade_checks: bool = None,
         storage: Storage = None,
         wait_timeout_for_healthy_osd_in_minutes: int = None,
@@ -883,9 +1101,11 @@ class MetadataServer(KubernetesObject):
     active_standby: bool
     annotations: Dict[str, str]
     labels: Dict[str, str]
+    liveness_probe: Probe
     placement: Placement
     priority_class_name: str
     resources: core.ResourceRequirements
+    startup_probe: Probe
 
     def __init__(
         self,
@@ -893,18 +1113,22 @@ class MetadataServer(KubernetesObject):
         active_standby: bool = None,
         annotations: Dict[str, str] = None,
         labels: Dict[str, str] = None,
+        liveness_probe: Probe = None,
         placement: Placement = None,
         priority_class_name: str = None,
         resources: core.ResourceRequirements = None,
+        startup_probe: Probe = None,
     ):
         super().__init__(
             active_count=active_count,
             active_standby=active_standby,
             annotations=annotations,
             labels=labels,
+            liveness_probe=liveness_probe,
             placement=placement,
             priority_class_name=priority_class_name,
             resources=resources,
+            startup_probe=startup_probe,
         )
 
 
@@ -1024,16 +1248,88 @@ class CephFilesystemMirror(KubernetesApiResource):
         super().__init__("ceph.rook.io/v1", "CephFilesystemMirror", name, namespace, metadata=metadata, spec=spec)
 
 
-class Rado(KubernetesObject):
+class CephFilesystemSubVolumeGroupSpec(KubernetesObject):
     __slots__ = ()
 
-    _required_ = ["namespace", "pool"]
+    _required_ = ["filesystem_name"]
+
+    filesystem_name: str
+
+    def __init__(self, filesystem_name: str = None):
+        super().__init__(filesystem_name=filesystem_name)
+
+
+class CephFilesystemSubVolumeGroup(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "ceph.rook.io/v1"
+    _kind_ = "CephFilesystemSubVolumeGroup"
+    _scope_ = "namespace"
+
+    _required_ = ["metadata", "spec"]
+
+    metadata: meta.ObjectMeta
+    spec: CephFilesystemSubVolumeGroupSpec
+
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephFilesystemSubVolumeGroupSpec = None):
+        super().__init__("ceph.rook.io/v1", "CephFilesystemSubVolumeGroup", name, namespace, metadata=metadata, spec=spec)
+
+
+class Rado(KubernetesObject):
+    __slots__ = ()
 
     namespace: str
     pool: str
 
     def __init__(self, namespace: str = None, pool: str = None):
         super().__init__(namespace=namespace, pool=pool)
+
+
+class SssdConfigFile(KubernetesObject):
+    __slots__ = ()
+
+    volume_source: core.Volume
+
+    def __init__(self, volume_source: core.Volume = None):
+        super().__init__(volume_source=volume_source)
+
+
+class Sidecar(KubernetesObject):
+    __slots__ = ()
+
+    _required_ = ["image"]
+
+    debug_level: int
+    image: str
+    resources: core.ResourceRequirements
+    sssd_config_file: SssdConfigFile
+
+    def __init__(
+        self,
+        debug_level: int = None,
+        image: str = None,
+        resources: core.ResourceRequirements = None,
+        sssd_config_file: SssdConfigFile = None,
+    ):
+        super().__init__(debug_level=debug_level, image=image, resources=resources, sssd_config_file=sssd_config_file)
+
+
+class Sssd(KubernetesObject):
+    __slots__ = ()
+
+    sidecar: Sidecar
+
+    def __init__(self, sidecar: Sidecar = None):
+        super().__init__(sidecar=sidecar)
+
+
+class CephNFSSpecSecurity(KubernetesObject):
+    __slots__ = ()
+
+    sssd: Sssd
+
+    def __init__(self, sssd: Sssd = None):
+        super().__init__(sssd=sssd)
 
 
 class Server(KubernetesObject):
@@ -1073,13 +1369,14 @@ class Server(KubernetesObject):
 class CephNFSSpec(KubernetesObject):
     __slots__ = ()
 
-    _required_ = ["rados", "server"]
+    _required_ = ["server"]
 
     rados: Rado
+    security: CephNFSSpecSecurity
     server: Server
 
-    def __init__(self, rados: Rado = None, server: Server = None):
-        super().__init__(rados=rados, server=server)
+    def __init__(self, rados: Rado = None, security: CephNFSSpecSecurity = None, server: Server = None):
+        super().__init__(rados=rados, security=security, server=server)
 
 
 class CephNFS(KubernetesApiResource):
@@ -1101,8 +1398,6 @@ class CephNFS(KubernetesApiResource):
 class Pull(KubernetesObject):
     __slots__ = ()
 
-    _required_ = ["endpoint"]
-
     endpoint: str
 
     def __init__(self, endpoint: str = None):
@@ -1111,8 +1406,6 @@ class Pull(KubernetesObject):
 
 class CephObjectRealmSpec(KubernetesObject):
     __slots__ = ()
-
-    _required_ = ["pull"]
 
     pull: Pull
 
@@ -1165,6 +1458,7 @@ class Gateway(KubernetesObject):
     annotations: Dict[str, str]
     ca_bundle_ref: str
     external_rgw_endpoints: List[ExternalRgwEndpoint]
+    host_network: bool
     instances: int
     labels: Dict[str, str]
     placement: Placement
@@ -1180,6 +1474,7 @@ class Gateway(KubernetesObject):
         annotations: Dict[str, str] = None,
         ca_bundle_ref: str = None,
         external_rgw_endpoints: List[ExternalRgwEndpoint] = None,
+        host_network: bool = None,
         instances: int = None,
         labels: Dict[str, str] = None,
         placement: Placement = None,
@@ -1194,6 +1489,7 @@ class Gateway(KubernetesObject):
             annotations=annotations,
             ca_bundle_ref=ca_bundle_ref,
             external_rgw_endpoints=external_rgw_endpoints,
+            host_network=host_network,
             instances=instances,
             labels=labels,
             placement=placement,
@@ -1210,10 +1506,32 @@ class CephObjectStoreSpecHealthCheck(KubernetesObject):
     __slots__ = ()
 
     bucket: Bucket
-    liveness_probe: core.Probe
+    liveness_probe: Probe
+    readiness_probe: Probe
+    startup_probe: Probe
 
-    def __init__(self, bucket: Bucket = None, liveness_probe: core.Probe = None):
-        super().__init__(bucket=bucket, liveness_probe=liveness_probe)
+    def __init__(self, bucket: Bucket = None, liveness_probe: Probe = None, readiness_probe: Probe = None, startup_probe: Probe = None):
+        super().__init__(bucket=bucket, liveness_probe=liveness_probe, readiness_probe=readiness_probe, startup_probe=startup_probe)
+
+
+class S3(KubernetesObject):
+    __slots__ = ()
+
+    connection_details: Dict[str, str]
+    token_secret_name: str
+
+    def __init__(self, connection_details: Dict[str, str] = None, token_secret_name: str = None):
+        super().__init__(connection_details=connection_details, token_secret_name=token_secret_name)
+
+
+class CephObjectStoreSpecSecurity(KubernetesObject):
+    __slots__ = ()
+
+    kms: KMS
+    s3: S3
+
+    def __init__(self, kms: KMS = None, s3: S3 = None):
+        super().__init__(kms=kms, s3=s3)
 
 
 class CephObjectStoreSpecZone(KubernetesObject):
@@ -1235,7 +1553,7 @@ class CephObjectStoreSpec(KubernetesObject):
     health_check: CephObjectStoreSpecHealthCheck
     metadata_pool: CephBlockPoolSpec
     preserve_pools_on_delete: bool
-    security: Security
+    security: CephObjectStoreSpecSecurity
     zone: CephObjectStoreSpecZone
 
     def __init__(
@@ -1245,7 +1563,7 @@ class CephObjectStoreSpec(KubernetesObject):
         health_check: CephObjectStoreSpecHealthCheck = None,
         metadata_pool: CephBlockPoolSpec = None,
         preserve_pools_on_delete: bool = None,
-        security: Security = None,
+        security: CephObjectStoreSpecSecurity = None,
         zone: CephObjectStoreSpecZone = None,
     ):
         super().__init__(
@@ -1321,12 +1639,19 @@ class CephObjectZoneSpec(KubernetesObject):
 
     _required_ = ["data_pool", "metadata_pool", "zone_group"]
 
+    custom_endpoints: List[str]
     data_pool: CephBlockPoolSpec
     metadata_pool: CephBlockPoolSpec
     zone_group: str
 
-    def __init__(self, data_pool: CephBlockPoolSpec = None, metadata_pool: CephBlockPoolSpec = None, zone_group: str = None):
-        super().__init__(data_pool=data_pool, metadata_pool=metadata_pool, zone_group=zone_group)
+    def __init__(
+        self,
+        custom_endpoints: List[str] = None,
+        data_pool: CephBlockPoolSpec = None,
+        metadata_pool: CephBlockPoolSpec = None,
+        zone_group: str = None,
+    ):
+        super().__init__(custom_endpoints=custom_endpoints, data_pool=data_pool, metadata_pool=metadata_pool, zone_group=zone_group)
 
 
 class CephObjectZone(KubernetesApiResource):
@@ -1422,20 +1747,7 @@ class CephRBDMirror(KubernetesApiResource):
         super().__init__("ceph.rook.io/v1", "CephRBDMirror", name, namespace, metadata=metadata, spec=spec)
 
 
-class DataSource(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["kind", "name"]
-
-    api_group: str
-    kind: str
-    name: str
-
-    def __init__(self, api_group: str = None, kind: str = None, name: str = None):
-        super().__init__(api_group=api_group, kind=kind, name=name)
-
-
-class Endpoint(KubernetesObject):
+class ObjectBucketSpecEndpoint(KubernetesObject):
     __slots__ = ()
 
     additional_config: Dict[str, Any]
@@ -1470,7 +1782,7 @@ class ObjectBucketSpec(KubernetesObject):
     additional_state: Dict[str, Any]
     authentication: Dict[str, Any]
     claim_ref: Dict[str, Any]
-    endpoint: Endpoint
+    endpoint: ObjectBucketSpecEndpoint
     reclaim_policy: str
     storage_class_name: str
 
@@ -1479,7 +1791,7 @@ class ObjectBucketSpec(KubernetesObject):
         additional_state: Dict[str, Any] = None,
         authentication: Dict[str, Any] = None,
         claim_ref: Dict[str, Any] = None,
-        endpoint: Endpoint = None,
+        endpoint: ObjectBucketSpecEndpoint = None,
         reclaim_policy: str = None,
         storage_class_name: str = None,
     ):
@@ -1545,72 +1857,3 @@ class ObjectBucketClaim(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ObjectBucketClaimSpec = None):
         super().__init__("objectbucket.io/v1alpha1", "ObjectBucketClaim", name, namespace, metadata=metadata, spec=spec)
-
-
-class Volume(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "rook.io/v1alpha2"
-    _kind_ = "Volume"
-    _scope_ = "namespace"
-
-    _required_ = ["attachments", "metadata"]
-
-    attachments: List[Attachment]
-    metadata: meta.ObjectMeta
-
-    def __init__(self, name: str, namespace: str = None, attachments: List[Attachment] = None, metadata: meta.ObjectMeta = None):
-        super().__init__("rook.io/v1alpha2", "Volume", name, namespace, attachments=attachments, metadata=metadata)
-
-
-class VolumeReplicationSpec(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["data_source", "replication_state", "volume_replication_class"]
-
-    data_source: DataSource
-    replication_state: str
-    volume_replication_class: str
-
-    def __init__(self, data_source: DataSource = None, replication_state: str = None, volume_replication_class: str = None):
-        super().__init__(data_source=data_source, replication_state=replication_state, volume_replication_class=volume_replication_class)
-
-
-class VolumeReplication(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "replication.storage.openshift.io/v1alpha1"
-    _kind_ = "VolumeReplication"
-    _scope_ = "namespace"
-
-    metadata: meta.ObjectMeta
-    spec: VolumeReplicationSpec
-
-    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VolumeReplicationSpec = None):
-        super().__init__("replication.storage.openshift.io/v1alpha1", "VolumeReplication", name, namespace, metadata=metadata, spec=spec)
-
-
-class VolumeReplicationClassSpec(KubernetesObject):
-    __slots__ = ()
-
-    _required_ = ["provisioner"]
-
-    parameters: Dict[str, str]
-    provisioner: str
-
-    def __init__(self, parameters: Dict[str, str] = None, provisioner: str = None):
-        super().__init__(parameters=parameters, provisioner=provisioner)
-
-
-class VolumeReplicationClass(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "replication.storage.openshift.io/v1alpha1"
-    _kind_ = "VolumeReplicationClass"
-    _scope_ = "cluster"
-
-    metadata: meta.ObjectMeta
-    spec: VolumeReplicationClassSpec
-
-    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: VolumeReplicationClassSpec = None):
-        super().__init__("replication.storage.openshift.io/v1alpha1", "VolumeReplicationClass", name, "", metadata=metadata, spec=spec)

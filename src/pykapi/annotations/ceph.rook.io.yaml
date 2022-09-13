@@ -6,9 +6,8 @@ patches:
   CephClusterSpecMON:
     volumeClaimTemplate: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
   CephClusterSpecHealthCheck:
-    livenessProbe: { type: object, additionalProperties: { $ref: "io.k8s.api.core.v1.Probe" } }
-  CephObjectStoreSpecHealthCheck:
-    livenessProbe: "io.k8s.api.core.v1.Probe"
+    livenessProbe: { type: object, additionalProperties: { $ref: "Probe" } }
+    startupProbe: { type: object, additionalProperties: { $ref: "Probe" } }
   CephFilesystemMirrorSpec:
     resources: "io.k8s.api.core.v1.ResourceRequirements"
   CephFilesystemSpec:
@@ -17,17 +16,25 @@ patches:
   CephObjectStoreSpec:
     dataPool: CephBlockPoolSpec
     metadataPool: CephBlockPoolSpec
+  CephObjectStoreSpecHealthCheck:
+    livenessProbe: { type_name: Probe }
+    readinessProbe: { type_name: Probe }
+    startupProbe: { type_name: Probe }
   CephObjectZoneSpec:
     dataPool: CephBlockPoolSpec
     metadataPool: CephBlockPoolSpec
   CephRBDMirrorSpec:
     resources: "io.k8s.api.core.v1.ResourceRequirements"
-  StretchClusterZone:
-    volumeClaimTemplate: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
+  Filter:
+    keyFilters: { type_name: FilterItem }
+    metadataFilters: { type_name: FilterItem }
+    tagFilters: { type_name: FilterItem }
   Gateway:
     resources: "io.k8s.api.core.v1.ResourceRequirements"
   MetadataServer:
     resources: "io.k8s.api.core.v1.ResourceRequirements"
+    livenessProbe: { type_name: Probe }
+    startupProbe: { type_name: Probe }
   Node:
     volumeClaimTemplates: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
     resources: "io.k8s.api.core.v1.ResourceRequirements"
@@ -37,8 +44,16 @@ patches:
     podAntiAffinity: "io.k8s.api.core.v1.PodAntiAffinity"
     tolerations: "io.k8s.api.core.v1.Toleration"
     topologySpreadConstraints: "io.k8s.api.core.v1.TopologySpreadConstraint"
+  Probe:
+    probe: "io.k8s.api.core.v1.Probe"
   Server:
     resources: "io.k8s.api.core.v1.ResourceRequirements"
+  Sidecar:
+    resources: "io.k8s.api.core.v1.ResourceRequirements"
+  SssdConfigFile:
+    volumeSource: "io.k8s.api.core.v1.Volume"
+  StretchClusterZone:
+    volumeClaimTemplate: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
   StorageClassDeviceSet:
     volumeClaimTemplates: "io.k8s.api.core.v1.PersistentVolumeClaimTemplate"
     resources: "io.k8s.api.core.v1.ResourceRequirements"
