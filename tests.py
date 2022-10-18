@@ -2,8 +2,9 @@ import unittest
 from collections.abc import MutableSequence
 from typing import List, Union
 
+import kubic.api
+import kubic.crds
 from kubic import KubernetesObject, KubernetesApiResource
-from kubic import crds
 from kubic.api.apps import Deployment
 from kubic.api.meta import ObjectMeta
 from kubic.reader import create_api_resource, register_modules
@@ -171,7 +172,8 @@ class LoaderTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        register_modules(crds.__spec__)
+        register_modules(kubic.api.__spec__)
+        register_modules(kubic.crds.__spec__)
 
     def test_create(self):
         spec = {
