@@ -162,7 +162,7 @@ class AnnotationFactory:
         self.cached = {}
         self.builtin = resources.files("pykapi").joinpath("annotations")
 
-    def __getitem__(self, group: str):
+    def __call__(self, group: str) -> dict:
         if group in self.cached:
             return self.cached[group]
 
@@ -247,7 +247,7 @@ def main():
     api.add_argument("-o", "--output", type=str, default="-")
 
     crd = subparsers.add_parser("crd")
-    crd.add_argument("--api_module", type=str, default="kubic.api")
+    crd.add_argument("--api_module", type=str, required=True)
     crd.add_argument("--annotations", type=str, help="annotations directory")
     crd.add_argument("crds", nargs="*", type=str)
     crd.add_argument("-o", "--output", type=str, default="-")

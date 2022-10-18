@@ -1,5 +1,6 @@
+import typing
 from collections import defaultdict
-from typing import Optional, Tuple, List, Mapping
+from typing import Optional, Tuple, List
 
 from .k8s import QualifiedName
 from .parser import Parser, ApiGroup
@@ -119,13 +120,16 @@ def is_key_selector(schema: dict) -> bool:
     )
 
 
-def import_crds(crds: List[Tuple[QualifiedName, dict]], annotations: Mapping[str, dict]) -> List[ApiGroup]:
+AnnotationProvider: typing.TypeAlias = typing.Callable[[str], dict]
+
+
+def import_crds(crds: List[Tuple[QualifiedName, dict]], annotations: AnnotationProvider) -> List[ApiGroup]:
     # in case there is CRDs from many groups/versions.
     # FIXME: disable group by version as some CRDs have etherogenous version (cilium)
     crds_by_groups = defaultdict(list)
     patches_by_group = defaultdict(dict)
     for fqn, schema in crds:
-        a = annotations[fqn.group]
+        a = annotations(fqn.group)
         group = a.get("module", fqn.group)
         crds_by_groups[group].append((fqn, schema))
         # merge all patches into a single map

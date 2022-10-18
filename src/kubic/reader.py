@@ -11,9 +11,9 @@ from . import KubernetesObject, KubernetesApiResource, _TypedList
 R = typing.TypeVar("R", bound=KubernetesApiResource)
 
 # noinspection PyTypeChecker
-_AnyApiResource: typing.Type[R] = None
+AnyApiResource: typing.Type[R] = None
 # noinspection PyTypeChecker
-_AnyResourceList: typing.Type[R] = None
+AnyResourceList: typing.Type[R] = None
 
 
 class _ObjID(NamedTuple):
@@ -27,11 +27,11 @@ _rsrc_index: typing.Dict[_ObjID, typing.Type] = {}
 # Must be called before trying to use the reader API.
 # Module must be the module containing the Kubernetes API
 def _register_any(object_meta):
-    global _AnyApiResource
-    global _AnyResourceList
-    assert not _AnyApiResource and not _AnyResourceList
+    global AnyApiResource
+    global AnyResourceList
+    assert not AnyApiResource and not AnyResourceList
 
-    class __AnyApiResource(KubernetesApiResource):
+    class _AnyApiResource(KubernetesApiResource):
         __slots__ = ()
 
         spec: typing.Dict[str, typing.Any]
@@ -42,9 +42,9 @@ def _register_any(object_meta):
             self.spec = {}
             self.spec.update(kwargs)
 
-    _AnyApiResource = __AnyApiResource
+    AnyApiResource = _AnyApiResource
 
-    class __AnyResourceList(KubernetesApiResource):
+    class _AnyResourceList(KubernetesApiResource):
         __slots__ = ()
 
         _revfield_names_ = {
@@ -61,7 +61,7 @@ def _register_any(object_meta):
             else:
                 self.items_ = list(items)
 
-    _AnyResourceList = __AnyResourceList
+    AnyResourceList = _AnyResourceList
 
 
 def register_module(module: ModuleType):
@@ -94,6 +94,6 @@ def create_api_resource(obj: dict) -> KubernetesApiResource:
         # assuming that object that contains items instead of spec is a ResourceList (ConfigMapList, …)
         items = obj.pop("items", None)
         if items:
-            return _AnyResourceList(api_version, kind, "", items=[create_api_resource(item) for item in items])
-        return _AnyApiResource(api_version, kind, "").update(obj)
+            return AnyResourceList(api_version, kind, "", items=[create_api_resource(item) for item in items])
+        return AnyApiResource(api_version, kind, "").update(obj)
     return rsrc("").update(obj)
