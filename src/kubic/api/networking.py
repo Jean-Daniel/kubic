@@ -1,4 +1,4 @@
-from typing import List
+import typing as t
 
 from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
@@ -64,9 +64,9 @@ class HTTPIngressRuleValue(KubernetesObject):
 
     _required_ = ["paths"]
 
-    paths: List[HTTPIngressPath]
+    paths: t.List[HTTPIngressPath]
 
-    def __init__(self, paths: List[HTTPIngressPath] = None):
+    def __init__(self, paths: t.List[HTTPIngressPath] = None):
         super().__init__(paths=paths)
 
 
@@ -82,9 +82,9 @@ class IPBlock(KubernetesObject):
     }
 
     cidr: str
-    except_: List[str]
+    except_: t.List[str]
 
-    def __init__(self, cidr: str = None, except_: List[str] = None):
+    def __init__(self, cidr: str = None, except_: t.List[str] = None):
         super().__init__(cidr=cidr, except_=except_)
 
 
@@ -105,10 +105,10 @@ class IngressTLS(KubernetesObject):
 
     _api_version_ = "networking.k8s.io/v1"
 
-    hosts: List[str]
+    hosts: t.List[str]
     secret_name: str
 
-    def __init__(self, hosts: List[str] = None, secret_name: str = None):
+    def __init__(self, hosts: t.List[str] = None, secret_name: str = None):
         super().__init__(hosts=hosts, secret_name=secret_name)
 
 
@@ -119,15 +119,15 @@ class IngressSpec(KubernetesObject):
 
     default_backend: IngressBackend
     ingress_class_name: str
-    rules: List[IngressRule]
-    tls: List[IngressTLS]
+    rules: t.List[IngressRule]
+    tls: t.List[IngressTLS]
 
     def __init__(
         self,
         default_backend: IngressBackend = None,
         ingress_class_name: str = None,
-        rules: List[IngressRule] = None,
-        tls: List[IngressTLS] = None,
+        rules: t.List[IngressRule] = None,
+        tls: t.List[IngressTLS] = None,
     ):
         super().__init__(default_backend=default_backend, ingress_class_name=ingress_class_name, rules=rules, tls=tls)
 
@@ -220,10 +220,10 @@ class NetworkPolicyEgressRule(KubernetesObject):
 
     _api_version_ = "networking.k8s.io/v1"
 
-    ports: List[NetworkPolicyPort]
-    to: List[NetworkPolicyPeer]
+    ports: t.List[NetworkPolicyPort]
+    to: t.List[NetworkPolicyPeer]
 
-    def __init__(self, ports: List[NetworkPolicyPort] = None, to: List[NetworkPolicyPeer] = None):
+    def __init__(self, ports: t.List[NetworkPolicyPort] = None, to: t.List[NetworkPolicyPeer] = None):
         super().__init__(ports=ports, to=to)
 
 
@@ -236,10 +236,10 @@ class NetworkPolicyIngressRule(KubernetesObject):
         "from": "from_",
     }
 
-    from_: List[NetworkPolicyPeer]
-    ports: List[NetworkPolicyPort]
+    from_: t.List[NetworkPolicyPeer]
+    ports: t.List[NetworkPolicyPort]
 
-    def __init__(self, from_: List[NetworkPolicyPeer] = None, ports: List[NetworkPolicyPort] = None):
+    def __init__(self, from_: t.List[NetworkPolicyPeer] = None, ports: t.List[NetworkPolicyPort] = None):
         super().__init__(from_=from_, ports=ports)
 
 
@@ -250,17 +250,17 @@ class NetworkPolicySpec(KubernetesObject):
 
     _required_ = ["pod_selector"]
 
-    egress: List[NetworkPolicyEgressRule]
-    ingress: List[NetworkPolicyIngressRule]
+    egress: t.List[NetworkPolicyEgressRule]
+    ingress: t.List[NetworkPolicyIngressRule]
     pod_selector: meta.LabelSelector
-    policy_types: List[str]
+    policy_types: t.List[str]
 
     def __init__(
         self,
-        egress: List[NetworkPolicyEgressRule] = None,
-        ingress: List[NetworkPolicyIngressRule] = None,
+        egress: t.List[NetworkPolicyEgressRule] = None,
+        ingress: t.List[NetworkPolicyIngressRule] = None,
         pod_selector: meta.LabelSelector = None,
-        policy_types: List[str] = None,
+        policy_types: t.List[str] = None,
     ):
         super().__init__(egress=egress, ingress=ingress, pod_selector=pod_selector, policy_types=policy_types)
 

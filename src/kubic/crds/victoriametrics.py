@@ -1,7 +1,7 @@
-from typing import Dict, List
+import typing as t
 
 from kubic import KubernetesApiResource, KubernetesObject
-from kubic.api import apps, core, meta
+from ..api import apps, core, meta
 
 
 class BasicAuth(KubernetesObject):
@@ -118,11 +118,11 @@ class Datasource(KubernetesObject):
 class Metadata(KubernetesObject):
     __slots__ = ()
 
-    annotations: Dict[str, str]
-    labels: Dict[str, str]
+    annotations: t.Dict[str, str]
+    labels: t.Dict[str, str]
     name: str
 
-    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None, name: str = None):
+    def __init__(self, annotations: t.Dict[str, str] = None, labels: t.Dict[str, str] = None, name: str = None):
         super().__init__(annotations=annotations, labels=labels, name=name)
 
 
@@ -146,7 +146,7 @@ class RelabelConfig(KubernetesObject):
     regex: str
     replacement: str
     separator: str
-    source_labels: List[str]
+    source_labels: t.List[str]
     target_label: str
 
     def __init__(
@@ -156,7 +156,7 @@ class RelabelConfig(KubernetesObject):
         regex: str = None,
         replacement: str = None,
         separator: str = None,
-        source_labels: List[str] = None,
+        source_labels: t.List[str] = None,
         target_label: str = None,
     ):
         super().__init__(
@@ -186,12 +186,12 @@ class Endpoint(KubernetesObject):
     honor_labels: bool
     honor_timestamps: bool
     interval: str
-    metric_relabel_configs: List[RelabelConfig]
-    params: Dict[str, List[str]]
+    metric_relabel_configs: t.List[RelabelConfig]
+    params: t.Dict[str, t.List[str]]
     path: str
     port: str
     proxy_url: str
-    relabel_configs: List[RelabelConfig]
+    relabel_configs: t.List[RelabelConfig]
     scheme: str
     scrape_timeout: str
     target_port: core.IntOrString
@@ -205,12 +205,12 @@ class Endpoint(KubernetesObject):
         honor_labels: bool = None,
         honor_timestamps: bool = None,
         interval: str = None,
-        metric_relabel_configs: List[RelabelConfig] = None,
-        params: Dict[str, List[str]] = None,
+        metric_relabel_configs: t.List[RelabelConfig] = None,
+        params: t.Dict[str, t.List[str]] = None,
         path: str = None,
         port: str = None,
         proxy_url: str = None,
-        relabel_configs: List[RelabelConfig] = None,
+        relabel_configs: t.List[RelabelConfig] = None,
         scheme: str = None,
         scrape_timeout: str = None,
         target_port: core.IntOrString = None,
@@ -302,19 +302,19 @@ class Rule(KubernetesObject):
     }
 
     alert: str
-    annotations: Dict[str, str]
+    annotations: t.Dict[str, str]
     expr: core.IntOrString
     for_: str
-    labels: Dict[str, str]
+    labels: t.Dict[str, str]
     record: str
 
     def __init__(
         self,
         alert: str = None,
-        annotations: Dict[str, str] = None,
+        annotations: t.Dict[str, str] = None,
         expr: core.IntOrString = None,
         for_: str = None,
-        labels: Dict[str, str] = None,
+        labels: t.Dict[str, str] = None,
         record: str = None,
     ):
         super().__init__(alert=alert, annotations=annotations, expr=expr, for_=for_, labels=labels, record=record)
@@ -328,19 +328,19 @@ class Group(KubernetesObject):
     concurrency: int
     interval: str
     name: str
-    rules: List[Rule]
+    rules: t.List[Rule]
 
-    def __init__(self, concurrency: int = None, interval: str = None, name: str = None, rules: List[Rule] = None):
+    def __init__(self, concurrency: int = None, interval: str = None, name: str = None, rules: t.List[Rule] = None):
         super().__init__(concurrency=concurrency, interval=interval, name=name, rules=rules)
 
 
 class Host_aliase(KubernetesObject):
     __slots__ = ()
 
-    hostnames: List[str]
+    hostnames: t.List[str]
     ip: str
 
-    def __init__(self, hostnames: List[str] = None, ip: str = None):
+    def __init__(self, hostnames: t.List[str] = None, ip: str = None):
         super().__init__(hostnames=hostnames, ip=ip)
 
 
@@ -359,9 +359,9 @@ class NamespaceSelector(KubernetesObject):
     __slots__ = ()
 
     any: bool
-    match_names: List[str]
+    match_names: t.List[str]
 
-    def __init__(self, any: bool = None, match_names: List[str] = None):
+    def __init__(self, any: bool = None, match_names: t.List[str] = None):
         super().__init__(any=any, match_names=match_names)
 
 
@@ -369,13 +369,13 @@ class Ingress(KubernetesObject):
     __slots__ = ()
 
     namespace_selector: NamespaceSelector
-    relabeling_configs: List[RelabelConfig]
+    relabeling_configs: t.List[RelabelConfig]
     selector: meta.LabelSelector
 
     def __init__(
         self,
         namespace_selector: NamespaceSelector = None,
-        relabeling_configs: List[RelabelConfig] = None,
+        relabeling_configs: t.List[RelabelConfig] = None,
         selector: meta.LabelSelector = None,
     ):
         super().__init__(namespace_selector=namespace_selector, relabeling_configs=relabeling_configs, selector=selector)
@@ -430,11 +430,11 @@ class PodDisruptionBudget(KubernetesObject):
 class PodMetadata(KubernetesObject):
     __slots__ = ()
 
-    annotations: Dict[str, str]
-    labels: Dict[str, str]
+    annotations: t.Dict[str, str]
+    labels: t.Dict[str, str]
     name: str
 
-    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None, name: str = None):
+    def __init__(self, annotations: t.Dict[str, str] = None, labels: t.Dict[str, str] = None, name: str = None):
         super().__init__(annotations=annotations, labels=labels, name=name)
 
 
@@ -493,10 +493,10 @@ class RemoteWriteSetting(KubernetesObject):
 class Resource(KubernetesObject):
     __slots__ = ()
 
-    limits: Dict[str, core.IntOrString]
-    requests: Dict[str, core.IntOrString]
+    limits: t.Dict[str, core.IntOrString]
+    requests: t.Dict[str, core.IntOrString]
 
-    def __init__(self, limits: Dict[str, core.IntOrString] = None, requests: Dict[str, core.IntOrString] = None):
+    def __init__(self, limits: t.Dict[str, core.IntOrString] = None, requests: t.Dict[str, core.IntOrString] = None):
         super().__init__(limits=limits, requests=requests)
 
 
@@ -527,11 +527,11 @@ class StaticConfig(KubernetesObject):
 
     _required_ = ["targets"]
 
-    labels: Dict[str, str]
-    relabeling_configs: List[RelabelConfig]
-    targets: List[str]
+    labels: t.Dict[str, str]
+    relabeling_configs: t.List[RelabelConfig]
+    targets: t.List[str]
 
-    def __init__(self, labels: Dict[str, str] = None, relabeling_configs: List[RelabelConfig] = None, targets: List[str] = None):
+    def __init__(self, labels: t.Dict[str, str] = None, relabeling_configs: t.List[RelabelConfig] = None, targets: t.List[str] = None):
         super().__init__(labels=labels, relabeling_configs=relabeling_configs, targets=targets)
 
 
@@ -579,16 +579,16 @@ class TargetEndpoint(KubernetesObject):
     honor_labels: bool
     honor_timestamps: bool
     interval: str
-    labels: Dict[str, str]
-    metric_relabel_configs: List[RelabelConfig]
-    params: Dict[str, List[str]]
+    labels: t.Dict[str, str]
+    metric_relabel_configs: t.List[RelabelConfig]
+    params: t.Dict[str, t.List[str]]
     path: str
     port: str
     proxy_url: str
-    relabel_configs: List[RelabelConfig]
+    relabel_configs: t.List[RelabelConfig]
     scheme: str
     scrape_timeout: str
-    targets: List[str]
+    targets: t.List[str]
     tls_config: TLSConfig
 
     def __init__(
@@ -599,16 +599,16 @@ class TargetEndpoint(KubernetesObject):
         honor_labels: bool = None,
         honor_timestamps: bool = None,
         interval: str = None,
-        labels: Dict[str, str] = None,
-        metric_relabel_configs: List[RelabelConfig] = None,
-        params: Dict[str, List[str]] = None,
+        labels: t.Dict[str, str] = None,
+        metric_relabel_configs: t.List[RelabelConfig] = None,
+        params: t.Dict[str, t.List[str]] = None,
         path: str = None,
         port: str = None,
         proxy_url: str = None,
-        relabel_configs: List[RelabelConfig] = None,
+        relabel_configs: t.List[RelabelConfig] = None,
         scheme: str = None,
         scrape_timeout: str = None,
-        targets: List[str] = None,
+        targets: t.List[str] = None,
         tls_config: TLSConfig = None,
     ):
         super().__init__(
@@ -639,8 +639,8 @@ class VMAgentSpecRemoteWrite(KubernetesObject):
 
     basic_auth: BasicAuth
     bearer_token_secret: core.ConfigMapKeySelector
-    inline_url_relabel_config: List[RelabelConfig]
-    label: Dict[str, str]
+    inline_url_relabel_config: t.List[RelabelConfig]
+    label: t.Dict[str, str]
     send_timeout: str
     tls_config: TLSConfig
     url: str
@@ -650,8 +650,8 @@ class VMAgentSpecRemoteWrite(KubernetesObject):
         self,
         basic_auth: BasicAuth = None,
         bearer_token_secret: core.ConfigMapKeySelector = None,
-        inline_url_relabel_config: List[RelabelConfig] = None,
-        label: Dict[str, str] = None,
+        inline_url_relabel_config: t.List[RelabelConfig] = None,
+        label: t.Dict[str, str] = None,
         send_timeout: str = None,
         tls_config: TLSConfig = None,
         url: str = None,
@@ -686,20 +686,20 @@ class VMAgentSpec(KubernetesObject):
     additional_scrape_configs: core.SecretKeySelector
     affinity: core.Affinity
     arbitrary_fs_access_through_sms: ArbitraryFSAccessThroughSM
-    config_maps: List[str]
-    containers: List[core.Container]
+    config_maps: t.List[str]
+    containers: t.List[core.Container]
     dns_policy: str
     enforced_namespace_label: str
-    external_labels: Dict[str, str]
-    extra_args: Dict[str, str]
-    extra_envs: List[core.EnvVar]
+    external_labels: t.Dict[str, str]
+    extra_args: t.Dict[str, str]
+    extra_envs: t.List[core.EnvVar]
     host_network: bool
-    host_aliases: List[Host_aliase]
+    host_aliases: t.List[Host_aliase]
     ignore_namespace_selectors: bool
     image: Image
-    image_pull_secrets: List[core.LocalObjectReference]
-    init_containers: List[core.Container]
-    inline_relabel_config: List[RelabelConfig]
+    image_pull_secrets: t.List[core.LocalObjectReference]
+    init_containers: t.List[core.Container]
+    inline_relabel_config: t.List[RelabelConfig]
     inline_scrape_config: str
     insert_ports: InsertPort
     liveness_probe: core.Probe
@@ -720,7 +720,7 @@ class VMAgentSpec(KubernetesObject):
     probe_selector: meta.LabelSelector
     readiness_probe: core.Probe
     relabel_config: core.ConfigMapKeySelector
-    remote_write: List[VMAgentSpecRemoteWrite]
+    remote_write: t.List[VMAgentSpecRemoteWrite]
     remote_write_settings: RemoteWriteSetting
     replica_count: int
     resources: core.ResourceRequirements
@@ -728,7 +728,7 @@ class VMAgentSpec(KubernetesObject):
     runtime_class_name: str
     scheduler_name: str
     scrape_interval: str
-    secrets: List[str]
+    secrets: t.List[str]
     security_context: core.PodSecurityContext
     service_account_name: str
     service_scrape_namespace_selector: meta.LabelSelector
@@ -738,12 +738,12 @@ class VMAgentSpec(KubernetesObject):
     startup_probe: core.Probe
     static_scrape_namespace_selector: meta.LabelSelector
     static_scrape_selector: meta.LabelSelector
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
     update_strategy: str
     vm_agent_external_label_name: str
-    volume_mounts: List[core.VolumeMount]
-    volumes: List[core.Volume]
+    volume_mounts: t.List[core.VolumeMount]
+    volumes: t.List[core.Volume]
 
     def __init__(
         self,
@@ -751,20 +751,20 @@ class VMAgentSpec(KubernetesObject):
         additional_scrape_configs: core.SecretKeySelector = None,
         affinity: core.Affinity = None,
         arbitrary_fs_access_through_sms: ArbitraryFSAccessThroughSM = None,
-        config_maps: List[str] = None,
-        containers: List[core.Container] = None,
+        config_maps: t.List[str] = None,
+        containers: t.List[core.Container] = None,
         dns_policy: str = None,
         enforced_namespace_label: str = None,
-        external_labels: Dict[str, str] = None,
-        extra_args: Dict[str, str] = None,
-        extra_envs: List[core.EnvVar] = None,
+        external_labels: t.Dict[str, str] = None,
+        extra_args: t.Dict[str, str] = None,
+        extra_envs: t.List[core.EnvVar] = None,
         host_network: bool = None,
-        host_aliases: List[Host_aliase] = None,
+        host_aliases: t.List[Host_aliase] = None,
         ignore_namespace_selectors: bool = None,
         image: Image = None,
-        image_pull_secrets: List[core.LocalObjectReference] = None,
-        init_containers: List[core.Container] = None,
-        inline_relabel_config: List[RelabelConfig] = None,
+        image_pull_secrets: t.List[core.LocalObjectReference] = None,
+        init_containers: t.List[core.Container] = None,
+        inline_relabel_config: t.List[RelabelConfig] = None,
         inline_scrape_config: str = None,
         insert_ports: InsertPort = None,
         liveness_probe: core.Probe = None,
@@ -785,7 +785,7 @@ class VMAgentSpec(KubernetesObject):
         probe_selector: meta.LabelSelector = None,
         readiness_probe: core.Probe = None,
         relabel_config: core.ConfigMapKeySelector = None,
-        remote_write: List[VMAgentSpecRemoteWrite] = None,
+        remote_write: t.List[VMAgentSpecRemoteWrite] = None,
         remote_write_settings: RemoteWriteSetting = None,
         replica_count: int = None,
         resources: core.ResourceRequirements = None,
@@ -793,7 +793,7 @@ class VMAgentSpec(KubernetesObject):
         runtime_class_name: str = None,
         scheduler_name: str = None,
         scrape_interval: str = None,
-        secrets: List[str] = None,
+        secrets: t.List[str] = None,
         security_context: core.PodSecurityContext = None,
         service_account_name: str = None,
         service_scrape_namespace_selector: meta.LabelSelector = None,
@@ -803,12 +803,12 @@ class VMAgentSpec(KubernetesObject):
         startup_probe: core.Probe = None,
         static_scrape_namespace_selector: meta.LabelSelector = None,
         static_scrape_selector: meta.LabelSelector = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
         update_strategy: str = None,
         vm_agent_external_label_name: str = None,
-        volume_mounts: List[core.VolumeMount] = None,
-        volumes: List[core.Volume] = None,
+        volume_mounts: t.List[core.VolumeMount] = None,
+        volumes: t.List[core.Volume] = None,
     ):
         super().__init__(
             api_server_config=api_server_config,
@@ -930,24 +930,24 @@ class VMAlertSpec(KubernetesObject):
     _required_ = ["datasource"]
 
     affinity: core.Affinity
-    config_maps: List[str]
-    containers: List[core.Container]
+    config_maps: t.List[str]
+    containers: t.List[core.Container]
     datasource: Datasource
     dns_policy: str
     enforced_namespace_label: str
     evaluation_interval: str
-    external_labels: Dict[str, str]
-    extra_args: Dict[str, str]
-    extra_envs: List[core.EnvVar]
+    external_labels: t.Dict[str, str]
+    extra_args: t.Dict[str, str]
+    extra_envs: t.List[core.EnvVar]
     host_network: bool
     image: Image
-    image_pull_secrets: List[core.LocalObjectReference]
-    init_containers: List[core.Container]
+    image_pull_secrets: t.List[core.LocalObjectReference]
+    init_containers: t.List[core.Container]
     liveness_probe: core.Probe
     log_format: str
     log_level: str
     notifier: Notifier
-    notifiers: List[Notifier]
+    notifiers: t.List[Notifier]
     pod_disruption_budget: PodDisruptionBudget
     pod_metadata: PodMetadata
     pod_security_policy_name: str
@@ -960,42 +960,42 @@ class VMAlertSpec(KubernetesObject):
     resources: core.ResourceRequirements
     rolling_update: RollingUpdate
     rule_namespace_selector: meta.LabelSelector
-    rule_path: List[str]
+    rule_path: t.List[str]
     rule_selector: meta.LabelSelector
     runtime_class_name: str
     scheduler_name: str
-    secrets: List[str]
+    secrets: t.List[str]
     security_context: core.PodSecurityContext
     service_account_name: str
     service_spec: ServiceSpec
     startup_probe: core.Probe
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
     update_strategy: str
-    volume_mounts: List[core.VolumeMount]
-    volumes: List[core.Volume]
+    volume_mounts: t.List[core.VolumeMount]
+    volumes: t.List[core.Volume]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
-        config_maps: List[str] = None,
-        containers: List[core.Container] = None,
+        config_maps: t.List[str] = None,
+        containers: t.List[core.Container] = None,
         datasource: Datasource = None,
         dns_policy: str = None,
         enforced_namespace_label: str = None,
         evaluation_interval: str = None,
-        external_labels: Dict[str, str] = None,
-        extra_args: Dict[str, str] = None,
-        extra_envs: List[core.EnvVar] = None,
+        external_labels: t.Dict[str, str] = None,
+        extra_args: t.Dict[str, str] = None,
+        extra_envs: t.List[core.EnvVar] = None,
         host_network: bool = None,
         image: Image = None,
-        image_pull_secrets: List[core.LocalObjectReference] = None,
-        init_containers: List[core.Container] = None,
+        image_pull_secrets: t.List[core.LocalObjectReference] = None,
+        init_containers: t.List[core.Container] = None,
         liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
         notifier: Notifier = None,
-        notifiers: List[Notifier] = None,
+        notifiers: t.List[Notifier] = None,
         pod_disruption_budget: PodDisruptionBudget = None,
         pod_metadata: PodMetadata = None,
         pod_security_policy_name: str = None,
@@ -1008,20 +1008,20 @@ class VMAlertSpec(KubernetesObject):
         resources: core.ResourceRequirements = None,
         rolling_update: RollingUpdate = None,
         rule_namespace_selector: meta.LabelSelector = None,
-        rule_path: List[str] = None,
+        rule_path: t.List[str] = None,
         rule_selector: meta.LabelSelector = None,
         runtime_class_name: str = None,
         scheduler_name: str = None,
-        secrets: List[str] = None,
+        secrets: t.List[str] = None,
         security_context: core.PodSecurityContext = None,
         service_account_name: str = None,
         service_spec: ServiceSpec = None,
         startup_probe: core.Probe = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
         update_strategy: str = None,
-        volume_mounts: List[core.VolumeMount] = None,
-        volumes: List[core.Volume] = None,
+        volume_mounts: t.List[core.VolumeMount] = None,
+        volumes: t.List[core.Volume] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -1096,24 +1096,24 @@ class VMAlertmanagerSpec(KubernetesObject):
         "externalURL": "external_url",
     }
 
-    additional_peers: List[str]
+    additional_peers: t.List[str]
     affinity: core.Affinity
     cluster_advertise_address: str
-    config_maps: List[str]
+    config_maps: t.List[str]
     config_raw_yaml: str
     config_secret: str
-    containers: List[core.Container]
+    containers: t.List[core.Container]
     dns_policy: str
     external_url: str
     host_network: bool
     image: Image
-    image_pull_secrets: List[core.LocalObjectReference]
-    init_containers: List[core.Container]
+    image_pull_secrets: t.List[core.LocalObjectReference]
+    init_containers: t.List[core.Container]
     listen_local: bool
     liveness_probe: core.Probe
     log_format: str
     log_level: str
-    node_selector: Dict[str, str]
+    node_selector: t.Dict[str, str]
     paused: bool
     pod_disruption_budget: PodDisruptionBudget
     pod_metadata: PodMetadata
@@ -1127,37 +1127,37 @@ class VMAlertmanagerSpec(KubernetesObject):
     route_prefix: str
     runtime_class_name: str
     scheduler_name: str
-    secrets: List[str]
+    secrets: t.List[str]
     security_context: core.PodSecurityContext
     service_account_name: str
     service_spec: ServiceSpec
     startup_probe: core.Probe
     storage: StorageSpec
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
-    volume_mounts: List[core.VolumeMount]
-    volumes: List[core.Volume]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
+    volume_mounts: t.List[core.VolumeMount]
+    volumes: t.List[core.Volume]
 
     def __init__(
         self,
-        additional_peers: List[str] = None,
+        additional_peers: t.List[str] = None,
         affinity: core.Affinity = None,
         cluster_advertise_address: str = None,
-        config_maps: List[str] = None,
+        config_maps: t.List[str] = None,
         config_raw_yaml: str = None,
         config_secret: str = None,
-        containers: List[core.Container] = None,
+        containers: t.List[core.Container] = None,
         dns_policy: str = None,
         external_url: str = None,
         host_network: bool = None,
         image: Image = None,
-        image_pull_secrets: List[core.LocalObjectReference] = None,
-        init_containers: List[core.Container] = None,
+        image_pull_secrets: t.List[core.LocalObjectReference] = None,
+        init_containers: t.List[core.Container] = None,
         listen_local: bool = None,
         liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
-        node_selector: Dict[str, str] = None,
+        node_selector: t.Dict[str, str] = None,
         paused: bool = None,
         pod_disruption_budget: PodDisruptionBudget = None,
         pod_metadata: PodMetadata = None,
@@ -1171,16 +1171,16 @@ class VMAlertmanagerSpec(KubernetesObject):
         route_prefix: str = None,
         runtime_class_name: str = None,
         scheduler_name: str = None,
-        secrets: List[str] = None,
+        secrets: t.List[str] = None,
         security_context: core.PodSecurityContext = None,
         service_account_name: str = None,
         service_spec: ServiceSpec = None,
         startup_probe: core.Probe = None,
         storage: StorageSpec = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
-        volume_mounts: List[core.VolumeMount] = None,
-        volumes: List[core.Volume] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
+        volume_mounts: t.List[core.VolumeMount] = None,
+        volumes: t.List[core.Volume] = None,
     ):
         super().__init__(
             additional_peers=additional_peers,
@@ -1249,14 +1249,14 @@ class VMInsert(KubernetesObject):
     _required_ = ["replica_count"]
 
     affinity: core.Affinity
-    config_maps: List[str]
-    containers: List[core.Container]
+    config_maps: t.List[str]
+    containers: t.List[core.Container]
     dns_policy: str
-    extra_args: Dict[str, str]
-    extra_envs: List[core.EnvVar]
+    extra_args: t.Dict[str, str]
+    extra_envs: t.List[core.EnvVar]
     host_network: bool
     image: Image
-    init_containers: List[core.Container]
+    init_containers: t.List[core.Container]
     insert_ports: InsertPort
     liveness_probe: core.Probe
     log_format: str
@@ -1272,27 +1272,27 @@ class VMInsert(KubernetesObject):
     rolling_update: RollingUpdate
     runtime_class_name: str
     scheduler_name: str
-    secrets: List[str]
+    secrets: t.List[str]
     security_context: core.PodSecurityContext
     service_spec: ServiceSpec
     startup_probe: core.Probe
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
     update_strategy: str
-    volume_mounts: List[core.VolumeMount]
-    volumes: List[core.Volume]
+    volume_mounts: t.List[core.VolumeMount]
+    volumes: t.List[core.Volume]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
-        config_maps: List[str] = None,
-        containers: List[core.Container] = None,
+        config_maps: t.List[str] = None,
+        containers: t.List[core.Container] = None,
         dns_policy: str = None,
-        extra_args: Dict[str, str] = None,
-        extra_envs: List[core.EnvVar] = None,
+        extra_args: t.Dict[str, str] = None,
+        extra_envs: t.List[core.EnvVar] = None,
         host_network: bool = None,
         image: Image = None,
-        init_containers: List[core.Container] = None,
+        init_containers: t.List[core.Container] = None,
         insert_ports: InsertPort = None,
         liveness_probe: core.Probe = None,
         log_format: str = None,
@@ -1308,15 +1308,15 @@ class VMInsert(KubernetesObject):
         rolling_update: RollingUpdate = None,
         runtime_class_name: str = None,
         scheduler_name: str = None,
-        secrets: List[str] = None,
+        secrets: t.List[str] = None,
         security_context: core.PodSecurityContext = None,
         service_spec: ServiceSpec = None,
         startup_probe: core.Probe = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
         update_strategy: str = None,
-        volume_mounts: List[core.VolumeMount] = None,
-        volumes: List[core.Volume] = None,
+        volume_mounts: t.List[core.VolumeMount] = None,
+        volumes: t.List[core.Volume] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -1362,14 +1362,14 @@ class VMSelect(KubernetesObject):
 
     affinity: core.Affinity
     cache_mount_path: str
-    config_maps: List[str]
-    containers: List[core.Container]
+    config_maps: t.List[str]
+    containers: t.List[core.Container]
     dns_policy: str
-    extra_args: Dict[str, str]
-    extra_envs: List[core.EnvVar]
+    extra_args: t.Dict[str, str]
+    extra_envs: t.List[core.EnvVar]
     host_network: bool
     image: Image
-    init_containers: List[core.Container]
+    init_containers: t.List[core.Container]
     liveness_probe: core.Probe
     log_format: str
     log_level: str
@@ -1384,28 +1384,28 @@ class VMSelect(KubernetesObject):
     resources: core.ResourceRequirements
     runtime_class_name: str
     scheduler_name: str
-    secrets: List[str]
+    secrets: t.List[str]
     security_context: core.PodSecurityContext
     service_spec: ServiceSpec
     startup_probe: core.Probe
     storage: StorageSpec
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
-    volume_mounts: List[core.VolumeMount]
-    volumes: List[core.Volume]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
+    volume_mounts: t.List[core.VolumeMount]
+    volumes: t.List[core.Volume]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
         cache_mount_path: str = None,
-        config_maps: List[str] = None,
-        containers: List[core.Container] = None,
+        config_maps: t.List[str] = None,
+        containers: t.List[core.Container] = None,
         dns_policy: str = None,
-        extra_args: Dict[str, str] = None,
-        extra_envs: List[core.EnvVar] = None,
+        extra_args: t.Dict[str, str] = None,
+        extra_envs: t.List[core.EnvVar] = None,
         host_network: bool = None,
         image: Image = None,
-        init_containers: List[core.Container] = None,
+        init_containers: t.List[core.Container] = None,
         liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
@@ -1420,15 +1420,15 @@ class VMSelect(KubernetesObject):
         resources: core.ResourceRequirements = None,
         runtime_class_name: str = None,
         scheduler_name: str = None,
-        secrets: List[str] = None,
+        secrets: t.List[str] = None,
         security_context: core.PodSecurityContext = None,
         service_spec: ServiceSpec = None,
         startup_probe: core.Probe = None,
         storage: StorageSpec = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
-        volume_mounts: List[core.VolumeMount] = None,
-        volumes: List[core.Volume] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
+        volume_mounts: t.List[core.VolumeMount] = None,
+        volumes: t.List[core.Volume] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -1488,8 +1488,8 @@ class VmBackup(KubernetesObject):
     disable_hourly: bool
     disable_monthly: bool
     disable_weekly: bool
-    extra_args: Dict[str, str]
-    extra_envs: List[ExtraEnv]
+    extra_args: t.Dict[str, str]
+    extra_envs: t.List[ExtraEnv]
     image: Image
     log_format: str
     log_level: str
@@ -1507,8 +1507,8 @@ class VmBackup(KubernetesObject):
         disable_hourly: bool = None,
         disable_monthly: bool = None,
         disable_weekly: bool = None,
-        extra_args: Dict[str, str] = None,
-        extra_envs: List[ExtraEnv] = None,
+        extra_args: t.Dict[str, str] = None,
+        extra_envs: t.List[ExtraEnv] = None,
         image: Image = None,
         log_format: str = None,
         log_level: str = None,
@@ -1550,19 +1550,19 @@ class VMStorage(KubernetesObject):
     }
 
     affinity: core.Affinity
-    config_maps: List[str]
-    containers: List[core.Container]
+    config_maps: t.List[str]
+    containers: t.List[core.Container]
     dns_policy: str
-    extra_args: Dict[str, str]
-    extra_envs: List[core.EnvVar]
+    extra_args: t.Dict[str, str]
+    extra_envs: t.List[core.EnvVar]
     host_network: bool
     image: Image
-    init_containers: List[core.Container]
+    init_containers: t.List[core.Container]
     liveness_probe: core.Probe
     log_format: str
     log_level: str
-    maintenance_insert_node_ids: List[int]
-    maintenance_select_node_ids: List[int]
+    maintenance_insert_node_ids: t.List[int]
+    maintenance_select_node_ids: t.List[int]
     name: str
     pod_disruption_budget: PodDisruptionBudget
     pod_metadata: PodMetadata
@@ -1573,37 +1573,37 @@ class VMStorage(KubernetesObject):
     resources: core.ResourceRequirements
     runtime_class_name: str
     scheduler_name: str
-    secrets: List[str]
+    secrets: t.List[str]
     security_context: core.PodSecurityContext
     service_spec: ServiceSpec
     startup_probe: core.Probe
     storage: StorageSpec
     storage_data_path: str
     termination_grace_period_seconds: int
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
     vm_backup: VmBackup
     vm_insert_port: str
     vm_select_port: str
-    volume_mounts: List[core.VolumeMount]
-    volumes: List[core.Volume]
+    volume_mounts: t.List[core.VolumeMount]
+    volumes: t.List[core.Volume]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
-        config_maps: List[str] = None,
-        containers: List[core.Container] = None,
+        config_maps: t.List[str] = None,
+        containers: t.List[core.Container] = None,
         dns_policy: str = None,
-        extra_args: Dict[str, str] = None,
-        extra_envs: List[core.EnvVar] = None,
+        extra_args: t.Dict[str, str] = None,
+        extra_envs: t.List[core.EnvVar] = None,
         host_network: bool = None,
         image: Image = None,
-        init_containers: List[core.Container] = None,
+        init_containers: t.List[core.Container] = None,
         liveness_probe: core.Probe = None,
         log_format: str = None,
         log_level: str = None,
-        maintenance_insert_node_ids: List[int] = None,
-        maintenance_select_node_ids: List[int] = None,
+        maintenance_insert_node_ids: t.List[int] = None,
+        maintenance_select_node_ids: t.List[int] = None,
         name: str = None,
         pod_disruption_budget: PodDisruptionBudget = None,
         pod_metadata: PodMetadata = None,
@@ -1614,20 +1614,20 @@ class VMStorage(KubernetesObject):
         resources: core.ResourceRequirements = None,
         runtime_class_name: str = None,
         scheduler_name: str = None,
-        secrets: List[str] = None,
+        secrets: t.List[str] = None,
         security_context: core.PodSecurityContext = None,
         service_spec: ServiceSpec = None,
         startup_probe: core.Probe = None,
         storage: StorageSpec = None,
         storage_data_path: str = None,
         termination_grace_period_seconds: int = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
         vm_backup: VmBackup = None,
         vm_insert_port: str = None,
         vm_select_port: str = None,
-        volume_mounts: List[core.VolumeMount] = None,
-        volumes: List[core.Volume] = None,
+        volume_mounts: t.List[core.VolumeMount] = None,
+        volumes: t.List[core.Volume] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -1677,7 +1677,7 @@ class VMClusterSpec(KubernetesObject):
     _required_ = ["retention_period"]
 
     cluster_version: str
-    image_pull_secrets: List[core.LocalObjectReference]
+    image_pull_secrets: t.List[core.LocalObjectReference]
     pod_security_policy_name: str
     replication_factor: int
     retention_period: str
@@ -1689,7 +1689,7 @@ class VMClusterSpec(KubernetesObject):
     def __init__(
         self,
         cluster_version: str = None,
-        image_pull_secrets: List[core.LocalObjectReference] = None,
+        image_pull_secrets: t.List[core.LocalObjectReference] = None,
         pod_security_policy_name: str = None,
         replication_factor: int = None,
         retention_period: str = None,
@@ -1744,17 +1744,17 @@ class VMNodeScrapeSpec(KubernetesObject):
     honor_timestamps: bool
     interval: str
     job_label: str
-    metric_relabel_configs: List[RelabelConfig]
-    params: Dict[str, List[str]]
+    metric_relabel_configs: t.List[RelabelConfig]
+    params: t.Dict[str, t.List[str]]
     path: str
     port: str
     proxy_url: str
-    relabel_configs: List[RelabelConfig]
+    relabel_configs: t.List[RelabelConfig]
     sample_limit: int
     scheme: str
     scrape_timeout: str
     selector: meta.LabelSelector
-    target_labels: List[str]
+    target_labels: t.List[str]
     tls_config: TLSConfig
 
     def __init__(
@@ -1766,17 +1766,17 @@ class VMNodeScrapeSpec(KubernetesObject):
         honor_timestamps: bool = None,
         interval: str = None,
         job_label: str = None,
-        metric_relabel_configs: List[RelabelConfig] = None,
-        params: Dict[str, List[str]] = None,
+        metric_relabel_configs: t.List[RelabelConfig] = None,
+        params: t.Dict[str, t.List[str]] = None,
         path: str = None,
         port: str = None,
         proxy_url: str = None,
-        relabel_configs: List[RelabelConfig] = None,
+        relabel_configs: t.List[RelabelConfig] = None,
         sample_limit: int = None,
         scheme: str = None,
         scrape_timeout: str = None,
         selector: meta.LabelSelector = None,
-        target_labels: List[str] = None,
+        target_labels: t.List[str] = None,
         tls_config: TLSConfig = None,
     ):
         super().__init__(
@@ -1823,8 +1823,8 @@ class VMPodScrapeSpec(KubernetesObject):
 
     job_label: str
     namespace_selector: NamespaceSelector
-    pod_metrics_endpoints: List[Endpoint]
-    pod_target_labels: List[str]
+    pod_metrics_endpoints: t.List[Endpoint]
+    pod_target_labels: t.List[str]
     sample_limit: int
     selector: meta.LabelSelector
 
@@ -1832,8 +1832,8 @@ class VMPodScrapeSpec(KubernetesObject):
         self,
         job_label: str = None,
         namespace_selector: NamespaceSelector = None,
-        pod_metrics_endpoints: List[Endpoint] = None,
-        pod_target_labels: List[str] = None,
+        pod_metrics_endpoints: t.List[Endpoint] = None,
+        pod_target_labels: t.List[str] = None,
         sample_limit: int = None,
         selector: meta.LabelSelector = None,
     ):
@@ -1926,9 +1926,9 @@ class VMRuleSpec(KubernetesObject):
 
     _required_ = ["groups"]
 
-    groups: List[Group]
+    groups: t.List[Group]
 
-    def __init__(self, groups: List[Group] = None):
+    def __init__(self, groups: t.List[Group] = None):
         super().__init__(groups=groups)
 
 
@@ -1954,24 +1954,24 @@ class VMServiceScrapeSpec(KubernetesObject):
     _required_ = ["endpoints", "selector"]
 
     discovery_role: str
-    endpoints: List[Endpoint]
+    endpoints: t.List[Endpoint]
     job_label: str
     namespace_selector: NamespaceSelector
-    pod_target_labels: List[str]
+    pod_target_labels: t.List[str]
     sample_limit: int
     selector: meta.LabelSelector
-    target_labels: List[str]
+    target_labels: t.List[str]
 
     def __init__(
         self,
         discovery_role: str = None,
-        endpoints: List[Endpoint] = None,
+        endpoints: t.List[Endpoint] = None,
         job_label: str = None,
         namespace_selector: NamespaceSelector = None,
-        pod_target_labels: List[str] = None,
+        pod_target_labels: t.List[str] = None,
         sample_limit: int = None,
         selector: meta.LabelSelector = None,
-        target_labels: List[str] = None,
+        target_labels: t.List[str] = None,
     ):
         super().__init__(
             discovery_role=discovery_role,
@@ -2007,16 +2007,16 @@ class VMSingleSpec(KubernetesObject):
     _required_ = ["retention_period"]
 
     affinity: core.Affinity
-    config_maps: List[str]
-    containers: List[core.Container]
+    config_maps: t.List[str]
+    containers: t.List[core.Container]
     dns_policy: str
-    extra_args: Dict[str, str]
-    extra_envs: List[core.EnvVar]
-    host_aliases: List[core.HostAlias]
+    extra_args: t.Dict[str, str]
+    extra_envs: t.List[core.EnvVar]
+    host_aliases: t.List[core.HostAlias]
     host_network: bool
     image: Image
-    image_pull_secrets: List[core.LocalObjectReference]
-    init_containers: List[core.Container]
+    image_pull_secrets: t.List[core.LocalObjectReference]
+    init_containers: t.List[core.Container]
     insert_ports: InsertPort
     liveness_probe: core.Probe
     log_format: str
@@ -2032,31 +2032,31 @@ class VMSingleSpec(KubernetesObject):
     retention_period: str
     runtime_class_name: str
     scheduler_name: str
-    secrets: List[str]
+    secrets: t.List[str]
     security_context: core.PodSecurityContext
     service_account_name: str
     service_spec: ServiceSpec
     startup_probe: core.Probe
     storage: core.PersistentVolumeClaimSpec
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
     vm_backup: VmBackup
-    volume_mounts: List[core.VolumeMount]
-    volumes: List[core.Volume]
+    volume_mounts: t.List[core.VolumeMount]
+    volumes: t.List[core.Volume]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
-        config_maps: List[str] = None,
-        containers: List[core.Container] = None,
+        config_maps: t.List[str] = None,
+        containers: t.List[core.Container] = None,
         dns_policy: str = None,
-        extra_args: Dict[str, str] = None,
-        extra_envs: List[core.EnvVar] = None,
-        host_aliases: List[core.HostAlias] = None,
+        extra_args: t.Dict[str, str] = None,
+        extra_envs: t.List[core.EnvVar] = None,
+        host_aliases: t.List[core.HostAlias] = None,
         host_network: bool = None,
         image: Image = None,
-        image_pull_secrets: List[core.LocalObjectReference] = None,
-        init_containers: List[core.Container] = None,
+        image_pull_secrets: t.List[core.LocalObjectReference] = None,
+        init_containers: t.List[core.Container] = None,
         insert_ports: InsertPort = None,
         liveness_probe: core.Probe = None,
         log_format: str = None,
@@ -2072,17 +2072,17 @@ class VMSingleSpec(KubernetesObject):
         retention_period: str = None,
         runtime_class_name: str = None,
         scheduler_name: str = None,
-        secrets: List[str] = None,
+        secrets: t.List[str] = None,
         security_context: core.PodSecurityContext = None,
         service_account_name: str = None,
         service_spec: ServiceSpec = None,
         startup_probe: core.Probe = None,
         storage: core.PersistentVolumeClaimSpec = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
         vm_backup: VmBackup = None,
-        volume_mounts: List[core.VolumeMount] = None,
-        volumes: List[core.Volume] = None,
+        volume_mounts: t.List[core.VolumeMount] = None,
+        volumes: t.List[core.Volume] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -2146,9 +2146,9 @@ class VMStaticScrapeSpec(KubernetesObject):
 
     job_name: str
     sample_limit: int
-    target_endpoints: List[TargetEndpoint]
+    target_endpoints: t.List[TargetEndpoint]
 
-    def __init__(self, job_name: str = None, sample_limit: int = None, target_endpoints: List[TargetEndpoint] = None):
+    def __init__(self, job_name: str = None, sample_limit: int = None, target_endpoints: t.List[TargetEndpoint] = None):
         super().__init__(job_name=job_name, sample_limit=sample_limit, target_endpoints=target_endpoints)
 
 

@@ -1,6 +1,6 @@
 import sys
+import typing as t
 from collections import defaultdict
-from typing import List, Iterable, Tuple, Optional, Dict, Set
 
 from .k8s import QualifiedName, module_for_group
 from .types import (
@@ -16,21 +16,29 @@ from .types import (
     NamedProperty,
 )
 
-TimeType = TypeAlias(QualifiedName("Time", "meta", "v1"), "str", description="ISO date-time")
+TimeType = TypeAlias(
+    QualifiedName("Time", "meta", "v1"),
+    "str",
+    description="ISO date-time")
 
 QuantityType = TypeAlias(
     QualifiedName("Quantity", "core", "v1"),
-    GenericType("Union", ["str", "int", "float"]),
+    "str | int | float",
     description="Quantity is a fixed-point representation of a number. "
                 "It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.",
 )
 
 IntOrStringType = TypeAlias(
     QualifiedName("IntOrString", "core", "v1"),
-    GenericType("Union", ["str", "int"]),
+    "int | str",
     description="IntOrString is a type that can hold an int32 or a string.",
 )
-IDNHostname = TypeAlias(QualifiedName("IDNHostname", "core", "v1"), "str", description="")
+
+IDNHostname = TypeAlias(
+    QualifiedName("IDNHostname", "core", "v1"),
+    "str",
+    description="")
+
 Base64Type = TypeAlias(
     QualifiedName("Base64", "core", "v1"),
     "str",
@@ -44,14 +52,15 @@ class ApiGroup:
         self.version = version
 
         # group types
-        self.types: List[ApiType] = []
-        self._types: Dict[str, ApiType] = {}
-        self._anonymous: Dict[str, List[AnonymousType]] = defaultdict(list)
+        self.types: t.List[ApiType] = []
+
+        self._types: t.Dict[str, ApiType] = {}
+        self._anonymous: t.Dict[str, t.List[AnonymousType]] = defaultdict(list)
 
         # imports
-        self._refs: Set[str] = set()
-        self._typing: Set[str] = set()
-        self._base_types: Set[str] = set()
+        self.use_typing: bool = False
+        self._refs: t.Set[str] = set()
+        self._base_types: t.Set[str] = set()
 
     def __repr__(self):
         return f"ApiGroup {{ name: {self.name}, {len(self._types)} types: }}"
@@ -62,7 +71,7 @@ class ApiGroup:
 
         return item.name in self._types
 
-    def get(self, fqn: QualifiedName) -> Optional[ApiType]:
+    def get(self, fqn: QualifiedName) -> ApiType | None:
         return self._types.get(fqn.name)
 
     def _quote(self, value: str, quote: bool):
@@ -88,15 +97,11 @@ class ApiGroup:
             self._types[api_type.name] = api_type
 
     @property
-    def typing(self) -> Iterable[str]:
-        return self._typing
-
-    @property
-    def base_types(self) -> Iterable[str]:
+    def base_types(self) -> t.Iterable[str]:
         return self._base_types
 
     @property
-    def refs(self) -> Iterable[str]:
+    def refs(self) -> t.Iterable[str]:
         return self._refs
 
     def _rename(self, item):
@@ -104,8 +109,8 @@ class ApiGroup:
         assert item.name not in self._types, item.name
         self._types[item.name] = item
 
-    def rename_duplicated(self, items: List[AnonymousType]):
-        types: List[List[AnonymousType]] = []
+    def rename_duplicated(self, items: t.List[AnonymousType]):
+        types: t.List[t.List[AnonymousType]] = []
 
         for duplicated in items:
             # Try to group items by matching type
@@ -127,21 +132,21 @@ class ApiGroup:
                 self._types[base.name] = base
         else:
             types.sort(key=lambda i: len(i), reverse=True)
-            for idx, ty in enumerate(types):
+            for idx, typs in enumerate(types):
                 # generate indexed names if names do not match.
-                if len(ty) > 1 and any(t.fullname != ty[0].fullname for t in ty):
-                    base = ty[0]
+                if len(typs) > 1 and any(ty.fullname != typs[0].fullname for ty in typs):
+                    base = typs[0]
                     # For the type with most matching types -> use the original name
                     if idx > 0 or base.name in self._types:
                         name = f"{base.name}{idx + 1}"
-                        for t in ty:
-                            t.fqn = QualifiedName(name, base.group, base.version)
+                        for ty in typs:
+                            ty.fqn = QualifiedName(name, base.group, base.version)
                     assert base.name not in self._types
                     self._types[base.name] = base
                 else:
-                    self._rename(ty[0])
-                    for t in ty[1:]:
-                        t.fqn = ty[0].fqn
+                    self._rename(typs[0])
+                    for ty in typs[1:]:
+                        ty.fqn = typs[0].fqn
 
     def finalize(self):
         for name, items in self._anonymous.items():
@@ -174,18 +179,18 @@ class ApiGroup:
 
     def add_imports_for_type(self, ty):
         if isinstance(ty, GenericType):
-            self._typing.add(ty.base_type)
+            self.use_typing = True
         elif isinstance(ty, ApiType):
             if ty in self:
                 if isinstance(ty, ObjectType):
                     self._base_types.add(ty.kubic_type)
                 elif sys.version_info >= (3, 10) and isinstance(ty, TypeAlias):
-                    self._typing.add("TypeAlias")
+                    self.use_typing = True
             elif ty.group:
                 self._refs.add(ty.group)
         else:
-            if ty == "Any":
-                self._typing.add("Any")
+            if ty == "t.Any":
+                self.use_typing = True
 
     def _fetch_generic_params(self, ty: GenericType, into: list):
         self.add_imports_for_type(ty)
@@ -195,7 +200,7 @@ class ApiGroup:
             else:
                 into.append(param)
 
-    def _fetch_dependencies(self, ty: ApiType, dones: set) -> List[ApiType]:
+    def _fetch_dependencies(self, ty: ApiType, dones: set) -> t.List[ApiType]:
         dependencies = []
 
         # resolve internal reference
@@ -242,16 +247,16 @@ class ApiGroup:
 
 class Parser:
     def __init__(self):
-        self._pendings: List[Tuple[ObjectType, dict]] = []
+        self._pendings: t.List[t.Tuple[ObjectType, dict]] = []
 
     def group_for_type(self, fqn: QualifiedName) -> ApiGroup:
         raise NotImplementedError()
 
-    def annotations_for_type(self, obj_type: ObjectType) -> Optional[dict]:
+    def annotations_for_type(self, obj_type: ObjectType) -> dict | None:
         return None
 
     @property
-    def pendings(self) -> Iterable[Tuple[ObjectType, dict]]:
+    def pendings(self) -> t.Iterable[t.Tuple[ObjectType, dict]]:
         def iterator():
             while self._pendings:
                 yield self._pendings.pop()
@@ -339,9 +344,9 @@ class Parser:
                 if "_type_name_" in schema:
                     details["_type_name_"] = schema["_type_name_"]
                 vtype = self.import_property(obj_type, prop_name, details)
-                return GenericType("Dict", ("str", vtype))
+                return GenericType("t.Dict", ("str", vtype))
 
-            return GenericType("Dict", ("str", "Any"))
+            return GenericType("t.Dict", ("str", "Any"))
 
         if prop_type == "integer":
             return "int"
@@ -352,7 +357,7 @@ class Parser:
         if prop_type == "string":
             fmt = schema.get("format")
             if fmt == "int-or-string":
-                return GenericType("Union", ("int", "str"))
+                return IntOrStringType
             if fmt == "byte":
                 return Base64Type
             if fmt == "date-time":
@@ -377,7 +382,7 @@ class Parser:
                 if "_type_name_" in schema:
                     details["_type_name_"] = schema["_type_name_"]
                 vtype = self.import_property(obj_type, prop_name, details)
-                return GenericType("List", (vtype,))
+                return GenericType("t.List", (vtype,))
             return "list"
 
         raise NotImplementedError(f"{prop_type} base type not supported")
@@ -391,7 +396,7 @@ class Parser:
         #     types = [self._get_type_name(item, prop_name) for item in union]
         #     return f"Union[{', '.join(types)}]"
         if schema.get("x-kubernetes-preserve-unknown-fields", False):
-            return "Any"
+            return "t.Any"
 
         if schema.get("x-kubernetes-int-or-string", False):
             return IntOrStringType

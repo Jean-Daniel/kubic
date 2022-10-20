@@ -1,7 +1,7 @@
-from typing import Any, Dict, List
+import typing as t
 
 from kubic import KubernetesApiResource, KubernetesObject
-from kubic.api import core, meta
+from ..api import core, meta
 
 
 class SecretRef(KubernetesObject):
@@ -235,11 +235,11 @@ class Webhook(KubernetesObject):
 
     _required_ = ["group_name", "solver_name"]
 
-    config: Any
+    config: t.Any
     group_name: str
     solver_name: str
 
-    def __init__(self, config: Any = None, group_name: str = None, solver_name: str = None):
+    def __init__(self, config: t.Any = None, group_name: str = None, solver_name: str = None):
         super().__init__(config=config, group_name=group_name, solver_name=solver_name)
 
 
@@ -298,20 +298,20 @@ class Dns01(KubernetesObject):
 class GatewayHTTPRoute(KubernetesObject):
     __slots__ = ()
 
-    labels: Dict[str, str]
+    labels: t.Dict[str, str]
     service_type: str
 
-    def __init__(self, labels: Dict[str, str] = None, service_type: str = None):
+    def __init__(self, labels: t.Dict[str, str] = None, service_type: str = None):
         super().__init__(labels=labels, service_type=service_type)
 
 
 class Metadata(KubernetesObject):
     __slots__ = ()
 
-    annotations: Dict[str, str]
-    labels: Dict[str, str]
+    annotations: t.Dict[str, str]
+    labels: t.Dict[str, str]
 
-    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None):
+    def __init__(self, annotations: t.Dict[str, str] = None, labels: t.Dict[str, str] = None):
         super().__init__(annotations=annotations, labels=labels)
 
 
@@ -328,18 +328,18 @@ class PodTemplateSpec(KubernetesObject):
     __slots__ = ()
 
     affinity: core.Affinity
-    node_selector: Dict[str, str]
+    node_selector: t.Dict[str, str]
     priority_class_name: str
     service_account_name: str
-    tolerations: List[core.Toleration]
+    tolerations: t.List[core.Toleration]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
-        node_selector: Dict[str, str] = None,
+        node_selector: t.Dict[str, str] = None,
         priority_class_name: str = None,
         service_account_name: str = None,
-        tolerations: List[core.Toleration] = None,
+        tolerations: t.List[core.Toleration] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -404,11 +404,11 @@ class Http01(KubernetesObject):
 class Selector(KubernetesObject):
     __slots__ = ()
 
-    dns_names: List[str]
-    dns_zones: List[str]
-    match_labels: Dict[str, str]
+    dns_names: t.List[str]
+    dns_zones: t.List[str]
+    match_labels: t.Dict[str, str]
 
-    def __init__(self, dns_names: List[str] = None, dns_zones: List[str] = None, match_labels: Dict[str, str] = None):
+    def __init__(self, dns_names: t.List[str] = None, dns_zones: t.List[str] = None, match_labels: t.Dict[str, str] = None):
         super().__init__(dns_names=dns_names, dns_zones=dns_zones, match_labels=match_labels)
 
 
@@ -443,7 +443,7 @@ class Acme(KubernetesObject):
     private_key_secret_ref: SecretRef
     server: str
     skip_tls_verify: bool
-    solvers: List[Solver]
+    solvers: t.List[Solver]
 
     def __init__(
         self,
@@ -455,7 +455,7 @@ class Acme(KubernetesObject):
         private_key_secret_ref: SecretRef = None,
         server: str = None,
         skip_tls_verify: bool = None,
-        solvers: List[Solver] = None,
+        solvers: t.List[Solver] = None,
     ):
         super().__init__(
             disable_account_key_generation=disable_account_key_generation,
@@ -523,11 +523,11 @@ class CA(KubernetesObject):
 
     _required_ = ["secret_name"]
 
-    crl_distribution_points: List[str]
-    ocsp_servers: List[str]
+    crl_distribution_points: t.List[str]
+    ocsp_servers: t.List[str]
     secret_name: str
 
-    def __init__(self, crl_distribution_points: List[str] = None, ocsp_servers: List[str] = None, secret_name: str = None):
+    def __init__(self, crl_distribution_points: t.List[str] = None, ocsp_servers: t.List[str] = None, secret_name: str = None):
         super().__init__(crl_distribution_points=crl_distribution_points, ocsp_servers=ocsp_servers, secret_name=secret_name)
 
 
@@ -593,35 +593,35 @@ class PrivateKey(KubernetesObject):
 class SecretTemplate(KubernetesObject):
     __slots__ = ()
 
-    annotations: Dict[str, str]
-    labels: Dict[str, str]
+    annotations: t.Dict[str, str]
+    labels: t.Dict[str, str]
 
-    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None):
+    def __init__(self, annotations: t.Dict[str, str] = None, labels: t.Dict[str, str] = None):
         super().__init__(annotations=annotations, labels=labels)
 
 
 class Subject(KubernetesObject):
     __slots__ = ()
 
-    countries: List[str]
-    localities: List[str]
-    organizational_units: List[str]
-    organizations: List[str]
-    postal_codes: List[str]
-    provinces: List[str]
+    countries: t.List[str]
+    localities: t.List[str]
+    organizational_units: t.List[str]
+    organizations: t.List[str]
+    postal_codes: t.List[str]
+    provinces: t.List[str]
     serial_number: str
-    street_addresses: List[str]
+    street_addresses: t.List[str]
 
     def __init__(
         self,
-        countries: List[str] = None,
-        localities: List[str] = None,
-        organizational_units: List[str] = None,
-        organizations: List[str] = None,
-        postal_codes: List[str] = None,
-        provinces: List[str] = None,
+        countries: t.List[str] = None,
+        localities: t.List[str] = None,
+        organizational_units: t.List[str] = None,
+        organizations: t.List[str] = None,
+        postal_codes: t.List[str] = None,
+        provinces: t.List[str] = None,
         serial_number: str = None,
-        street_addresses: List[str] = None,
+        street_addresses: t.List[str] = None,
     ):
         super().__init__(
             countries=countries,
@@ -647,13 +647,13 @@ class CertificateSpec(KubernetesObject):
         "isCA": "is_ca",
     }
 
-    additional_output_formats: List[AdditionalOutputFormat]
+    additional_output_formats: t.List[AdditionalOutputFormat]
     common_name: str
-    dns_names: List[str]
+    dns_names: t.List[str]
     duration: str
-    email_addresses: List[str]
+    email_addresses: t.List[str]
     encode_usages_in_request: bool
-    ip_addresses: List[str]
+    ip_addresses: t.List[str]
     is_ca: bool
     issuer_ref: IssuerRef
     keystores: Keystore
@@ -663,18 +663,18 @@ class CertificateSpec(KubernetesObject):
     secret_name: str
     secret_template: SecretTemplate
     subject: Subject
-    uris: List[str]
-    usages: List[str]
+    uris: t.List[str]
+    usages: t.List[str]
 
     def __init__(
         self,
-        additional_output_formats: List[AdditionalOutputFormat] = None,
+        additional_output_formats: t.List[AdditionalOutputFormat] = None,
         common_name: str = None,
-        dns_names: List[str] = None,
+        dns_names: t.List[str] = None,
         duration: str = None,
-        email_addresses: List[str] = None,
+        email_addresses: t.List[str] = None,
         encode_usages_in_request: bool = None,
-        ip_addresses: List[str] = None,
+        ip_addresses: t.List[str] = None,
         is_ca: bool = None,
         issuer_ref: IssuerRef = None,
         keystores: Keystore = None,
@@ -684,8 +684,8 @@ class CertificateSpec(KubernetesObject):
         secret_name: str = None,
         secret_template: SecretTemplate = None,
         subject: Subject = None,
-        uris: List[str] = None,
-        usages: List[str] = None,
+        uris: t.List[str] = None,
+        usages: t.List[str] = None,
     ):
         super().__init__(
             additional_output_formats=additional_output_formats,
@@ -738,25 +738,25 @@ class CertificateRequestSpec(KubernetesObject):
     }
 
     duration: str
-    extra: Dict[str, List[str]]
-    groups: List[str]
+    extra: t.Dict[str, t.List[str]]
+    groups: t.List[str]
     is_ca: bool
     issuer_ref: IssuerRef
     request: core.Base64
     uid: str
-    usages: List[str]
+    usages: t.List[str]
     username: str
 
     def __init__(
         self,
         duration: str = None,
-        extra: Dict[str, List[str]] = None,
-        groups: List[str] = None,
+        extra: t.Dict[str, t.List[str]] = None,
+        groups: t.List[str] = None,
         is_ca: bool = None,
         issuer_ref: IssuerRef = None,
         request: core.Base64 = None,
         uid: str = None,
-        usages: List[str] = None,
+        usages: t.List[str] = None,
         username: str = None,
     ):
         super().__init__(
@@ -866,9 +866,9 @@ class Cloud(KubernetesObject):
 class SelfSigned(KubernetesObject):
     __slots__ = ()
 
-    crl_distribution_points: List[str]
+    crl_distribution_points: t.List[str]
 
-    def __init__(self, crl_distribution_points: List[str] = None):
+    def __init__(self, crl_distribution_points: t.List[str] = None):
         super().__init__(crl_distribution_points=crl_distribution_points)
 
 
@@ -975,18 +975,18 @@ class OrderSpec(KubernetesObject):
     _required_ = ["issuer_ref", "request"]
 
     common_name: str
-    dns_names: List[str]
+    dns_names: t.List[str]
     duration: str
-    ip_addresses: List[str]
+    ip_addresses: t.List[str]
     issuer_ref: IssuerRef
     request: core.Base64
 
     def __init__(
         self,
         common_name: str = None,
-        dns_names: List[str] = None,
+        dns_names: t.List[str] = None,
         duration: str = None,
-        ip_addresses: List[str] = None,
+        ip_addresses: t.List[str] = None,
         issuer_ref: IssuerRef = None,
         request: core.Base64 = None,
     ):

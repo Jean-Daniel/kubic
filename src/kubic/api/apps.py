@@ -1,4 +1,4 @@
-from typing import List
+import typing as t
 
 from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
@@ -154,10 +154,23 @@ class RollingUpdateStatefulSetStrategy(KubernetesObject):
 
     _api_version_ = "apps/v1"
 
+    max_unavailable: core.IntOrString
     partition: int
 
-    def __init__(self, partition: int = None):
-        super().__init__(partition=partition)
+    def __init__(self, max_unavailable: core.IntOrString = None, partition: int = None):
+        super().__init__(max_unavailable=max_unavailable, partition=partition)
+
+
+class StatefulSetPersistentVolumeClaimRetentionPolicy(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "apps/v1"
+
+    when_deleted: str
+    when_scaled: str
+
+    def __init__(self, when_deleted: str = None, when_scaled: str = None):
+        super().__init__(when_deleted=when_deleted, when_scaled=when_scaled)
 
 
 class StatefulSetUpdateStrategy(KubernetesObject):
@@ -180,6 +193,7 @@ class StatefulSetSpec(KubernetesObject):
     _required_ = ["selector", "service_name", "template"]
 
     min_ready_seconds: int
+    persistent_volume_claim_retention_policy: StatefulSetPersistentVolumeClaimRetentionPolicy
     pod_management_policy: str
     replicas: int
     revision_history_limit: int
@@ -187,11 +201,12 @@ class StatefulSetSpec(KubernetesObject):
     service_name: str
     template: core.PodTemplateSpec
     update_strategy: StatefulSetUpdateStrategy
-    volume_claim_templates: List[core.PersistentVolumeClaim]
+    volume_claim_templates: t.List[core.PersistentVolumeClaim]
 
     def __init__(
         self,
         min_ready_seconds: int = None,
+        persistent_volume_claim_retention_policy: StatefulSetPersistentVolumeClaimRetentionPolicy = None,
         pod_management_policy: str = None,
         replicas: int = None,
         revision_history_limit: int = None,
@@ -199,10 +214,11 @@ class StatefulSetSpec(KubernetesObject):
         service_name: str = None,
         template: core.PodTemplateSpec = None,
         update_strategy: StatefulSetUpdateStrategy = None,
-        volume_claim_templates: List[core.PersistentVolumeClaim] = None,
+        volume_claim_templates: t.List[core.PersistentVolumeClaim] = None,
     ):
         super().__init__(
             min_ready_seconds=min_ready_seconds,
+            persistent_volume_claim_retention_policy=persistent_volume_claim_retention_policy,
             pod_management_policy=pod_management_policy,
             replicas=replicas,
             revision_history_limit=revision_history_limit,

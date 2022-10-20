@@ -2,7 +2,7 @@
 
 for crd in schemas/crds/*;
   echo "  Processing $crd"
-  python3 src/kubegen.py --api_module=".." --schemas ./schemas -o src/kubic/crds/ $crd
+  python3 src/kubegen.py crd --api_module="..api" -o src/kubic/crds/ $crd
 end
 
 # for crd in (kubectl get crds -o name);

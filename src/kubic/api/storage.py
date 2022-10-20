@@ -1,4 +1,4 @@
-from typing import Dict, List
+import typing as t
 
 from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
@@ -14,10 +14,10 @@ class StorageClass(KubernetesApiResource):
     _required_ = ["provisioner"]
 
     allow_volume_expansion: bool
-    allowed_topologies: List[core.TopologySelectorTerm]
+    allowed_topologies: t.List[core.TopologySelectorTerm]
     metadata: meta.ObjectMeta
-    mount_options: List[str]
-    parameters: Dict[str, str]
+    mount_options: t.List[str]
+    parameters: t.Dict[str, str]
     provisioner: str
     reclaim_policy: str
     volume_binding_mode: str
@@ -26,10 +26,10 @@ class StorageClass(KubernetesApiResource):
         self,
         name: str,
         allow_volume_expansion: bool = None,
-        allowed_topologies: List[core.TopologySelectorTerm] = None,
+        allowed_topologies: t.List[core.TopologySelectorTerm] = None,
         metadata: meta.ObjectMeta = None,
-        mount_options: List[str] = None,
-        parameters: Dict[str, str] = None,
+        mount_options: t.List[str] = None,
+        parameters: t.Dict[str, str] = None,
         provisioner: str = None,
         reclaim_policy: str = None,
         volume_binding_mode: str = None,

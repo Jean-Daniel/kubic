@@ -5,9 +5,9 @@ import pathlib
 import subprocess
 import sys
 import tempfile
+import typing as t
 from importlib import resources
 from os import fdopen
-from typing import List, NamedTuple, Dict, Any, TextIO
 from urllib.request import urlretrieve
 
 import yaml
@@ -22,7 +22,7 @@ from .printer import TypePrinter
 logger = logging.getLogger("cli")
 
 
-def download_schema(version: str, output: TextIO):
+def download_schema(version: str, output: t.TextIO):
     tmp, headers = urlretrieve(f"https://github.com/kubernetes/kubernetes/raw/release-{version}/api/openapi-spec/swagger.json")
     with open(tmp, "rb") as f:
         data = yaml.load(f, yaml.CSafeLoader)
@@ -91,7 +91,7 @@ def import_k8s_api(args):
             os.remove(tmp)
 
 
-def print_groups(groups: List[ApiGroup], output: str, api_module: str = "."):
+def print_groups(groups: t.List[ApiGroup], output: str, api_module: str = "."):
     printer = TypePrinter(api_module=api_module)
     for group in groups:
         filename = output
@@ -101,7 +101,7 @@ def print_groups(groups: List[ApiGroup], output: str, api_module: str = "."):
         printer.print_group(group, filename)
 
 
-class CRD(NamedTuple):
+class CRD(t.NamedTuple):
     fqn: QualifiedName
     schema: dict
 
@@ -111,7 +111,7 @@ def create_crd(schema: dict) -> CRD:
     kind = spec["names"]["kind"]
     group = spec["group"]
     # default to using the storage version, ignoring other versions
-    vers: Dict[str, Any] = {}
+    vers: t.Dict[str, t.Any] = {}
     if "versions" in spec:
         # find best version
         storage = None
@@ -139,7 +139,7 @@ def create_crd(schema: dict) -> CRD:
     return CRD(QualifiedName(kind, group, version), openapi)
 
 
-def read_crds(paths: List[str], crds: list):
+def read_crds(paths: t.List[str], crds: list):
     for path in paths:
         if os.path.isdir(path):
             for entry in os.scandir(path):  # type: os.DirEntry

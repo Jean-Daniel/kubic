@@ -1,27 +1,27 @@
-from typing import Dict
+import typing as t
 
 from kubic import KubernetesApiResource, KubernetesObject
-from kubic.api import core, meta
+from ..api import core, meta
 
 
 class Template(KubernetesObject):
     __slots__ = ()
 
-    data: Dict[str, str]
+    data: t.Dict[str, str]
     metadata: meta.ObjectMeta
     type: str
 
-    def __init__(self, data: Dict[str, str] = None, metadata: meta.ObjectMeta = None, type: str = None):
+    def __init__(self, data: t.Dict[str, str] = None, metadata: meta.ObjectMeta = None, type: str = None):
         super().__init__(data=data, metadata=metadata, type=type)
 
 
 class SealedSecretSpec(KubernetesObject):
     __slots__ = ()
 
-    encrypted_data: Dict[str, core.Base64]
+    encrypted_data: t.Dict[str, core.Base64]
     template: Template
 
-    def __init__(self, encrypted_data: Dict[str, core.Base64] = None, template: Template = None):
+    def __init__(self, encrypted_data: t.Dict[str, core.Base64] = None, template: Template = None):
         super().__init__(encrypted_data=encrypted_data, template=template)
 
 

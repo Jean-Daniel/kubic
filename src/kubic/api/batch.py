@@ -73,6 +73,7 @@ class CronJobSpec(KubernetesObject):
     starting_deadline_seconds: int
     successful_jobs_history_limit: int
     suspend: bool
+    time_zone: str
 
     def __init__(
         self,
@@ -83,6 +84,7 @@ class CronJobSpec(KubernetesObject):
         starting_deadline_seconds: int = None,
         successful_jobs_history_limit: int = None,
         suspend: bool = None,
+        time_zone: str = None,
     ):
         super().__init__(
             concurrency_policy=concurrency_policy,
@@ -92,6 +94,7 @@ class CronJobSpec(KubernetesObject):
             starting_deadline_seconds=starting_deadline_seconds,
             successful_jobs_history_limit=successful_jobs_history_limit,
             suspend=suspend,
+            time_zone=time_zone,
         )
 
 

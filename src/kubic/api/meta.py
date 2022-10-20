@@ -1,4 +1,4 @@
-from typing import Dict, List
+import typing as t
 
 from kubic import KubernetesObject
 
@@ -12,9 +12,9 @@ class LabelSelectorRequirement(KubernetesObject):
 
     key: str
     operator: str
-    values: List[str]
+    values: t.List[str]
 
-    def __init__(self, key: str = None, operator: str = None, values: List[str] = None):
+    def __init__(self, key: str = None, operator: str = None, values: t.List[str] = None):
         super().__init__(key=key, operator=operator, values=values)
 
 
@@ -23,14 +23,14 @@ class LabelSelector(KubernetesObject):
 
     _api_version_ = "meta/v1"
 
-    match_expressions: List[LabelSelectorRequirement]
-    match_labels: Dict[str, str]
+    match_expressions: t.List[LabelSelectorRequirement]
+    match_labels: t.Dict[str, str]
 
-    def __init__(self, match_expressions: List[LabelSelectorRequirement] = None, match_labels: Dict[str, str] = None):
+    def __init__(self, match_expressions: t.List[LabelSelectorRequirement] = None, match_labels: t.Dict[str, str] = None):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
 
-Time = str
+Time: t.TypeAlias = str
 
 
 class OwnerReference(KubernetesObject):
@@ -66,36 +66,36 @@ class ObjectMeta(KubernetesObject):
 
     _api_version_ = "meta/v1"
 
-    annotations: Dict[str, str]
+    annotations: t.Dict[str, str]
     cluster_name: str
     creation_timestamp: Time
     deletion_grace_period_seconds: int
     deletion_timestamp: Time
-    finalizers: List[str]
+    finalizers: t.List[str]
     generate_name: str
     generation: int
-    labels: Dict[str, str]
+    labels: t.Dict[str, str]
     name: str
     namespace: str
-    owner_references: List[OwnerReference]
+    owner_references: t.List[OwnerReference]
     resource_version: str
     self_link: str
     uid: str
 
     def __init__(
         self,
-        annotations: Dict[str, str] = None,
+        annotations: t.Dict[str, str] = None,
         cluster_name: str = None,
         creation_timestamp: Time = None,
         deletion_grace_period_seconds: int = None,
         deletion_timestamp: Time = None,
-        finalizers: List[str] = None,
+        finalizers: t.List[str] = None,
         generate_name: str = None,
         generation: int = None,
-        labels: Dict[str, str] = None,
+        labels: t.Dict[str, str] = None,
         name: str = None,
         namespace: str = None,
-        owner_references: List[OwnerReference] = None,
+        owner_references: t.List[OwnerReference] = None,
         resource_version: str = None,
         self_link: str = None,
         uid: str = None,

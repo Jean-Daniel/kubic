@@ -1,6 +1,6 @@
 import re
+import typing as t
 from functools import cache
-from typing import NamedTuple
 
 # List of types that are not scoped to namespace
 CLUSTER_OBJECTS = {
@@ -65,7 +65,7 @@ GROUP_MAPPING = {
 }
 
 
-class QualifiedName(NamedTuple):
+class QualifiedName(t.NamedTuple):
     name: str
     group: str
     version: str

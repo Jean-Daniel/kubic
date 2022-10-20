@@ -1,5 +1,5 @@
 import sys
-from typing import TextIO
+import typing as t
 
 # noinspection PyProtectedMember
 from kubic import (
@@ -35,10 +35,9 @@ class TypePrinter:
             if stream is not sys.stdout:
                 stream.close()
 
-    def print_imports(self, group: ApiGroup, stream: TextIO):
-        if group.typing:
-            stream.write("from typing import ")
-            stream.write(", ".join(sorted(group.typing)))
+    def print_imports(self, group: ApiGroup, stream: t.TextIO):
+        if group.use_typing:
+            stream.write("import typing as t")
             stream.write("\n\n")
 
         if group.base_types:
@@ -51,7 +50,7 @@ class TypePrinter:
             stream.write(", ".join(sorted(module_for_group(g) for g in group.refs)))
             stream.write("\n\n")
 
-    def print_types(self, group: ApiGroup, stream: TextIO):
+    def print_types(self, group: ApiGroup, stream: t.TextIO):
         for ty in group.types:
             if isinstance(ty, TypeAlias):
                 self.print_type_alias(group, ty, stream)
@@ -61,16 +60,16 @@ class TypePrinter:
             stream.write("\n")
 
     @staticmethod
-    def print_type_alias(group: ApiGroup, ty: TypeAlias, stream: TextIO):
+    def print_type_alias(group: ApiGroup, ty: TypeAlias, stream: t.TextIO):
         stream.write(ty.name)
         if sys.version_info >= (3, 10):
-            stream.write(": TypeAlias = ")
+            stream.write(": t.TypeAlias = ")
         else:
             stream.write(" = ")
         stream.write(group.qualified_name(ty.type))
         stream.write("\n\n")
 
-    def print_type(self, group: ApiGroup, ty: ObjectType, stream: TextIO):
+    def print_type(self, group: ApiGroup, ty: ObjectType, stream: t.TextIO):
         stream.write("class ")
         stream.write(ty.name)
         stream.write(f"({ty.kubic_type})")

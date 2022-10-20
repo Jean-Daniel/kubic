@@ -1,8 +1,7 @@
 import logging
 import os
-import pathlib
+import typing as t
 from collections import defaultdict
-from typing import Dict, Union, Iterable, List, Optional, Set
 
 import yaml
 
@@ -35,10 +34,10 @@ def _is_greater_version(v1: str, v2: str) -> bool:
 
 
 class ApiParser(Parser):
-    def __init__(self, schema: Union[str, dict], annotations: dict):
+    def __init__(self, schema: str | dict, annotations: dict):
         super().__init__()
         self.annotations = annotations
-        self._groups: Dict[str, ApiGroup] = {}
+        self._groups: t.Dict[str, ApiGroup] = {}
 
         if isinstance(schema, (str, os.PathLike)):
             with open(schema) as f:
@@ -50,8 +49,8 @@ class ApiParser(Parser):
             self.components = schema["components"]["schemas"]
 
         # short name to fqn map
-        self.index: Dict[str, QualifiedName] = {}
-        self.ambiguous: Dict[str, Set[str]] = defaultdict(set)
+        self.index: t.Dict[str, QualifiedName] = {}
+        self.ambiguous: t.Dict[str, t.Set[str]] = defaultdict(set)
         for key in self.components.keys():
             group, version, name = key.rsplit(".", maxsplit=2)
             fqn = QualifiedName(name, group, version)
@@ -67,7 +66,7 @@ class ApiParser(Parser):
                 self.index[shortname] = fqn
 
     @property
-    def groups(self) -> Iterable[ApiGroup]:
+    def groups(self) -> t.Iterable[ApiGroup]:
         return self._groups.values()
 
     def group_for_type(self, fqn: QualifiedName) -> ApiGroup:
@@ -77,10 +76,10 @@ class ApiParser(Parser):
             self._groups[fqn.group] = group
         return group
 
-    def annotations_for_type(self, obj_type: ObjectType) -> Optional[dict]:
+    def annotations_for_type(self, obj_type: ObjectType) -> dict | None:
         return self.annotations.get(f"{obj_type.group}.{obj_type.version}.{obj_type.name}")
 
-    def import_types(self, names: Iterable[str]) -> List[ApiGroup]:
+    def import_types(self, names: t.Iterable[str]) -> t.List[ApiGroup]:
         # register builtin types
         for t in (IntOrStringType, QuantityType, Base64Type, TimeType, IDNHostname):
             self.group_for_type(t).add(t)
@@ -178,7 +177,7 @@ class ApiParser(Parser):
         return alias
 
 
-def import_api_types(schema: str, annotations: dict, *names) -> List[ApiGroup]:
+def import_api_types(schema: str, annotations: dict, *names) -> t.List[ApiGroup]:
     if annotations is None:
         # Default API Annotations
         annotations = {

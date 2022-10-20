@@ -1,7 +1,7 @@
-from typing import Any, Dict, List
+import typing as t
 
 from kubic import KubernetesApiResource, KubernetesObject
-from kubic.api import core, meta
+from ..api import core, meta
 
 
 class Azure(KubernetesObject):
@@ -21,14 +21,14 @@ class JOB(KubernetesObject):
     affinity: core.Affinity
     priority_class_name: str
     resources: core.ResourceRequirements
-    tolerations: List[core.Toleration]
+    tolerations: t.List[core.Toleration]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
         priority_class_name: str = None,
         resources: core.ResourceRequirements = None,
-        tolerations: List[core.Toleration] = None,
+        tolerations: t.List[core.Toleration] = None,
     ):
         super().__init__(affinity=affinity, priority_class_name=priority_class_name, resources=resources, tolerations=tolerations)
 
@@ -38,20 +38,20 @@ class Manual(KubernetesObject):
 
     _required_ = ["repo_name"]
 
-    options: List[str]
+    options: t.List[str]
     repo_name: str
 
-    def __init__(self, options: List[str] = None, repo_name: str = None):
+    def __init__(self, options: t.List[str] = None, repo_name: str = None):
         super().__init__(options=options, repo_name=repo_name)
 
 
 class Metadata(KubernetesObject):
     __slots__ = ()
 
-    annotations: Dict[str, str]
-    labels: Dict[str, str]
+    annotations: t.Dict[str, str]
+    labels: t.Dict[str, str]
 
-    def __init__(self, annotations: Dict[str, str] = None, labels: Dict[str, str] = None):
+    def __init__(self, annotations: t.Dict[str, str] = None, labels: t.Dict[str, str] = None):
         super().__init__(annotations=annotations, labels=labels)
 
 
@@ -63,8 +63,8 @@ class RepoHost(KubernetesObject):
     resources: core.ResourceRequirements
     ssh_config_map: core.SecretProjection
     ssh_secret: core.SecretProjection
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
 
     def __init__(
         self,
@@ -73,8 +73,8 @@ class RepoHost(KubernetesObject):
         resources: core.ResourceRequirements = None,
         ssh_config_map: core.SecretProjection = None,
         ssh_secret: core.SecretProjection = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -160,11 +160,11 @@ class Restore(KubernetesObject):
     cluster_name: str
     cluster_namespace: str
     enabled: bool
-    options: List[str]
+    options: t.List[str]
     priority_class_name: str
     repo_name: str
     resources: core.ResourceRequirements
-    tolerations: List[core.Toleration]
+    tolerations: t.List[core.Toleration]
 
     def __init__(
         self,
@@ -172,11 +172,11 @@ class Restore(KubernetesObject):
         cluster_name: str = None,
         cluster_namespace: str = None,
         enabled: bool = None,
-        options: List[str] = None,
+        options: t.List[str] = None,
         priority_class_name: str = None,
         repo_name: str = None,
         resources: core.ResourceRequirements = None,
-        tolerations: List[core.Toleration] = None,
+        tolerations: t.List[core.Toleration] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -228,27 +228,27 @@ class BackupPgbackrest(KubernetesObject):
         "global": "global_",
     }
 
-    configuration: List[core.VolumeProjection]
-    global_: Dict[str, str]
+    configuration: t.List[core.VolumeProjection]
+    global_: t.Dict[str, str]
     image: str
     jobs: JOB
     manual: Manual
     metadata: Metadata
     repo_host: RepoHost
-    repos: List[Repo]
+    repos: t.List[Repo]
     restore: Restore
     sidecars: PgbackrestSidecar
 
     def __init__(
         self,
-        configuration: List[core.VolumeProjection] = None,
-        global_: Dict[str, str] = None,
+        configuration: t.List[core.VolumeProjection] = None,
+        global_: t.Dict[str, str] = None,
         image: str = None,
         jobs: JOB = None,
         manual: Manual = None,
         metadata: Metadata = None,
         repo_host: RepoHost = None,
-        repos: List[Repo] = None,
+        repos: t.List[Repo] = None,
         restore: Restore = None,
         sidecars: PgbackrestSidecar = None,
     ):
@@ -287,26 +287,26 @@ class DataSourcePgbackrest(KubernetesObject):
     }
 
     affinity: core.Affinity
-    configuration: List[core.VolumeProjection]
-    global_: Dict[str, str]
-    options: List[str]
+    configuration: t.List[core.VolumeProjection]
+    global_: t.Dict[str, str]
+    options: t.List[str]
     priority_class_name: str
     repo: Repo
     resources: core.ResourceRequirements
     stanza: str
-    tolerations: List[core.Toleration]
+    tolerations: t.List[core.Toleration]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
-        configuration: List[core.VolumeProjection] = None,
-        global_: Dict[str, str] = None,
-        options: List[str] = None,
+        configuration: t.List[core.VolumeProjection] = None,
+        global_: t.Dict[str, str] = None,
+        options: t.List[str] = None,
         priority_class_name: str = None,
         repo: Repo = None,
         resources: core.ResourceRequirements = None,
         stanza: str = None,
-        tolerations: List[core.Toleration] = None,
+        tolerations: t.List[core.Toleration] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -329,22 +329,22 @@ class DataSourcePostgresCluster(KubernetesObject):
     affinity: core.Affinity
     cluster_name: str
     cluster_namespace: str
-    options: List[str]
+    options: t.List[str]
     priority_class_name: str
     repo_name: str
     resources: core.ResourceRequirements
-    tolerations: List[core.Toleration]
+    tolerations: t.List[core.Toleration]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
         cluster_name: str = None,
         cluster_namespace: str = None,
-        options: List[str] = None,
+        options: t.List[str] = None,
         priority_class_name: str = None,
         repo_name: str = None,
         resources: core.ResourceRequirements = None,
-        tolerations: List[core.Toleration] = None,
+        tolerations: t.List[core.Toleration] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -442,11 +442,11 @@ class DatabaseInitSQL(KubernetesObject):
 class Exporter(KubernetesObject):
     __slots__ = ()
 
-    configuration: List[core.VolumeProjection]
+    configuration: t.List[core.VolumeProjection]
     image: str
     resources: core.ResourceRequirements
 
-    def __init__(self, configuration: List[core.VolumeProjection] = None, image: str = None, resources: core.ResourceRequirements = None):
+    def __init__(self, configuration: t.List[core.VolumeProjection] = None, image: str = None, resources: core.ResourceRequirements = None):
         super().__init__(configuration=configuration, image=image, resources=resources)
 
 
@@ -474,7 +474,7 @@ class Instance(KubernetesObject):
     _required_ = ["data_volume_claim_spec"]
 
     affinity: core.Affinity
-    containers: List[core.Container]
+    containers: t.List[core.Container]
     data_volume_claim_spec: core.PersistentVolumeClaimSpec
     metadata: Metadata
     min_available: core.IntOrString
@@ -483,14 +483,14 @@ class Instance(KubernetesObject):
     replicas: int
     resources: core.ResourceRequirements
     sidecars: InstanceSidecar
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
     wal_volume_claim_spec: core.PersistentVolumeClaimSpec
 
     def __init__(
         self,
         affinity: core.Affinity = None,
-        containers: List[core.Container] = None,
+        containers: t.List[core.Container] = None,
         data_volume_claim_spec: core.PersistentVolumeClaimSpec = None,
         metadata: Metadata = None,
         min_available: core.IntOrString = None,
@@ -499,8 +499,8 @@ class Instance(KubernetesObject):
         replicas: int = None,
         resources: core.ResourceRequirements = None,
         sidecars: InstanceSidecar = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
         wal_volume_claim_spec: core.PersistentVolumeClaimSpec = None,
     ):
         super().__init__(
@@ -547,14 +547,14 @@ class PGUpgradeSpec(KubernetesObject):
     from_postgres_version: int
     image: str
     image_pull_policy: str
-    image_pull_secrets: List[core.LocalObjectReference]
+    image_pull_secrets: t.List[core.LocalObjectReference]
     metadata: Metadata
     postgres_cluster_name: str
     priority_class_name: str
     resources: core.ResourceRequirements
     to_postgres_image: str
     to_postgres_version: int
-    tolerations: List[core.Toleration]
+    tolerations: t.List[core.Toleration]
 
     def __init__(
         self,
@@ -562,14 +562,14 @@ class PGUpgradeSpec(KubernetesObject):
         from_postgres_version: int = None,
         image: str = None,
         image_pull_policy: str = None,
-        image_pull_secrets: List[core.LocalObjectReference] = None,
+        image_pull_secrets: t.List[core.LocalObjectReference] = None,
         metadata: Metadata = None,
         postgres_cluster_name: str = None,
         priority_class_name: str = None,
         resources: core.ResourceRequirements = None,
         to_postgres_image: str = None,
         to_postgres_version: int = None,
-        tolerations: List[core.Toleration] = None,
+        tolerations: t.List[core.Toleration] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -628,7 +628,7 @@ class Switchover(KubernetesObject):
 class Patroni(KubernetesObject):
     __slots__ = ()
 
-    dynamic_configuration: Dict[str, Any]
+    dynamic_configuration: t.Dict[str, Any]
     leader_lease_duration_seconds: int
     port: int
     switchover: Switchover
@@ -636,7 +636,7 @@ class Patroni(KubernetesObject):
 
     def __init__(
         self,
-        dynamic_configuration: Dict[str, Any] = None,
+        dynamic_configuration: t.Dict[str, Any] = None,
         leader_lease_duration_seconds: int = None,
         port: int = None,
         switchover: Switchover = None,
@@ -654,15 +654,15 @@ class Patroni(KubernetesObject):
 class PgAdminConfig(KubernetesObject):
     __slots__ = ()
 
-    files: List[core.VolumeProjection]
+    files: t.List[core.VolumeProjection]
     ldap_bind_password: core.ConfigMapKeySelector
-    settings: Dict[str, Any]
+    settings: t.Dict[str, Any]
 
     def __init__(
         self,
-        files: List[core.VolumeProjection] = None,
+        files: t.List[core.VolumeProjection] = None,
         ldap_bind_password: core.ConfigMapKeySelector = None,
-        settings: Dict[str, Any] = None,
+        settings: t.Dict[str, Any] = None,
     ):
         super().__init__(files=files, ldap_bind_password=ldap_bind_password, settings=settings)
 
@@ -692,8 +692,8 @@ class PgAdmin(KubernetesObject):
     replicas: int
     resources: core.ResourceRequirements
     service: Service
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
 
     def __init__(
         self,
@@ -706,8 +706,8 @@ class PgAdmin(KubernetesObject):
         replicas: int = None,
         resources: core.ResourceRequirements = None,
         service: Service = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -731,17 +731,17 @@ class PgBouncerConfig(KubernetesObject):
         "global": "global_",
     }
 
-    databases: Dict[str, str]
-    files: List[core.VolumeProjection]
-    global_: Dict[str, str]
-    users: Dict[str, str]
+    databases: t.Dict[str, str]
+    files: t.List[core.VolumeProjection]
+    global_: t.Dict[str, str]
+    users: t.Dict[str, str]
 
     def __init__(
         self,
-        databases: Dict[str, str] = None,
-        files: List[core.VolumeProjection] = None,
-        global_: Dict[str, str] = None,
-        users: Dict[str, str] = None,
+        databases: t.Dict[str, str] = None,
+        files: t.List[core.VolumeProjection] = None,
+        global_: t.Dict[str, str] = None,
+        users: t.Dict[str, str] = None,
     ):
         super().__init__(databases=databases, files=files, global_=global_, users=users)
 
@@ -776,7 +776,7 @@ class PgBouncer(KubernetesObject):
 
     affinity: core.Affinity
     config: PgBouncerConfig
-    containers: List[core.Container]
+    containers: t.List[core.Container]
     custom_tls_secret: core.SecretProjection
     image: str
     metadata: Metadata
@@ -787,14 +787,14 @@ class PgBouncer(KubernetesObject):
     resources: core.ResourceRequirements
     service: Service
     sidecars: PgBouncerSidecar
-    tolerations: List[core.Toleration]
-    topology_spread_constraints: List[core.TopologySpreadConstraint]
+    tolerations: t.List[core.Toleration]
+    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
         config: PgBouncerConfig = None,
-        containers: List[core.Container] = None,
+        containers: t.List[core.Container] = None,
         custom_tls_secret: core.SecretProjection = None,
         image: str = None,
         metadata: Metadata = None,
@@ -805,8 +805,8 @@ class PgBouncer(KubernetesObject):
         resources: core.ResourceRequirements = None,
         service: Service = None,
         sidecars: PgBouncerSidecar = None,
-        tolerations: List[core.Toleration] = None,
-        topology_spread_constraints: List[core.TopologySpreadConstraint] = None,
+        tolerations: t.List[core.Toleration] = None,
+        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
     ):
         super().__init__(
             affinity=affinity,
@@ -830,9 +830,9 @@ class PgBouncer(KubernetesObject):
 class PostgresClusterSpecConfig(KubernetesObject):
     __slots__ = ()
 
-    files: List[core.VolumeProjection]
+    files: t.List[core.VolumeProjection]
 
-    def __init__(self, files: List[core.VolumeProjection] = None):
+    def __init__(self, files: t.List[core.VolumeProjection] = None):
         super().__init__(files=files)
 
 
@@ -875,12 +875,12 @@ class User(KubernetesObject):
 
     _required_ = ["name"]
 
-    databases: List[str]
+    databases: t.List[str]
     name: str
     options: str
     password: Password
 
-    def __init__(self, databases: List[str] = None, name: str = None, options: str = None, password: Password = None):
+    def __init__(self, databases: t.List[str] = None, name: str = None, options: str = None, password: Password = None):
         super().__init__(databases=databases, name=name, options=options, password=password)
 
 
@@ -911,8 +911,8 @@ class PostgresClusterSpec(KubernetesObject):
     disable_default_pod_scheduling: bool
     image: str
     image_pull_policy: str
-    image_pull_secrets: List[core.LocalObjectReference]
-    instances: List[Instance]
+    image_pull_secrets: t.List[core.LocalObjectReference]
+    instances: t.List[Instance]
     metadata: Metadata
     monitoring: Monitoring
     openshift: bool
@@ -925,9 +925,9 @@ class PostgresClusterSpec(KubernetesObject):
     service: Service
     shutdown: bool
     standby: Standby
-    supplemental_groups: List[int]
+    supplemental_groups: t.List[int]
     user_interface: UserInterface
-    users: List[User]
+    users: t.List[User]
 
     def __init__(
         self,
@@ -940,8 +940,8 @@ class PostgresClusterSpec(KubernetesObject):
         disable_default_pod_scheduling: bool = None,
         image: str = None,
         image_pull_policy: str = None,
-        image_pull_secrets: List[core.LocalObjectReference] = None,
-        instances: List[Instance] = None,
+        image_pull_secrets: t.List[core.LocalObjectReference] = None,
+        instances: t.List[Instance] = None,
         metadata: Metadata = None,
         monitoring: Monitoring = None,
         openshift: bool = None,
@@ -954,9 +954,9 @@ class PostgresClusterSpec(KubernetesObject):
         service: Service = None,
         shutdown: bool = None,
         standby: Standby = None,
-        supplemental_groups: List[int] = None,
+        supplemental_groups: t.List[int] = None,
         user_interface: UserInterface = None,
-        users: List[User] = None,
+        users: t.List[User] = None,
     ):
         super().__init__(
             backups=backups,

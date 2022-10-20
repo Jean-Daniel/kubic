@@ -1,11 +1,11 @@
-from typing import Union, List, Any, NamedTuple, Iterable
+import typing as t
 
 from .k8s import QualifiedName, camel_to_snake, type_name_from_property_name
 
 
-class GenericType(NamedTuple):
+class GenericType(t.NamedTuple):
     base_type: str
-    parameters: Iterable[Any]
+    parameters: t.Iterable[t.Any]
 
     def __str__(self):
         return f"{self.base_type}[{str(self.parameters)}]"
@@ -66,7 +66,7 @@ class TypeAlias(ApiType):
         return self.name == other.name and self.type == other.type
 
 
-class Property(NamedTuple):
+class Property(t.NamedTuple):
     name: str
     type: "Type"
     required: bool
@@ -76,7 +76,7 @@ class Property(NamedTuple):
         return camel_to_snake(self.name)
 
 
-class NamedProperty(NamedTuple):
+class NamedProperty(t.NamedTuple):
     name: str
     type: "Type"
     required: bool
@@ -89,7 +89,7 @@ class ObjectType(ApiType):
     def __init__(self, fqn: QualifiedName, description: str):
         super().__init__(fqn)
         self.description = description
-        self.properties: List[Property] = []
+        self.properties: t.List[Property] = []
 
     def __eq__(self, other):
         return self.name == other.name and self.properties == other.properties
@@ -154,4 +154,4 @@ class AnonymousType(ObjectType):
         return AnonymousType(QualifiedName(base_name, parent.group, parent.version), parent, prop_name)
 
 
-Type = Union[str, ApiType, GenericType]
+Type: t.TypeAlias = str | ApiType | GenericType

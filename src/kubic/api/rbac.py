@@ -1,4 +1,4 @@
-from typing import List
+import typing as t
 
 from kubic import KubernetesApiResource, KubernetesObject
 from . import meta
@@ -9,9 +9,9 @@ class AggregationRule(KubernetesObject):
 
     _api_version_ = "rbac.authorization.k8s.io/v1"
 
-    cluster_role_selectors: List[meta.LabelSelector]
+    cluster_role_selectors: t.List[meta.LabelSelector]
 
-    def __init__(self, cluster_role_selectors: List[meta.LabelSelector] = None):
+    def __init__(self, cluster_role_selectors: t.List[meta.LabelSelector] = None):
         super().__init__(cluster_role_selectors=cluster_role_selectors)
 
 
@@ -29,19 +29,19 @@ class PolicyRule(KubernetesObject):
         "nonResourceURLs": "non_resource_urls",
     }
 
-    api_groups: List[str]
-    non_resource_urls: List[str]
-    resource_names: List[str]
-    resources: List[str]
-    verbs: List[str]
+    api_groups: t.List[str]
+    non_resource_urls: t.List[str]
+    resource_names: t.List[str]
+    resources: t.List[str]
+    verbs: t.List[str]
 
     def __init__(
         self,
-        api_groups: List[str] = None,
-        non_resource_urls: List[str] = None,
-        resource_names: List[str] = None,
-        resources: List[str] = None,
-        verbs: List[str] = None,
+        api_groups: t.List[str] = None,
+        non_resource_urls: t.List[str] = None,
+        resource_names: t.List[str] = None,
+        resources: t.List[str] = None,
+        verbs: t.List[str] = None,
     ):
         super().__init__(
             api_groups=api_groups, non_resource_urls=non_resource_urls, resource_names=resource_names, resources=resources, verbs=verbs
@@ -57,10 +57,10 @@ class ClusterRole(KubernetesApiResource):
 
     aggregation_rule: AggregationRule
     metadata: meta.ObjectMeta
-    rules: List[PolicyRule]
+    rules: t.List[PolicyRule]
 
     def __init__(
-        self, name: str, aggregation_rule: AggregationRule = None, metadata: meta.ObjectMeta = None, rules: List[PolicyRule] = None
+        self, name: str, aggregation_rule: AggregationRule = None, metadata: meta.ObjectMeta = None, rules: t.List[PolicyRule] = None
     ):
         super().__init__(
             "rbac.authorization.k8s.io/v1", "ClusterRole", name, "", aggregation_rule=aggregation_rule, metadata=metadata, rules=rules
@@ -109,9 +109,9 @@ class ClusterRoleBinding(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     role_ref: RoleRef
-    subjects: List[Subject]
+    subjects: t.List[Subject]
 
-    def __init__(self, name: str, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: List[Subject] = None):
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: t.List[Subject] = None):
         super().__init__(
             "rbac.authorization.k8s.io/v1", "ClusterRoleBinding", name, "", metadata=metadata, role_ref=role_ref, subjects=subjects
         )
@@ -125,9 +125,9 @@ class Role(KubernetesApiResource):
     _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
-    rules: List[PolicyRule]
+    rules: t.List[PolicyRule]
 
-    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, rules: List[PolicyRule] = None):
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, rules: t.List[PolicyRule] = None):
         super().__init__("rbac.authorization.k8s.io/v1", "Role", name, namespace, metadata=metadata, rules=rules)
 
 
@@ -142,10 +142,10 @@ class RoleBinding(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     role_ref: RoleRef
-    subjects: List[Subject]
+    subjects: t.List[Subject]
 
     def __init__(
-        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: List[Subject] = None
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: t.List[Subject] = None
     ):
         super().__init__(
             "rbac.authorization.k8s.io/v1", "RoleBinding", name, namespace, metadata=metadata, role_ref=role_ref, subjects=subjects

@@ -1,4 +1,4 @@
-from typing import Dict, List
+import typing as t
 
 from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
@@ -35,9 +35,9 @@ class EndpointHints(KubernetesObject):
 
     _api_version_ = "discovery.k8s.io/v1"
 
-    for_zones: List[ForZone]
+    for_zones: t.List[ForZone]
 
-    def __init__(self, for_zones: List[ForZone] = None):
+    def __init__(self, for_zones: t.List[ForZone] = None):
         super().__init__(for_zones=for_zones)
 
 
@@ -48,9 +48,9 @@ class Endpoint(KubernetesObject):
 
     _required_ = ["addresses"]
 
-    addresses: List[str]
+    addresses: t.List[str]
     conditions: EndpointConditions
-    deprecated_topology: Dict[str, str]
+    deprecated_topology: t.Dict[str, str]
     hints: EndpointHints
     hostname: str
     node_name: str
@@ -59,9 +59,9 @@ class Endpoint(KubernetesObject):
 
     def __init__(
         self,
-        addresses: List[str] = None,
+        addresses: t.List[str] = None,
         conditions: EndpointConditions = None,
-        deprecated_topology: Dict[str, str] = None,
+        deprecated_topology: t.Dict[str, str] = None,
         hints: EndpointHints = None,
         hostname: str = None,
         node_name: str = None,
@@ -104,18 +104,18 @@ class EndpointSlice(KubernetesApiResource):
     _required_ = ["address_type", "endpoints"]
 
     address_type: str
-    endpoints: List[Endpoint]
+    endpoints: t.List[Endpoint]
     metadata: meta.ObjectMeta
-    ports: List[EndpointPort]
+    ports: t.List[EndpointPort]
 
     def __init__(
         self,
         name: str,
         namespace: str = None,
         address_type: str = None,
-        endpoints: List[Endpoint] = None,
+        endpoints: t.List[Endpoint] = None,
         metadata: meta.ObjectMeta = None,
-        ports: List[EndpointPort] = None,
+        ports: t.List[EndpointPort] = None,
     ):
         super().__init__(
             "discovery.k8s.io/v1",
