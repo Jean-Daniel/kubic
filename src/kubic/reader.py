@@ -1,27 +1,26 @@
 import importlib.util
 import inspect
 import pkgutil
-import typing
+import typing as t
 from importlib.machinery import ModuleSpec
 from types import ModuleType
-from typing import NamedTuple
 
 from . import KubernetesObject, KubernetesApiResource, _TypedList
 
-R = typing.TypeVar("R", bound=KubernetesApiResource)
+R = t.TypeVar("R", bound=KubernetesApiResource)
 
 # noinspection PyTypeChecker
-AnyApiResource: typing.Type[R] = None
+AnyApiResource: t.Type[R] = None
 # noinspection PyTypeChecker
-AnyResourceList: typing.Type[R] = None
+AnyResourceList: t.Type[R] = None
 
 
-class _ObjID(NamedTuple):
+class _ObjID(t.NamedTuple):
     api_version: str
     kind: str
 
 
-_rsrc_index: typing.Dict[_ObjID, typing.Type] = {}
+_rsrc_index: t.Dict[_ObjID, t.Type] = {}
 
 
 # Must be called before trying to use the reader API.
@@ -34,7 +33,7 @@ def _register_any(object_meta):
     class _AnyApiResource(KubernetesApiResource):
         __slots__ = ()
 
-        spec: typing.Dict[str, typing.Any]
+        spec: t.Dict[str, t.Any]
         metadata: object_meta
 
         def __init__(self, version: str, kind: str, name: str, namespace: str = None, **kwargs):
@@ -54,7 +53,7 @@ def _register_any(object_meta):
         items_: list
         metadata: object_meta
 
-        def __init__(self, version: str, kind: str, name: str, namespace: str = None, items: typing.List[KubernetesApiResource] = None):
+        def __init__(self, version: str, kind: str, name: str, namespace: str = None, items: t.List[KubernetesApiResource] = None):
             super().__init__(version, kind, name, namespace)
             if items and isinstance(items[0], KubernetesObject):
                 self.items_ = _TypedList(type(items[0]), items)

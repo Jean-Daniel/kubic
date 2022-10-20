@@ -1752,7 +1752,7 @@ class CephRBDMirror(KubernetesApiResource):
 class ObjectBucketSpecEndpoint(KubernetesObject):
     __slots__ = ()
 
-    additional_config: t.Dict[str, Any]
+    additional_config: t.Dict[str, t.Any]
     bucket_host: str
     bucket_name: str
     bucket_port: int
@@ -1761,7 +1761,7 @@ class ObjectBucketSpecEndpoint(KubernetesObject):
 
     def __init__(
         self,
-        additional_config: t.Dict[str, Any] = None,
+        additional_config: t.Dict[str, t.Any] = None,
         bucket_host: str = None,
         bucket_name: str = None,
         bucket_port: int = None,
@@ -1781,18 +1781,18 @@ class ObjectBucketSpecEndpoint(KubernetesObject):
 class ObjectBucketSpec(KubernetesObject):
     __slots__ = ()
 
-    additional_state: t.Dict[str, Any]
-    authentication: t.Dict[str, Any]
-    claim_ref: t.Dict[str, Any]
+    additional_state: t.Dict[str, t.Any]
+    authentication: t.Dict[str, t.Any]
+    claim_ref: t.Dict[str, t.Any]
     endpoint: ObjectBucketSpecEndpoint
     reclaim_policy: str
     storage_class_name: str
 
     def __init__(
         self,
-        additional_state: t.Dict[str, Any] = None,
-        authentication: t.Dict[str, Any] = None,
-        claim_ref: t.Dict[str, Any] = None,
+        additional_state: t.Dict[str, t.Any] = None,
+        authentication: t.Dict[str, t.Any] = None,
+        claim_ref: t.Dict[str, t.Any] = None,
         endpoint: ObjectBucketSpecEndpoint = None,
         reclaim_policy: str = None,
         storage_class_name: str = None,
@@ -1824,7 +1824,7 @@ class ObjectBucket(KubernetesApiResource):
 class ObjectBucketClaimSpec(KubernetesObject):
     __slots__ = ()
 
-    additional_config: t.Dict[str, Any]
+    additional_config: t.Dict[str, t.Any]
     bucket_name: str
     generate_bucket_name: str
     object_bucket_name: str
@@ -1832,7 +1832,7 @@ class ObjectBucketClaimSpec(KubernetesObject):
 
     def __init__(
         self,
-        additional_config: t.Dict[str, Any] = None,
+        additional_config: t.Dict[str, t.Any] = None,
         bucket_name: str = None,
         generate_bucket_name: str = None,
         object_bucket_name: str = None,

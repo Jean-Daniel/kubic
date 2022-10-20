@@ -143,7 +143,7 @@ class ApiParser(Parser):
         assert "$ref" not in schema
         if "type" not in schema:
             logger.warning(f"unsupported type {schema}")
-            return "Any"
+            return "t.Any"
 
         if schema["type"] == "object" and "properties" in schema:
             # Create ObjectType or ApiResourceType

@@ -346,7 +346,7 @@ class Parser:
                 vtype = self.import_property(obj_type, prop_name, details)
                 return GenericType("t.Dict", ("str", vtype))
 
-            return GenericType("t.Dict", ("str", "Any"))
+            return GenericType("t.Dict", ("str", "t.Any"))
 
         if prop_type == "integer":
             return "int"

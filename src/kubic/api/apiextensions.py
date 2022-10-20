@@ -164,22 +164,22 @@ class JSONSchemaProps(KubernetesObject):
 
     ref_: str
     schema_: str
-    additional_items: Any
-    additional_properties: Any
+    additional_items: t.Any
+    additional_properties: t.Any
     all_of: t.List["JSONSchemaProps"]
     any_of: t.List["JSONSchemaProps"]
-    default: Any
+    default: t.Any
     definitions: t.Dict[str, "JSONSchemaProps"]
-    dependencies: t.Dict[str, Any]
+    dependencies: t.Dict[str, t.Any]
     description: str
-    enum: t.List[Any]
-    example: Any
+    enum: t.List[t.Any]
+    example: t.Any
     exclusive_maximum: bool
     exclusive_minimum: bool
     external_docs: ExternalDocumentation
     format: str
     id: str
-    items: Any
+    items: t.Any
     max_items: int
     max_length: int
     max_properties: int
@@ -211,22 +211,22 @@ class JSONSchemaProps(KubernetesObject):
         self,
         ref_: str = None,
         schema_: str = None,
-        additional_items: Any = None,
-        additional_properties: Any = None,
+        additional_items: t.Any = None,
+        additional_properties: t.Any = None,
         all_of: t.List["JSONSchemaProps"] = None,
         any_of: t.List["JSONSchemaProps"] = None,
-        default: Any = None,
+        default: t.Any = None,
         definitions: t.Dict[str, "JSONSchemaProps"] = None,
-        dependencies: t.Dict[str, Any] = None,
+        dependencies: t.Dict[str, t.Any] = None,
         description: str = None,
-        enum: t.List[Any] = None,
-        example: Any = None,
+        enum: t.List[t.Any] = None,
+        example: t.Any = None,
         exclusive_maximum: bool = None,
         exclusive_minimum: bool = None,
         external_docs: ExternalDocumentation = None,
         format: str = None,
         id: str = None,
-        items: Any = None,
+        items: t.Any = None,
         max_items: int = None,
         max_length: int = None,
         max_properties: int = None,
@@ -337,7 +337,7 @@ class CustomResourceSubresourceScale(KubernetesObject):
         )
 
 
-CustomResourceSubresourceStatus: t.TypeAlias = t.Dict[str, Any]
+CustomResourceSubresourceStatus: t.TypeAlias = t.Dict[str, t.Any]
 
 
 class CustomResourceSubresources(KubernetesObject):

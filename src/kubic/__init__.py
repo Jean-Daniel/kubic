@@ -1,6 +1,6 @@
-import typing
+import types
+import typing as t
 from functools import cache
-from typing import Union, Iterable
 
 __all__ = ["KubernetesObject", "KubernetesApiResource"]
 
@@ -38,15 +38,15 @@ def camel_to_snake(name: str) -> str:
     return "".join("_" + i.lower() if i.isupper() else i for i in name)
 
 
-R = typing.TypeVar("R", bound="K8SResource")
+R = t.TypeVar("R", bound="K8SResource")
 
 
 class _TypedList(list):
     __slots__ = ("type",)
 
-    def __init__(self, ty: typing.Type[R], values: Iterable = None):
+    def __init__(self, ty: t.Type[R], values: t.Iterable = None):
         super().__init__()
-        self.type: typing.Type[R] = ty
+        self.type: t.Type[R] = ty
         if values:
             self.extend(values)
 
@@ -66,7 +66,7 @@ class _TypedList(list):
         if obj is not None:
             super().insert(index, self._cast(obj))
 
-    def extend(self, values: typing.Iterable):
+    def extend(self, values: t.Iterable):
         if not values:
             return
         if isinstance(values, _TypedList) and values.type == self.type:
@@ -100,14 +100,14 @@ class _TypedList(list):
 
 
 def _create_generic_type(hint):
-    origin = hint.__origin__
-    if origin is Union:
+    origin = _get_generic_origin(hint)
+    if not origin or origin is t.Union:
         return None
 
     if origin is list:
         if hint.__args__:
             param = hint.__args__[0]
-            if not hasattr(param, "__origin__") and issubclass(param, KubernetesObject):
+            if not _is_generic_type(param) and issubclass(param, KubernetesObject):
                 return _TypedList(param)
         return list()
 
@@ -149,8 +149,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
 
         value = None
         # Handle generic types
-        origin = getattr(hint, "__origin__", None)
-        if origin:
+        if _is_generic_type(hint):
             value = _create_generic_type(hint)
             if value is not None:
                 self[camel_name] = value
@@ -173,8 +172,8 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
 
         hint = self._item_hint(key)  # check key validity
 
-        origin = getattr(hint, "__origin__", None)
-        if origin:
+        if _is_generic_type(hint):
+            origin = _get_generic_origin(hint)
             if (origin is list) and hint.__args__:
                 param = hint.__args__[0]
                 if issubclass(param, KubernetesObject):
@@ -201,7 +200,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
     def _hints_(self) -> dict:
         cls = type(self)
         if cls._hints is None:
-            cls._hints = typing.get_type_hints(cls)
+            cls._hints = t.get_type_hints(cls)
         return cls._hints
 
     def _item_hint(self, key: str):
@@ -223,7 +222,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
             else:
                 self._attribute_error(key)
 
-        if not hasattr(factory, "__origin__"):
+        if not _is_generic_type(factory):
             if issubclass(factory, KubernetesObject):
                 # merge recursively
                 getattr(self, key).update(value)
@@ -238,7 +237,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
     def update(self, values: dict = None, **kwargs):
         if values:
             # assume iterable of pairs if not a dict
-            items = values.items() if isinstance(values, typing.Mapping) else values
+            items = values.items() if isinstance(values, t.Mapping) else values
             for key, value in items:
                 self._update(key, value)
 
@@ -271,6 +270,17 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
             return None
 
         return cls().update(values)
+
+
+# Wrapper to properly handle types.UnionType which is not a generic type but should behave like one
+def _get_generic_origin(ty: t.Type) -> t.Type | None:
+    if isinstance(ty, types.UnionType):
+        return None
+    return getattr(ty, "__origin__")
+
+
+def _is_generic_type(ty: t.Type) -> bool:
+    return isinstance(ty, types.UnionType) or hasattr(ty, "__origin__")
 
 
 class KubernetesApiResource(KubernetesObject):

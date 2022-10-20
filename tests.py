@@ -1,6 +1,6 @@
+import typing as t
 import unittest
 from collections.abc import MutableSequence
-from typing import List, Union
 
 import kubic.api
 import kubic.crds
@@ -13,7 +13,7 @@ from kubic.reader import create_api_resource, register_modules
 class LeaveType(KubernetesObject):
     __slots__ = ()
 
-    value: Union[str, int]
+    value: str | int
 
 
 class SubType(KubernetesObject):
@@ -21,7 +21,7 @@ class SubType(KubernetesObject):
 
     value: str
     leave: LeaveType
-    leaves: List[LeaveType]
+    leaves: t.List[LeaveType]
 
 
 class BaseType(KubernetesObject):

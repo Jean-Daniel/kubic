@@ -628,7 +628,7 @@ class Switchover(KubernetesObject):
 class Patroni(KubernetesObject):
     __slots__ = ()
 
-    dynamic_configuration: t.Dict[str, Any]
+    dynamic_configuration: t.Dict[str, t.Any]
     leader_lease_duration_seconds: int
     port: int
     switchover: Switchover
@@ -636,7 +636,7 @@ class Patroni(KubernetesObject):
 
     def __init__(
         self,
-        dynamic_configuration: t.Dict[str, Any] = None,
+        dynamic_configuration: t.Dict[str, t.Any] = None,
         leader_lease_duration_seconds: int = None,
         port: int = None,
         switchover: Switchover = None,
@@ -656,13 +656,13 @@ class PgAdminConfig(KubernetesObject):
 
     files: t.List[core.VolumeProjection]
     ldap_bind_password: core.ConfigMapKeySelector
-    settings: t.Dict[str, Any]
+    settings: t.Dict[str, t.Any]
 
     def __init__(
         self,
         files: t.List[core.VolumeProjection] = None,
         ldap_bind_password: core.ConfigMapKeySelector = None,
-        settings: t.Dict[str, Any] = None,
+        settings: t.Dict[str, t.Any] = None,
     ):
         super().__init__(files=files, ldap_bind_password=ldap_bind_password, settings=settings)
 
