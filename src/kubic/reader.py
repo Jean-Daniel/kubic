@@ -81,7 +81,10 @@ def register_modules(spec: ModuleSpec):
         register_module(mod)
 
 
-def create_api_resource(obj: dict) -> KubernetesApiResource:
+K = t.TypeVar('K', bound=KubernetesApiResource)
+
+
+def create_api_resource(obj: dict) -> K:
     if isinstance(obj, KubernetesApiResource):
         return obj
 
