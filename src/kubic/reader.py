@@ -90,6 +90,9 @@ def create_api_resource(obj: dict) -> K:
 
     api_version = obj.get("apiVersion")
     kind = obj.get("kind")
+    if not api_version or not kind:
+        raise ValueError("K8S resource must have 'apiVersion' and 'kind'")
+
     obj.pop("status", None)
     rsrc = _rsrc_index.get(_ObjID(api_version, kind))
     if not rsrc:
