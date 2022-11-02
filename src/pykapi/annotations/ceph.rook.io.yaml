@@ -1,6 +1,8 @@
 module: rook.io
 
 patches:
+  AdditionalFile:
+    volumeSource: "io.k8s.api.core.v1.Volume"
   CephClusterSpec:
     resources: { type: object, additionalProperties: { $ref: "io.k8s.api.core.v1.ResourceRequirements" } }
   CephClusterSpecMON:
@@ -25,12 +27,16 @@ patches:
     metadataPool: CephBlockPoolSpec
   CephRBDMirrorSpec:
     resources: "io.k8s.api.core.v1.ResourceRequirements"
+  ConfigFile:
+    volumeSource: "io.k8s.api.core.v1.Volume"
   Filter:
     keyFilters: { type_name: FilterItem }
     metadataFilters: { type_name: FilterItem }
     tagFilters: { type_name: FilterItem }
   Gateway:
     resources: "io.k8s.api.core.v1.ResourceRequirements"
+  KeytabFile:
+    volumeSource: "io.k8s.api.core.v1.Volume"
   MetadataServer:
     resources: "io.k8s.api.core.v1.ResourceRequirements"
     livenessProbe: { type_name: Probe }
