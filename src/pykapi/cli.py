@@ -8,6 +8,7 @@ import tempfile
 import typing as t
 from importlib import resources
 from os import fdopen
+from tempfile import mktemp
 from urllib.request import urlretrieve
 
 import yaml
@@ -198,10 +199,13 @@ def import_custom_resources(args):
             files.append(pathlib.Path(crd))
             continue
 
-        cached: pathlib.Path = args.schema.joinpath(crd + ".yaml")
-        if cached.exists():
-            files.append(cached)
-            continue
+        if args.cache_dir:
+            cached: pathlib.Path = args.cache_dir.joinpath(crd + ".yaml")
+            if cached.exists():
+                files.append(cached)
+                continue
+        else:
+            cached: pathlib.Path = pathlib.Path(mktemp(f"-{crd}.yaml"))
 
         content = subprocess.run(
             ["kubectl", "get", f"crds/{crd}", "-o", "json"],
@@ -246,6 +250,7 @@ def main():
     crd = subparsers.add_parser("crd")
     crd.add_argument("--api_module", type=str, required=True)
     crd.add_argument("--annotations", type=pathlib.Path, help="annotations directory")
+    crd.add_argument("--cache_dir", type=pathlib.Path)
     crd.add_argument("crds", nargs="*", type=str)
     crd.add_argument("-o", "--output", type=str, default="-")
 
