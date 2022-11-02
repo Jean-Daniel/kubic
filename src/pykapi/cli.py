@@ -46,7 +46,7 @@ def import_k8s_api(args):
 
         annotations = None
         if args.annotations:
-            with open(args.annotations, "rb") as f:
+            with args.annotations.open("rb") as f:
                 annotations = yaml.load(f, CSafeLoader)
 
         groups = import_api_types(
@@ -139,25 +139,25 @@ def create_crd(schema: dict) -> CRD:
     return CRD(QualifiedName(kind, group, version), openapi)
 
 
-def read_crds(paths: t.List[str], crds: list):
+def read_crds(paths: t.List[pathlib.Path], crds: list):
     for path in paths:
-        if os.path.isdir(path):
-            for entry in os.scandir(path):  # type: os.DirEntry
+        if path.is_dir():
+            for entry in path.iterdir():
                 if entry.name.startswith("."):
                     continue
 
-                with open(entry.path, "rb") as f:
+                with entry.open("rb") as f:
                     for schema in yaml.load_all(f, yaml.CSafeLoader):
                         crds.append(create_crd(schema))
         else:
-            with open(path, "rb") as f:
+            with path.open("rb") as f:
                 for schema in yaml.load_all(f, yaml.CSafeLoader):
                     crds.append(create_crd(schema))
 
 
 class AnnotationFactory:
 
-    def __init__(self, dir_path: str):
+    def __init__(self, dir_path: pathlib.Path):
         self.dir = dir_path
         self.cached = {}
         self.builtin = resources.files("pykapi").joinpath("annotations")
@@ -172,7 +172,7 @@ class AnnotationFactory:
         annotations = None
         if self.dir:
             try:
-                with open(os.path.join(self.dir, filename)) as f:
+                with self.dir.joinpath(filename).open("rb") as f:
                     annotations = yaml.load(f, yaml.CSafeLoader)
             except FileNotFoundError:
                 pass
@@ -195,11 +195,11 @@ def import_custom_resources(args):
     for crd in args.crds:
         filename, ext = os.path.splitext(crd)
         if ext.lower() in (".yml", ".yaml", ".json") or os.path.isdir(crd):
-            files.append(crd)
+            files.append(pathlib.Path(crd))
             continue
 
-        cached = os.path.join(args.schemas, crd + ".yaml")
-        if os.path.exists(cached):
+        cached: pathlib.Path = args.schema.joinpath(crd + ".yaml")
+        if cached.exists():
             files.append(cached)
             continue
 
@@ -214,7 +214,7 @@ def import_custom_resources(args):
         schema["metadata"].pop("annotations", None)
         schema["metadata"].pop("managedFields", None)
 
-        with open(cached, "w") as f:
+        with cached.open("w") as f:
             yaml.dump(schema, f, yaml.CSafeDumper, indent=2)
 
         files.append(cached)
@@ -225,9 +225,6 @@ def import_custom_resources(args):
     groups = import_crds(crds, annotations)
 
     print_groups(groups, args.output, api_module=args.api_module)
-
-
-SCHEMA_DIR = os.path.join(os.path.dirname(__file__), "schemas")
 
 
 def main():
@@ -248,7 +245,7 @@ def main():
 
     crd = subparsers.add_parser("crd")
     crd.add_argument("--api_module", type=str, required=True)
-    crd.add_argument("--annotations", type=str, help="annotations directory")
+    crd.add_argument("--annotations", type=pathlib.Path, help="annotations directory")
     crd.add_argument("crds", nargs="*", type=str)
     crd.add_argument("-o", "--output", type=str, default="-")
 
