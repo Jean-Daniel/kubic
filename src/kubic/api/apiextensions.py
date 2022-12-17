@@ -61,9 +61,9 @@ class WebhookConversion(KubernetesObject):
     _required_ = ["conversion_review_versions"]
 
     client_config: WebhookClientConfig
-    conversion_review_versions: t.List[str]
+    conversion_review_versions: list[str]
 
-    def __init__(self, client_config: WebhookClientConfig = None, conversion_review_versions: t.List[str] = None):
+    def __init__(self, client_config: WebhookClientConfig = None, conversion_review_versions: list[str] = None):
         super().__init__(client_config=client_config, conversion_review_versions=conversion_review_versions)
 
 
@@ -88,20 +88,20 @@ class CustomResourceDefinitionNames(KubernetesObject):
 
     _required_ = ["kind", "plural"]
 
-    categories: t.List[str]
+    categories: list[str]
     kind: str
     list_kind: str
     plural: str
-    short_names: t.List[str]
+    short_names: list[str]
     singular: str
 
     def __init__(
         self,
-        categories: t.List[str] = None,
+        categories: list[str] = None,
         kind: str = None,
         list_kind: str = None,
         plural: str = None,
-        short_names: t.List[str] = None,
+        short_names: list[str] = None,
         singular: str = None,
     ):
         super().__init__(categories=categories, kind=kind, list_kind=list_kind, plural=plural, short_names=short_names, singular=singular)
@@ -166,13 +166,13 @@ class JSONSchemaProps(KubernetesObject):
     schema_: str
     additional_items: t.Any
     additional_properties: t.Any
-    all_of: t.List["JSONSchemaProps"]
-    any_of: t.List["JSONSchemaProps"]
+    all_of: list["JSONSchemaProps"]
+    any_of: list["JSONSchemaProps"]
     default: t.Any
-    definitions: t.Dict[str, "JSONSchemaProps"]
-    dependencies: t.Dict[str, t.Any]
+    definitions: dict[str, "JSONSchemaProps"]
+    dependencies: dict[str, t.Any]
     description: str
-    enum: t.List[t.Any]
+    enum: list[t.Any]
     example: t.Any
     exclusive_maximum: bool
     exclusive_minimum: bool
@@ -191,21 +191,21 @@ class JSONSchemaProps(KubernetesObject):
     multiple_of: float
     not_: "JSONSchemaProps"
     nullable: bool
-    one_of: t.List["JSONSchemaProps"]
+    one_of: list["JSONSchemaProps"]
     pattern: str
-    pattern_properties: t.Dict[str, "JSONSchemaProps"]
-    properties: t.Dict[str, "JSONSchemaProps"]
-    required: t.List[str]
+    pattern_properties: dict[str, "JSONSchemaProps"]
+    properties: dict[str, "JSONSchemaProps"]
+    required: list[str]
     title: str
     type: str
     unique_items: bool
     x_kubernetes_embedded_resource: bool
     x_kubernetes_int_or_string: bool
-    x_kubernetes_list_map_keys: t.List[str]
+    x_kubernetes_list_map_keys: list[str]
     x_kubernetes_list_type: str
     x_kubernetes_map_type: str
     x_kubernetes_preserve_unknown_fields: bool
-    x_kubernetes_validations: t.List[ValidationRule]
+    x_kubernetes_validations: list[ValidationRule]
 
     def __init__(
         self,
@@ -213,13 +213,13 @@ class JSONSchemaProps(KubernetesObject):
         schema_: str = None,
         additional_items: t.Any = None,
         additional_properties: t.Any = None,
-        all_of: t.List["JSONSchemaProps"] = None,
-        any_of: t.List["JSONSchemaProps"] = None,
+        all_of: list["JSONSchemaProps"] = None,
+        any_of: list["JSONSchemaProps"] = None,
         default: t.Any = None,
-        definitions: t.Dict[str, "JSONSchemaProps"] = None,
-        dependencies: t.Dict[str, t.Any] = None,
+        definitions: dict[str, "JSONSchemaProps"] = None,
+        dependencies: dict[str, t.Any] = None,
         description: str = None,
-        enum: t.List[t.Any] = None,
+        enum: list[t.Any] = None,
         example: t.Any = None,
         exclusive_maximum: bool = None,
         exclusive_minimum: bool = None,
@@ -238,21 +238,21 @@ class JSONSchemaProps(KubernetesObject):
         multiple_of: float = None,
         not_: "JSONSchemaProps" = None,
         nullable: bool = None,
-        one_of: t.List["JSONSchemaProps"] = None,
+        one_of: list["JSONSchemaProps"] = None,
         pattern: str = None,
-        pattern_properties: t.Dict[str, "JSONSchemaProps"] = None,
-        properties: t.Dict[str, "JSONSchemaProps"] = None,
-        required: t.List[str] = None,
+        pattern_properties: dict[str, "JSONSchemaProps"] = None,
+        properties: dict[str, "JSONSchemaProps"] = None,
+        required: list[str] = None,
         title: str = None,
         type: str = None,
         unique_items: bool = None,
         x_kubernetes_embedded_resource: bool = None,
         x_kubernetes_int_or_string: bool = None,
-        x_kubernetes_list_map_keys: t.List[str] = None,
+        x_kubernetes_list_map_keys: list[str] = None,
         x_kubernetes_list_type: str = None,
         x_kubernetes_map_type: str = None,
         x_kubernetes_preserve_unknown_fields: bool = None,
-        x_kubernetes_validations: t.List[ValidationRule] = None,
+        x_kubernetes_validations: list[ValidationRule] = None,
     ):
         super().__init__(
             ref_=ref_,
@@ -337,7 +337,7 @@ class CustomResourceSubresourceScale(KubernetesObject):
         )
 
 
-CustomResourceSubresourceStatus: t.TypeAlias = t.Dict[str, t.Any]
+CustomResourceSubresourceStatus: t.TypeAlias = dict[str, t.Any]
 
 
 class CustomResourceSubresources(KubernetesObject):
@@ -359,7 +359,7 @@ class CustomResourceDefinitionVersion(KubernetesObject):
 
     _required_ = ["name", "served", "storage"]
 
-    additional_printer_columns: t.List[CustomResourceColumnDefinition]
+    additional_printer_columns: list[CustomResourceColumnDefinition]
     deprecated: bool
     deprecation_warning: str
     name: str
@@ -370,7 +370,7 @@ class CustomResourceDefinitionVersion(KubernetesObject):
 
     def __init__(
         self,
-        additional_printer_columns: t.List[CustomResourceColumnDefinition] = None,
+        additional_printer_columns: list[CustomResourceColumnDefinition] = None,
         deprecated: bool = None,
         deprecation_warning: str = None,
         name: str = None,
@@ -403,7 +403,7 @@ class CustomResourceDefinitionSpec(KubernetesObject):
     names: CustomResourceDefinitionNames
     preserve_unknown_fields: bool
     scope: str
-    versions: t.List[CustomResourceDefinitionVersion]
+    versions: list[CustomResourceDefinitionVersion]
 
     def __init__(
         self,
@@ -412,7 +412,7 @@ class CustomResourceDefinitionSpec(KubernetesObject):
         names: CustomResourceDefinitionNames = None,
         preserve_unknown_fields: bool = None,
         scope: str = None,
-        versions: t.List[CustomResourceDefinitionVersion] = None,
+        versions: list[CustomResourceDefinitionVersion] = None,
     ):
         super().__init__(
             conversion=conversion, group=group, names=names, preserve_unknown_fields=preserve_unknown_fields, scope=scope, versions=versions

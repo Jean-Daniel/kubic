@@ -65,9 +65,9 @@ class ErasureCoded(KubernetesObject):
 class Peer(KubernetesObject):
     __slots__ = ()
 
-    secret_names: t.List[str]
+    secret_names: list[str]
 
-    def __init__(self, secret_names: t.List[str] = None):
+    def __init__(self, secret_names: list[str] = None):
         super().__init__(secret_names=secret_names)
 
 
@@ -88,9 +88,9 @@ class CephBlockPoolSpecMirroring(KubernetesObject):
     enabled: bool
     mode: str
     peers: Peer
-    snapshot_schedules: t.List[SnapshotSchedule]
+    snapshot_schedules: list[SnapshotSchedule]
 
-    def __init__(self, enabled: bool = None, mode: str = None, peers: Peer = None, snapshot_schedules: t.List[SnapshotSchedule] = None):
+    def __init__(self, enabled: bool = None, mode: str = None, peers: Peer = None, snapshot_schedules: list[SnapshotSchedule] = None):
         super().__init__(enabled=enabled, mode=mode, peers=peers, snapshot_schedules=snapshot_schedules)
 
 
@@ -186,7 +186,7 @@ class CephBlockPoolSpec(KubernetesObject):
     failure_domain: str
     mirroring: CephBlockPoolSpecMirroring
     name: str
-    parameters: t.Dict[str, str]
+    parameters: dict[str, str]
     quotas: CephBlockPoolSpecQuota
     replicated: Replicated
     status_check: StatusCheck
@@ -201,7 +201,7 @@ class CephBlockPoolSpec(KubernetesObject):
         failure_domain: str = None,
         mirroring: CephBlockPoolSpecMirroring = None,
         name: str = None,
-        parameters: t.Dict[str, str] = None,
+        parameters: dict[str, str] = None,
         quotas: CephBlockPoolSpecQuota = None,
         replicated: Replicated = None,
         status_check: StatusCheck = None,
@@ -280,12 +280,12 @@ class FilterItem(KubernetesObject):
 class Filter(KubernetesObject):
     __slots__ = ()
 
-    key_filters: t.List[FilterItem]
-    metadata_filters: t.List[FilterItem]
-    tag_filters: t.List[FilterItem]
+    key_filters: list[FilterItem]
+    metadata_filters: list[FilterItem]
+    tag_filters: list[FilterItem]
 
     def __init__(
-        self, key_filters: t.List[FilterItem] = None, metadata_filters: t.List[FilterItem] = None, tag_filters: t.List[FilterItem] = None
+        self, key_filters: list[FilterItem] = None, metadata_filters: list[FilterItem] = None, tag_filters: list[FilterItem] = None
     ):
         super().__init__(key_filters=key_filters, metadata_filters=metadata_filters, tag_filters=tag_filters)
 
@@ -295,11 +295,11 @@ class CephBucketNotificationSpec(KubernetesObject):
 
     _required_ = ["topic"]
 
-    events: t.List[str]
+    events: list[str]
     filter: Filter
     topic: str
 
-    def __init__(self, events: t.List[str] = None, filter: Filter = None, topic: str = None):
+    def __init__(self, events: list[str] = None, filter: Filter = None, topic: str = None):
         super().__init__(events=events, filter=filter, topic=topic)
 
 
@@ -422,10 +422,10 @@ class CephClientSpec(KubernetesObject):
 
     _required_ = ["caps"]
 
-    caps: t.Dict[str, str]
+    caps: dict[str, str]
     name: str
 
-    def __init__(self, caps: t.Dict[str, str] = None, name: str = None):
+    def __init__(self, caps: dict[str, str] = None, name: str = None):
         super().__init__(caps=caps, name=name)
 
 
@@ -594,12 +594,10 @@ class CephClusterSpecHealthCheck(KubernetesObject):
     __slots__ = ()
 
     daemon_health: DaemonHealth
-    liveness_probe: t.Dict[str, Probe]
-    startup_probe: t.Dict[str, Probe]
+    liveness_probe: dict[str, Probe]
+    startup_probe: dict[str, Probe]
 
-    def __init__(
-        self, daemon_health: DaemonHealth = None, liveness_probe: t.Dict[str, Probe] = None, startup_probe: t.Dict[str, Probe] = None
-    ):
+    def __init__(self, daemon_health: DaemonHealth = None, liveness_probe: dict[str, Probe] = None, startup_probe: dict[str, Probe] = None):
         super().__init__(daemon_health=daemon_health, liveness_probe=liveness_probe, startup_probe=startup_probe)
 
 
@@ -629,9 +627,9 @@ class MGR(KubernetesObject):
 
     allow_multiple_per_node: bool
     count: int
-    modules: t.List[Module]
+    modules: list[Module]
 
-    def __init__(self, allow_multiple_per_node: bool = None, count: int = None, modules: t.List[Module] = None):
+    def __init__(self, allow_multiple_per_node: bool = None, count: int = None, modules: list[Module] = None):
         super().__init__(allow_multiple_per_node=allow_multiple_per_node, count=count, modules=modules)
 
 
@@ -651,9 +649,9 @@ class StretchCluster(KubernetesObject):
 
     failure_domain_label: str
     sub_failure_domain: str
-    zones: t.List[StretchClusterZone]
+    zones: list[StretchClusterZone]
 
-    def __init__(self, failure_domain_label: str = None, sub_failure_domain: str = None, zones: t.List[StretchClusterZone] = None):
+    def __init__(self, failure_domain_label: str = None, sub_failure_domain: str = None, zones: list[StretchClusterZone] = None):
         super().__init__(failure_domain_label=failure_domain_label, sub_failure_domain=sub_failure_domain, zones=zones)
 
 
@@ -730,11 +728,11 @@ class Monitoring(KubernetesObject):
     __slots__ = ()
 
     enabled: bool
-    external_mgr_endpoints: t.List[ExternalMgrEndpoint]
+    external_mgr_endpoints: list[ExternalMgrEndpoint]
     external_mgr_prometheus_port: int
 
     def __init__(
-        self, enabled: bool = None, external_mgr_endpoints: t.List[ExternalMgrEndpoint] = None, external_mgr_prometheus_port: int = None
+        self, enabled: bool = None, external_mgr_endpoints: list[ExternalMgrEndpoint] = None, external_mgr_prometheus_port: int = None
     ):
         super().__init__(
             enabled=enabled, external_mgr_endpoints=external_mgr_endpoints, external_mgr_prometheus_port=external_mgr_prometheus_port
@@ -777,7 +775,7 @@ class Network(KubernetesObject):
     host_network: bool
     ip_family: str
     provider: str
-    selectors: t.Dict[str, str]
+    selectors: dict[str, str]
 
     def __init__(
         self,
@@ -786,7 +784,7 @@ class Network(KubernetesObject):
         host_network: bool = None,
         ip_family: str = None,
         provider: str = None,
-        selectors: t.Dict[str, str] = None,
+        selectors: dict[str, str] = None,
     ):
         super().__init__(
             connections=connections,
@@ -804,16 +802,16 @@ class Placement(KubernetesObject):
     node_affinity: core.NodeAffinity
     pod_affinity: core.PodAffinity
     pod_anti_affinity: core.PodAntiAffinity
-    tolerations: t.List[core.Toleration]
-    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
+    tolerations: list[core.Toleration]
+    topology_spread_constraints: list[core.TopologySpreadConstraint]
 
     def __init__(
         self,
         node_affinity: core.NodeAffinity = None,
         pod_affinity: core.PodAffinity = None,
         pod_anti_affinity: core.PodAntiAffinity = None,
-        tolerations: t.List[core.Toleration] = None,
-        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
+        tolerations: list[core.Toleration] = None,
+        topology_spread_constraints: list[core.TopologySpreadConstraint] = None,
     ):
         super().__init__(
             node_affinity=node_affinity,
@@ -827,10 +825,10 @@ class Placement(KubernetesObject):
 class KMS(KubernetesObject):
     __slots__ = ()
 
-    connection_details: t.Dict[str, str]
+    connection_details: dict[str, str]
     token_secret_name: str
 
-    def __init__(self, connection_details: t.Dict[str, str] = None, token_secret_name: str = None):
+    def __init__(self, connection_details: dict[str, str] = None, token_secret_name: str = None):
         super().__init__(connection_details=connection_details, token_secret_name=token_secret_name)
 
 
@@ -846,36 +844,36 @@ class CephClusterSpecSecurity(KubernetesObject):
 class Device(KubernetesObject):
     __slots__ = ()
 
-    config: t.Dict[str, str]
+    config: dict[str, str]
     fullpath: str
     name: str
 
-    def __init__(self, config: t.Dict[str, str] = None, fullpath: str = None, name: str = None):
+    def __init__(self, config: dict[str, str] = None, fullpath: str = None, name: str = None):
         super().__init__(config=config, fullpath=fullpath, name=name)
 
 
 class Node(KubernetesObject):
     __slots__ = ()
 
-    config: t.Dict[str, str]
+    config: dict[str, str]
     device_filter: str
     device_path_filter: str
-    devices: t.List[Device]
+    devices: list[Device]
     name: str
     resources: core.ResourceRequirements
     use_all_devices: bool
-    volume_claim_templates: t.List[core.PersistentVolumeClaimTemplate]
+    volume_claim_templates: list[core.PersistentVolumeClaimTemplate]
 
     def __init__(
         self,
-        config: t.Dict[str, str] = None,
+        config: dict[str, str] = None,
         device_filter: str = None,
         device_path_filter: str = None,
-        devices: t.List[Device] = None,
+        devices: list[Device] = None,
         name: str = None,
         resources: core.ResourceRequirements = None,
         use_all_devices: bool = None,
-        volume_claim_templates: t.List[core.PersistentVolumeClaimTemplate] = None,
+        volume_claim_templates: list[core.PersistentVolumeClaimTemplate] = None,
     ):
         super().__init__(
             config=config,
@@ -894,7 +892,7 @@ class StorageClassDeviceSet(KubernetesObject):
 
     _required_ = ["count", "name", "volume_claim_templates"]
 
-    config: t.Dict[str, str]
+    config: dict[str, str]
     count: int
     encrypted: bool
     name: str
@@ -905,11 +903,11 @@ class StorageClassDeviceSet(KubernetesObject):
     scheduler_name: str
     tune_device_class: bool
     tune_fast_device_class: bool
-    volume_claim_templates: t.List[core.PersistentVolumeClaimTemplate]
+    volume_claim_templates: list[core.PersistentVolumeClaimTemplate]
 
     def __init__(
         self,
-        config: t.Dict[str, str] = None,
+        config: dict[str, str] = None,
         count: int = None,
         encrypted: bool = None,
         name: str = None,
@@ -920,7 +918,7 @@ class StorageClassDeviceSet(KubernetesObject):
         scheduler_name: str = None,
         tune_device_class: bool = None,
         tune_fast_device_class: bool = None,
-        volume_claim_templates: t.List[core.PersistentVolumeClaimTemplate] = None,
+        volume_claim_templates: list[core.PersistentVolumeClaimTemplate] = None,
     ):
         super().__init__(
             config=config,
@@ -948,29 +946,29 @@ class Storage(KubernetesObject):
         "onlyApplyOSDPlacement": "only_apply_osd_placement",
     }
 
-    config: t.Dict[str, str]
+    config: dict[str, str]
     device_filter: str
     device_path_filter: str
-    devices: t.List[Device]
-    nodes: t.List[Node]
+    devices: list[Device]
+    nodes: list[Node]
     only_apply_osd_placement: bool
-    storage_class_device_sets: t.List[StorageClassDeviceSet]
+    storage_class_device_sets: list[StorageClassDeviceSet]
     use_all_devices: bool
     use_all_nodes: bool
-    volume_claim_templates: t.List[core.PersistentVolumeClaimTemplate]
+    volume_claim_templates: list[core.PersistentVolumeClaimTemplate]
 
     def __init__(
         self,
-        config: t.Dict[str, str] = None,
+        config: dict[str, str] = None,
         device_filter: str = None,
         device_path_filter: str = None,
-        devices: t.List[Device] = None,
-        nodes: t.List[Node] = None,
+        devices: list[Device] = None,
+        nodes: list[Node] = None,
         only_apply_osd_placement: bool = None,
-        storage_class_device_sets: t.List[StorageClassDeviceSet] = None,
+        storage_class_device_sets: list[StorageClassDeviceSet] = None,
         use_all_devices: bool = None,
         use_all_nodes: bool = None,
-        volume_claim_templates: t.List[core.PersistentVolumeClaimTemplate] = None,
+        volume_claim_templates: list[core.PersistentVolumeClaimTemplate] = None,
     ):
         super().__init__(
             config=config,
@@ -998,7 +996,7 @@ class CephClusterSpec(KubernetesObject):
         "waitTimeoutForHealthyOSDInMinutes": "wait_timeout_for_healthy_osd_in_minutes",
     }
 
-    annotations: t.Dict[str, t.Dict[str, str]]
+    annotations: dict[str, dict[str, str]]
     ceph_version: CephVersion
     cleanup_policy: CleanupPolicy
     continue_upgrade_after_checks_even_if_not_healthy: bool
@@ -1008,16 +1006,16 @@ class CephClusterSpec(KubernetesObject):
     disruption_management: DisruptionManagement
     external: External
     health_check: CephClusterSpecHealthCheck
-    labels: t.Dict[str, t.Dict[str, str]]
+    labels: dict[str, dict[str, str]]
     log_collector: LogCollector
     mgr: MGR
     mon: CephClusterSpecMON
     monitoring: Monitoring
     network: Network
-    placement: t.Dict[str, Placement]
-    priority_class_names: t.Dict[str, str]
+    placement: dict[str, Placement]
+    priority_class_names: dict[str, str]
     remove_os_ds_if_out_and_safe_to_remove: bool
-    resources: t.Dict[str, core.ResourceRequirements]
+    resources: dict[str, core.ResourceRequirements]
     security: CephClusterSpecSecurity
     skip_upgrade_checks: bool
     storage: Storage
@@ -1025,7 +1023,7 @@ class CephClusterSpec(KubernetesObject):
 
     def __init__(
         self,
-        annotations: t.Dict[str, t.Dict[str, str]] = None,
+        annotations: dict[str, dict[str, str]] = None,
         ceph_version: CephVersion = None,
         cleanup_policy: CleanupPolicy = None,
         continue_upgrade_after_checks_even_if_not_healthy: bool = None,
@@ -1035,16 +1033,16 @@ class CephClusterSpec(KubernetesObject):
         disruption_management: DisruptionManagement = None,
         external: External = None,
         health_check: CephClusterSpecHealthCheck = None,
-        labels: t.Dict[str, t.Dict[str, str]] = None,
+        labels: dict[str, dict[str, str]] = None,
         log_collector: LogCollector = None,
         mgr: MGR = None,
         mon: CephClusterSpecMON = None,
         monitoring: Monitoring = None,
         network: Network = None,
-        placement: t.Dict[str, Placement] = None,
-        priority_class_names: t.Dict[str, str] = None,
+        placement: dict[str, Placement] = None,
+        priority_class_names: dict[str, str] = None,
         remove_os_ds_if_out_and_safe_to_remove: bool = None,
-        resources: t.Dict[str, core.ResourceRequirements] = None,
+        resources: dict[str, core.ResourceRequirements] = None,
         security: CephClusterSpecSecurity = None,
         skip_upgrade_checks: bool = None,
         storage: Storage = None,
@@ -1101,8 +1099,8 @@ class MetadataServer(KubernetesObject):
 
     active_count: int
     active_standby: bool
-    annotations: t.Dict[str, str]
-    labels: t.Dict[str, str]
+    annotations: dict[str, str]
+    labels: dict[str, str]
     liveness_probe: Probe
     placement: Placement
     priority_class_name: str
@@ -1113,8 +1111,8 @@ class MetadataServer(KubernetesObject):
         self,
         active_count: int = None,
         active_standby: bool = None,
-        annotations: t.Dict[str, str] = None,
-        labels: t.Dict[str, str] = None,
+        annotations: dict[str, str] = None,
+        labels: dict[str, str] = None,
         liveness_probe: Probe = None,
         placement: Placement = None,
         priority_class_name: str = None,
@@ -1149,15 +1147,15 @@ class CephFilesystemSpecMirroring(KubernetesObject):
 
     enabled: bool
     peers: Peer
-    snapshot_retention: t.List[SnapshotRetention]
-    snapshot_schedules: t.List[SnapshotSchedule]
+    snapshot_retention: list[SnapshotRetention]
+    snapshot_schedules: list[SnapshotSchedule]
 
     def __init__(
         self,
         enabled: bool = None,
         peers: Peer = None,
-        snapshot_retention: t.List[SnapshotRetention] = None,
-        snapshot_schedules: t.List[SnapshotSchedule] = None,
+        snapshot_retention: list[SnapshotRetention] = None,
+        snapshot_schedules: list[SnapshotSchedule] = None,
     ):
         super().__init__(enabled=enabled, peers=peers, snapshot_retention=snapshot_retention, snapshot_schedules=snapshot_schedules)
 
@@ -1167,7 +1165,7 @@ class CephFilesystemSpec(KubernetesObject):
 
     _required_ = ["data_pools", "metadata_pool", "metadata_server"]
 
-    data_pools: t.List[CephBlockPoolSpec]
+    data_pools: list[CephBlockPoolSpec]
     metadata_pool: CephBlockPoolSpec
     metadata_server: MetadataServer
     mirroring: CephFilesystemSpecMirroring
@@ -1177,7 +1175,7 @@ class CephFilesystemSpec(KubernetesObject):
 
     def __init__(
         self,
-        data_pools: t.List[CephBlockPoolSpec] = None,
+        data_pools: list[CephBlockPoolSpec] = None,
         metadata_pool: CephBlockPoolSpec = None,
         metadata_server: MetadataServer = None,
         mirroring: CephFilesystemSpecMirroring = None,
@@ -1215,16 +1213,16 @@ class CephFilesystem(KubernetesApiResource):
 class CephFilesystemMirrorSpec(KubernetesObject):
     __slots__ = ()
 
-    annotations: t.Dict[str, str]
-    labels: t.Dict[str, str]
+    annotations: dict[str, str]
+    labels: dict[str, str]
     placement: Placement
     priority_class_name: str
     resources: core.ResourceRequirements
 
     def __init__(
         self,
-        annotations: t.Dict[str, str] = None,
-        labels: t.Dict[str, str] = None,
+        annotations: dict[str, str] = None,
+        labels: dict[str, str] = None,
         placement: Placement = None,
         priority_class_name: str = None,
         resources: core.ResourceRequirements = None,
@@ -1340,8 +1338,8 @@ class Server(KubernetesObject):
     _required_ = ["active"]
 
     active: int
-    annotations: t.Dict[str, str]
-    labels: t.Dict[str, str]
+    annotations: dict[str, str]
+    labels: dict[str, str]
     log_level: str
     placement: Placement
     priority_class_name: str
@@ -1350,8 +1348,8 @@ class Server(KubernetesObject):
     def __init__(
         self,
         active: int = None,
-        annotations: t.Dict[str, str] = None,
-        labels: t.Dict[str, str] = None,
+        annotations: dict[str, str] = None,
+        labels: dict[str, str] = None,
         log_level: str = None,
         placement: Placement = None,
         priority_class_name: str = None,
@@ -1448,21 +1446,21 @@ class ExternalRgwEndpoint(KubernetesObject):
 class Service(KubernetesObject):
     __slots__ = ()
 
-    annotations: t.Dict[str, str]
+    annotations: dict[str, str]
 
-    def __init__(self, annotations: t.Dict[str, str] = None):
+    def __init__(self, annotations: dict[str, str] = None):
         super().__init__(annotations=annotations)
 
 
 class Gateway(KubernetesObject):
     __slots__ = ()
 
-    annotations: t.Dict[str, str]
+    annotations: dict[str, str]
     ca_bundle_ref: str
-    external_rgw_endpoints: t.List[ExternalRgwEndpoint]
+    external_rgw_endpoints: list[ExternalRgwEndpoint]
     host_network: bool
     instances: int
-    labels: t.Dict[str, str]
+    labels: dict[str, str]
     placement: Placement
     port: int
     priority_class_name: str
@@ -1473,12 +1471,12 @@ class Gateway(KubernetesObject):
 
     def __init__(
         self,
-        annotations: t.Dict[str, str] = None,
+        annotations: dict[str, str] = None,
         ca_bundle_ref: str = None,
-        external_rgw_endpoints: t.List[ExternalRgwEndpoint] = None,
+        external_rgw_endpoints: list[ExternalRgwEndpoint] = None,
         host_network: bool = None,
         instances: int = None,
-        labels: t.Dict[str, str] = None,
+        labels: dict[str, str] = None,
         placement: Placement = None,
         port: int = None,
         priority_class_name: str = None,
@@ -1519,10 +1517,10 @@ class CephObjectStoreSpecHealthCheck(KubernetesObject):
 class S3(KubernetesObject):
     __slots__ = ()
 
-    connection_details: t.Dict[str, str]
+    connection_details: dict[str, str]
     token_secret_name: str
 
-    def __init__(self, connection_details: t.Dict[str, str] = None, token_secret_name: str = None):
+    def __init__(self, connection_details: dict[str, str] = None, token_secret_name: str = None):
         super().__init__(connection_details=connection_details, token_secret_name=token_secret_name)
 
 
@@ -1641,14 +1639,14 @@ class CephObjectZoneSpec(KubernetesObject):
 
     _required_ = ["data_pool", "metadata_pool", "zone_group"]
 
-    custom_endpoints: t.List[str]
+    custom_endpoints: list[str]
     data_pool: CephBlockPoolSpec
     metadata_pool: CephBlockPoolSpec
     zone_group: str
 
     def __init__(
         self,
-        custom_endpoints: t.List[str] = None,
+        custom_endpoints: list[str] = None,
         data_pool: CephBlockPoolSpec = None,
         metadata_pool: CephBlockPoolSpec = None,
         zone_group: str = None,
@@ -1704,9 +1702,9 @@ class CephRBDMirrorSpec(KubernetesObject):
 
     _required_ = ["count"]
 
-    annotations: t.Dict[str, str]
+    annotations: dict[str, str]
     count: int
-    labels: t.Dict[str, str]
+    labels: dict[str, str]
     peers: Peer
     placement: Placement
     priority_class_name: str
@@ -1714,9 +1712,9 @@ class CephRBDMirrorSpec(KubernetesObject):
 
     def __init__(
         self,
-        annotations: t.Dict[str, str] = None,
+        annotations: dict[str, str] = None,
         count: int = None,
-        labels: t.Dict[str, str] = None,
+        labels: dict[str, str] = None,
         peers: Peer = None,
         placement: Placement = None,
         priority_class_name: str = None,
@@ -1752,7 +1750,7 @@ class CephRBDMirror(KubernetesApiResource):
 class ObjectBucketSpecEndpoint(KubernetesObject):
     __slots__ = ()
 
-    additional_config: t.Dict[str, t.Any]
+    additional_config: dict[str, t.Any]
     bucket_host: str
     bucket_name: str
     bucket_port: int
@@ -1761,7 +1759,7 @@ class ObjectBucketSpecEndpoint(KubernetesObject):
 
     def __init__(
         self,
-        additional_config: t.Dict[str, t.Any] = None,
+        additional_config: dict[str, t.Any] = None,
         bucket_host: str = None,
         bucket_name: str = None,
         bucket_port: int = None,
@@ -1781,18 +1779,18 @@ class ObjectBucketSpecEndpoint(KubernetesObject):
 class ObjectBucketSpec(KubernetesObject):
     __slots__ = ()
 
-    additional_state: t.Dict[str, t.Any]
-    authentication: t.Dict[str, t.Any]
-    claim_ref: t.Dict[str, t.Any]
+    additional_state: dict[str, t.Any]
+    authentication: dict[str, t.Any]
+    claim_ref: dict[str, t.Any]
     endpoint: ObjectBucketSpecEndpoint
     reclaim_policy: str
     storage_class_name: str
 
     def __init__(
         self,
-        additional_state: t.Dict[str, t.Any] = None,
-        authentication: t.Dict[str, t.Any] = None,
-        claim_ref: t.Dict[str, t.Any] = None,
+        additional_state: dict[str, t.Any] = None,
+        authentication: dict[str, t.Any] = None,
+        claim_ref: dict[str, t.Any] = None,
         endpoint: ObjectBucketSpecEndpoint = None,
         reclaim_policy: str = None,
         storage_class_name: str = None,
@@ -1824,7 +1822,7 @@ class ObjectBucket(KubernetesApiResource):
 class ObjectBucketClaimSpec(KubernetesObject):
     __slots__ = ()
 
-    additional_config: t.Dict[str, t.Any]
+    additional_config: dict[str, t.Any]
     bucket_name: str
     generate_bucket_name: str
     object_bucket_name: str
@@ -1832,7 +1830,7 @@ class ObjectBucketClaimSpec(KubernetesObject):
 
     def __init__(
         self,
-        additional_config: t.Dict[str, t.Any] = None,
+        additional_config: dict[str, t.Any] = None,
         bucket_name: str = None,
         generate_bucket_name: str = None,
         object_bucket_name: str = None,

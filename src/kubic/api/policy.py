@@ -1,5 +1,3 @@
-import typing as t
-
 from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
@@ -61,10 +59,10 @@ class FSGroupStrategyOptions(KubernetesObject):
 
     _api_version_ = "policy/v1beta1"
 
-    ranges: t.List[IDRange]
+    ranges: list[IDRange]
     rule: str
 
-    def __init__(self, ranges: t.List[IDRange] = None, rule: str = None):
+    def __init__(self, ranges: list[IDRange] = None, rule: str = None):
         super().__init__(ranges=ranges, rule=rule)
 
 
@@ -118,10 +116,10 @@ class RunAsGroupStrategyOptions(KubernetesObject):
 
     _required_ = ["rule"]
 
-    ranges: t.List[IDRange]
+    ranges: list[IDRange]
     rule: str
 
-    def __init__(self, ranges: t.List[IDRange] = None, rule: str = None):
+    def __init__(self, ranges: list[IDRange] = None, rule: str = None):
         super().__init__(ranges=ranges, rule=rule)
 
 
@@ -132,10 +130,10 @@ class RunAsUserStrategyOptions(KubernetesObject):
 
     _required_ = ["rule"]
 
-    ranges: t.List[IDRange]
+    ranges: list[IDRange]
     rule: str
 
-    def __init__(self, ranges: t.List[IDRange] = None, rule: str = None):
+    def __init__(self, ranges: list[IDRange] = None, rule: str = None):
         super().__init__(ranges=ranges, rule=rule)
 
 
@@ -146,10 +144,10 @@ class RuntimeClassStrategyOptions(KubernetesObject):
 
     _required_ = ["allowed_runtime_class_names"]
 
-    allowed_runtime_class_names: t.List[str]
+    allowed_runtime_class_names: list[str]
     default_runtime_class_name: str
 
-    def __init__(self, allowed_runtime_class_names: t.List[str] = None, default_runtime_class_name: str = None):
+    def __init__(self, allowed_runtime_class_names: list[str] = None, default_runtime_class_name: str = None):
         super().__init__(allowed_runtime_class_names=allowed_runtime_class_names, default_runtime_class_name=default_runtime_class_name)
 
 
@@ -172,10 +170,10 @@ class SupplementalGroupsStrategyOptions(KubernetesObject):
 
     _api_version_ = "policy/v1beta1"
 
-    ranges: t.List[IDRange]
+    ranges: list[IDRange]
     rule: str
 
-    def __init__(self, ranges: t.List[IDRange] = None, rule: str = None):
+    def __init__(self, ranges: list[IDRange] = None, rule: str = None):
         super().__init__(ranges=ranges, rule=rule)
 
 
@@ -198,56 +196,56 @@ class PodSecurityPolicySpec(KubernetesObject):
     }
 
     allow_privilege_escalation: bool
-    allowed_csi_drivers: t.List[AllowedCSIDriver]
-    allowed_capabilities: t.List[str]
-    allowed_flex_volumes: t.List[AllowedFlexVolume]
-    allowed_host_paths: t.List[AllowedHostPath]
-    allowed_proc_mount_types: t.List[str]
-    allowed_unsafe_sysctls: t.List[str]
-    default_add_capabilities: t.List[str]
+    allowed_csi_drivers: list[AllowedCSIDriver]
+    allowed_capabilities: list[str]
+    allowed_flex_volumes: list[AllowedFlexVolume]
+    allowed_host_paths: list[AllowedHostPath]
+    allowed_proc_mount_types: list[str]
+    allowed_unsafe_sysctls: list[str]
+    default_add_capabilities: list[str]
     default_allow_privilege_escalation: bool
-    forbidden_sysctls: t.List[str]
+    forbidden_sysctls: list[str]
     fs_group: FSGroupStrategyOptions
     host_ipc: bool
     host_network: bool
     host_pid: bool
-    host_ports: t.List[HostPortRange]
+    host_ports: list[HostPortRange]
     privileged: bool
     read_only_root_filesystem: bool
-    required_drop_capabilities: t.List[str]
+    required_drop_capabilities: list[str]
     run_as_group: RunAsGroupStrategyOptions
     run_as_user: RunAsUserStrategyOptions
     runtime_class: RuntimeClassStrategyOptions
     se_linux: SELinuxStrategyOptions
     supplemental_groups: SupplementalGroupsStrategyOptions
-    volumes: t.List[str]
+    volumes: list[str]
 
     def __init__(
         self,
         allow_privilege_escalation: bool = None,
-        allowed_csi_drivers: t.List[AllowedCSIDriver] = None,
-        allowed_capabilities: t.List[str] = None,
-        allowed_flex_volumes: t.List[AllowedFlexVolume] = None,
-        allowed_host_paths: t.List[AllowedHostPath] = None,
-        allowed_proc_mount_types: t.List[str] = None,
-        allowed_unsafe_sysctls: t.List[str] = None,
-        default_add_capabilities: t.List[str] = None,
+        allowed_csi_drivers: list[AllowedCSIDriver] = None,
+        allowed_capabilities: list[str] = None,
+        allowed_flex_volumes: list[AllowedFlexVolume] = None,
+        allowed_host_paths: list[AllowedHostPath] = None,
+        allowed_proc_mount_types: list[str] = None,
+        allowed_unsafe_sysctls: list[str] = None,
+        default_add_capabilities: list[str] = None,
         default_allow_privilege_escalation: bool = None,
-        forbidden_sysctls: t.List[str] = None,
+        forbidden_sysctls: list[str] = None,
         fs_group: FSGroupStrategyOptions = None,
         host_ipc: bool = None,
         host_network: bool = None,
         host_pid: bool = None,
-        host_ports: t.List[HostPortRange] = None,
+        host_ports: list[HostPortRange] = None,
         privileged: bool = None,
         read_only_root_filesystem: bool = None,
-        required_drop_capabilities: t.List[str] = None,
+        required_drop_capabilities: list[str] = None,
         run_as_group: RunAsGroupStrategyOptions = None,
         run_as_user: RunAsUserStrategyOptions = None,
         runtime_class: RuntimeClassStrategyOptions = None,
         se_linux: SELinuxStrategyOptions = None,
         supplemental_groups: SupplementalGroupsStrategyOptions = None,
-        volumes: t.List[str] = None,
+        volumes: list[str] = None,
     ):
         super().__init__(
             allow_privilege_escalation=allow_privilege_escalation,

@@ -1,11 +1,12 @@
 import typing as t
+from collections.abc import Iterable
 
 from .k8s import QualifiedName, camel_to_snake, type_name_from_property_name
 
 
 class GenericType(t.NamedTuple):
     base_type: str
-    parameters: t.Iterable[t.Any]
+    parameters: Iterable[t.Any]
 
     def __str__(self):
         return f"{self.base_type}[{str(self.parameters)}]"
@@ -89,7 +90,7 @@ class ObjectType(ApiType):
     def __init__(self, fqn: QualifiedName, description: str):
         super().__init__(fqn)
         self.description = description
-        self.properties: t.List[Property] = []
+        self.properties: list[Property] = []
 
     def __eq__(self, other):
         return self.name == other.name and self.properties == other.properties

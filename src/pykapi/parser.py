@@ -1,6 +1,7 @@
 import sys
 import typing as t
 from collections import defaultdict
+from collections.abc import Iterable
 
 from .k8s import QualifiedName, module_for_group
 from .types import (
@@ -52,15 +53,15 @@ class ApiGroup:
         self.version = version
 
         # group types
-        self.types: t.List[ApiType] = []
+        self.types: list[ApiType] = []
 
-        self._types: t.Dict[str, ApiType] = {}
-        self._anonymous: t.Dict[str, t.List[AnonymousType]] = defaultdict(list)
+        self._types: dict[str, ApiType] = {}
+        self._anonymous: dict[str, list[AnonymousType]] = defaultdict(list)
 
         # imports
         self.use_typing: bool = False
-        self._refs: t.Set[str] = set()
-        self._base_types: t.Set[str] = set()
+        self._refs: set[str] = set()
+        self._base_types: set[str] = set()
 
     def __repr__(self):
         return f"ApiGroup {{ name: {self.name}, {len(self._types)} types: }}"
@@ -97,11 +98,11 @@ class ApiGroup:
             self._types[api_type.name] = api_type
 
     @property
-    def base_types(self) -> t.Iterable[str]:
+    def base_types(self) -> Iterable[str]:
         return self._base_types
 
     @property
-    def refs(self) -> t.Iterable[str]:
+    def refs(self) -> Iterable[str]:
         return self._refs
 
     def _rename(self, item):
@@ -109,8 +110,8 @@ class ApiGroup:
         assert item.name not in self._types, item.name
         self._types[item.name] = item
 
-    def rename_duplicated(self, items: t.List[AnonymousType]):
-        types: t.List[t.List[AnonymousType]] = []
+    def rename_duplicated(self, items: list[AnonymousType]):
+        types: list[list[AnonymousType]] = []
 
         for duplicated in items:
             # Try to group items by matching type
@@ -164,7 +165,7 @@ class ApiGroup:
         # Sort types by dependency
         types = []
         dones = set()
-        for ty in sorted(self._types.values(), key=lambda t: t.name):
+        for ty in sorted(self._types.values(), key=lambda k: k.name):
             if ty.name in dones:
                 continue
             dones.add(ty.name)
@@ -178,9 +179,7 @@ class ApiGroup:
         self.types = reversed(types)
 
     def add_imports_for_type(self, ty):
-        if isinstance(ty, GenericType):
-            self.use_typing = True
-        elif isinstance(ty, ApiType):
+        if isinstance(ty, ApiType):
             if ty in self:
                 if isinstance(ty, ObjectType):
                     self._base_types.add(ty.kubic_type)
@@ -200,7 +199,7 @@ class ApiGroup:
             else:
                 into.append(param)
 
-    def _fetch_dependencies(self, ty: ApiType, dones: set) -> t.List[ApiType]:
+    def _fetch_dependencies(self, ty: ApiType, dones: set) -> list[ApiType]:
         dependencies = []
 
         # resolve internal reference
@@ -247,7 +246,7 @@ class ApiGroup:
 
 class Parser:
     def __init__(self):
-        self._pendings: t.List[t.Tuple[ObjectType, dict]] = []
+        self._pendings: list[tuple[ObjectType, dict]] = []
 
     def group_for_type(self, fqn: QualifiedName) -> ApiGroup:
         raise NotImplementedError()
@@ -256,7 +255,7 @@ class Parser:
         return None
 
     @property
-    def pendings(self) -> t.Iterable[t.Tuple[ObjectType, dict]]:
+    def pendings(self) -> Iterable[tuple[ObjectType, dict]]:
         def iterator():
             while self._pendings:
                 yield self._pendings.pop()
@@ -344,9 +343,9 @@ class Parser:
                 if "_type_name_" in schema:
                     details["_type_name_"] = schema["_type_name_"]
                 vtype = self.import_property(obj_type, prop_name, details)
-                return GenericType("t.Dict", ("str", vtype))
+                return GenericType("dict", ("str", vtype))
 
-            return GenericType("t.Dict", ("str", "t.Any"))
+            return GenericType("dict", ("str", "t.Any"))
 
         if prop_type == "integer":
             return "int"
@@ -382,7 +381,7 @@ class Parser:
                 if "_type_name_" in schema:
                     details["_type_name_"] = schema["_type_name_"]
                 vtype = self.import_property(obj_type, prop_name, details)
-                return GenericType("t.List", (vtype,))
+                return GenericType("list", (vtype,))
             return "list"
 
         raise NotImplementedError(f"{prop_type} base type not supported")

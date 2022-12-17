@@ -92,7 +92,7 @@ def import_k8s_api(args):
             os.remove(tmp)
 
 
-def print_groups(groups: t.List[ApiGroup], output: str, api_module: str = "."):
+def print_groups(groups: list[ApiGroup], output: str, api_module: str = "."):
     printer = TypePrinter(api_module=api_module)
     for group in groups:
         filename = output
@@ -112,7 +112,7 @@ def create_crd(schema: dict) -> CRD:
     kind = spec["names"]["kind"]
     group = spec["group"]
     # default to using the storage version, ignoring other versions
-    vers: t.Dict[str, t.Any] = {}
+    vers: dict[str, t.Any] = {}
     if "versions" in spec:
         # find best version
         storage = None
@@ -140,7 +140,7 @@ def create_crd(schema: dict) -> CRD:
     return CRD(QualifiedName(kind, group, version), openapi)
 
 
-def read_crds(paths: t.List[pathlib.Path], crds: list):
+def read_crds(paths: list[pathlib.Path], crds: list):
     for path in paths:
         if path.is_dir():
             for entry in path.iterdir():

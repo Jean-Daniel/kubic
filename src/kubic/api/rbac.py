@@ -1,5 +1,3 @@
-import typing as t
-
 from kubic import KubernetesApiResource, KubernetesObject
 from . import meta
 
@@ -9,9 +7,9 @@ class AggregationRule(KubernetesObject):
 
     _api_version_ = "rbac.authorization.k8s.io/v1"
 
-    cluster_role_selectors: t.List[meta.LabelSelector]
+    cluster_role_selectors: list[meta.LabelSelector]
 
-    def __init__(self, cluster_role_selectors: t.List[meta.LabelSelector] = None):
+    def __init__(self, cluster_role_selectors: list[meta.LabelSelector] = None):
         super().__init__(cluster_role_selectors=cluster_role_selectors)
 
 
@@ -29,19 +27,19 @@ class PolicyRule(KubernetesObject):
         "nonResourceURLs": "non_resource_urls",
     }
 
-    api_groups: t.List[str]
-    non_resource_urls: t.List[str]
-    resource_names: t.List[str]
-    resources: t.List[str]
-    verbs: t.List[str]
+    api_groups: list[str]
+    non_resource_urls: list[str]
+    resource_names: list[str]
+    resources: list[str]
+    verbs: list[str]
 
     def __init__(
         self,
-        api_groups: t.List[str] = None,
-        non_resource_urls: t.List[str] = None,
-        resource_names: t.List[str] = None,
-        resources: t.List[str] = None,
-        verbs: t.List[str] = None,
+        api_groups: list[str] = None,
+        non_resource_urls: list[str] = None,
+        resource_names: list[str] = None,
+        resources: list[str] = None,
+        verbs: list[str] = None,
     ):
         super().__init__(
             api_groups=api_groups, non_resource_urls=non_resource_urls, resource_names=resource_names, resources=resources, verbs=verbs
@@ -57,10 +55,10 @@ class ClusterRole(KubernetesApiResource):
 
     aggregation_rule: AggregationRule
     metadata: meta.ObjectMeta
-    rules: t.List[PolicyRule]
+    rules: list[PolicyRule]
 
     def __init__(
-        self, name: str, aggregation_rule: AggregationRule = None, metadata: meta.ObjectMeta = None, rules: t.List[PolicyRule] = None
+        self, name: str, aggregation_rule: AggregationRule = None, metadata: meta.ObjectMeta = None, rules: list[PolicyRule] = None
     ):
         super().__init__(
             "rbac.authorization.k8s.io/v1", "ClusterRole", name, "", aggregation_rule=aggregation_rule, metadata=metadata, rules=rules
@@ -109,9 +107,9 @@ class ClusterRoleBinding(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     role_ref: RoleRef
-    subjects: t.List[Subject]
+    subjects: list[Subject]
 
-    def __init__(self, name: str, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: t.List[Subject] = None):
+    def __init__(self, name: str, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: list[Subject] = None):
         super().__init__(
             "rbac.authorization.k8s.io/v1", "ClusterRoleBinding", name, "", metadata=metadata, role_ref=role_ref, subjects=subjects
         )
@@ -125,9 +123,9 @@ class Role(KubernetesApiResource):
     _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
-    rules: t.List[PolicyRule]
+    rules: list[PolicyRule]
 
-    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, rules: t.List[PolicyRule] = None):
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, rules: list[PolicyRule] = None):
         super().__init__("rbac.authorization.k8s.io/v1", "Role", name, namespace, metadata=metadata, rules=rules)
 
 
@@ -142,10 +140,10 @@ class RoleBinding(KubernetesApiResource):
 
     metadata: meta.ObjectMeta
     role_ref: RoleRef
-    subjects: t.List[Subject]
+    subjects: list[Subject]
 
     def __init__(
-        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: t.List[Subject] = None
+        self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: list[Subject] = None
     ):
         super().__init__(
             "rbac.authorization.k8s.io/v1", "RoleBinding", name, namespace, metadata=metadata, role_ref=role_ref, subjects=subjects

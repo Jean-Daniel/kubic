@@ -1,5 +1,3 @@
-import typing as t
-
 from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
@@ -98,11 +96,11 @@ class HPAScalingRules(KubernetesObject):
 
     _api_version_ = "autoscaling/v2"
 
-    policies: t.List[HPAScalingPolicy]
+    policies: list[HPAScalingPolicy]
     select_policy: str
     stabilization_window_seconds: int
 
-    def __init__(self, policies: t.List[HPAScalingPolicy] = None, select_policy: str = None, stabilization_window_seconds: int = None):
+    def __init__(self, policies: list[HPAScalingPolicy] = None, select_policy: str = None, stabilization_window_seconds: int = None):
         super().__init__(policies=policies, select_policy=select_policy, stabilization_window_seconds=stabilization_window_seconds)
 
 
@@ -196,7 +194,7 @@ class HorizontalPodAutoscalerSpec(KubernetesObject):
 
     behavior: HorizontalPodAutoscalerBehavior
     max_replicas: int
-    metrics: t.List[MetricSpec]
+    metrics: list[MetricSpec]
     min_replicas: int
     scale_target_ref: CrossVersionObjectReference
 
@@ -204,7 +202,7 @@ class HorizontalPodAutoscalerSpec(KubernetesObject):
         self,
         behavior: HorizontalPodAutoscalerBehavior = None,
         max_replicas: int = None,
-        metrics: t.List[MetricSpec] = None,
+        metrics: list[MetricSpec] = None,
         min_replicas: int = None,
         scale_target_ref: CrossVersionObjectReference = None,
     ):

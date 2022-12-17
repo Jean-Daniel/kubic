@@ -1,5 +1,6 @@
 import typing as t
 from collections import defaultdict
+from collections.abc import Callable
 
 from .k8s import QualifiedName
 from .parser import Parser, ApiGroup
@@ -43,7 +44,7 @@ class CRDParser(Parser):
         # obj_type is the root type -> lookup annotation for that type
         return self.annotations.get(obj_type.name)
 
-    def process(self, *resources: t.Tuple[QualifiedName, dict]) -> ApiGroup:
+    def process(self, *resources: tuple[QualifiedName, dict]) -> ApiGroup:
         for fqn, schema in resources:
             schema["properties"]["metadata"] = {"$ref": "io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta"}
             # may contains items from remapped groups
@@ -119,10 +120,10 @@ def is_key_selector(schema: dict) -> bool:
     )
 
 
-AnnotationProvider: t.TypeAlias = t.Callable[[str], dict]
+AnnotationProvider: t.TypeAlias = Callable[[str], dict]
 
 
-def import_crds(crds: t.List[t.Tuple[QualifiedName, dict]], annotations: AnnotationProvider) -> t.List[ApiGroup]:
+def import_crds(crds: list[tuple[QualifiedName, dict]], annotations: AnnotationProvider) -> list[ApiGroup]:
     # in case there is CRDs from many groups/versions.
     # FIXME: disable group by version as some CRDs have etherogenous version (cilium)
     crds_by_groups = defaultdict(list)

@@ -12,9 +12,9 @@ class LabelSelectorRequirement(KubernetesObject):
 
     key: str
     operator: str
-    values: t.List[str]
+    values: list[str]
 
-    def __init__(self, key: str = None, operator: str = None, values: t.List[str] = None):
+    def __init__(self, key: str = None, operator: str = None, values: list[str] = None):
         super().__init__(key=key, operator=operator, values=values)
 
 
@@ -23,10 +23,10 @@ class LabelSelector(KubernetesObject):
 
     _api_version_ = "meta/v1"
 
-    match_expressions: t.List[LabelSelectorRequirement]
-    match_labels: t.Dict[str, str]
+    match_expressions: list[LabelSelectorRequirement]
+    match_labels: dict[str, str]
 
-    def __init__(self, match_expressions: t.List[LabelSelectorRequirement] = None, match_labels: t.Dict[str, str] = None):
+    def __init__(self, match_expressions: list[LabelSelectorRequirement] = None, match_labels: dict[str, str] = None):
         super().__init__(match_expressions=match_expressions, match_labels=match_labels)
 
 
@@ -66,36 +66,36 @@ class ObjectMeta(KubernetesObject):
 
     _api_version_ = "meta/v1"
 
-    annotations: t.Dict[str, str]
+    annotations: dict[str, str]
     cluster_name: str
     creation_timestamp: Time
     deletion_grace_period_seconds: int
     deletion_timestamp: Time
-    finalizers: t.List[str]
+    finalizers: list[str]
     generate_name: str
     generation: int
-    labels: t.Dict[str, str]
+    labels: dict[str, str]
     name: str
     namespace: str
-    owner_references: t.List[OwnerReference]
+    owner_references: list[OwnerReference]
     resource_version: str
     self_link: str
     uid: str
 
     def __init__(
         self,
-        annotations: t.Dict[str, str] = None,
+        annotations: dict[str, str] = None,
         cluster_name: str = None,
         creation_timestamp: Time = None,
         deletion_grace_period_seconds: int = None,
         deletion_timestamp: Time = None,
-        finalizers: t.List[str] = None,
+        finalizers: list[str] = None,
         generate_name: str = None,
         generation: int = None,
-        labels: t.Dict[str, str] = None,
+        labels: dict[str, str] = None,
         name: str = None,
         namespace: str = None,
-        owner_references: t.List[OwnerReference] = None,
+        owner_references: list[OwnerReference] = None,
         resource_version: str = None,
         self_link: str = None,
         uid: str = None,

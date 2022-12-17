@@ -1,5 +1,3 @@
-import typing as t
-
 from kubic import KubernetesApiResource, KubernetesObject
 from ..api import meta
 
@@ -45,10 +43,10 @@ class Namespace(KubernetesObject):
 class AllowedRoute(KubernetesObject):
     __slots__ = ()
 
-    kinds: t.List[Kind]
+    kinds: list[Kind]
     namespaces: Namespace
 
-    def __init__(self, kinds: t.List[Kind] = None, namespaces: Namespace = None):
+    def __init__(self, kinds: list[Kind] = None, namespaces: Namespace = None):
         super().__init__(kinds=kinds, namespaces=namespaces)
 
 
@@ -94,11 +92,11 @@ class RequestHeader(KubernetesObject):
 class RequestHeaderModifier(KubernetesObject):
     __slots__ = ()
 
-    add: t.List[RequestHeader]
-    remove: t.List[str]
-    set: t.List[RequestHeader]
+    add: list[RequestHeader]
+    remove: list[str]
+    set: list[RequestHeader]
 
-    def __init__(self, add: t.List[RequestHeader] = None, remove: t.List[str] = None, set: t.List[RequestHeader] = None):
+    def __init__(self, add: list[RequestHeader] = None, remove: list[str] = None, set: list[RequestHeader] = None):
         super().__init__(add=add, remove=remove, set=set)
 
 
@@ -171,11 +169,11 @@ class Filter(KubernetesObject):
 class TLS(KubernetesObject):
     __slots__ = ()
 
-    certificate_refs: t.List[CertificateRef]
+    certificate_refs: list[CertificateRef]
     mode: str
-    options: t.Dict[str, str]
+    options: dict[str, str]
 
-    def __init__(self, certificate_refs: t.List[CertificateRef] = None, mode: str = None, options: t.Dict[str, str] = None):
+    def __init__(self, certificate_refs: list[CertificateRef] = None, mode: str = None, options: dict[str, str] = None):
         super().__init__(certificate_refs=certificate_refs, mode=mode, options=options)
 
 
@@ -208,11 +206,11 @@ class GatewaySpec(KubernetesObject):
 
     _required_ = ["gateway_class_name", "listeners"]
 
-    addresses: t.List[Addresse]
+    addresses: list[Addresse]
     gateway_class_name: str
-    listeners: t.List[Listener]
+    listeners: list[Listener]
 
-    def __init__(self, addresses: t.List[Addresse] = None, gateway_class_name: str = None, listeners: t.List[Listener] = None):
+    def __init__(self, addresses: list[Addresse] = None, gateway_class_name: str = None, listeners: list[Listener] = None):
         super().__init__(addresses=addresses, gateway_class_name=gateway_class_name, listeners=listeners)
 
 
@@ -295,7 +293,7 @@ class RuleBackendRef(KubernetesObject):
 
     _required_ = ["name"]
 
-    filters: t.List[Filter]
+    filters: list[Filter]
     group: str
     kind: str
     name: str
@@ -305,7 +303,7 @@ class RuleBackendRef(KubernetesObject):
 
     def __init__(
         self,
-        filters: t.List[Filter] = None,
+        filters: list[Filter] = None,
         group: str = None,
         kind: str = None,
         name: str = None,
@@ -355,34 +353,34 @@ class QueryParam(KubernetesObject):
 class Match(KubernetesObject):
     __slots__ = ()
 
-    headers: t.List[Header]
+    headers: list[Header]
     method: str
     path: Path
-    query_params: t.List[QueryParam]
+    query_params: list[QueryParam]
 
-    def __init__(self, headers: t.List[Header] = None, method: str = None, path: Path = None, query_params: t.List[QueryParam] = None):
+    def __init__(self, headers: list[Header] = None, method: str = None, path: Path = None, query_params: list[QueryParam] = None):
         super().__init__(headers=headers, method=method, path=path, query_params=query_params)
 
 
 class Rule(KubernetesObject):
     __slots__ = ()
 
-    backend_refs: t.List[RuleBackendRef]
-    filters: t.List[Filter]
-    matches: t.List[Match]
+    backend_refs: list[RuleBackendRef]
+    filters: list[Filter]
+    matches: list[Match]
 
-    def __init__(self, backend_refs: t.List[RuleBackendRef] = None, filters: t.List[Filter] = None, matches: t.List[Match] = None):
+    def __init__(self, backend_refs: list[RuleBackendRef] = None, filters: list[Filter] = None, matches: list[Match] = None):
         super().__init__(backend_refs=backend_refs, filters=filters, matches=matches)
 
 
 class HTTPRouteSpec(KubernetesObject):
     __slots__ = ()
 
-    hostnames: t.List[str]
-    parent_refs: t.List[ParentRef]
-    rules: t.List[Rule]
+    hostnames: list[str]
+    parent_refs: list[ParentRef]
+    rules: list[Rule]
 
-    def __init__(self, hostnames: t.List[str] = None, parent_refs: t.List[ParentRef] = None, rules: t.List[Rule] = None):
+    def __init__(self, hostnames: list[str] = None, parent_refs: list[ParentRef] = None, rules: list[Rule] = None):
         super().__init__(hostnames=hostnames, parent_refs=parent_refs, rules=rules)
 
 

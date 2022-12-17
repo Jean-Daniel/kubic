@@ -1,5 +1,3 @@
-import typing as t
-
 from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
@@ -201,7 +199,7 @@ class StatefulSetSpec(KubernetesObject):
     service_name: str
     template: core.PodTemplateSpec
     update_strategy: StatefulSetUpdateStrategy
-    volume_claim_templates: t.List[core.PersistentVolumeClaim]
+    volume_claim_templates: list[core.PersistentVolumeClaim]
 
     def __init__(
         self,
@@ -214,7 +212,7 @@ class StatefulSetSpec(KubernetesObject):
         service_name: str = None,
         template: core.PodTemplateSpec = None,
         update_strategy: StatefulSetUpdateStrategy = None,
-        volume_claim_templates: t.List[core.PersistentVolumeClaim] = None,
+        volume_claim_templates: list[core.PersistentVolumeClaim] = None,
     ):
         super().__init__(
             min_ready_seconds=min_ready_seconds,

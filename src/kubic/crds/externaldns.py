@@ -1,5 +1,3 @@
-import typing as t
-
 from kubic import KubernetesApiResource, KubernetesObject
 from ..api import meta
 
@@ -25,22 +23,22 @@ class Endpoint(KubernetesObject):
     }
 
     dns_name: str
-    labels: t.Dict[str, str]
-    provider_specific: t.List[ProviderSpecific]
+    labels: dict[str, str]
+    provider_specific: list[ProviderSpecific]
     record_ttl: int
     record_type: str
     set_identifier: str
-    targets: t.List[str]
+    targets: list[str]
 
     def __init__(
         self,
         dns_name: str = None,
-        labels: t.Dict[str, str] = None,
-        provider_specific: t.List[ProviderSpecific] = None,
+        labels: dict[str, str] = None,
+        provider_specific: list[ProviderSpecific] = None,
         record_ttl: int = None,
         record_type: str = None,
         set_identifier: str = None,
-        targets: t.List[str] = None,
+        targets: list[str] = None,
     ):
         super().__init__(
             dns_name=dns_name,
@@ -56,9 +54,9 @@ class Endpoint(KubernetesObject):
 class DNSEndpointSpec(KubernetesObject):
     __slots__ = ()
 
-    endpoints: t.List[Endpoint]
+    endpoints: list[Endpoint]
 
-    def __init__(self, endpoints: t.List[Endpoint] = None):
+    def __init__(self, endpoints: list[Endpoint] = None):
         super().__init__(endpoints=endpoints)
 
 

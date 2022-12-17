@@ -81,7 +81,7 @@ def register_modules(spec: ModuleSpec):
         register_module(mod)
 
 
-K = t.TypeVar('K', bound=KubernetesApiResource)
+K = t.TypeVar("K", bound=KubernetesApiResource)
 
 
 def create_api_resource(obj: dict) -> K:

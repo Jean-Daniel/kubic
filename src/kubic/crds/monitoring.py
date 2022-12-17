@@ -220,20 +220,20 @@ class Alerting(KubernetesObject):
 
     _required_ = ["alertmanagers"]
 
-    alertmanagers: t.List[AlertingAlertmanager]
+    alertmanagers: list[AlertingAlertmanager]
 
-    def __init__(self, alertmanagers: t.List[AlertingAlertmanager] = None):
+    def __init__(self, alertmanagers: list[AlertingAlertmanager] = None):
         super().__init__(alertmanagers=alertmanagers)
 
 
 class PodMetadata(KubernetesObject):
     __slots__ = ()
 
-    annotations: t.Dict[str, str]
-    labels: t.Dict[str, str]
+    annotations: dict[str, str]
+    labels: dict[str, str]
     name: str
 
-    def __init__(self, annotations: t.Dict[str, str] = None, labels: t.Dict[str, str] = None, name: str = None):
+    def __init__(self, annotations: dict[str, str] = None, labels: dict[str, str] = None, name: str = None):
         super().__init__(annotations=annotations, labels=labels, name=name)
 
 
@@ -263,7 +263,7 @@ class Storage(KubernetesObject):
 class AlertmanagerSpec(KubernetesObject):
     __slots__ = ()
 
-    additional_peers: t.List[str]
+    additional_peers: list[str]
     affinity: core.Affinity
     alertmanager_config_namespace_selector: meta.LabelSelector
     alertmanager_config_selector: meta.LabelSelector
@@ -272,19 +272,19 @@ class AlertmanagerSpec(KubernetesObject):
     cluster_gossip_interval: str
     cluster_peer_timeout: str
     cluster_pushpull_interval: str
-    config_maps: t.List[str]
+    config_maps: list[str]
     config_secret: str
-    containers: t.List[core.Container]
+    containers: list[core.Container]
     external_url: str
     force_enable_cluster_mode: bool
     image: str
-    image_pull_secrets: t.List[core.LocalObjectReference]
-    init_containers: t.List[core.Container]
+    image_pull_secrets: list[core.LocalObjectReference]
+    init_containers: list[core.Container]
     listen_local: bool
     log_format: str
     log_level: str
     min_ready_seconds: int
-    node_selector: t.Dict[str, str]
+    node_selector: dict[str, str]
     paused: bool
     pod_metadata: PodMetadata
     port_name: str
@@ -293,21 +293,21 @@ class AlertmanagerSpec(KubernetesObject):
     resources: core.ResourceRequirements
     retention: str
     route_prefix: str
-    secrets: t.List[str]
+    secrets: list[str]
     security_context: core.PodSecurityContext
     service_account_name: str
     sha: str
     storage: Storage
     tag: str
-    tolerations: t.List[core.Toleration]
-    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
+    tolerations: list[core.Toleration]
+    topology_spread_constraints: list[core.TopologySpreadConstraint]
     version: str
-    volume_mounts: t.List[core.VolumeMount]
-    volumes: t.List[core.Volume]
+    volume_mounts: list[core.VolumeMount]
+    volumes: list[core.Volume]
 
     def __init__(
         self,
-        additional_peers: t.List[str] = None,
+        additional_peers: list[str] = None,
         affinity: core.Affinity = None,
         alertmanager_config_namespace_selector: meta.LabelSelector = None,
         alertmanager_config_selector: meta.LabelSelector = None,
@@ -316,19 +316,19 @@ class AlertmanagerSpec(KubernetesObject):
         cluster_gossip_interval: str = None,
         cluster_peer_timeout: str = None,
         cluster_pushpull_interval: str = None,
-        config_maps: t.List[str] = None,
+        config_maps: list[str] = None,
         config_secret: str = None,
-        containers: t.List[core.Container] = None,
+        containers: list[core.Container] = None,
         external_url: str = None,
         force_enable_cluster_mode: bool = None,
         image: str = None,
-        image_pull_secrets: t.List[core.LocalObjectReference] = None,
-        init_containers: t.List[core.Container] = None,
+        image_pull_secrets: list[core.LocalObjectReference] = None,
+        init_containers: list[core.Container] = None,
         listen_local: bool = None,
         log_format: str = None,
         log_level: str = None,
         min_ready_seconds: int = None,
-        node_selector: t.Dict[str, str] = None,
+        node_selector: dict[str, str] = None,
         paused: bool = None,
         pod_metadata: PodMetadata = None,
         port_name: str = None,
@@ -337,17 +337,17 @@ class AlertmanagerSpec(KubernetesObject):
         resources: core.ResourceRequirements = None,
         retention: str = None,
         route_prefix: str = None,
-        secrets: t.List[str] = None,
+        secrets: list[str] = None,
         security_context: core.PodSecurityContext = None,
         service_account_name: str = None,
         sha: str = None,
         storage: Storage = None,
         tag: str = None,
-        tolerations: t.List[core.Toleration] = None,
-        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
+        tolerations: list[core.Toleration] = None,
+        topology_spread_constraints: list[core.TopologySpreadConstraint] = None,
         version: str = None,
-        volume_mounts: t.List[core.VolumeMount] = None,
-        volumes: t.List[core.Volume] = None,
+        volume_mounts: list[core.VolumeMount] = None,
+        volumes: list[core.Volume] = None,
     ):
         super().__init__(
             additional_peers=additional_peers,
@@ -441,11 +441,11 @@ class TargetMatch(KubernetesObject):
 class InhibitRule(KubernetesObject):
     __slots__ = ()
 
-    equal: t.List[str]
-    source_match: t.List[SourceMatch]
-    target_match: t.List[TargetMatch]
+    equal: list[str]
+    source_match: list[SourceMatch]
+    target_match: list[TargetMatch]
 
-    def __init__(self, equal: t.List[str] = None, source_match: t.List[SourceMatch] = None, target_match: t.List[TargetMatch] = None):
+    def __init__(self, equal: list[str] = None, source_match: list[SourceMatch] = None, target_match: list[TargetMatch] = None):
         super().__init__(equal=equal, source_match=source_match, target_match=target_match)
 
 
@@ -472,19 +472,19 @@ class Time(KubernetesObject):
 class TimeInterval(KubernetesObject):
     __slots__ = ()
 
-    days_of_month: t.List[DaysOfMonth]
-    months: t.List[str]
-    times: t.List[Time]
-    weekdays: t.List[str]
-    years: t.List[str]
+    days_of_month: list[DaysOfMonth]
+    months: list[str]
+    times: list[Time]
+    weekdays: list[str]
+    years: list[str]
 
     def __init__(
         self,
-        days_of_month: t.List[DaysOfMonth] = None,
-        months: t.List[str] = None,
-        times: t.List[Time] = None,
-        weekdays: t.List[str] = None,
-        years: t.List[str] = None,
+        days_of_month: list[DaysOfMonth] = None,
+        months: list[str] = None,
+        times: list[Time] = None,
+        weekdays: list[str] = None,
+        years: list[str] = None,
     ):
         super().__init__(days_of_month=days_of_month, months=months, times=times, weekdays=weekdays, years=years)
 
@@ -493,9 +493,9 @@ class MuteTimeInterval(KubernetesObject):
     __slots__ = ()
 
     name: str
-    time_intervals: t.List[TimeInterval]
+    time_intervals: list[TimeInterval]
 
-    def __init__(self, name: str = None, time_intervals: t.List[TimeInterval] = None):
+    def __init__(self, name: str = None, time_intervals: list[TimeInterval] = None):
         super().__init__(name=name, time_intervals=time_intervals)
 
 
@@ -547,7 +547,7 @@ class EmailConfig(KubernetesObject):
     auth_secret: core.ConfigMapKeySelector
     auth_username: str
     from_: str
-    headers: t.List[Header]
+    headers: list[Header]
     hello: str
     html: str
     require_tls: bool
@@ -564,7 +564,7 @@ class EmailConfig(KubernetesObject):
         auth_secret: core.ConfigMapKeySelector = None,
         auth_username: str = None,
         from_: str = None,
-        headers: t.List[Header] = None,
+        headers: list[Header] = None,
         hello: str = None,
         html: str = None,
         require_tls: bool = None,
@@ -664,12 +664,12 @@ class OpsgenieConfig(KubernetesObject):
     api_key: core.ConfigMapKeySelector
     api_url: str
     description: str
-    details: t.List[Detail]
+    details: list[Detail]
     http_config: HttpConfig
     message: str
     note: str
     priority: str
-    responders: t.List[Responder]
+    responders: list[Responder]
     send_resolved: bool
     source: str
     tags: str
@@ -679,12 +679,12 @@ class OpsgenieConfig(KubernetesObject):
         api_key: core.ConfigMapKeySelector = None,
         api_url: str = None,
         description: str = None,
-        details: t.List[Detail] = None,
+        details: list[Detail] = None,
         http_config: HttpConfig = None,
         message: str = None,
         note: str = None,
         priority: str = None,
-        responders: t.List[Responder] = None,
+        responders: list[Responder] = None,
         send_resolved: bool = None,
         source: str = None,
         tags: str = None,
@@ -742,11 +742,11 @@ class PagerdutyConfig(KubernetesObject):
     client_url: str
     component: str
     description: str
-    details: t.List[Detail]
+    details: list[Detail]
     group: str
     http_config: HttpConfig
-    pager_duty_image_configs: t.List[PagerDutyImageConfig]
-    pager_duty_link_configs: t.List[PagerDutyLinkConfig]
+    pager_duty_image_configs: list[PagerDutyImageConfig]
+    pager_duty_link_configs: list[PagerDutyLinkConfig]
     routing_key: core.ConfigMapKeySelector
     send_resolved: bool
     service_key: core.ConfigMapKeySelector
@@ -760,11 +760,11 @@ class PagerdutyConfig(KubernetesObject):
         client_url: str = None,
         component: str = None,
         description: str = None,
-        details: t.List[Detail] = None,
+        details: list[Detail] = None,
         group: str = None,
         http_config: HttpConfig = None,
-        pager_duty_image_configs: t.List[PagerDutyImageConfig] = None,
-        pager_duty_link_configs: t.List[PagerDutyLinkConfig] = None,
+        pager_duty_image_configs: list[PagerDutyImageConfig] = None,
+        pager_duty_link_configs: list[PagerDutyLinkConfig] = None,
         routing_key: core.ConfigMapKeySelector = None,
         send_resolved: bool = None,
         service_key: core.ConfigMapKeySelector = None,
@@ -869,20 +869,20 @@ class SlackConfig(KubernetesObject):
         "thumbURL": "thumb_url",
     }
 
-    actions: t.List[Action]
+    actions: list[Action]
     api_url: core.ConfigMapKeySelector
     callback_id: str
     channel: str
     color: str
     fallback: str
-    fields: t.List[Field]
+    fields: list[Field]
     footer: str
     http_config: HttpConfig
     icon_emoji: str
     icon_url: str
     image_url: str
     link_names: bool
-    mrkdwn_in: t.List[str]
+    mrkdwn_in: list[str]
     pretext: str
     send_resolved: bool
     short_fields: bool
@@ -894,20 +894,20 @@ class SlackConfig(KubernetesObject):
 
     def __init__(
         self,
-        actions: t.List[Action] = None,
+        actions: list[Action] = None,
         api_url: core.ConfigMapKeySelector = None,
         callback_id: str = None,
         channel: str = None,
         color: str = None,
         fallback: str = None,
-        fields: t.List[Field] = None,
+        fields: list[Field] = None,
         footer: str = None,
         http_config: HttpConfig = None,
         icon_emoji: str = None,
         icon_url: str = None,
         image_url: str = None,
         link_names: bool = None,
-        mrkdwn_in: t.List[str] = None,
+        mrkdwn_in: list[str] = None,
         pretext: str = None,
         send_resolved: bool = None,
         short_fields: bool = None,
@@ -960,7 +960,7 @@ class VictoropsConfig(KubernetesObject):
 
     api_key: core.ConfigMapKeySelector
     api_url: str
-    custom_fields: t.List[CustomField]
+    custom_fields: list[CustomField]
     entity_display_name: str
     http_config: HttpConfig
     message_type: str
@@ -973,7 +973,7 @@ class VictoropsConfig(KubernetesObject):
         self,
         api_key: core.ConfigMapKeySelector = None,
         api_url: str = None,
-        custom_fields: t.List[CustomField] = None,
+        custom_fields: list[CustomField] = None,
         entity_display_name: str = None,
         http_config: HttpConfig = None,
         message_type: str = None,
@@ -1076,27 +1076,27 @@ class Receiver(KubernetesObject):
 
     _required_ = ["name"]
 
-    email_configs: t.List[EmailConfig]
+    email_configs: list[EmailConfig]
     name: str
-    opsgenie_configs: t.List[OpsgenieConfig]
-    pagerduty_configs: t.List[PagerdutyConfig]
-    pushover_configs: t.List[PushoverConfig]
-    slack_configs: t.List[SlackConfig]
-    victorops_configs: t.List[VictoropsConfig]
-    webhook_configs: t.List[WebhookConfig]
-    wechat_configs: t.List[WechatConfig]
+    opsgenie_configs: list[OpsgenieConfig]
+    pagerduty_configs: list[PagerdutyConfig]
+    pushover_configs: list[PushoverConfig]
+    slack_configs: list[SlackConfig]
+    victorops_configs: list[VictoropsConfig]
+    webhook_configs: list[WebhookConfig]
+    wechat_configs: list[WechatConfig]
 
     def __init__(
         self,
-        email_configs: t.List[EmailConfig] = None,
+        email_configs: list[EmailConfig] = None,
         name: str = None,
-        opsgenie_configs: t.List[OpsgenieConfig] = None,
-        pagerduty_configs: t.List[PagerdutyConfig] = None,
-        pushover_configs: t.List[PushoverConfig] = None,
-        slack_configs: t.List[SlackConfig] = None,
-        victorops_configs: t.List[VictoropsConfig] = None,
-        webhook_configs: t.List[WebhookConfig] = None,
-        wechat_configs: t.List[WechatConfig] = None,
+        opsgenie_configs: list[OpsgenieConfig] = None,
+        pagerduty_configs: list[PagerdutyConfig] = None,
+        pushover_configs: list[PushoverConfig] = None,
+        slack_configs: list[SlackConfig] = None,
+        victorops_configs: list[VictoropsConfig] = None,
+        webhook_configs: list[WebhookConfig] = None,
+        wechat_configs: list[WechatConfig] = None,
     ):
         super().__init__(
             email_configs=email_configs,
@@ -1133,26 +1133,26 @@ class Route(KubernetesObject):
     }
 
     continue_: bool
-    group_by: t.List[str]
+    group_by: list[str]
     group_interval: str
     group_wait: str
-    matchers: t.List[Matcher]
-    mute_time_intervals: t.List[str]
+    matchers: list[Matcher]
+    mute_time_intervals: list[str]
     receiver: str
     repeat_interval: str
-    routes: t.List[t.Any]
+    routes: list[t.Any]
 
     def __init__(
         self,
         continue_: bool = None,
-        group_by: t.List[str] = None,
+        group_by: list[str] = None,
         group_interval: str = None,
         group_wait: str = None,
-        matchers: t.List[Matcher] = None,
-        mute_time_intervals: t.List[str] = None,
+        matchers: list[Matcher] = None,
+        mute_time_intervals: list[str] = None,
         receiver: str = None,
         repeat_interval: str = None,
-        routes: t.List[t.Any] = None,
+        routes: list[t.Any] = None,
     ):
         super().__init__(
             continue_=continue_,
@@ -1170,16 +1170,16 @@ class Route(KubernetesObject):
 class AlertmanagerConfigSpec(KubernetesObject):
     __slots__ = ()
 
-    inhibit_rules: t.List[InhibitRule]
-    mute_time_intervals: t.List[MuteTimeInterval]
-    receivers: t.List[Receiver]
+    inhibit_rules: list[InhibitRule]
+    mute_time_intervals: list[MuteTimeInterval]
+    receivers: list[Receiver]
     route: Route
 
     def __init__(
         self,
-        inhibit_rules: t.List[InhibitRule] = None,
-        mute_time_intervals: t.List[MuteTimeInterval] = None,
-        receivers: t.List[Receiver] = None,
+        inhibit_rules: list[InhibitRule] = None,
+        mute_time_intervals: list[MuteTimeInterval] = None,
+        receivers: list[Receiver] = None,
         route: Route = None,
     ):
         super().__init__(inhibit_rules=inhibit_rules, mute_time_intervals=mute_time_intervals, receivers=receivers, route=route)
@@ -1228,7 +1228,7 @@ class MetricRelabeling(KubernetesObject):
     regex: str
     replacement: str
     separator: str
-    source_labels: t.List[str]
+    source_labels: list[str]
     target_label: str
 
     def __init__(
@@ -1238,7 +1238,7 @@ class MetricRelabeling(KubernetesObject):
         regex: str = None,
         replacement: str = None,
         separator: str = None,
-        source_labels: t.List[str] = None,
+        source_labels: list[str] = None,
         target_label: str = None,
     ):
         super().__init__(
@@ -1259,16 +1259,16 @@ class Oauth2(KubernetesObject):
 
     client_id: ClientId
     client_secret: core.ConfigMapKeySelector
-    endpoint_params: t.Dict[str, str]
-    scopes: t.List[str]
+    endpoint_params: dict[str, str]
+    scopes: list[str]
     token_url: str
 
     def __init__(
         self,
         client_id: ClientId = None,
         client_secret: core.ConfigMapKeySelector = None,
-        endpoint_params: t.Dict[str, str] = None,
-        scopes: t.List[str] = None,
+        endpoint_params: dict[str, str] = None,
+        scopes: list[str] = None,
         token_url: str = None,
     ):
         super().__init__(
@@ -1284,7 +1284,7 @@ class Relabeling(KubernetesObject):
     regex: str
     replacement: str
     separator: str
-    source_labels: t.List[str]
+    source_labels: list[str]
     target_label: str
 
     def __init__(
@@ -1294,7 +1294,7 @@ class Relabeling(KubernetesObject):
         regex: str = None,
         replacement: str = None,
         separator: str = None,
-        source_labels: t.List[str] = None,
+        source_labels: list[str] = None,
         target_label: str = None,
     ):
         super().__init__(
@@ -1318,13 +1318,13 @@ class Endpoint(KubernetesObject):
     honor_labels: bool
     honor_timestamps: bool
     interval: str
-    metric_relabelings: t.List[MetricRelabeling]
+    metric_relabelings: list[MetricRelabeling]
     oauth2: Oauth2
-    params: t.Dict[str, t.List[str]]
+    params: dict[str, list[str]]
     path: str
     port: str
     proxy_url: str
-    relabelings: t.List[Relabeling]
+    relabelings: list[Relabeling]
     scheme: str
     scrape_timeout: str
     target_port: core.IntOrString
@@ -1339,13 +1339,13 @@ class Endpoint(KubernetesObject):
         honor_labels: bool = None,
         honor_timestamps: bool = None,
         interval: str = None,
-        metric_relabelings: t.List[MetricRelabeling] = None,
+        metric_relabelings: list[MetricRelabeling] = None,
         oauth2: Oauth2 = None,
-        params: t.Dict[str, t.List[str]] = None,
+        params: dict[str, list[str]] = None,
         path: str = None,
         port: str = None,
         proxy_url: str = None,
-        relabelings: t.List[Relabeling] = None,
+        relabelings: list[Relabeling] = None,
         scheme: str = None,
         scrape_timeout: str = None,
         target_port: core.IntOrString = None,
@@ -1383,19 +1383,19 @@ class GroupRule(KubernetesObject):
     }
 
     alert: str
-    annotations: t.Dict[str, str]
+    annotations: dict[str, str]
     expr: core.IntOrString
     for_: str
-    labels: t.Dict[str, str]
+    labels: dict[str, str]
     record: str
 
     def __init__(
         self,
         alert: str = None,
-        annotations: t.Dict[str, str] = None,
+        annotations: dict[str, str] = None,
         expr: core.IntOrString = None,
         for_: str = None,
-        labels: t.Dict[str, str] = None,
+        labels: dict[str, str] = None,
         record: str = None,
     ):
         super().__init__(alert=alert, annotations=annotations, expr=expr, for_=for_, labels=labels, record=record)
@@ -1413,9 +1413,9 @@ class Group(KubernetesObject):
     interval: str
     name: str
     partial_response_strategy: str
-    rules: t.List[GroupRule]
+    rules: list[GroupRule]
 
-    def __init__(self, interval: str = None, name: str = None, partial_response_strategy: str = None, rules: t.List[GroupRule] = None):
+    def __init__(self, interval: str = None, name: str = None, partial_response_strategy: str = None, rules: list[GroupRule] = None):
         super().__init__(interval=interval, name=name, partial_response_strategy=partial_response_strategy, rules=rules)
 
 
@@ -1458,9 +1458,9 @@ class NamespaceSelector(KubernetesObject):
     __slots__ = ()
 
     any: bool
-    match_names: t.List[str]
+    match_names: list[str]
 
-    def __init__(self, any: bool = None, match_names: t.List[str] = None):
+    def __init__(self, any: bool = None, match_names: list[str] = None):
         super().__init__(any=any, match_names=match_names)
 
 
@@ -1472,7 +1472,7 @@ class RelabelingConfig(KubernetesObject):
     regex: str
     replacement: str
     separator: str
-    source_labels: t.List[str]
+    source_labels: list[str]
     target_label: str
 
     def __init__(
@@ -1482,7 +1482,7 @@ class RelabelingConfig(KubernetesObject):
         regex: str = None,
         replacement: str = None,
         separator: str = None,
-        source_labels: t.List[str] = None,
+        source_labels: list[str] = None,
         target_label: str = None,
     ):
         super().__init__(
@@ -1500,13 +1500,13 @@ class Ingress(KubernetesObject):
     __slots__ = ()
 
     namespace_selector: NamespaceSelector
-    relabeling_configs: t.List[RelabelingConfig]
+    relabeling_configs: list[RelabelingConfig]
     selector: meta.LabelSelector
 
     def __init__(
         self,
         namespace_selector: NamespaceSelector = None,
-        relabeling_configs: t.List[RelabelingConfig] = None,
+        relabeling_configs: list[RelabelingConfig] = None,
         selector: meta.LabelSelector = None,
     ):
         super().__init__(namespace_selector=namespace_selector, relabeling_configs=relabeling_configs, selector=selector)
@@ -1531,13 +1531,13 @@ class PodMetricsEndpoint(KubernetesObject):
     honor_labels: bool
     honor_timestamps: bool
     interval: str
-    metric_relabelings: t.List[MetricRelabeling]
+    metric_relabelings: list[MetricRelabeling]
     oauth2: Oauth2
-    params: t.Dict[str, t.List[str]]
+    params: dict[str, list[str]]
     path: str
     port: str
     proxy_url: str
-    relabelings: t.List[Relabeling]
+    relabelings: list[Relabeling]
     scheme: str
     scrape_timeout: str
     target_port: core.IntOrString
@@ -1551,13 +1551,13 @@ class PodMetricsEndpoint(KubernetesObject):
         honor_labels: bool = None,
         honor_timestamps: bool = None,
         interval: str = None,
-        metric_relabelings: t.List[MetricRelabeling] = None,
+        metric_relabelings: list[MetricRelabeling] = None,
         oauth2: Oauth2 = None,
-        params: t.Dict[str, t.List[str]] = None,
+        params: dict[str, list[str]] = None,
         path: str = None,
         port: str = None,
         proxy_url: str = None,
-        relabelings: t.List[Relabeling] = None,
+        relabelings: list[Relabeling] = None,
         scheme: str = None,
         scrape_timeout: str = None,
         target_port: core.IntOrString = None,
@@ -1594,8 +1594,8 @@ class PodMonitorSpec(KubernetesObject):
     label_name_length_limit: int
     label_value_length_limit: int
     namespace_selector: NamespaceSelector
-    pod_metrics_endpoints: t.List[PodMetricsEndpoint]
-    pod_target_labels: t.List[str]
+    pod_metrics_endpoints: list[PodMetricsEndpoint]
+    pod_target_labels: list[str]
     sample_limit: int
     selector: meta.LabelSelector
     target_limit: int
@@ -1607,8 +1607,8 @@ class PodMonitorSpec(KubernetesObject):
         label_name_length_limit: int = None,
         label_value_length_limit: int = None,
         namespace_selector: NamespaceSelector = None,
-        pod_metrics_endpoints: t.List[PodMetricsEndpoint] = None,
-        pod_target_labels: t.List[str] = None,
+        pod_metrics_endpoints: list[PodMetricsEndpoint] = None,
+        pod_target_labels: list[str] = None,
         sample_limit: int = None,
         selector: meta.LabelSelector = None,
         target_limit: int = None,
@@ -1660,11 +1660,11 @@ class Prober(KubernetesObject):
 class StaticConfig(KubernetesObject):
     __slots__ = ()
 
-    labels: t.Dict[str, str]
-    relabeling_configs: t.List[RelabelingConfig]
-    static: t.List[str]
+    labels: dict[str, str]
+    relabeling_configs: list[RelabelingConfig]
+    static: list[str]
 
-    def __init__(self, labels: t.Dict[str, str] = None, relabeling_configs: t.List[RelabelingConfig] = None, static: t.List[str] = None):
+    def __init__(self, labels: dict[str, str] = None, relabeling_configs: list[RelabelingConfig] = None, static: list[str] = None):
         super().__init__(labels=labels, relabeling_configs=relabeling_configs, static=static)
 
 
@@ -1689,7 +1689,7 @@ class ProbeSpec(KubernetesObject):
     label_limit: int
     label_name_length_limit: int
     label_value_length_limit: int
-    metric_relabelings: t.List[MetricRelabeling]
+    metric_relabelings: list[MetricRelabeling]
     module: str
     oauth2: Oauth2
     prober: Prober
@@ -1709,7 +1709,7 @@ class ProbeSpec(KubernetesObject):
         label_limit: int = None,
         label_name_length_limit: int = None,
         label_value_length_limit: int = None,
-        metric_relabelings: t.List[MetricRelabeling] = None,
+        metric_relabelings: list[MetricRelabeling] = None,
         module: str = None,
         oauth2: Oauth2 = None,
         prober: Prober = None,
@@ -1789,13 +1789,13 @@ class RemoteRead(KubernetesObject):
     basic_auth: BasicAuth
     bearer_token: str
     bearer_token_file: str
-    headers: t.Dict[str, str]
+    headers: dict[str, str]
     name: str
     oauth2: Oauth2
     proxy_url: str
     read_recent: bool
     remote_timeout: str
-    required_matchers: t.Dict[str, str]
+    required_matchers: dict[str, str]
     tls_config: TLSConfig2
     url: str
 
@@ -1805,13 +1805,13 @@ class RemoteRead(KubernetesObject):
         basic_auth: BasicAuth = None,
         bearer_token: str = None,
         bearer_token_file: str = None,
-        headers: t.Dict[str, str] = None,
+        headers: dict[str, str] = None,
         name: str = None,
         oauth2: Oauth2 = None,
         proxy_url: str = None,
         read_recent: bool = None,
         remote_timeout: str = None,
-        required_matchers: t.Dict[str, str] = None,
+        required_matchers: dict[str, str] = None,
         tls_config: TLSConfig2 = None,
         url: str = None,
     ):
@@ -1898,7 +1898,7 @@ class WriteRelabelConfig(KubernetesObject):
     regex: str
     replacement: str
     separator: str
-    source_labels: t.List[str]
+    source_labels: list[str]
     target_label: str
 
     def __init__(
@@ -1908,7 +1908,7 @@ class WriteRelabelConfig(KubernetesObject):
         regex: str = None,
         replacement: str = None,
         separator: str = None,
-        source_labels: t.List[str] = None,
+        source_labels: list[str] = None,
         target_label: str = None,
     ):
         super().__init__(
@@ -1931,7 +1931,7 @@ class RemoteWrite(KubernetesObject):
     basic_auth: BasicAuth
     bearer_token: str
     bearer_token_file: str
-    headers: t.Dict[str, str]
+    headers: dict[str, str]
     metadata_config: MetadataConfig
     name: str
     oauth2: Oauth2
@@ -1942,7 +1942,7 @@ class RemoteWrite(KubernetesObject):
     sigv4: Sigv4
     tls_config: TLSConfig2
     url: str
-    write_relabel_configs: t.List[WriteRelabelConfig]
+    write_relabel_configs: list[WriteRelabelConfig]
 
     def __init__(
         self,
@@ -1950,7 +1950,7 @@ class RemoteWrite(KubernetesObject):
         basic_auth: BasicAuth = None,
         bearer_token: str = None,
         bearer_token_file: str = None,
-        headers: t.Dict[str, str] = None,
+        headers: dict[str, str] = None,
         metadata_config: MetadataConfig = None,
         name: str = None,
         oauth2: Oauth2 = None,
@@ -1961,7 +1961,7 @@ class RemoteWrite(KubernetesObject):
         sigv4: Sigv4 = None,
         tls_config: TLSConfig2 = None,
         url: str = None,
-        write_relabel_configs: t.List[WriteRelabelConfig] = None,
+        write_relabel_configs: list[WriteRelabelConfig] = None,
     ):
         super().__init__(
             authorization=authorization,
@@ -2042,7 +2042,7 @@ class Thano(KubernetesObject):
     tracing_config: core.ConfigMapKeySelector
     tracing_config_file: str
     version: str
-    volume_mounts: t.List[VolumeMount]
+    volume_mounts: list[VolumeMount]
 
     def __init__(
         self,
@@ -2062,7 +2062,7 @@ class Thano(KubernetesObject):
         tracing_config: core.ConfigMapKeySelector = None,
         tracing_config_file: str = None,
         version: str = None,
-        volume_mounts: t.List[VolumeMount] = None,
+        volume_mounts: list[VolumeMount] = None,
     ):
         super().__init__(
             base_image=base_image,
@@ -2095,10 +2095,10 @@ class WEBTLSConfig(KubernetesObject):
     }
 
     cert: Cert
-    cipher_suites: t.List[str]
+    cipher_suites: list[str]
     client_auth_type: str
     client_ca: CA
-    curve_preferences: t.List[str]
+    curve_preferences: list[str]
     key_secret: core.SecretKeySelector
     max_version: str
     min_version: str
@@ -2107,10 +2107,10 @@ class WEBTLSConfig(KubernetesObject):
     def __init__(
         self,
         cert: Cert = None,
-        cipher_suites: t.List[str] = None,
+        cipher_suites: list[str] = None,
         client_auth_type: str = None,
         client_ca: CA = None,
-        curve_preferences: t.List[str] = None,
+        curve_preferences: list[str] = None,
         key_secret: core.SecretKeySelector = None,
         max_version: str = None,
         min_version: str = None,
@@ -2160,11 +2160,11 @@ class PrometheusSpec(KubernetesObject):
     apiserver_config: APIserverConfig
     arbitrary_fs_access_through_sms: ArbitraryFSAccessThroughSM
     base_image: str
-    config_maps: t.List[str]
-    containers: t.List[core.Container]
+    config_maps: list[str]
+    containers: list[core.Container]
     disable_compaction: bool
     enable_admin_api: bool
-    enable_features: t.List[str]
+    enable_features: list[str]
     enforced_body_size_limit: str
     enforced_label_limit: int
     enforced_label_name_length_limit: int
@@ -2173,17 +2173,17 @@ class PrometheusSpec(KubernetesObject):
     enforced_sample_limit: int
     enforced_target_limit: int
     evaluation_interval: str
-    external_labels: t.Dict[str, str]
+    external_labels: dict[str, str]
     external_url: str
     ignore_namespace_selectors: bool
     image: str
-    image_pull_secrets: t.List[core.LocalObjectReference]
-    init_containers: t.List[core.Container]
+    image_pull_secrets: list[core.LocalObjectReference]
+    init_containers: list[core.Container]
     listen_local: bool
     log_format: str
     log_level: str
     min_ready_seconds: int
-    node_selector: t.Dict[str, str]
+    node_selector: dict[str, str]
     override_honor_labels: bool
     override_honor_timestamps: bool
     paused: bool
@@ -2195,11 +2195,11 @@ class PrometheusSpec(KubernetesObject):
     probe_namespace_selector: meta.LabelSelector
     probe_selector: meta.LabelSelector
     prometheus_external_label_name: str
-    prometheus_rules_excluded_from_enforce: t.List[PrometheusRulesExcludedFromEnforce]
+    prometheus_rules_excluded_from_enforce: list[PrometheusRulesExcludedFromEnforce]
     query: Query
     query_log_file: str
-    remote_read: t.List[RemoteRead]
-    remote_write: t.List[RemoteWrite]
+    remote_read: list[RemoteRead]
+    remote_write: list[RemoteWrite]
     replica_external_label_name: str
     replicas: int
     resources: core.ResourceRequirements
@@ -2211,7 +2211,7 @@ class PrometheusSpec(KubernetesObject):
     rules: PrometheusSpecRule
     scrape_interval: str
     scrape_timeout: str
-    secrets: t.List[str]
+    secrets: list[str]
     security_context: core.PodSecurityContext
     service_account_name: str
     service_monitor_namespace_selector: meta.LabelSelector
@@ -2221,11 +2221,11 @@ class PrometheusSpec(KubernetesObject):
     storage: Storage
     tag: str
     thanos: Thano
-    tolerations: t.List[core.Toleration]
-    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
+    tolerations: list[core.Toleration]
+    topology_spread_constraints: list[core.TopologySpreadConstraint]
     version: str
-    volume_mounts: t.List[core.VolumeMount]
-    volumes: t.List[core.Volume]
+    volume_mounts: list[core.VolumeMount]
+    volumes: list[core.Volume]
     wal_compression: bool
     web: WEB
 
@@ -2240,11 +2240,11 @@ class PrometheusSpec(KubernetesObject):
         apiserver_config: APIserverConfig = None,
         arbitrary_fs_access_through_sms: ArbitraryFSAccessThroughSM = None,
         base_image: str = None,
-        config_maps: t.List[str] = None,
-        containers: t.List[core.Container] = None,
+        config_maps: list[str] = None,
+        containers: list[core.Container] = None,
         disable_compaction: bool = None,
         enable_admin_api: bool = None,
-        enable_features: t.List[str] = None,
+        enable_features: list[str] = None,
         enforced_body_size_limit: str = None,
         enforced_label_limit: int = None,
         enforced_label_name_length_limit: int = None,
@@ -2253,17 +2253,17 @@ class PrometheusSpec(KubernetesObject):
         enforced_sample_limit: int = None,
         enforced_target_limit: int = None,
         evaluation_interval: str = None,
-        external_labels: t.Dict[str, str] = None,
+        external_labels: dict[str, str] = None,
         external_url: str = None,
         ignore_namespace_selectors: bool = None,
         image: str = None,
-        image_pull_secrets: t.List[core.LocalObjectReference] = None,
-        init_containers: t.List[core.Container] = None,
+        image_pull_secrets: list[core.LocalObjectReference] = None,
+        init_containers: list[core.Container] = None,
         listen_local: bool = None,
         log_format: str = None,
         log_level: str = None,
         min_ready_seconds: int = None,
-        node_selector: t.Dict[str, str] = None,
+        node_selector: dict[str, str] = None,
         override_honor_labels: bool = None,
         override_honor_timestamps: bool = None,
         paused: bool = None,
@@ -2275,11 +2275,11 @@ class PrometheusSpec(KubernetesObject):
         probe_namespace_selector: meta.LabelSelector = None,
         probe_selector: meta.LabelSelector = None,
         prometheus_external_label_name: str = None,
-        prometheus_rules_excluded_from_enforce: t.List[PrometheusRulesExcludedFromEnforce] = None,
+        prometheus_rules_excluded_from_enforce: list[PrometheusRulesExcludedFromEnforce] = None,
         query: Query = None,
         query_log_file: str = None,
-        remote_read: t.List[RemoteRead] = None,
-        remote_write: t.List[RemoteWrite] = None,
+        remote_read: list[RemoteRead] = None,
+        remote_write: list[RemoteWrite] = None,
         replica_external_label_name: str = None,
         replicas: int = None,
         resources: core.ResourceRequirements = None,
@@ -2291,7 +2291,7 @@ class PrometheusSpec(KubernetesObject):
         rules: PrometheusSpecRule = None,
         scrape_interval: str = None,
         scrape_timeout: str = None,
-        secrets: t.List[str] = None,
+        secrets: list[str] = None,
         security_context: core.PodSecurityContext = None,
         service_account_name: str = None,
         service_monitor_namespace_selector: meta.LabelSelector = None,
@@ -2301,11 +2301,11 @@ class PrometheusSpec(KubernetesObject):
         storage: Storage = None,
         tag: str = None,
         thanos: Thano = None,
-        tolerations: t.List[core.Toleration] = None,
-        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
+        tolerations: list[core.Toleration] = None,
+        topology_spread_constraints: list[core.TopologySpreadConstraint] = None,
         version: str = None,
-        volume_mounts: t.List[core.VolumeMount] = None,
-        volumes: t.List[core.Volume] = None,
+        volume_mounts: list[core.VolumeMount] = None,
+        volumes: list[core.Volume] = None,
         wal_compression: bool = None,
         web: WEB = None,
     ):
@@ -2409,9 +2409,9 @@ class Prometheus(KubernetesApiResource):
 class PrometheusRuleSpec(KubernetesObject):
     __slots__ = ()
 
-    groups: t.List[Group]
+    groups: list[Group]
 
-    def __init__(self, groups: t.List[Group] = None):
+    def __init__(self, groups: list[Group] = None):
         super().__init__(groups=groups)
 
 
@@ -2436,30 +2436,30 @@ class ServiceMonitorSpec(KubernetesObject):
 
     _required_ = ["endpoints", "selector"]
 
-    endpoints: t.List[Endpoint]
+    endpoints: list[Endpoint]
     job_label: str
     label_limit: int
     label_name_length_limit: int
     label_value_length_limit: int
     namespace_selector: NamespaceSelector
-    pod_target_labels: t.List[str]
+    pod_target_labels: list[str]
     sample_limit: int
     selector: meta.LabelSelector
-    target_labels: t.List[str]
+    target_labels: list[str]
     target_limit: int
 
     def __init__(
         self,
-        endpoints: t.List[Endpoint] = None,
+        endpoints: list[Endpoint] = None,
         job_label: str = None,
         label_limit: int = None,
         label_name_length_limit: int = None,
         label_value_length_limit: int = None,
         namespace_selector: NamespaceSelector = None,
-        pod_target_labels: t.List[str] = None,
+        pod_target_labels: list[str] = None,
         sample_limit: int = None,
         selector: meta.LabelSelector = None,
-        target_labels: t.List[str] = None,
+        target_labels: list[str] = None,
         target_limit: int = None,
     ):
         super().__init__(
@@ -2497,35 +2497,35 @@ class ThanosRulerSpec(KubernetesObject):
     __slots__ = ()
 
     affinity: core.Affinity
-    alert_drop_labels: t.List[str]
+    alert_drop_labels: list[str]
     alert_query_url: str
     alert_relabel_config_file: str
     alert_relabel_configs: core.ConfigMapKeySelector
     alertmanagers_config: core.ConfigMapKeySelector
-    alertmanagers_url: t.List[str]
-    containers: t.List[core.Container]
+    alertmanagers_url: list[str]
+    containers: list[core.Container]
     enforced_namespace_label: str
     evaluation_interval: str
     external_prefix: str
     grpc_server_tls_config: GrpcServerTlsConfig
     image: str
-    image_pull_secrets: t.List[core.LocalObjectReference]
-    init_containers: t.List[core.Container]
-    labels: t.Dict[str, str]
+    image_pull_secrets: list[core.LocalObjectReference]
+    init_containers: list[core.Container]
+    labels: dict[str, str]
     listen_local: bool
     log_format: str
     log_level: str
     min_ready_seconds: int
-    node_selector: t.Dict[str, str]
+    node_selector: dict[str, str]
     object_storage_config: core.ConfigMapKeySelector
     object_storage_config_file: str
     paused: bool
     pod_metadata: PodMetadata
     port_name: str
     priority_class_name: str
-    prometheus_rules_excluded_from_enforce: t.List[PrometheusRulesExcludedFromEnforce]
+    prometheus_rules_excluded_from_enforce: list[PrometheusRulesExcludedFromEnforce]
     query_config: core.ConfigMapKeySelector
-    query_endpoints: t.List[str]
+    query_endpoints: list[str]
     replicas: int
     resources: core.ResourceRequirements
     retention: str
@@ -2535,43 +2535,43 @@ class ThanosRulerSpec(KubernetesObject):
     security_context: core.PodSecurityContext
     service_account_name: str
     storage: Storage
-    tolerations: t.List[core.Toleration]
-    topology_spread_constraints: t.List[core.TopologySpreadConstraint]
+    tolerations: list[core.Toleration]
+    topology_spread_constraints: list[core.TopologySpreadConstraint]
     tracing_config: core.ConfigMapKeySelector
-    volumes: t.List[core.Volume]
+    volumes: list[core.Volume]
 
     def __init__(
         self,
         affinity: core.Affinity = None,
-        alert_drop_labels: t.List[str] = None,
+        alert_drop_labels: list[str] = None,
         alert_query_url: str = None,
         alert_relabel_config_file: str = None,
         alert_relabel_configs: core.ConfigMapKeySelector = None,
         alertmanagers_config: core.ConfigMapKeySelector = None,
-        alertmanagers_url: t.List[str] = None,
-        containers: t.List[core.Container] = None,
+        alertmanagers_url: list[str] = None,
+        containers: list[core.Container] = None,
         enforced_namespace_label: str = None,
         evaluation_interval: str = None,
         external_prefix: str = None,
         grpc_server_tls_config: GrpcServerTlsConfig = None,
         image: str = None,
-        image_pull_secrets: t.List[core.LocalObjectReference] = None,
-        init_containers: t.List[core.Container] = None,
-        labels: t.Dict[str, str] = None,
+        image_pull_secrets: list[core.LocalObjectReference] = None,
+        init_containers: list[core.Container] = None,
+        labels: dict[str, str] = None,
         listen_local: bool = None,
         log_format: str = None,
         log_level: str = None,
         min_ready_seconds: int = None,
-        node_selector: t.Dict[str, str] = None,
+        node_selector: dict[str, str] = None,
         object_storage_config: core.ConfigMapKeySelector = None,
         object_storage_config_file: str = None,
         paused: bool = None,
         pod_metadata: PodMetadata = None,
         port_name: str = None,
         priority_class_name: str = None,
-        prometheus_rules_excluded_from_enforce: t.List[PrometheusRulesExcludedFromEnforce] = None,
+        prometheus_rules_excluded_from_enforce: list[PrometheusRulesExcludedFromEnforce] = None,
         query_config: core.ConfigMapKeySelector = None,
-        query_endpoints: t.List[str] = None,
+        query_endpoints: list[str] = None,
         replicas: int = None,
         resources: core.ResourceRequirements = None,
         retention: str = None,
@@ -2581,10 +2581,10 @@ class ThanosRulerSpec(KubernetesObject):
         security_context: core.PodSecurityContext = None,
         service_account_name: str = None,
         storage: Storage = None,
-        tolerations: t.List[core.Toleration] = None,
-        topology_spread_constraints: t.List[core.TopologySpreadConstraint] = None,
+        tolerations: list[core.Toleration] = None,
+        topology_spread_constraints: list[core.TopologySpreadConstraint] = None,
         tracing_config: core.ConfigMapKeySelector = None,
-        volumes: t.List[core.Volume] = None,
+        volumes: list[core.Volume] = None,
     ):
         super().__init__(
             affinity=affinity,
