@@ -20,7 +20,7 @@ class _ObjID(t.NamedTuple):
     kind: str
 
 
-_rsrc_index: t.Dict[_ObjID, t.Type] = {}
+_rsrc_index: dict[_ObjID, t.Type] = {}
 
 
 # Must be called before trying to use the reader API.
@@ -33,7 +33,7 @@ def _register_any(object_meta):
     class _AnyApiResource(KubernetesApiResource):
         __slots__ = ()
 
-        spec: t.Dict[str, t.Any]
+        spec: dict[str, t.Any]
         metadata: object_meta
 
         def __init__(self, version: str, kind: str, name: str, namespace: str = None, **kwargs):
@@ -53,7 +53,7 @@ def _register_any(object_meta):
         items_: list
         metadata: object_meta
 
-        def __init__(self, version: str, kind: str, name: str, namespace: str = None, items: t.List[KubernetesApiResource] = None):
+        def __init__(self, version: str, kind: str, name: str, namespace: str = None, items: list[KubernetesApiResource] = None):
             super().__init__(version, kind, name, namespace)
             if items and isinstance(items[0], KubernetesObject):
                 self.items_ = _TypedList(type(items[0]), items)

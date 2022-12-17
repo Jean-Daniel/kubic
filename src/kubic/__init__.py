@@ -1,5 +1,6 @@
 import types
 import typing as t
+from collections.abc import Iterable, Mapping
 from functools import cache
 
 __all__ = ["KubernetesObject", "KubernetesApiResource"]
@@ -44,7 +45,7 @@ R = t.TypeVar("R", bound="K8SResource")
 class _TypedList(list):
     __slots__ = ("type",)
 
-    def __init__(self, ty: t.Type[R], values: t.Iterable = None):
+    def __init__(self, ty: t.Type[R], values: Iterable | None = None):
         super().__init__()
         self.type: t.Type[R] = ty
         if values:
@@ -66,7 +67,7 @@ class _TypedList(list):
         if obj is not None:
             super().insert(index, self._cast(obj))
 
-    def extend(self, values: t.Iterable):
+    def extend(self, values: Iterable):
         if not values:
             return
         if isinstance(values, _TypedList) and values.type == self.type:
@@ -237,7 +238,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
     def update(self, values: dict = None, **kwargs):
         if values:
             # assume iterable of pairs if not a dict
-            items = values.items() if isinstance(values, t.Mapping) else values
+            items = values.items() if isinstance(values, Mapping) else values
             for key, value in items:
                 self._update(key, value)
 
