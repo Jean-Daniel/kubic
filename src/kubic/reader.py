@@ -68,7 +68,7 @@ def register_module(module: ModuleType):
         if not inspect.isclass(cls):
             continue
         if hasattr(cls, "_kind_"):
-            oid = _ObjID(cls._api_version_, cls._kind_)
+            oid = _ObjID(cls._api_version_, cls._kind_.lower())
             _rsrc_index[oid] = cls
         elif name == "ObjectMeta" and getattr(cls, "_api_version_", None) == "meta/v1":
             _register_any(cls)
@@ -88,13 +88,13 @@ def create_api_resource(obj: dict) -> K:
     if isinstance(obj, KubernetesApiResource):
         return obj
 
-    api_version = obj.get("apiVersion")
-    kind = obj.get("kind")
+    api_version: str = obj.get("apiVersion")
+    kind: str = obj.get("kind")
     if not api_version or not kind:
         raise ValueError("K8S resource must have 'apiVersion' and 'kind'")
 
     obj.pop("status", None)
-    rsrc = _rsrc_index.get(_ObjID(api_version, kind))
+    rsrc = _rsrc_index.get(_ObjID(api_version, kind.lower()))
     if not rsrc:
         # assuming that object that contains items instead of spec is a ResourceList (ConfigMapList, …)
         items = obj.pop("items", None)

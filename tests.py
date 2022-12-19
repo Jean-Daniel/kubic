@@ -190,6 +190,13 @@ class LoaderTest(unittest.TestCase):
         self.assertIsInstance(rsrc.metadata, ObjectMeta)
         self.assertEqual(rsrc.metadata.name, "myobject")
 
+        # Test that kind is case insensitive
+        spec["kind"] = "deployment"
+        rsrc = create_api_resource(spec)
+        self.assertIsInstance(rsrc, Deployment)
+        self.assertIsInstance(rsrc.metadata, ObjectMeta)
+        self.assertEqual(rsrc.metadata.name, "myobject")
+
     def test_create_any(self):
         spec = {
             "apiVersion": "apps/v3",
