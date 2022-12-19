@@ -166,6 +166,12 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         return value
 
     def __setattr__(self, key, value):
+        try:
+            # do not interfere with existing attributes
+            return super().__setattr__(key, value)
+        except AttributeError:
+            pass
+
         # kubernetes does not uses the concept of null value.
         # So instead of setting to None, remove the entry.
         if value is None:
@@ -285,7 +291,7 @@ def _is_generic_type(ty: t.Type) -> bool:
 
 
 class KubernetesApiResource(KubernetesObject):
-    __slots__ = ()
+    __slots__ = ("_group",)
 
     api_version: str
     kind: str
@@ -294,11 +300,19 @@ class KubernetesApiResource(KubernetesObject):
         super().__init__(**kwargs)
         self["apiVersion"] = version
         self["kind"] = kind
+        self._group = None
 
         self.metadata.name = name
         # Cluster objects don't need namespace.
         if namespace:
             self.metadata.namespace = namespace
+
+    @property
+    def group(self) -> str:
+        if self._group is None:
+            group, _, _ = self.api_version.rpartition("/")
+            self._group = group
+        return self._group
 
     @property
     def has_namespace(self) -> bool:
