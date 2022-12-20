@@ -100,10 +100,6 @@ def create_api_resource(obj: dict) -> KubernetesApiResourceTy:
     if not api_version or not kind:
         raise ValueError("K8S resource must have 'apiVersion' and 'kind'")
 
-    obj = dict(obj)  # copy to not alter parameter
-    obj.pop("apiVersion", None)
-    obj.pop("kind", None)
-    obj.pop("status", None)
     rsrc = _rsrc_index.get(_ObjID(api_version, kind.lower()))
     if not rsrc:
         # assuming that object that contains items instead of spec is a ResourceList (ConfigMapList, …)

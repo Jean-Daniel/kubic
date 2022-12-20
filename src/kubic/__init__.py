@@ -343,3 +343,20 @@ class KubernetesApiResource(KubernetesObject, metaclass=_K8SApiResourceMeta):
     @property
     def has_namespace(self) -> bool:
         return getattr(type(self), "_scope_", None) == "namespace"
+
+    # Special case to be able to pass a whole object dict and don't have to worry about ignored fields
+    def _update(self, key, value):
+        if key == "api_version" or key == "apiVersion":
+            if value.lower() != self.api_version.lower():
+                raise AttributeError(f"apiVersion is a read-only attribute ({self.api_version} ≠ {value})")
+            return
+
+        if key == "kind":
+            if value.lower() != self.kind.lower():
+                raise AttributeError(f"kind is a read-only attribute ({self.kind} ≠ {value})")
+            return
+
+        if key == "status":
+            return
+
+        return super()._update(key, value)

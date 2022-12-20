@@ -167,7 +167,7 @@ class ResourceTest(unittest.TestCase):
         with self.assertRaises(AttributeError):
             base.update({"unknown": "foo"})
 
-    def test_api_version(self):
+    def test_read_only(self):
         dep = Deployment("myobj", namespace="default")
         # Make sure api_version and kind are read-only
         with self.assertRaises(AttributeError):
@@ -178,6 +178,18 @@ class ResourceTest(unittest.TestCase):
 
         with self.assertRaises(AttributeError):
             dep.kind = "youpi"
+
+        with self.assertRaises(AttributeError):
+            dep.update({"apiVersion": "Anything"})
+
+        with self.assertRaises(AttributeError):
+            dep.update({"kind": "Something"})
+
+        with self.assertRaises(AttributeError):
+            dep.update({"group": "OK"})
+
+        # And ensure status, and matching read-only fields are ignored
+        dep.update({"status": {""}, "apiVersion": "apps/v1", "kind": "deployment"})
 
     def type_info(self):
         self.assertEqual(Deployment.api_version, "apps/v1")
