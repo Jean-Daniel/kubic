@@ -167,6 +167,23 @@ class ResourceTest(unittest.TestCase):
         with self.assertRaises(AttributeError):
             base.update({"unknown": "foo"})
 
+    def test_api_version(self):
+        dep = Deployment("myobj", namespace="default")
+        # Make sure api_version and kind are read-only
+        with self.assertRaises(AttributeError):
+            dep.api_version = "youpi"
+
+        with self.assertRaises(AttributeError):
+            dep.group = "youpi"
+
+        with self.assertRaises(AttributeError):
+            dep.kind = "youpi"
+
+    def type_info(self):
+        self.assertEqual(Deployment.api_version, "apps/v1")
+        self.assertEqual(Deployment.group, "apps")
+        self.assertEqual(Deployment.kind, "Deployment")
+
 
 class LoaderTest(unittest.TestCase):
 
@@ -189,6 +206,9 @@ class LoaderTest(unittest.TestCase):
         self.assertIsInstance(rsrc, Deployment)
         self.assertIsInstance(rsrc.metadata, ObjectMeta)
         self.assertEqual(rsrc.metadata.name, "myobject")
+        self.assertEqual("apps/v1", rsrc.api_version)
+        self.assertEqual("apps", rsrc.group)
+        self.assertEqual("Deployment", rsrc.kind)
 
         # Test that kind is case insensitive
         spec["kind"] = "deployment"
@@ -196,6 +216,9 @@ class LoaderTest(unittest.TestCase):
         self.assertIsInstance(rsrc, Deployment)
         self.assertIsInstance(rsrc.metadata, ObjectMeta)
         self.assertEqual(rsrc.metadata.name, "myobject")
+        self.assertEqual("apps/v1", rsrc.api_version)
+        self.assertEqual("apps", rsrc.group)
+        self.assertEqual("Deployment", rsrc.kind)
 
     def test_create_any(self):
         spec = {
@@ -210,4 +233,7 @@ class LoaderTest(unittest.TestCase):
         rsrc = create_api_resource(spec)
         self.assertIsInstance(rsrc, KubernetesApiResource)
         self.assertIsInstance(rsrc.metadata, ObjectMeta)
-        self.assertEqual(rsrc.metadata.name, "myobject")
+        self.assertEqual("myobject", rsrc.metadata.name)
+        self.assertEqual("apps/v3", rsrc.api_version)
+        self.assertEqual("Deployment", rsrc.kind)
+        self.assertEqual("apps", rsrc.group)

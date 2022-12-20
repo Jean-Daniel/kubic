@@ -31,20 +31,24 @@ def _register_any(object_meta):
     assert not AnyApiResource and not AnyResourceList
 
     class _AnyApiResource(KubernetesApiResource):
-        __slots__ = ()
+        __slots__ = ("_api_version_", "_api_group_", "_kind_")
 
         spec: dict[str, t.Any]
         metadata: object_meta
 
         def __init__(self, version: str, kind: str, name: str, namespace: str = None, **kwargs):
-            super().__init__(version, kind, name, namespace)
+            self._api_version_ = version
+            self._api_group_, _, _ = version.rpartition("/")
+            self._kind_ = kind
+
+            super().__init__(name, namespace)
             self.spec = {}
             self.spec.update(kwargs)
 
     AnyApiResource = _AnyApiResource
 
     class _AnyResourceList(KubernetesApiResource):
-        __slots__ = ()
+        __slots__ = ("_api_version_", "_api_group_", "_kind_")
 
         _revfield_names_ = {
             "items": "items_",
@@ -54,7 +58,10 @@ def _register_any(object_meta):
         metadata: object_meta
 
         def __init__(self, version: str, kind: str, name: str, namespace: str = None, items: list[KubernetesApiResource] = None):
-            super().__init__(version, kind, name, namespace)
+            self._api_version_ = version
+            self._api_group_, _, _ = version.rpartition("/")
+            self._kind_ = kind
+            super().__init__(name, namespace)
             if items and isinstance(items[0], KubernetesObject):
                 self.items_ = _TypedList(type(items[0]), items)
             else:
@@ -81,10 +88,10 @@ def register_modules(spec: ModuleSpec):
         register_module(mod)
 
 
-K = t.TypeVar("K", bound=KubernetesApiResource)
+KubernetesApiResourceTy = t.TypeVar("KubernetesApiResourceTy", bound=KubernetesApiResource)
 
 
-def create_api_resource(obj: dict) -> K:
+def create_api_resource(obj: dict) -> KubernetesApiResourceTy:
     if isinstance(obj, KubernetesApiResource):
         return obj
 
@@ -93,6 +100,9 @@ def create_api_resource(obj: dict) -> K:
     if not api_version or not kind:
         raise ValueError("K8S resource must have 'apiVersion' and 'kind'")
 
+    obj = dict(obj)  # copy to not alter parameter
+    obj.pop("apiVersion", None)
+    obj.pop("kind", None)
     obj.pop("status", None)
     rsrc = _rsrc_index.get(_ObjID(api_version, kind.lower()))
     if not rsrc:

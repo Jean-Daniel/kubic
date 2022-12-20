@@ -579,6 +579,7 @@ class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
+    _api_group_ = "cilium.io"
     _kind_ = "CiliumClusterwideNetworkPolicy"
     _scope_ = "cluster"
 
@@ -595,7 +596,7 @@ class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
         spec: CiliumClusterwideNetworkPolicySpec = None,
         specs: list[CiliumClusterwideNetworkPolicySpec] = None,
     ):
-        super().__init__("cilium.io/v2", "CiliumClusterwideNetworkPolicy", name, "", metadata=metadata, spec=spec, specs=specs)
+        super().__init__(name, "", metadata=metadata, spec=spec, specs=specs)
 
 
 class CiliumEgressNATPolicySpecEgress(KubernetesObject):
@@ -636,6 +637,7 @@ class CiliumEgressNATPolicy(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
+    _api_group_ = "cilium.io"
     _kind_ = "CiliumEgressNATPolicy"
     _scope_ = "cluster"
 
@@ -645,13 +647,14 @@ class CiliumEgressNATPolicy(KubernetesApiResource):
     spec: CiliumEgressNATPolicySpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: CiliumEgressNATPolicySpec = None):
-        super().__init__("cilium.io/v2alpha1", "CiliumEgressNATPolicy", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)
 
 
 class CiliumEndpoint(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
+    _api_group_ = "cilium.io"
     _kind_ = "CiliumEndpoint"
     _scope_ = "namespace"
 
@@ -660,7 +663,7 @@ class CiliumEndpoint(KubernetesApiResource):
     metadata: meta.ObjectMeta
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None):
-        super().__init__("cilium.io/v2", "CiliumEndpoint", name, namespace, metadata=metadata)
+        super().__init__(name, namespace, metadata=metadata)
 
 
 class CiliumExternalWorkloadSpec(KubernetesObject):
@@ -686,6 +689,7 @@ class CiliumExternalWorkload(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
+    _api_group_ = "cilium.io"
     _kind_ = "CiliumExternalWorkload"
     _scope_ = "cluster"
 
@@ -695,13 +699,14 @@ class CiliumExternalWorkload(KubernetesApiResource):
     spec: CiliumExternalWorkloadSpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: CiliumExternalWorkloadSpec = None):
-        super().__init__("cilium.io/v2", "CiliumExternalWorkload", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)
 
 
 class CiliumIdentity(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
+    _api_group_ = "cilium.io"
     _kind_ = "CiliumIdentity"
     _scope_ = "cluster"
 
@@ -718,7 +723,7 @@ class CiliumIdentity(KubernetesApiResource):
     security_labels: dict[str, str]
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, security_labels: dict[str, str] = None):
-        super().__init__("cilium.io/v2", "CiliumIdentity", name, "", metadata=metadata, security_labels=security_labels)
+        super().__init__(name, "", metadata=metadata, security_labels=security_labels)
 
 
 class RedirectBackend(KubernetesObject):
@@ -773,6 +778,7 @@ class CiliumLocalRedirectPolicy(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
+    _api_group_ = "cilium.io"
     _kind_ = "CiliumLocalRedirectPolicy"
     _scope_ = "namespace"
 
@@ -782,7 +788,7 @@ class CiliumLocalRedirectPolicy(KubernetesApiResource):
     spec: CiliumLocalRedirectPolicySpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CiliumLocalRedirectPolicySpec = None):
-        super().__init__("cilium.io/v2", "CiliumLocalRedirectPolicy", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CiliumNetworkPolicySpec(KubernetesObject):
@@ -824,6 +830,7 @@ class CiliumNetworkPolicy(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
+    _api_group_ = "cilium.io"
     _kind_ = "CiliumNetworkPolicy"
     _scope_ = "namespace"
 
@@ -841,7 +848,7 @@ class CiliumNetworkPolicy(KubernetesApiResource):
         spec: CiliumNetworkPolicySpec = None,
         specs: list[CiliumNetworkPolicySpec] = None,
     ):
-        super().__init__("cilium.io/v2", "CiliumNetworkPolicy", name, namespace, metadata=metadata, spec=spec, specs=specs)
+        super().__init__(name, namespace, metadata=metadata, spec=spec, specs=specs)
 
 
 class Encryption(KubernetesObject):
@@ -1044,6 +1051,7 @@ class CiliumNode(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
+    _api_group_ = "cilium.io"
     _kind_ = "CiliumNode"
     _scope_ = "cluster"
 
@@ -1053,4 +1061,4 @@ class CiliumNode(KubernetesApiResource):
     spec: CiliumNodeSpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: CiliumNodeSpec = None):
-        super().__init__("cilium.io/v2", "CiliumNode", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)

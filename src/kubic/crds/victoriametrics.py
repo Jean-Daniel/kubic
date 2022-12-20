@@ -878,6 +878,7 @@ class VMAgent(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMAgent"
     _scope_ = "namespace"
 
@@ -885,7 +886,7 @@ class VMAgent(KubernetesApiResource):
     spec: VMAgentSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMAgentSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMAgent", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class VMAlertSpecRemoteWrite(KubernetesObject):
@@ -1074,6 +1075,7 @@ class VMAlert(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMAlert"
     _scope_ = "namespace"
 
@@ -1081,7 +1083,7 @@ class VMAlert(KubernetesApiResource):
     spec: VMAlertSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMAlertSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMAlert", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class VMAlertmanagerSpec(KubernetesObject):
@@ -1229,6 +1231,7 @@ class VMAlertmanager(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMAlertmanager"
     _scope_ = "namespace"
 
@@ -1238,7 +1241,7 @@ class VMAlertmanager(KubernetesApiResource):
     spec: VMAlertmanagerSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMAlertmanagerSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMAlertmanager", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class VMInsert(KubernetesObject):
@@ -1713,6 +1716,7 @@ class VMCluster(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMCluster"
     _scope_ = "namespace"
 
@@ -1722,7 +1726,7 @@ class VMCluster(KubernetesApiResource):
     spec: VMClusterSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMClusterSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMCluster", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class VMNodeScrapeSpec(KubernetesObject):
@@ -1804,6 +1808,7 @@ class VMNodeScrape(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMNodeScrape"
     _scope_ = "namespace"
 
@@ -1811,7 +1816,7 @@ class VMNodeScrape(KubernetesApiResource):
     spec: VMNodeScrapeSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMNodeScrapeSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMNodeScrape", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class VMPodScrapeSpec(KubernetesObject):
@@ -1849,6 +1854,7 @@ class VMPodScrape(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMPodScrape"
     _scope_ = "namespace"
 
@@ -1856,7 +1862,7 @@ class VMPodScrape(KubernetesApiResource):
     spec: VMPodScrapeSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMPodScrapeSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMPodScrape", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class VmProberSpec(KubernetesObject):
@@ -1907,6 +1913,7 @@ class VMProbe(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMProbe"
     _scope_ = "namespace"
 
@@ -1916,7 +1923,7 @@ class VMProbe(KubernetesApiResource):
     spec: VMProbeSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMProbeSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMProbe", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class VMRuleSpec(KubernetesObject):
@@ -1934,6 +1941,7 @@ class VMRule(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMRule"
     _scope_ = "namespace"
 
@@ -1943,7 +1951,7 @@ class VMRule(KubernetesApiResource):
     spec: VMRuleSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMRuleSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMRule", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class VMServiceScrapeSpec(KubernetesObject):
@@ -1987,6 +1995,7 @@ class VMServiceScrape(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMServiceScrape"
     _scope_ = "namespace"
 
@@ -1996,7 +2005,7 @@ class VMServiceScrape(KubernetesApiResource):
     spec: VMServiceScrapeSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMServiceScrapeSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMServiceScrape", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class VMSingleSpec(KubernetesObject):
@@ -2127,6 +2136,7 @@ class VMSingle(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMSingle"
     _scope_ = "namespace"
 
@@ -2134,7 +2144,7 @@ class VMSingle(KubernetesApiResource):
     spec: VMSingleSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMSingleSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMSingle", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class VMStaticScrapeSpec(KubernetesObject):
@@ -2154,6 +2164,7 @@ class VMStaticScrape(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "operator.victoriametrics.com/v1beta1"
+    _api_group_ = "operator.victoriametrics.com"
     _kind_ = "VMStaticScrape"
     _scope_ = "namespace"
 
@@ -2161,4 +2172,4 @@ class VMStaticScrape(KubernetesApiResource):
     spec: VMStaticScrapeSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: VMStaticScrapeSpec = None):
-        super().__init__("operator.victoriametrics.com/v1beta1", "VMStaticScrape", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

@@ -99,6 +99,7 @@ class PodDisruptionBudget(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "policy/v1"
+    _api_group_ = "policy"
     _kind_ = "PodDisruptionBudget"
     _scope_ = "namespace"
 
@@ -106,7 +107,7 @@ class PodDisruptionBudget(KubernetesApiResource):
     spec: PodDisruptionBudgetSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PodDisruptionBudgetSpec = None):
-        super().__init__("policy/v1", "PodDisruptionBudget", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class RunAsGroupStrategyOptions(KubernetesObject):
@@ -279,6 +280,7 @@ class PodSecurityPolicy(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "policy/v1beta1"
+    _api_group_ = "policy"
     _kind_ = "PodSecurityPolicy"
     _scope_ = "cluster"
 
@@ -286,4 +288,4 @@ class PodSecurityPolicy(KubernetesApiResource):
     spec: PodSecurityPolicySpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: PodSecurityPolicySpec = None):
-        super().__init__("policy/v1beta1", "PodSecurityPolicy", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)

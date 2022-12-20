@@ -60,6 +60,7 @@ class DaemonSet(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "apps/v1"
+    _api_group_ = "apps"
     _kind_ = "DaemonSet"
     _scope_ = "namespace"
 
@@ -67,7 +68,7 @@ class DaemonSet(KubernetesApiResource):
     spec: DaemonSetSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: DaemonSetSpec = None):
-        super().__init__("apps/v1", "DaemonSet", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class RollingUpdateDeployment(KubernetesObject):
@@ -137,6 +138,7 @@ class Deployment(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "apps/v1"
+    _api_group_ = "apps"
     _kind_ = "Deployment"
     _scope_ = "namespace"
 
@@ -144,7 +146,7 @@ class Deployment(KubernetesApiResource):
     spec: DeploymentSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: DeploymentSpec = None):
-        super().__init__("apps/v1", "Deployment", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class RollingUpdateStatefulSetStrategy(KubernetesObject):
@@ -232,6 +234,7 @@ class StatefulSet(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "apps/v1"
+    _api_group_ = "apps"
     _kind_ = "StatefulSet"
     _scope_ = "namespace"
 
@@ -239,4 +242,4 @@ class StatefulSet(KubernetesApiResource):
     spec: StatefulSetSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: StatefulSetSpec = None):
-        super().__init__("apps/v1", "StatefulSet", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

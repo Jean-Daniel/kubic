@@ -6,6 +6,7 @@ class StorageClass(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "storage.k8s.io/v1"
+    _api_group_ = "storage.k8s.io"
     _kind_ = "StorageClass"
     _scope_ = "cluster"
 
@@ -33,8 +34,6 @@ class StorageClass(KubernetesApiResource):
         volume_binding_mode: str = None,
     ):
         super().__init__(
-            "storage.k8s.io/v1",
-            "StorageClass",
             name,
             "",
             allow_volume_expansion=allow_volume_expansion,
@@ -79,6 +78,7 @@ class VolumeAttachment(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "storage.k8s.io/v1"
+    _api_group_ = "storage.k8s.io"
     _kind_ = "VolumeAttachment"
     _scope_ = "cluster"
 
@@ -88,4 +88,4 @@ class VolumeAttachment(KubernetesApiResource):
     spec: VolumeAttachmentSpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: VolumeAttachmentSpec = None):
-        super().__init__("storage.k8s.io/v1", "VolumeAttachment", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)

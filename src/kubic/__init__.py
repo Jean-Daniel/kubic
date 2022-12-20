@@ -290,17 +290,38 @@ def _is_generic_type(ty: t.Type) -> bool:
     return isinstance(ty, types.UnionType) or hasattr(ty, "__origin__")
 
 
-class KubernetesApiResource(KubernetesObject):
-    __slots__ = ("_group",)
+# Read-Only API Class Members
+class _K8SApiResourceMeta(_K8SResourceMeta):
+    __slots__ = ()
 
-    api_version: str
-    kind: str
+    @property
+    def api_version(cls):
+        # noinspection PyUnresolvedReferences
+        return cls._api_version_
 
-    def __init__(self, version: str, kind: str, name: str, namespace: str = None, **kwargs):
+    @property
+    def group(cls):
+        # noinspection PyUnresolvedReferences
+        return cls._api_group_
+
+    @property
+    def kind(cls):
+        # noinspection PyUnresolvedReferences
+        return cls._kind_
+
+
+class KubernetesApiResource(KubernetesObject, metaclass=_K8SApiResourceMeta):
+    __slots__ = ()
+
+    # === read-only class members ===
+    # api_version: str
+    # group: str
+    # kind: str
+
+    def __init__(self, name: str, namespace: str = None, **kwargs):
         super().__init__(**kwargs)
-        self["apiVersion"] = version
-        self["kind"] = kind
-        self._group = None
+        self["apiVersion"] = self._api_version_
+        self["kind"] = self._kind_
 
         self.metadata.name = name
         # Cluster objects don't need namespace.
@@ -308,11 +329,16 @@ class KubernetesApiResource(KubernetesObject):
             self.metadata.namespace = namespace
 
     @property
-    def group(self) -> str:
-        if self._group is None:
-            group, _, _ = self.api_version.rpartition("/")
-            self._group = group
-        return self._group
+    def api_version(self):
+        return self._api_version_
+
+    @property
+    def group(self):
+        return self._api_group_
+
+    @property
+    def kind(self):
+        return self._kind_
 
     @property
     def has_namespace(self) -> bool:

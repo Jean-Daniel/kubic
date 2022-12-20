@@ -713,6 +713,7 @@ class Certificate(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cert-manager.io/v1"
+    _api_group_ = "cert-manager.io"
     _kind_ = "Certificate"
     _scope_ = "namespace"
 
@@ -722,7 +723,7 @@ class Certificate(KubernetesApiResource):
     spec: CertificateSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CertificateSpec = None):
-        super().__init__("cert-manager.io/v1", "Certificate", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CertificateRequestSpec(KubernetesObject):
@@ -776,6 +777,7 @@ class CertificateRequest(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cert-manager.io/v1"
+    _api_group_ = "cert-manager.io"
     _kind_ = "CertificateRequest"
     _scope_ = "namespace"
 
@@ -785,7 +787,7 @@ class CertificateRequest(KubernetesApiResource):
     spec: CertificateRequestSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CertificateRequestSpec = None):
-        super().__init__("cert-manager.io/v1", "CertificateRequest", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class ChallengeSpec(KubernetesObject):
@@ -839,6 +841,7 @@ class Challenge(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "acme.cert-manager.io/v1"
+    _api_group_ = "acme.cert-manager.io"
     _kind_ = "Challenge"
     _scope_ = "namespace"
 
@@ -848,7 +851,7 @@ class Challenge(KubernetesApiResource):
     spec: ChallengeSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ChallengeSpec = None):
-        super().__init__("acme.cert-manager.io/v1", "Challenge", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class Cloud(KubernetesObject):
@@ -941,6 +944,7 @@ class ClusterIssuer(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cert-manager.io/v1"
+    _api_group_ = "cert-manager.io"
     _kind_ = "ClusterIssuer"
     _scope_ = "cluster"
 
@@ -950,13 +954,14 @@ class ClusterIssuer(KubernetesApiResource):
     spec: IssuerSpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: IssuerSpec = None):
-        super().__init__("cert-manager.io/v1", "ClusterIssuer", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)
 
 
 class Issuer(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "cert-manager.io/v1"
+    _api_group_ = "cert-manager.io"
     _kind_ = "Issuer"
     _scope_ = "namespace"
 
@@ -966,7 +971,7 @@ class Issuer(KubernetesApiResource):
     spec: IssuerSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: IssuerSpec = None):
-        super().__init__("cert-manager.io/v1", "Issuer", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class OrderSpec(KubernetesObject):
@@ -1004,6 +1009,7 @@ class Order(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "acme.cert-manager.io/v1"
+    _api_group_ = "acme.cert-manager.io"
     _kind_ = "Order"
     _scope_ = "namespace"
 
@@ -1013,4 +1019,4 @@ class Order(KubernetesApiResource):
     spec: OrderSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: OrderSpec = None):
-        super().__init__("acme.cert-manager.io/v1", "Order", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

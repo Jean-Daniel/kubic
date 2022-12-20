@@ -134,6 +134,7 @@ class Ingress(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "networking.k8s.io/v1"
+    _api_group_ = "networking.k8s.io"
     _kind_ = "Ingress"
     _scope_ = "namespace"
 
@@ -141,7 +142,7 @@ class Ingress(KubernetesApiResource):
     spec: IngressSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: IngressSpec = None):
-        super().__init__("networking.k8s.io/v1", "Ingress", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class IngressClassParametersReference(KubernetesObject):
@@ -177,6 +178,7 @@ class IngressClass(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "networking.k8s.io/v1"
+    _api_group_ = "networking.k8s.io"
     _kind_ = "IngressClass"
     _scope_ = "cluster"
 
@@ -184,7 +186,7 @@ class IngressClass(KubernetesApiResource):
     spec: IngressClassSpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: IngressClassSpec = None):
-        super().__init__("networking.k8s.io/v1", "IngressClass", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)
 
 
 class NetworkPolicyPort(KubernetesObject):
@@ -267,6 +269,7 @@ class NetworkPolicy(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "networking.k8s.io/v1"
+    _api_group_ = "networking.k8s.io"
     _kind_ = "NetworkPolicy"
     _scope_ = "namespace"
 
@@ -274,4 +277,4 @@ class NetworkPolicy(KubernetesApiResource):
     spec: NetworkPolicySpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: NetworkPolicySpec = None):
-        super().__init__("networking.k8s.io/v1", "NetworkPolicy", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

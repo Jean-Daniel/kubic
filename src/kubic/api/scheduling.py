@@ -6,6 +6,7 @@ class PriorityClass(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "scheduling.k8s.io/v1"
+    _api_group_ = "scheduling.k8s.io"
     _kind_ = "PriorityClass"
     _scope_ = "cluster"
 
@@ -27,8 +28,6 @@ class PriorityClass(KubernetesApiResource):
         value: int = None,
     ):
         super().__init__(
-            "scheduling.k8s.io/v1",
-            "PriorityClass",
             name,
             "",
             description=description,

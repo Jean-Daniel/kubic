@@ -215,6 +215,7 @@ class HorizontalPodAutoscaler(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "autoscaling/v2"
+    _api_group_ = "autoscaling"
     _kind_ = "HorizontalPodAutoscaler"
     _scope_ = "namespace"
 
@@ -222,4 +223,4 @@ class HorizontalPodAutoscaler(KubernetesApiResource):
     spec: HorizontalPodAutoscalerSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: HorizontalPodAutoscalerSpec = None):
-        super().__init__("autoscaling/v2", "HorizontalPodAutoscaler", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

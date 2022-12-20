@@ -88,8 +88,8 @@ class TypePrinter:
         if not isinstance(ty, AnonymousType):
             stream.write(f'\n    _api_version_ = "{ty.api_version}"\n')
             if isinstance(ty, ApiResourceType):
-                if ty.kind:
-                    stream.write(f'    _kind_ = "{ty.kind}"\n')
+                stream.write(f'    _api_group_ = "{ty.api_group}"\n')
+                stream.write(f'    _kind_ = "{ty.kind}"\n')
                 scope = "namespace" if ty.scoped else "cluster"
                 stream.write(f'    _scope_ = "{scope}"\n')
         required = [prop.snake_name for prop in ty.required_properties]
@@ -144,11 +144,7 @@ class TypePrinter:
         stream.write("):\n")
         stream.write("        super().__init__(")
         if isinstance(ty, ApiResourceType):
-            stream.write('"')
-            stream.write(ty.api_version)
-            stream.write('", ')
-            stream.write(f'"{ty.kind}"')
-            stream.write(", name")
+            stream.write("name")
             if ty.scoped:
                 stream.write(", namespace")
             else:

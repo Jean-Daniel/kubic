@@ -27,6 +27,7 @@ class SealedSecret(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "bitnami.com/v1alpha1"
+    _api_group_ = "bitnami.com"
     _kind_ = "SealedSecret"
     _scope_ = "namespace"
 
@@ -34,4 +35,4 @@ class SealedSecret(KubernetesApiResource):
     spec: SealedSecretSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: SealedSecretSpec = None):
-        super().__init__("bitnami.com/v1alpha1", "SealedSecret", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

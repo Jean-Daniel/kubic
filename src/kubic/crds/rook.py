@@ -226,6 +226,7 @@ class CephBlockPool(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephBlockPool"
     _scope_ = "namespace"
 
@@ -235,7 +236,7 @@ class CephBlockPool(KubernetesApiResource):
     spec: CephBlockPoolSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephBlockPoolSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephBlockPool", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CephBlockPoolRadosNamespaceSpec(KubernetesObject):
@@ -253,6 +254,7 @@ class CephBlockPoolRadosNamespace(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephBlockPoolRadosNamespace"
     _scope_ = "namespace"
 
@@ -262,7 +264,7 @@ class CephBlockPoolRadosNamespace(KubernetesApiResource):
     spec: CephBlockPoolRadosNamespaceSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephBlockPoolRadosNamespaceSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephBlockPoolRadosNamespace", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class FilterItem(KubernetesObject):
@@ -307,6 +309,7 @@ class CephBucketNotification(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephBucketNotification"
     _scope_ = "namespace"
 
@@ -316,7 +319,7 @@ class CephBucketNotification(KubernetesApiResource):
     spec: CephBucketNotificationSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephBucketNotificationSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephBucketNotification", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class Http(KubernetesObject):
@@ -405,6 +408,7 @@ class CephBucketTopic(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephBucketTopic"
     _scope_ = "namespace"
 
@@ -414,7 +418,7 @@ class CephBucketTopic(KubernetesApiResource):
     spec: CephBucketTopicSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephBucketTopicSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephBucketTopic", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CephClientSpec(KubernetesObject):
@@ -433,6 +437,7 @@ class CephClient(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephClient"
     _scope_ = "namespace"
 
@@ -442,7 +447,7 @@ class CephClient(KubernetesApiResource):
     spec: CephClientSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephClientSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephClient", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CephVersion(KubernetesObject):
@@ -1080,6 +1085,7 @@ class CephCluster(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephCluster"
     _scope_ = "namespace"
 
@@ -1089,7 +1095,7 @@ class CephCluster(KubernetesApiResource):
     spec: CephClusterSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephClusterSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephCluster", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class MetadataServer(KubernetesObject):
@@ -1198,6 +1204,7 @@ class CephFilesystem(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephFilesystem"
     _scope_ = "namespace"
 
@@ -1207,7 +1214,7 @@ class CephFilesystem(KubernetesApiResource):
     spec: CephFilesystemSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephFilesystemSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephFilesystem", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CephFilesystemMirrorSpec(KubernetesObject):
@@ -1236,6 +1243,7 @@ class CephFilesystemMirror(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephFilesystemMirror"
     _scope_ = "namespace"
 
@@ -1245,7 +1253,7 @@ class CephFilesystemMirror(KubernetesApiResource):
     spec: CephFilesystemMirrorSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephFilesystemMirrorSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephFilesystemMirror", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CephFilesystemSubVolumeGroupSpec(KubernetesObject):
@@ -1263,6 +1271,7 @@ class CephFilesystemSubVolumeGroup(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephFilesystemSubVolumeGroup"
     _scope_ = "namespace"
 
@@ -1272,7 +1281,7 @@ class CephFilesystemSubVolumeGroup(KubernetesApiResource):
     spec: CephFilesystemSubVolumeGroupSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephFilesystemSubVolumeGroupSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephFilesystemSubVolumeGroup", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class Rado(KubernetesObject):
@@ -1383,6 +1392,7 @@ class CephNFS(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephNFS"
     _scope_ = "namespace"
 
@@ -1392,7 +1402,7 @@ class CephNFS(KubernetesApiResource):
     spec: CephNFSSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephNFSSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephNFS", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class Pull(KubernetesObject):
@@ -1417,6 +1427,7 @@ class CephObjectRealm(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephObjectRealm"
     _scope_ = "namespace"
 
@@ -1426,7 +1437,7 @@ class CephObjectRealm(KubernetesApiResource):
     spec: CephObjectRealmSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephObjectRealmSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephObjectRealm", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class ExternalRgwEndpoint(KubernetesObject):
@@ -1581,6 +1592,7 @@ class CephObjectStore(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephObjectStore"
     _scope_ = "namespace"
 
@@ -1590,7 +1602,7 @@ class CephObjectStore(KubernetesApiResource):
     spec: CephObjectStoreSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephObjectStoreSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephObjectStore", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CephObjectStoreUserSpecQuota(KubernetesObject):
@@ -1622,6 +1634,7 @@ class CephObjectStoreUser(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephObjectStoreUser"
     _scope_ = "namespace"
 
@@ -1631,7 +1644,7 @@ class CephObjectStoreUser(KubernetesApiResource):
     spec: CephObjectStoreUserSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephObjectStoreUserSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephObjectStoreUser", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CephObjectZoneSpec(KubernetesObject):
@@ -1658,6 +1671,7 @@ class CephObjectZone(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephObjectZone"
     _scope_ = "namespace"
 
@@ -1667,7 +1681,7 @@ class CephObjectZone(KubernetesApiResource):
     spec: CephObjectZoneSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephObjectZoneSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephObjectZone", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CephObjectZoneGroupSpec(KubernetesObject):
@@ -1685,6 +1699,7 @@ class CephObjectZoneGroup(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephObjectZoneGroup"
     _scope_ = "namespace"
 
@@ -1694,7 +1709,7 @@ class CephObjectZoneGroup(KubernetesApiResource):
     spec: CephObjectZoneGroupSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephObjectZoneGroupSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephObjectZoneGroup", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class CephRBDMirrorSpec(KubernetesObject):
@@ -1735,6 +1750,7 @@ class CephRBDMirror(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "ceph.rook.io/v1"
+    _api_group_ = "ceph.rook.io"
     _kind_ = "CephRBDMirror"
     _scope_ = "namespace"
 
@@ -1744,7 +1760,7 @@ class CephRBDMirror(KubernetesApiResource):
     spec: CephRBDMirrorSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CephRBDMirrorSpec = None):
-        super().__init__("ceph.rook.io/v1", "CephRBDMirror", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class ObjectBucketSpecEndpoint(KubernetesObject):
@@ -1809,6 +1825,7 @@ class ObjectBucket(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "objectbucket.io/v1alpha1"
+    _api_group_ = "objectbucket.io"
     _kind_ = "ObjectBucket"
     _scope_ = "cluster"
 
@@ -1816,7 +1833,7 @@ class ObjectBucket(KubernetesApiResource):
     spec: ObjectBucketSpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: ObjectBucketSpec = None):
-        super().__init__("objectbucket.io/v1alpha1", "ObjectBucket", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)
 
 
 class ObjectBucketClaimSpec(KubernetesObject):
@@ -1849,6 +1866,7 @@ class ObjectBucketClaim(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "objectbucket.io/v1alpha1"
+    _api_group_ = "objectbucket.io"
     _kind_ = "ObjectBucketClaim"
     _scope_ = "namespace"
 
@@ -1856,4 +1874,4 @@ class ObjectBucketClaim(KubernetesApiResource):
     spec: ObjectBucketClaimSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ObjectBucketClaimSpec = None):
-        super().__init__("objectbucket.io/v1alpha1", "ObjectBucketClaim", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

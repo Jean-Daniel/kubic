@@ -476,6 +476,7 @@ class ConfigMap(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "v1"
+    _api_group_ = ""
     _kind_ = "ConfigMap"
     _scope_ = "namespace"
 
@@ -493,7 +494,7 @@ class ConfigMap(KubernetesApiResource):
         immutable: bool = None,
         metadata: meta.ObjectMeta = None,
     ):
-        super().__init__("v1", "ConfigMap", name, namespace, binary_data=binary_data, data=data, immutable=immutable, metadata=metadata)
+        super().__init__(name, namespace, binary_data=binary_data, data=data, immutable=immutable, metadata=metadata)
 
 
 class ConfigMapEnvSource(KubernetesObject):
@@ -1218,6 +1219,7 @@ class Endpoints(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "v1"
+    _api_group_ = ""
     _kind_ = "Endpoints"
     _scope_ = "namespace"
 
@@ -1225,7 +1227,7 @@ class Endpoints(KubernetesApiResource):
     subsets: list[EndpointSubset]
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, subsets: list[EndpointSubset] = None):
-        super().__init__("v1", "Endpoints", name, namespace, metadata=metadata, subsets=subsets)
+        super().__init__(name, namespace, metadata=metadata, subsets=subsets)
 
 
 class EphemeralContainer(KubernetesObject):
@@ -1711,6 +1713,7 @@ class Namespace(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "v1"
+    _api_group_ = ""
     _kind_ = "Namespace"
     _scope_ = "cluster"
 
@@ -1718,7 +1721,7 @@ class Namespace(KubernetesApiResource):
     spec: NamespaceSpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: NamespaceSpec = None):
-        super().__init__("v1", "Namespace", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)
 
 
 class VolumeNodeAffinity(KubernetesObject):
@@ -2042,6 +2045,7 @@ class PersistentVolume(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "v1"
+    _api_group_ = ""
     _kind_ = "PersistentVolume"
     _scope_ = "cluster"
 
@@ -2049,13 +2053,14 @@ class PersistentVolume(KubernetesApiResource):
     spec: PersistentVolumeSpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: PersistentVolumeSpec = None):
-        super().__init__("v1", "PersistentVolume", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)
 
 
 class PersistentVolumeClaim(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "v1"
+    _api_group_ = ""
     _kind_ = "PersistentVolumeClaim"
     _scope_ = "namespace"
 
@@ -2063,7 +2068,7 @@ class PersistentVolumeClaim(KubernetesApiResource):
     spec: PersistentVolumeClaimSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PersistentVolumeClaimSpec = None):
-        super().__init__("v1", "PersistentVolumeClaim", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class PersistentVolumeClaimVolumeSource(KubernetesObject):
@@ -2725,6 +2730,7 @@ class ResourceQuota(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "v1"
+    _api_group_ = ""
     _kind_ = "ResourceQuota"
     _scope_ = "namespace"
 
@@ -2732,13 +2738,14 @@ class ResourceQuota(KubernetesApiResource):
     spec: ResourceQuotaSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ResourceQuotaSpec = None):
-        super().__init__("v1", "ResourceQuota", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class Secret(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "v1"
+    _api_group_ = ""
     _kind_ = "Secret"
     _scope_ = "namespace"
 
@@ -2758,9 +2765,7 @@ class Secret(KubernetesApiResource):
         string_data: dict[str, str] = None,
         type: str = None,
     ):
-        super().__init__(
-            "v1", "Secret", name, namespace, data=data, immutable=immutable, metadata=metadata, string_data=string_data, type=type
-        )
+        super().__init__(name, namespace, data=data, immutable=immutable, metadata=metadata, string_data=string_data, type=type)
 
 
 class ServicePort(KubernetesObject):
@@ -2894,6 +2899,7 @@ class Service(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "v1"
+    _api_group_ = ""
     _kind_ = "Service"
     _scope_ = "namespace"
 
@@ -2901,13 +2907,14 @@ class Service(KubernetesApiResource):
     spec: ServiceSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ServiceSpec = None):
-        super().__init__("v1", "Service", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class ServiceAccount(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "v1"
+    _api_group_ = ""
     _kind_ = "ServiceAccount"
     _scope_ = "namespace"
 
@@ -2926,8 +2933,6 @@ class ServiceAccount(KubernetesApiResource):
         secrets: list[ObjectReference] = None,
     ):
         super().__init__(
-            "v1",
-            "ServiceAccount",
             name,
             namespace,
             automount_service_account_token=automount_service_account_token,

@@ -218,6 +218,7 @@ class Gateway(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "gateway.networking.k8s.io/v1beta1"
+    _api_group_ = "gateway.networking.k8s.io"
     _kind_ = "Gateway"
     _scope_ = "namespace"
 
@@ -227,7 +228,7 @@ class Gateway(KubernetesApiResource):
     spec: GatewaySpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: GatewaySpec = None):
-        super().__init__("gateway.networking.k8s.io/v1beta1", "Gateway", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class ParametersRef(KubernetesObject):
@@ -261,6 +262,7 @@ class GatewayClass(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "gateway.networking.k8s.io/v1beta1"
+    _api_group_ = "gateway.networking.k8s.io"
     _kind_ = "GatewayClass"
     _scope_ = "cluster"
 
@@ -270,7 +272,7 @@ class GatewayClass(KubernetesApiResource):
     spec: GatewayClassSpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: GatewayClassSpec = None):
-        super().__init__("gateway.networking.k8s.io/v1beta1", "GatewayClass", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)
 
 
 class ParentRef(KubernetesObject):
@@ -388,6 +390,7 @@ class HTTPRoute(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "gateway.networking.k8s.io/v1beta1"
+    _api_group_ = "gateway.networking.k8s.io"
     _kind_ = "HTTPRoute"
     _scope_ = "namespace"
 
@@ -397,4 +400,4 @@ class HTTPRoute(KubernetesApiResource):
     spec: HTTPRouteSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: HTTPRouteSpec = None):
-        super().__init__("gateway.networking.k8s.io/v1beta1", "HTTPRoute", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

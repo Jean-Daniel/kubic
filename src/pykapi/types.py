@@ -31,6 +31,10 @@ class ApiType:
         return self.fqn.group
 
     @property
+    def api_group(self) -> str:
+        return self.fqn.group if self.fqn.group != "core" else ""
+
+    @property
     def version(self) -> str:
         return self.fqn.version
 

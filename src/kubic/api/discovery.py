@@ -96,6 +96,7 @@ class EndpointSlice(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "discovery.k8s.io/v1"
+    _api_group_ = "discovery.k8s.io"
     _kind_ = "EndpointSlice"
     _scope_ = "namespace"
 
@@ -115,13 +116,4 @@ class EndpointSlice(KubernetesApiResource):
         metadata: meta.ObjectMeta = None,
         ports: list[EndpointPort] = None,
     ):
-        super().__init__(
-            "discovery.k8s.io/v1",
-            "EndpointSlice",
-            name,
-            namespace,
-            address_type=address_type,
-            endpoints=endpoints,
-            metadata=metadata,
-            ports=ports,
-        )
+        super().__init__(name, namespace, address_type=address_type, endpoints=endpoints, metadata=metadata, ports=ports)

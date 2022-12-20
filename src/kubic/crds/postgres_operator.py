@@ -591,6 +591,7 @@ class PGUpgrade(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "postgres-operator.crunchydata.com/v1beta1"
+    _api_group_ = "postgres-operator.crunchydata.com"
     _kind_ = "PGUpgrade"
     _scope_ = "namespace"
 
@@ -598,7 +599,7 @@ class PGUpgrade(KubernetesApiResource):
     spec: PGUpgradeSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PGUpgradeSpec = None):
-        super().__init__("postgres-operator.crunchydata.com/v1beta1", "PGUpgrade", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class Password(KubernetesObject):
@@ -992,6 +993,7 @@ class PostgresCluster(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "postgres-operator.crunchydata.com/v1beta1"
+    _api_group_ = "postgres-operator.crunchydata.com"
     _kind_ = "PostgresCluster"
     _scope_ = "namespace"
 
@@ -999,4 +1001,4 @@ class PostgresCluster(KubernetesApiResource):
     spec: PostgresClusterSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PostgresClusterSpec = None):
-        super().__init__("postgres-operator.crunchydata.com/v1beta1", "PostgresCluster", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

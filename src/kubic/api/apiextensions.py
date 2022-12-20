@@ -423,6 +423,7 @@ class CustomResourceDefinition(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "apiextensions.k8s.io/v1"
+    _api_group_ = "apiextensions.k8s.io"
     _kind_ = "CustomResourceDefinition"
     _scope_ = "cluster"
 
@@ -432,4 +433,4 @@ class CustomResourceDefinition(KubernetesApiResource):
     spec: CustomResourceDefinitionSpec
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: CustomResourceDefinitionSpec = None):
-        super().__init__("apiextensions.k8s.io/v1", "CustomResourceDefinition", name, "", metadata=metadata, spec=spec)
+        super().__init__(name, "", metadata=metadata, spec=spec)

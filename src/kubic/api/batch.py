@@ -102,6 +102,7 @@ class CronJob(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "batch/v1"
+    _api_group_ = "batch"
     _kind_ = "CronJob"
     _scope_ = "namespace"
 
@@ -109,13 +110,14 @@ class CronJob(KubernetesApiResource):
     spec: CronJobSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CronJobSpec = None):
-        super().__init__("batch/v1", "CronJob", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class Job(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "batch/v1"
+    _api_group_ = "batch"
     _kind_ = "Job"
     _scope_ = "namespace"
 
@@ -123,4 +125,4 @@ class Job(KubernetesApiResource):
     spec: JobSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: JobSpec = None):
-        super().__init__("batch/v1", "Job", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

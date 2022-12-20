@@ -398,6 +398,7 @@ class Alertmanager(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "monitoring.coreos.com/v1"
+    _api_group_ = "monitoring.coreos.com"
     _kind_ = "Alertmanager"
     _scope_ = "namespace"
 
@@ -407,7 +408,7 @@ class Alertmanager(KubernetesApiResource):
     spec: AlertmanagerSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: AlertmanagerSpec = None):
-        super().__init__("monitoring.coreos.com/v1", "Alertmanager", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class SourceMatch(KubernetesObject):
@@ -1189,6 +1190,7 @@ class AlertmanagerConfig(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "monitoring.coreos.com/v1alpha1"
+    _api_group_ = "monitoring.coreos.com"
     _kind_ = "AlertmanagerConfig"
     _scope_ = "namespace"
 
@@ -1198,7 +1200,7 @@ class AlertmanagerConfig(KubernetesApiResource):
     spec: AlertmanagerConfigSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: AlertmanagerConfigSpec = None):
-        super().__init__("monitoring.coreos.com/v1alpha1", "AlertmanagerConfig", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class ArbitraryFSAccessThroughSM(KubernetesObject):
@@ -1631,6 +1633,7 @@ class PodMonitor(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "monitoring.coreos.com/v1"
+    _api_group_ = "monitoring.coreos.com"
     _kind_ = "PodMonitor"
     _scope_ = "namespace"
 
@@ -1640,7 +1643,7 @@ class PodMonitor(KubernetesApiResource):
     spec: PodMonitorSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PodMonitorSpec = None):
-        super().__init__("monitoring.coreos.com/v1", "PodMonitor", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class Prober(KubernetesObject):
@@ -1744,6 +1747,7 @@ class Probe(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "monitoring.coreos.com/v1"
+    _api_group_ = "monitoring.coreos.com"
     _kind_ = "Probe"
     _scope_ = "namespace"
 
@@ -1753,7 +1757,7 @@ class Probe(KubernetesApiResource):
     spec: ProbeSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ProbeSpec = None):
-        super().__init__("monitoring.coreos.com/v1", "Probe", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class PrometheusRulesExcludedFromEnforce(KubernetesObject):
@@ -2394,6 +2398,7 @@ class Prometheus(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "monitoring.coreos.com/v1"
+    _api_group_ = "monitoring.coreos.com"
     _kind_ = "Prometheus"
     _scope_ = "namespace"
 
@@ -2403,7 +2408,7 @@ class Prometheus(KubernetesApiResource):
     spec: PrometheusSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PrometheusSpec = None):
-        super().__init__("monitoring.coreos.com/v1", "Prometheus", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class PrometheusRuleSpec(KubernetesObject):
@@ -2419,6 +2424,7 @@ class PrometheusRule(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "monitoring.coreos.com/v1"
+    _api_group_ = "monitoring.coreos.com"
     _kind_ = "PrometheusRule"
     _scope_ = "namespace"
 
@@ -2428,7 +2434,7 @@ class PrometheusRule(KubernetesApiResource):
     spec: PrometheusRuleSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PrometheusRuleSpec = None):
-        super().__init__("monitoring.coreos.com/v1", "PrometheusRule", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class ServiceMonitorSpec(KubernetesObject):
@@ -2481,6 +2487,7 @@ class ServiceMonitor(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "monitoring.coreos.com/v1"
+    _api_group_ = "monitoring.coreos.com"
     _kind_ = "ServiceMonitor"
     _scope_ = "namespace"
 
@@ -2490,7 +2497,7 @@ class ServiceMonitor(KubernetesApiResource):
     spec: ServiceMonitorSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ServiceMonitorSpec = None):
-        super().__init__("monitoring.coreos.com/v1", "ServiceMonitor", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class ThanosRulerSpec(KubernetesObject):
@@ -2637,6 +2644,7 @@ class ThanosRuler(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "monitoring.coreos.com/v1"
+    _api_group_ = "monitoring.coreos.com"
     _kind_ = "ThanosRuler"
     _scope_ = "namespace"
 
@@ -2646,4 +2654,4 @@ class ThanosRuler(KubernetesApiResource):
     spec: ThanosRulerSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ThanosRulerSpec = None):
-        super().__init__("monitoring.coreos.com/v1", "ThanosRuler", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

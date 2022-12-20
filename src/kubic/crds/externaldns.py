@@ -64,6 +64,7 @@ class DNSEndpoint(KubernetesApiResource):
     __slots__ = ()
 
     _api_version_ = "externaldns.k8s.io/v1alpha1"
+    _api_group_ = "externaldns.k8s.io"
     _kind_ = "DNSEndpoint"
     _scope_ = "namespace"
 
@@ -71,4 +72,4 @@ class DNSEndpoint(KubernetesApiResource):
     spec: DNSEndpointSpec
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: DNSEndpointSpec = None):
-        super().__init__("externaldns.k8s.io/v1alpha1", "DNSEndpoint", name, namespace, metadata=metadata, spec=spec)
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
