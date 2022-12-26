@@ -7,7 +7,7 @@ import sys
 import tempfile
 import typing as t
 from importlib import resources
-from os import fdopen
+from os import fdopen, fspath
 from tempfile import mktemp
 from urllib.request import urlretrieve
 
@@ -108,6 +108,9 @@ class CRD(t.NamedTuple):
 
 
 def create_crd(schema: dict) -> CRD:
+    if schema.get("kind") != "CustomResourceDefinition":
+        raise ValueError("Not a CustomResourceDefinition")
+
     spec = schema["spec"]
     kind = spec["names"]["kind"]
     group = spec["group"]
@@ -149,11 +152,17 @@ def read_crds(paths: list[pathlib.Path], crds: list):
 
                 with entry.open("rb") as f:
                     for schema in yaml.load_all(f, yaml.CSafeLoader):
-                        crds.append(create_crd(schema))
+                        try:
+                            crds.append(create_crd(schema))
+                        except ValueError:
+                            logger.warning("skipping non CRD file: %s", entry.name)
         else:
             with path.open("rb") as f:
                 for schema in yaml.load_all(f, yaml.CSafeLoader):
-                    crds.append(create_crd(schema))
+                    try:
+                        crds.append(create_crd(schema))
+                    except ValueError:
+                        logger.warning("skipping non CRD file: %s", path)
 
 
 class AnnotationFactory:
