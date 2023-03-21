@@ -38,6 +38,8 @@ class CRDParser(Parser):
 
         # Look up by fullname first
         if isinstance(obj_type, AnonymousType):
+            # TODO: refactor to use a tree for annotations and fetch by type full path instead
+            # FIXME: should use qualified name instead (root.property.property…)
             annotations = self.annotations.get(obj_type.fullname)
             if annotations:
                 return annotations

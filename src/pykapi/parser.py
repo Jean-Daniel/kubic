@@ -105,14 +105,23 @@ class ApiGroup:
     def refs(self) -> Iterable[str]:
         return self._refs
 
-    def _rename(self, item):
+    def _rename(self, item: AnonymousType):
         item.fqn = QualifiedName(item.fullname, item.group, item.version)
+        # ensure uniqueness
+        idx = 1
+        fullname = item.name
+        while item.name in self._types:
+            item.fqn = QualifiedName(f"{fullname}{idx}", item.group, item.version)
+            idx += 1
+
         assert item.name not in self._types, item.name
         self._types[item.name] = item
 
+    # list of items with the same name
     def rename_duplicated(self, items: list[AnonymousType]):
         types: list[list[AnonymousType]] = []
 
+        # Count effective number of ≠ types
         for duplicated in items:
             # Try to group items by matching type
             for atypes in types:
@@ -122,7 +131,7 @@ class ApiGroup:
             else:
                 types.append([duplicated])
 
-        # all types match
+        # This is a effectively a single type use at different places
         if len(types) == 1:
             # no conflict, add type
             base = types[0][0]
@@ -132,18 +141,24 @@ class ApiGroup:
             else:
                 self._types[base.name] = base
         else:
+            # There is multiples conflicting types with the same name
+            counter = 0
             types.sort(key=lambda i: len(i), reverse=True)
-            for idx, typs in enumerate(types):
-                # generate indexed names if names do not match.
-                if len(typs) > 1 and any(ty.fullname != typs[0].fullname for ty in typs):
+            for typs in types:
+                # We are supposed to use fullname,
+                # but if there is more than 1 item, and items have ≠ fullname, use indexed base name instead.
+                # else we may end up having incoherent fullname for renamed items.
+                fullname = typs[0].fullname
+                if any(ty.fullname != fullname for ty in typs[1:]):
                     base = typs[0]
                     # For the type with most matching types -> use the original name
-                    if idx > 0 or base.name in self._types:
-                        name = f"{base.name}{idx + 1}"
+                    if counter > 0 or base.name in self._types:
+                        name = f"{base.name}{counter}"
                         for ty in typs:
                             ty.fqn = QualifiedName(name, base.group, base.version)
                     assert base.name not in self._types
                     self._types[base.name] = base
+                    counter += 1
                 else:
                     self._rename(typs[0])
                     for ty in typs[1:]:
