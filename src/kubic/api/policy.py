@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-
 class Eviction(KubernetesApiResource):
     __slots__ = ()
 
@@ -27,7 +26,9 @@ class PodDisruptionBudgetSpec(KubernetesObject):
     min_available: core.IntOrString
     selector: meta.LabelSelector
 
-    def __init__(self, max_unavailable: core.IntOrString = None, min_available: core.IntOrString = None, selector: meta.LabelSelector = None):
+    def __init__(
+        self, max_unavailable: core.IntOrString = None, min_available: core.IntOrString = None, selector: meta.LabelSelector = None
+    ):
         super().__init__(max_unavailable=max_unavailable, min_available=min_available, selector=selector)
 
 
@@ -78,7 +79,22 @@ class PodDisruptionBudgetStatus(KubernetesObject):
     expected_pods: int
     observed_generation: int
 
-    def __init__(self, conditions: list[meta.Condition] = None, current_healthy: int = None, desired_healthy: int = None, disrupted_pods: dict[str, meta.Time] = None, disruptions_allowed: int = None, expected_pods: int = None, observed_generation: int = None):
-        super().__init__(conditions=conditions, current_healthy=current_healthy, desired_healthy=desired_healthy, disrupted_pods=disrupted_pods, disruptions_allowed=disruptions_allowed, expected_pods=expected_pods, observed_generation=observed_generation)
-
-
+    def __init__(
+        self,
+        conditions: list[meta.Condition] = None,
+        current_healthy: int = None,
+        desired_healthy: int = None,
+        disrupted_pods: dict[str, meta.Time] = None,
+        disruptions_allowed: int = None,
+        expected_pods: int = None,
+        observed_generation: int = None,
+    ):
+        super().__init__(
+            conditions=conditions,
+            current_healthy=current_healthy,
+            desired_healthy=desired_healthy,
+            disrupted_pods=disrupted_pods,
+            disruptions_allowed=disruptions_allowed,
+            expected_pods=expected_pods,
+            observed_generation=observed_generation,
+        )

@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import meta
 
 
-
 class LeaseSpec(KubernetesObject):
     __slots__ = ()
 
@@ -14,8 +13,21 @@ class LeaseSpec(KubernetesObject):
     lease_transitions: int
     renew_time: meta.MicroTime
 
-    def __init__(self, acquire_time: meta.MicroTime = None, holder_identity: str = None, lease_duration_seconds: int = None, lease_transitions: int = None, renew_time: meta.MicroTime = None):
-        super().__init__(acquire_time=acquire_time, holder_identity=holder_identity, lease_duration_seconds=lease_duration_seconds, lease_transitions=lease_transitions, renew_time=renew_time)
+    def __init__(
+        self,
+        acquire_time: meta.MicroTime = None,
+        holder_identity: str = None,
+        lease_duration_seconds: int = None,
+        lease_transitions: int = None,
+        renew_time: meta.MicroTime = None,
+    ):
+        super().__init__(
+            acquire_time=acquire_time,
+            holder_identity=holder_identity,
+            lease_duration_seconds=lease_duration_seconds,
+            lease_transitions=lease_transitions,
+            renew_time=renew_time,
+        )
 
 
 class Lease(KubernetesApiResource):
@@ -48,5 +60,3 @@ class LeaseList(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, items: list[Lease] = None, metadata: meta.ListMeta = None):
         super().__init__(name, namespace, items=items, metadata=metadata)
-
-

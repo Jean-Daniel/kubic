@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-
 class CertificateSigningRequestSpec(KubernetesObject):
     __slots__ = ()
 
@@ -19,8 +18,27 @@ class CertificateSigningRequestSpec(KubernetesObject):
     usages: list[str]
     username: str
 
-    def __init__(self, expiration_seconds: int = None, extra: dict[str, list[str]] = None, groups: list[str] = None, request: core.Base64 = None, signer_name: str = None, uid: str = None, usages: list[str] = None, username: str = None):
-        super().__init__(expiration_seconds=expiration_seconds, extra=extra, groups=groups, request=request, signer_name=signer_name, uid=uid, usages=usages, username=username)
+    def __init__(
+        self,
+        expiration_seconds: int = None,
+        extra: dict[str, list[str]] = None,
+        groups: list[str] = None,
+        request: core.Base64 = None,
+        signer_name: str = None,
+        uid: str = None,
+        usages: list[str] = None,
+        username: str = None,
+    ):
+        super().__init__(
+            expiration_seconds=expiration_seconds,
+            extra=extra,
+            groups=groups,
+            request=request,
+            signer_name=signer_name,
+            uid=uid,
+            usages=usages,
+            username=username,
+        )
 
 
 class CertificateSigningRequest(KubernetesApiResource):
@@ -54,8 +72,23 @@ class CertificateSigningRequestCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, last_update_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None):
-        super().__init__(last_transition_time=last_transition_time, last_update_time=last_update_time, message=message, reason=reason, status=status, type=type)
+    def __init__(
+        self,
+        last_transition_time: meta.Time = None,
+        last_update_time: meta.Time = None,
+        message: str = None,
+        reason: str = None,
+        status: str = None,
+        type: str = None,
+    ):
+        super().__init__(
+            last_transition_time=last_transition_time,
+            last_update_time=last_update_time,
+            message=message,
+            reason=reason,
+            status=status,
+            type=type,
+        )
 
 
 class CertificateSigningRequestList(KubernetesApiResource):
@@ -85,5 +118,3 @@ class CertificateSigningRequestStatus(KubernetesObject):
 
     def __init__(self, certificate: core.Base64 = None, conditions: list[CertificateSigningRequestCondition] = None):
         super().__init__(certificate=certificate, conditions=conditions)
-
-

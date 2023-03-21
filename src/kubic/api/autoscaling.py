@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-
 class MetricTarget(KubernetesObject):
     __slots__ = ()
 
@@ -166,8 +165,19 @@ class HorizontalPodAutoscalerSpec(KubernetesObject):
     scale_target_ref: CrossVersionObjectReference
     target_cpu_utilization_percentage: int
 
-    def __init__(self, max_replicas: int = None, min_replicas: int = None, scale_target_ref: CrossVersionObjectReference = None, target_cpu_utilization_percentage: int = None):
-        super().__init__(max_replicas=max_replicas, min_replicas=min_replicas, scale_target_ref=scale_target_ref, target_cpu_utilization_percentage=target_cpu_utilization_percentage)
+    def __init__(
+        self,
+        max_replicas: int = None,
+        min_replicas: int = None,
+        scale_target_ref: CrossVersionObjectReference = None,
+        target_cpu_utilization_percentage: int = None,
+    ):
+        super().__init__(
+            max_replicas=max_replicas,
+            min_replicas=min_replicas,
+            scale_target_ref=scale_target_ref,
+            target_cpu_utilization_percentage=target_cpu_utilization_percentage,
+        )
 
 
 class HorizontalPodAutoscaler(KubernetesApiResource):
@@ -210,7 +220,9 @@ class HorizontalPodAutoscalerCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None):
+    def __init__(
+        self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
+    ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
@@ -251,8 +263,21 @@ class HorizontalPodAutoscalerStatus(KubernetesObject):
     last_scale_time: meta.Time
     observed_generation: int
 
-    def __init__(self, current_cpu_utilization_percentage: int = None, current_replicas: int = None, desired_replicas: int = None, last_scale_time: meta.Time = None, observed_generation: int = None):
-        super().__init__(current_cpu_utilization_percentage=current_cpu_utilization_percentage, current_replicas=current_replicas, desired_replicas=desired_replicas, last_scale_time=last_scale_time, observed_generation=observed_generation)
+    def __init__(
+        self,
+        current_cpu_utilization_percentage: int = None,
+        current_replicas: int = None,
+        desired_replicas: int = None,
+        last_scale_time: meta.Time = None,
+        observed_generation: int = None,
+    ):
+        super().__init__(
+            current_cpu_utilization_percentage=current_cpu_utilization_percentage,
+            current_replicas=current_replicas,
+            desired_replicas=desired_replicas,
+            last_scale_time=last_scale_time,
+            observed_generation=observed_generation,
+        )
 
 
 class ObjectMetricSource(KubernetesObject):
@@ -312,7 +337,15 @@ class MetricSpec(KubernetesObject):
     resource: ResourceMetricSource
     type: str
 
-    def __init__(self, container_resource: ContainerResourceMetricSource = None, external: ExternalMetricSource = None, object: ObjectMetricSource = None, pods: PodsMetricSource = None, resource: ResourceMetricSource = None, type: str = None):
+    def __init__(
+        self,
+        container_resource: ContainerResourceMetricSource = None,
+        external: ExternalMetricSource = None,
+        object: ObjectMetricSource = None,
+        pods: PodsMetricSource = None,
+        resource: ResourceMetricSource = None,
+        type: str = None,
+    ):
         super().__init__(container_resource=container_resource, external=external, object=object, pods=pods, resource=resource, type=type)
 
 
@@ -327,7 +360,9 @@ class ObjectMetricStatus(KubernetesObject):
     described_object: CrossVersionObjectReference
     metric: MetricIdentifier
 
-    def __init__(self, current: MetricValueStatus = None, described_object: CrossVersionObjectReference = None, metric: MetricIdentifier = None):
+    def __init__(
+        self, current: MetricValueStatus = None, described_object: CrossVersionObjectReference = None, metric: MetricIdentifier = None
+    ):
         super().__init__(current=current, described_object=described_object, metric=metric)
 
 
@@ -373,7 +408,15 @@ class MetricStatus(KubernetesObject):
     resource: ResourceMetricStatus
     type: str
 
-    def __init__(self, container_resource: ContainerResourceMetricStatus = None, external: ExternalMetricStatus = None, object: ObjectMetricStatus = None, pods: PodsMetricStatus = None, resource: ResourceMetricStatus = None, type: str = None):
+    def __init__(
+        self,
+        container_resource: ContainerResourceMetricStatus = None,
+        external: ExternalMetricStatus = None,
+        object: ObjectMetricStatus = None,
+        pods: PodsMetricStatus = None,
+        resource: ResourceMetricStatus = None,
+        type: str = None,
+    ):
         super().__init__(container_resource=container_resource, external=external, object=object, pods=pods, resource=resource, type=type)
 
 
@@ -415,5 +458,3 @@ class ScaleStatus(KubernetesObject):
 
     def __init__(self, replicas: int = None, selector: str = None):
         super().__init__(replicas=replicas, selector=selector)
-
-

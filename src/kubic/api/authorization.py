@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import meta
 
 
-
 class NonResourceAttributes(KubernetesObject):
     __slots__ = ()
 
@@ -28,8 +27,19 @@ class ResourceAttributes(KubernetesObject):
     verb: str
     version: str
 
-    def __init__(self, group: str = None, name: str = None, namespace: str = None, resource: str = None, subresource: str = None, verb: str = None, version: str = None):
-        super().__init__(group=group, name=name, namespace=namespace, resource=resource, subresource=subresource, verb=verb, version=version)
+    def __init__(
+        self,
+        group: str = None,
+        name: str = None,
+        namespace: str = None,
+        resource: str = None,
+        subresource: str = None,
+        verb: str = None,
+        version: str = None,
+    ):
+        super().__init__(
+            group=group, name=name, namespace=namespace, resource=resource, subresource=subresource, verb=verb, version=version
+        )
 
 
 class SubjectAccessReviewSpec(KubernetesObject):
@@ -44,8 +54,23 @@ class SubjectAccessReviewSpec(KubernetesObject):
     uid: str
     user: str
 
-    def __init__(self, extra: dict[str, list[str]] = None, groups: list[str] = None, non_resource_attributes: NonResourceAttributes = None, resource_attributes: ResourceAttributes = None, uid: str = None, user: str = None):
-        super().__init__(extra=extra, groups=groups, non_resource_attributes=non_resource_attributes, resource_attributes=resource_attributes, uid=uid, user=user)
+    def __init__(
+        self,
+        extra: dict[str, list[str]] = None,
+        groups: list[str] = None,
+        non_resource_attributes: NonResourceAttributes = None,
+        resource_attributes: ResourceAttributes = None,
+        uid: str = None,
+        user: str = None,
+    ):
+        super().__init__(
+            extra=extra,
+            groups=groups,
+            non_resource_attributes=non_resource_attributes,
+            resource_attributes=resource_attributes,
+            uid=uid,
+            user=user,
+        )
 
 
 class LocalSubjectAccessReview(KubernetesApiResource):
@@ -98,7 +123,9 @@ class ResourceRule(KubernetesObject):
     resources: list[str]
     verbs: list[str]
 
-    def __init__(self, api_groups: list[str] = None, resource_names: list[str] = None, resources: list[str] = None, verbs: list[str] = None):
+    def __init__(
+        self, api_groups: list[str] = None, resource_names: list[str] = None, resources: list[str] = None, verbs: list[str] = None
+    ):
         super().__init__(api_groups=api_groups, resource_names=resource_names, resources=resources, verbs=verbs)
 
 
@@ -204,7 +231,13 @@ class SubjectRulesReviewStatus(KubernetesObject):
     non_resource_rules: list[NonResourceRule]
     resource_rules: list[ResourceRule]
 
-    def __init__(self, evaluation_error: str = None, incomplete: bool = None, non_resource_rules: list[NonResourceRule] = None, resource_rules: list[ResourceRule] = None):
-        super().__init__(evaluation_error=evaluation_error, incomplete=incomplete, non_resource_rules=non_resource_rules, resource_rules=resource_rules)
-
-
+    def __init__(
+        self,
+        evaluation_error: str = None,
+        incomplete: bool = None,
+        non_resource_rules: list[NonResourceRule] = None,
+        resource_rules: list[ResourceRule] = None,
+    ):
+        super().__init__(
+            evaluation_error=evaluation_error, incomplete=incomplete, non_resource_rules=non_resource_rules, resource_rules=resource_rules
+        )

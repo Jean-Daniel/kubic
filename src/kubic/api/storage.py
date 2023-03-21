@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-
 class TokenRequest(KubernetesObject):
     __slots__ = ()
 
@@ -31,8 +30,27 @@ class CSIDriverSpec(KubernetesObject):
     token_requests: list[TokenRequest]
     volume_lifecycle_modes: list[str]
 
-    def __init__(self, attach_required: bool = None, fs_group_policy: str = None, pod_info_on_mount: bool = None, requires_republish: bool = None, se_linux_mount: bool = None, storage_capacity: bool = None, token_requests: list[TokenRequest] = None, volume_lifecycle_modes: list[str] = None):
-        super().__init__(attach_required=attach_required, fs_group_policy=fs_group_policy, pod_info_on_mount=pod_info_on_mount, requires_republish=requires_republish, se_linux_mount=se_linux_mount, storage_capacity=storage_capacity, token_requests=token_requests, volume_lifecycle_modes=volume_lifecycle_modes)
+    def __init__(
+        self,
+        attach_required: bool = None,
+        fs_group_policy: str = None,
+        pod_info_on_mount: bool = None,
+        requires_republish: bool = None,
+        se_linux_mount: bool = None,
+        storage_capacity: bool = None,
+        token_requests: list[TokenRequest] = None,
+        volume_lifecycle_modes: list[str] = None,
+    ):
+        super().__init__(
+            attach_required=attach_required,
+            fs_group_policy=fs_group_policy,
+            pod_info_on_mount=pod_info_on_mount,
+            requires_republish=requires_republish,
+            se_linux_mount=se_linux_mount,
+            storage_capacity=storage_capacity,
+            token_requests=token_requests,
+            volume_lifecycle_modes=volume_lifecycle_modes,
+        )
 
 
 class CSIDriver(KubernetesApiResource):
@@ -166,8 +184,25 @@ class CSIStorageCapacity(KubernetesApiResource):
     node_topology: meta.LabelSelector
     storage_class_name: str
 
-    def __init__(self, name: str, namespace: str = None, capacity: core.Quantity = None, maximum_volume_size: core.Quantity = None, metadata: meta.ObjectMeta = None, node_topology: meta.LabelSelector = None, storage_class_name: str = None):
-        super().__init__(name, namespace, capacity=capacity, maximum_volume_size=maximum_volume_size, metadata=metadata, node_topology=node_topology, storage_class_name=storage_class_name)
+    def __init__(
+        self,
+        name: str,
+        namespace: str = None,
+        capacity: core.Quantity = None,
+        maximum_volume_size: core.Quantity = None,
+        metadata: meta.ObjectMeta = None,
+        node_topology: meta.LabelSelector = None,
+        storage_class_name: str = None,
+    ):
+        super().__init__(
+            name,
+            namespace,
+            capacity=capacity,
+            maximum_volume_size=maximum_volume_size,
+            metadata=metadata,
+            node_topology=node_topology,
+            storage_class_name=storage_class_name,
+        )
 
 
 class CSIStorageCapacityList(KubernetesApiResource):
@@ -206,8 +241,30 @@ class StorageClass(KubernetesApiResource):
     reclaim_policy: str
     volume_binding_mode: str
 
-    def __init__(self, name: str, allow_volume_expansion: bool = None, allowed_topologies: list[core.TopologySelectorTerm] = None, metadata: meta.ObjectMeta = None, mount_options: list[str] = None, parameters: dict[str, str] = None, provisioner: str = None, reclaim_policy: str = None, volume_binding_mode: str = None):
-        super().__init__(name, "", allow_volume_expansion=allow_volume_expansion, allowed_topologies=allowed_topologies, metadata=metadata, mount_options=mount_options, parameters=parameters, provisioner=provisioner, reclaim_policy=reclaim_policy, volume_binding_mode=volume_binding_mode)
+    def __init__(
+        self,
+        name: str,
+        allow_volume_expansion: bool = None,
+        allowed_topologies: list[core.TopologySelectorTerm] = None,
+        metadata: meta.ObjectMeta = None,
+        mount_options: list[str] = None,
+        parameters: dict[str, str] = None,
+        provisioner: str = None,
+        reclaim_policy: str = None,
+        volume_binding_mode: str = None,
+    ):
+        super().__init__(
+            name,
+            "",
+            allow_volume_expansion=allow_volume_expansion,
+            allowed_topologies=allowed_topologies,
+            metadata=metadata,
+            mount_options=mount_options,
+            parameters=parameters,
+            provisioner=provisioner,
+            reclaim_policy=reclaim_policy,
+            volume_binding_mode=volume_binding_mode,
+        )
 
 
 class StorageClassList(KubernetesApiResource):
@@ -312,7 +369,11 @@ class VolumeAttachmentStatus(KubernetesObject):
     attachment_metadata: dict[str, str]
     detach_error: VolumeError
 
-    def __init__(self, attach_error: VolumeError = None, attached: bool = None, attachment_metadata: dict[str, str] = None, detach_error: VolumeError = None):
+    def __init__(
+        self,
+        attach_error: VolumeError = None,
+        attached: bool = None,
+        attachment_metadata: dict[str, str] = None,
+        detach_error: VolumeError = None,
+    ):
         super().__init__(attach_error=attach_error, attached=attached, attachment_metadata=attachment_metadata, detach_error=detach_error)
-
-

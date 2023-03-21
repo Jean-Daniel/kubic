@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-
 class ServiceReference(KubernetesObject):
     __slots__ = ()
 
@@ -43,7 +42,14 @@ class RuleWithOperations(KubernetesObject):
     resources: list[str]
     scope: str
 
-    def __init__(self, api_groups: list[str] = None, api_versions: list[str] = None, operations: list[str] = None, resources: list[str] = None, scope: str = None):
+    def __init__(
+        self,
+        api_groups: list[str] = None,
+        api_versions: list[str] = None,
+        operations: list[str] = None,
+        resources: list[str] = None,
+        scope: str = None,
+    ):
         super().__init__(api_groups=api_groups, api_versions=api_versions, operations=operations, resources=resources, scope=scope)
 
 
@@ -66,8 +72,33 @@ class MutatingWebhook(KubernetesObject):
     side_effects: str
     timeout_seconds: int
 
-    def __init__(self, admission_review_versions: list[str] = None, client_config: WebhookClientConfig = None, failure_policy: str = None, match_policy: str = None, name: str = None, namespace_selector: meta.LabelSelector = None, object_selector: meta.LabelSelector = None, reinvocation_policy: str = None, rules: list[RuleWithOperations] = None, side_effects: str = None, timeout_seconds: int = None):
-        super().__init__(admission_review_versions=admission_review_versions, client_config=client_config, failure_policy=failure_policy, match_policy=match_policy, name=name, namespace_selector=namespace_selector, object_selector=object_selector, reinvocation_policy=reinvocation_policy, rules=rules, side_effects=side_effects, timeout_seconds=timeout_seconds)
+    def __init__(
+        self,
+        admission_review_versions: list[str] = None,
+        client_config: WebhookClientConfig = None,
+        failure_policy: str = None,
+        match_policy: str = None,
+        name: str = None,
+        namespace_selector: meta.LabelSelector = None,
+        object_selector: meta.LabelSelector = None,
+        reinvocation_policy: str = None,
+        rules: list[RuleWithOperations] = None,
+        side_effects: str = None,
+        timeout_seconds: int = None,
+    ):
+        super().__init__(
+            admission_review_versions=admission_review_versions,
+            client_config=client_config,
+            failure_policy=failure_policy,
+            match_policy=match_policy,
+            name=name,
+            namespace_selector=namespace_selector,
+            object_selector=object_selector,
+            reinvocation_policy=reinvocation_policy,
+            rules=rules,
+            side_effects=side_effects,
+            timeout_seconds=timeout_seconds,
+        )
 
 
 class MutatingWebhookConfiguration(KubernetesApiResource):
@@ -120,8 +151,31 @@ class ValidatingWebhook(KubernetesObject):
     side_effects: str
     timeout_seconds: int
 
-    def __init__(self, admission_review_versions: list[str] = None, client_config: WebhookClientConfig = None, failure_policy: str = None, match_policy: str = None, name: str = None, namespace_selector: meta.LabelSelector = None, object_selector: meta.LabelSelector = None, rules: list[RuleWithOperations] = None, side_effects: str = None, timeout_seconds: int = None):
-        super().__init__(admission_review_versions=admission_review_versions, client_config=client_config, failure_policy=failure_policy, match_policy=match_policy, name=name, namespace_selector=namespace_selector, object_selector=object_selector, rules=rules, side_effects=side_effects, timeout_seconds=timeout_seconds)
+    def __init__(
+        self,
+        admission_review_versions: list[str] = None,
+        client_config: WebhookClientConfig = None,
+        failure_policy: str = None,
+        match_policy: str = None,
+        name: str = None,
+        namespace_selector: meta.LabelSelector = None,
+        object_selector: meta.LabelSelector = None,
+        rules: list[RuleWithOperations] = None,
+        side_effects: str = None,
+        timeout_seconds: int = None,
+    ):
+        super().__init__(
+            admission_review_versions=admission_review_versions,
+            client_config=client_config,
+            failure_policy=failure_policy,
+            match_policy=match_policy,
+            name=name,
+            namespace_selector=namespace_selector,
+            object_selector=object_selector,
+            rules=rules,
+            side_effects=side_effects,
+            timeout_seconds=timeout_seconds,
+        )
 
 
 class ValidatingWebhookConfiguration(KubernetesApiResource):
@@ -152,7 +206,7 @@ class ValidatingWebhookConfigurationList(KubernetesApiResource):
     items: list[ValidatingWebhookConfiguration]
     metadata: meta.ListMeta
 
-    def __init__(self, name: str, namespace: str = None, items: list[ValidatingWebhookConfiguration] = None, metadata: meta.ListMeta = None):
+    def __init__(
+        self, name: str, namespace: str = None, items: list[ValidatingWebhookConfiguration] = None, metadata: meta.ListMeta = None
+    ):
         super().__init__(name, namespace, items=items, metadata=metadata)
-
-

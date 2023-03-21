@@ -4,7 +4,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-
 class CustomResourceColumnDefinition(KubernetesObject):
     __slots__ = ()
 
@@ -19,7 +18,9 @@ class CustomResourceColumnDefinition(KubernetesObject):
     priority: int
     type: str
 
-    def __init__(self, description: str = None, format: str = None, json_path: str = None, name: str = None, priority: int = None, type: str = None):
+    def __init__(
+        self, description: str = None, format: str = None, json_path: str = None, name: str = None, priority: int = None, type: str = None
+    ):
         super().__init__(description=description, format=format, json_path=json_path, name=name, priority=priority, type=type)
 
 
@@ -94,7 +95,15 @@ class CustomResourceDefinitionNames(KubernetesObject):
     short_names: list[str]
     singular: str
 
-    def __init__(self, categories: list[str] = None, kind: str = None, list_kind: str = None, plural: str = None, short_names: list[str] = None, singular: str = None):
+    def __init__(
+        self,
+        categories: list[str] = None,
+        kind: str = None,
+        list_kind: str = None,
+        plural: str = None,
+        short_names: list[str] = None,
+        singular: str = None,
+    ):
         super().__init__(categories=categories, kind=kind, list_kind=list_kind, plural=plural, short_names=short_names, singular=singular)
 
 
@@ -198,8 +207,99 @@ class JSONSchemaProps(KubernetesObject):
     x_kubernetes_preserve_unknown_fields: bool
     x_kubernetes_validations: list[ValidationRule]
 
-    def __init__(self, ref_: str = None, schema_: str = None, additional_items: t.Any = None, additional_properties: t.Any = None, all_of: list["JSONSchemaProps"] = None, any_of: list["JSONSchemaProps"] = None, default: t.Any = None, definitions: dict[str, "JSONSchemaProps"] = None, dependencies: dict[str, t.Any] = None, description: str = None, enum: list[t.Any] = None, example: t.Any = None, exclusive_maximum: bool = None, exclusive_minimum: bool = None, external_docs: ExternalDocumentation = None, format: str = None, id: str = None, items: t.Any = None, max_items: int = None, max_length: int = None, max_properties: int = None, maximum: float = None, min_items: int = None, min_length: int = None, min_properties: int = None, minimum: float = None, multiple_of: float = None, not_: "JSONSchemaProps" = None, nullable: bool = None, one_of: list["JSONSchemaProps"] = None, pattern: str = None, pattern_properties: dict[str, "JSONSchemaProps"] = None, properties: dict[str, "JSONSchemaProps"] = None, required: list[str] = None, title: str = None, type: str = None, unique_items: bool = None, x_kubernetes_embedded_resource: bool = None, x_kubernetes_int_or_string: bool = None, x_kubernetes_list_map_keys: list[str] = None, x_kubernetes_list_type: str = None, x_kubernetes_map_type: str = None, x_kubernetes_preserve_unknown_fields: bool = None, x_kubernetes_validations: list[ValidationRule] = None):
-        super().__init__(ref_=ref_, schema_=schema_, additional_items=additional_items, additional_properties=additional_properties, all_of=all_of, any_of=any_of, default=default, definitions=definitions, dependencies=dependencies, description=description, enum=enum, example=example, exclusive_maximum=exclusive_maximum, exclusive_minimum=exclusive_minimum, external_docs=external_docs, format=format, id=id, items=items, max_items=max_items, max_length=max_length, max_properties=max_properties, maximum=maximum, min_items=min_items, min_length=min_length, min_properties=min_properties, minimum=minimum, multiple_of=multiple_of, not_=not_, nullable=nullable, one_of=one_of, pattern=pattern, pattern_properties=pattern_properties, properties=properties, required=required, title=title, type=type, unique_items=unique_items, x_kubernetes_embedded_resource=x_kubernetes_embedded_resource, x_kubernetes_int_or_string=x_kubernetes_int_or_string, x_kubernetes_list_map_keys=x_kubernetes_list_map_keys, x_kubernetes_list_type=x_kubernetes_list_type, x_kubernetes_map_type=x_kubernetes_map_type, x_kubernetes_preserve_unknown_fields=x_kubernetes_preserve_unknown_fields, x_kubernetes_validations=x_kubernetes_validations)
+    def __init__(
+        self,
+        ref_: str = None,
+        schema_: str = None,
+        additional_items: t.Any = None,
+        additional_properties: t.Any = None,
+        all_of: list["JSONSchemaProps"] = None,
+        any_of: list["JSONSchemaProps"] = None,
+        default: t.Any = None,
+        definitions: dict[str, "JSONSchemaProps"] = None,
+        dependencies: dict[str, t.Any] = None,
+        description: str = None,
+        enum: list[t.Any] = None,
+        example: t.Any = None,
+        exclusive_maximum: bool = None,
+        exclusive_minimum: bool = None,
+        external_docs: ExternalDocumentation = None,
+        format: str = None,
+        id: str = None,
+        items: t.Any = None,
+        max_items: int = None,
+        max_length: int = None,
+        max_properties: int = None,
+        maximum: float = None,
+        min_items: int = None,
+        min_length: int = None,
+        min_properties: int = None,
+        minimum: float = None,
+        multiple_of: float = None,
+        not_: "JSONSchemaProps" = None,
+        nullable: bool = None,
+        one_of: list["JSONSchemaProps"] = None,
+        pattern: str = None,
+        pattern_properties: dict[str, "JSONSchemaProps"] = None,
+        properties: dict[str, "JSONSchemaProps"] = None,
+        required: list[str] = None,
+        title: str = None,
+        type: str = None,
+        unique_items: bool = None,
+        x_kubernetes_embedded_resource: bool = None,
+        x_kubernetes_int_or_string: bool = None,
+        x_kubernetes_list_map_keys: list[str] = None,
+        x_kubernetes_list_type: str = None,
+        x_kubernetes_map_type: str = None,
+        x_kubernetes_preserve_unknown_fields: bool = None,
+        x_kubernetes_validations: list[ValidationRule] = None,
+    ):
+        super().__init__(
+            ref_=ref_,
+            schema_=schema_,
+            additional_items=additional_items,
+            additional_properties=additional_properties,
+            all_of=all_of,
+            any_of=any_of,
+            default=default,
+            definitions=definitions,
+            dependencies=dependencies,
+            description=description,
+            enum=enum,
+            example=example,
+            exclusive_maximum=exclusive_maximum,
+            exclusive_minimum=exclusive_minimum,
+            external_docs=external_docs,
+            format=format,
+            id=id,
+            items=items,
+            max_items=max_items,
+            max_length=max_length,
+            max_properties=max_properties,
+            maximum=maximum,
+            min_items=min_items,
+            min_length=min_length,
+            min_properties=min_properties,
+            minimum=minimum,
+            multiple_of=multiple_of,
+            not_=not_,
+            nullable=nullable,
+            one_of=one_of,
+            pattern=pattern,
+            pattern_properties=pattern_properties,
+            properties=properties,
+            required=required,
+            title=title,
+            type=type,
+            unique_items=unique_items,
+            x_kubernetes_embedded_resource=x_kubernetes_embedded_resource,
+            x_kubernetes_int_or_string=x_kubernetes_int_or_string,
+            x_kubernetes_list_map_keys=x_kubernetes_list_map_keys,
+            x_kubernetes_list_type=x_kubernetes_list_type,
+            x_kubernetes_map_type=x_kubernetes_map_type,
+            x_kubernetes_preserve_unknown_fields=x_kubernetes_preserve_unknown_fields,
+            x_kubernetes_validations=x_kubernetes_validations,
+        )
 
 
 class CustomResourceValidation(KubernetesObject):
@@ -232,7 +332,9 @@ class CustomResourceSubresourceScale(KubernetesObject):
     status_replicas_path: str
 
     def __init__(self, label_selector_path: str = None, spec_replicas_path: str = None, status_replicas_path: str = None):
-        super().__init__(label_selector_path=label_selector_path, spec_replicas_path=spec_replicas_path, status_replicas_path=status_replicas_path)
+        super().__init__(
+            label_selector_path=label_selector_path, spec_replicas_path=spec_replicas_path, status_replicas_path=status_replicas_path
+        )
 
 
 CustomResourceSubresourceStatus: t.TypeAlias = dict[str, t.Any]
@@ -266,8 +368,27 @@ class CustomResourceDefinitionVersion(KubernetesObject):
     storage: bool
     subresources: CustomResourceSubresources
 
-    def __init__(self, additional_printer_columns: list[CustomResourceColumnDefinition] = None, deprecated: bool = None, deprecation_warning: str = None, name: str = None, schema: CustomResourceValidation = None, served: bool = None, storage: bool = None, subresources: CustomResourceSubresources = None):
-        super().__init__(additional_printer_columns=additional_printer_columns, deprecated=deprecated, deprecation_warning=deprecation_warning, name=name, schema=schema, served=served, storage=storage, subresources=subresources)
+    def __init__(
+        self,
+        additional_printer_columns: list[CustomResourceColumnDefinition] = None,
+        deprecated: bool = None,
+        deprecation_warning: str = None,
+        name: str = None,
+        schema: CustomResourceValidation = None,
+        served: bool = None,
+        storage: bool = None,
+        subresources: CustomResourceSubresources = None,
+    ):
+        super().__init__(
+            additional_printer_columns=additional_printer_columns,
+            deprecated=deprecated,
+            deprecation_warning=deprecation_warning,
+            name=name,
+            schema=schema,
+            served=served,
+            storage=storage,
+            subresources=subresources,
+        )
 
 
 class CustomResourceDefinitionSpec(KubernetesObject):
@@ -284,8 +405,18 @@ class CustomResourceDefinitionSpec(KubernetesObject):
     scope: str
     versions: list[CustomResourceDefinitionVersion]
 
-    def __init__(self, conversion: CustomResourceConversion = None, group: str = None, names: CustomResourceDefinitionNames = None, preserve_unknown_fields: bool = None, scope: str = None, versions: list[CustomResourceDefinitionVersion] = None):
-        super().__init__(conversion=conversion, group=group, names=names, preserve_unknown_fields=preserve_unknown_fields, scope=scope, versions=versions)
+    def __init__(
+        self,
+        conversion: CustomResourceConversion = None,
+        group: str = None,
+        names: CustomResourceDefinitionNames = None,
+        preserve_unknown_fields: bool = None,
+        scope: str = None,
+        versions: list[CustomResourceDefinitionVersion] = None,
+    ):
+        super().__init__(
+            conversion=conversion, group=group, names=names, preserve_unknown_fields=preserve_unknown_fields, scope=scope, versions=versions
+        )
 
 
 class CustomResourceDefinition(KubernetesApiResource):
@@ -318,7 +449,9 @@ class CustomResourceDefinitionCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None):
+    def __init__(
+        self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
+    ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
@@ -348,7 +481,10 @@ class CustomResourceDefinitionStatus(KubernetesObject):
     conditions: list[CustomResourceDefinitionCondition]
     stored_versions: list[str]
 
-    def __init__(self, accepted_names: CustomResourceDefinitionNames = None, conditions: list[CustomResourceDefinitionCondition] = None, stored_versions: list[str] = None):
+    def __init__(
+        self,
+        accepted_names: CustomResourceDefinitionNames = None,
+        conditions: list[CustomResourceDefinitionCondition] = None,
+        stored_versions: list[str] = None,
+    ):
         super().__init__(accepted_names=accepted_names, conditions=conditions, stored_versions=stored_versions)
-
-

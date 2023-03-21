@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-
 class ControllerRevision(KubernetesApiResource):
     __slots__ = ()
 
@@ -17,7 +16,9 @@ class ControllerRevision(KubernetesApiResource):
     metadata: meta.ObjectMeta
     revision: int
 
-    def __init__(self, name: str, namespace: str = None, data: core.RawExtension = None, metadata: meta.ObjectMeta = None, revision: int = None):
+    def __init__(
+        self, name: str, namespace: str = None, data: core.RawExtension = None, metadata: meta.ObjectMeta = None, revision: int = None
+    ):
         super().__init__(name, namespace, data=data, metadata=metadata, revision=revision)
 
 
@@ -75,8 +76,21 @@ class DaemonSetSpec(KubernetesObject):
     template: core.PodTemplateSpec
     update_strategy: DaemonSetUpdateStrategy
 
-    def __init__(self, min_ready_seconds: int = None, revision_history_limit: int = None, selector: meta.LabelSelector = None, template: core.PodTemplateSpec = None, update_strategy: DaemonSetUpdateStrategy = None):
-        super().__init__(min_ready_seconds=min_ready_seconds, revision_history_limit=revision_history_limit, selector=selector, template=template, update_strategy=update_strategy)
+    def __init__(
+        self,
+        min_ready_seconds: int = None,
+        revision_history_limit: int = None,
+        selector: meta.LabelSelector = None,
+        template: core.PodTemplateSpec = None,
+        update_strategy: DaemonSetUpdateStrategy = None,
+    ):
+        super().__init__(
+            min_ready_seconds=min_ready_seconds,
+            revision_history_limit=revision_history_limit,
+            selector=selector,
+            template=template,
+            update_strategy=update_strategy,
+        )
 
 
 class DaemonSet(KubernetesApiResource):
@@ -107,7 +121,9 @@ class DaemonSetCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None):
+    def __init__(
+        self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
+    ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
@@ -146,8 +162,31 @@ class DaemonSetStatus(KubernetesObject):
     observed_generation: int
     updated_number_scheduled: int
 
-    def __init__(self, collision_count: int = None, conditions: list[DaemonSetCondition] = None, current_number_scheduled: int = None, desired_number_scheduled: int = None, number_available: int = None, number_misscheduled: int = None, number_ready: int = None, number_unavailable: int = None, observed_generation: int = None, updated_number_scheduled: int = None):
-        super().__init__(collision_count=collision_count, conditions=conditions, current_number_scheduled=current_number_scheduled, desired_number_scheduled=desired_number_scheduled, number_available=number_available, number_misscheduled=number_misscheduled, number_ready=number_ready, number_unavailable=number_unavailable, observed_generation=observed_generation, updated_number_scheduled=updated_number_scheduled)
+    def __init__(
+        self,
+        collision_count: int = None,
+        conditions: list[DaemonSetCondition] = None,
+        current_number_scheduled: int = None,
+        desired_number_scheduled: int = None,
+        number_available: int = None,
+        number_misscheduled: int = None,
+        number_ready: int = None,
+        number_unavailable: int = None,
+        observed_generation: int = None,
+        updated_number_scheduled: int = None,
+    ):
+        super().__init__(
+            collision_count=collision_count,
+            conditions=conditions,
+            current_number_scheduled=current_number_scheduled,
+            desired_number_scheduled=desired_number_scheduled,
+            number_available=number_available,
+            number_misscheduled=number_misscheduled,
+            number_ready=number_ready,
+            number_unavailable=number_unavailable,
+            observed_generation=observed_generation,
+            updated_number_scheduled=updated_number_scheduled,
+        )
 
 
 class RollingUpdateDeployment(KubernetesObject):
@@ -190,8 +229,27 @@ class DeploymentSpec(KubernetesObject):
     strategy: DeploymentStrategy
     template: core.PodTemplateSpec
 
-    def __init__(self, min_ready_seconds: int = None, paused: bool = None, progress_deadline_seconds: int = None, replicas: int = None, revision_history_limit: int = None, selector: meta.LabelSelector = None, strategy: DeploymentStrategy = None, template: core.PodTemplateSpec = None):
-        super().__init__(min_ready_seconds=min_ready_seconds, paused=paused, progress_deadline_seconds=progress_deadline_seconds, replicas=replicas, revision_history_limit=revision_history_limit, selector=selector, strategy=strategy, template=template)
+    def __init__(
+        self,
+        min_ready_seconds: int = None,
+        paused: bool = None,
+        progress_deadline_seconds: int = None,
+        replicas: int = None,
+        revision_history_limit: int = None,
+        selector: meta.LabelSelector = None,
+        strategy: DeploymentStrategy = None,
+        template: core.PodTemplateSpec = None,
+    ):
+        super().__init__(
+            min_ready_seconds=min_ready_seconds,
+            paused=paused,
+            progress_deadline_seconds=progress_deadline_seconds,
+            replicas=replicas,
+            revision_history_limit=revision_history_limit,
+            selector=selector,
+            strategy=strategy,
+            template=template,
+        )
 
 
 class Deployment(KubernetesApiResource):
@@ -223,8 +281,23 @@ class DeploymentCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, last_update_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None):
-        super().__init__(last_transition_time=last_transition_time, last_update_time=last_update_time, message=message, reason=reason, status=status, type=type)
+    def __init__(
+        self,
+        last_transition_time: meta.Time = None,
+        last_update_time: meta.Time = None,
+        message: str = None,
+        reason: str = None,
+        status: str = None,
+        type: str = None,
+    ):
+        super().__init__(
+            last_transition_time=last_transition_time,
+            last_update_time=last_update_time,
+            message=message,
+            reason=reason,
+            status=status,
+            type=type,
+        )
 
 
 class DeploymentList(KubernetesApiResource):
@@ -258,8 +331,27 @@ class DeploymentStatus(KubernetesObject):
     unavailable_replicas: int
     updated_replicas: int
 
-    def __init__(self, available_replicas: int = None, collision_count: int = None, conditions: list[DeploymentCondition] = None, observed_generation: int = None, ready_replicas: int = None, replicas: int = None, unavailable_replicas: int = None, updated_replicas: int = None):
-        super().__init__(available_replicas=available_replicas, collision_count=collision_count, conditions=conditions, observed_generation=observed_generation, ready_replicas=ready_replicas, replicas=replicas, unavailable_replicas=unavailable_replicas, updated_replicas=updated_replicas)
+    def __init__(
+        self,
+        available_replicas: int = None,
+        collision_count: int = None,
+        conditions: list[DeploymentCondition] = None,
+        observed_generation: int = None,
+        ready_replicas: int = None,
+        replicas: int = None,
+        unavailable_replicas: int = None,
+        updated_replicas: int = None,
+    ):
+        super().__init__(
+            available_replicas=available_replicas,
+            collision_count=collision_count,
+            conditions=conditions,
+            observed_generation=observed_generation,
+            ready_replicas=ready_replicas,
+            replicas=replicas,
+            unavailable_replicas=unavailable_replicas,
+            updated_replicas=updated_replicas,
+        )
 
 
 class ReplicaSetSpec(KubernetesObject):
@@ -274,7 +366,13 @@ class ReplicaSetSpec(KubernetesObject):
     selector: meta.LabelSelector
     template: core.PodTemplateSpec
 
-    def __init__(self, min_ready_seconds: int = None, replicas: int = None, selector: meta.LabelSelector = None, template: core.PodTemplateSpec = None):
+    def __init__(
+        self,
+        min_ready_seconds: int = None,
+        replicas: int = None,
+        selector: meta.LabelSelector = None,
+        template: core.PodTemplateSpec = None,
+    ):
         super().__init__(min_ready_seconds=min_ready_seconds, replicas=replicas, selector=selector, template=template)
 
 
@@ -306,7 +404,9 @@ class ReplicaSetCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None):
+    def __init__(
+        self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
+    ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
@@ -341,8 +441,23 @@ class ReplicaSetStatus(KubernetesObject):
     ready_replicas: int
     replicas: int
 
-    def __init__(self, available_replicas: int = None, conditions: list[ReplicaSetCondition] = None, fully_labeled_replicas: int = None, observed_generation: int = None, ready_replicas: int = None, replicas: int = None):
-        super().__init__(available_replicas=available_replicas, conditions=conditions, fully_labeled_replicas=fully_labeled_replicas, observed_generation=observed_generation, ready_replicas=ready_replicas, replicas=replicas)
+    def __init__(
+        self,
+        available_replicas: int = None,
+        conditions: list[ReplicaSetCondition] = None,
+        fully_labeled_replicas: int = None,
+        observed_generation: int = None,
+        ready_replicas: int = None,
+        replicas: int = None,
+    ):
+        super().__init__(
+            available_replicas=available_replicas,
+            conditions=conditions,
+            fully_labeled_replicas=fully_labeled_replicas,
+            observed_generation=observed_generation,
+            ready_replicas=ready_replicas,
+            replicas=replicas,
+        )
 
 
 class RollingUpdateStatefulSetStrategy(KubernetesObject):
@@ -399,8 +514,31 @@ class StatefulSetSpec(KubernetesObject):
     update_strategy: StatefulSetUpdateStrategy
     volume_claim_templates: list[core.PersistentVolumeClaim]
 
-    def __init__(self, min_ready_seconds: int = None, persistent_volume_claim_retention_policy: StatefulSetPersistentVolumeClaimRetentionPolicy = None, pod_management_policy: str = None, replicas: int = None, revision_history_limit: int = None, selector: meta.LabelSelector = None, service_name: str = None, template: core.PodTemplateSpec = None, update_strategy: StatefulSetUpdateStrategy = None, volume_claim_templates: list[core.PersistentVolumeClaim] = None):
-        super().__init__(min_ready_seconds=min_ready_seconds, persistent_volume_claim_retention_policy=persistent_volume_claim_retention_policy, pod_management_policy=pod_management_policy, replicas=replicas, revision_history_limit=revision_history_limit, selector=selector, service_name=service_name, template=template, update_strategy=update_strategy, volume_claim_templates=volume_claim_templates)
+    def __init__(
+        self,
+        min_ready_seconds: int = None,
+        persistent_volume_claim_retention_policy: StatefulSetPersistentVolumeClaimRetentionPolicy = None,
+        pod_management_policy: str = None,
+        replicas: int = None,
+        revision_history_limit: int = None,
+        selector: meta.LabelSelector = None,
+        service_name: str = None,
+        template: core.PodTemplateSpec = None,
+        update_strategy: StatefulSetUpdateStrategy = None,
+        volume_claim_templates: list[core.PersistentVolumeClaim] = None,
+    ):
+        super().__init__(
+            min_ready_seconds=min_ready_seconds,
+            persistent_volume_claim_retention_policy=persistent_volume_claim_retention_policy,
+            pod_management_policy=pod_management_policy,
+            replicas=replicas,
+            revision_history_limit=revision_history_limit,
+            selector=selector,
+            service_name=service_name,
+            template=template,
+            update_strategy=update_strategy,
+            volume_claim_templates=volume_claim_templates,
+        )
 
 
 class StatefulSet(KubernetesApiResource):
@@ -431,7 +569,9 @@ class StatefulSetCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None):
+    def __init__(
+        self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
+    ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
@@ -470,7 +610,28 @@ class StatefulSetStatus(KubernetesObject):
     update_revision: str
     updated_replicas: int
 
-    def __init__(self, available_replicas: int = None, collision_count: int = None, conditions: list[StatefulSetCondition] = None, current_replicas: int = None, current_revision: str = None, observed_generation: int = None, ready_replicas: int = None, replicas: int = None, update_revision: str = None, updated_replicas: int = None):
-        super().__init__(available_replicas=available_replicas, collision_count=collision_count, conditions=conditions, current_replicas=current_replicas, current_revision=current_revision, observed_generation=observed_generation, ready_replicas=ready_replicas, replicas=replicas, update_revision=update_revision, updated_replicas=updated_replicas)
-
-
+    def __init__(
+        self,
+        available_replicas: int = None,
+        collision_count: int = None,
+        conditions: list[StatefulSetCondition] = None,
+        current_replicas: int = None,
+        current_revision: str = None,
+        observed_generation: int = None,
+        ready_replicas: int = None,
+        replicas: int = None,
+        update_revision: str = None,
+        updated_replicas: int = None,
+    ):
+        super().__init__(
+            available_replicas=available_replicas,
+            collision_count=collision_count,
+            conditions=conditions,
+            current_replicas=current_replicas,
+            current_revision=current_revision,
+            observed_generation=observed_generation,
+            ready_replicas=ready_replicas,
+            replicas=replicas,
+            update_revision=update_revision,
+            updated_replicas=updated_replicas,
+        )

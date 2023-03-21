@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import meta
 
 
-
 class BoundObjectReference(KubernetesObject):
     __slots__ = ()
 
@@ -118,5 +117,3 @@ class TokenReviewStatus(KubernetesObject):
 
     def __init__(self, audiences: list[str] = None, authenticated: bool = None, error: str = None, user: UserInfo = None):
         super().__init__(audiences=audiences, authenticated=authenticated, error=error, user=user)
-
-

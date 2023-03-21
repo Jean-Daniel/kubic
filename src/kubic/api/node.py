@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-
 class Overhead(KubernetesObject):
     __slots__ = ()
 
@@ -41,7 +40,9 @@ class RuntimeClass(KubernetesApiResource):
     overhead: Overhead
     scheduling: Scheduling
 
-    def __init__(self, name: str, handler: str = None, metadata: meta.ObjectMeta = None, overhead: Overhead = None, scheduling: Scheduling = None):
+    def __init__(
+        self, name: str, handler: str = None, metadata: meta.ObjectMeta = None, overhead: Overhead = None, scheduling: Scheduling = None
+    ):
         super().__init__(name, "", handler=handler, metadata=metadata, overhead=overhead, scheduling=scheduling)
 
 
@@ -60,5 +61,3 @@ class RuntimeClassList(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, items: list[RuntimeClass] = None, metadata: meta.ListMeta = None):
         super().__init__(name, namespace, items=items, metadata=metadata)
-
-

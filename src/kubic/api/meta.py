@@ -62,8 +62,23 @@ class APIGroup(KubernetesApiResource):
     server_address_by_client_cidrs: list[ServerAddressByClientCIDR]
     versions: list[GroupVersionForDiscovery]
 
-    def __init__(self, name: str, namespace: str = None, group_name: str = None, preferred_version: GroupVersionForDiscovery = None, server_address_by_client_cidrs: list[ServerAddressByClientCIDR] = None, versions: list[GroupVersionForDiscovery] = None):
-        super().__init__(name, namespace, group_name=group_name, preferred_version=preferred_version, server_address_by_client_cidrs=server_address_by_client_cidrs, versions=versions)
+    def __init__(
+        self,
+        name: str,
+        namespace: str = None,
+        group_name: str = None,
+        preferred_version: GroupVersionForDiscovery = None,
+        server_address_by_client_cidrs: list[ServerAddressByClientCIDR] = None,
+        versions: list[GroupVersionForDiscovery] = None,
+    ):
+        super().__init__(
+            name,
+            namespace,
+            group_name=group_name,
+            preferred_version=preferred_version,
+            server_address_by_client_cidrs=server_address_by_client_cidrs,
+            versions=versions,
+        )
 
 
 class APIGroupList(KubernetesApiResource):
@@ -100,8 +115,31 @@ class APIResource(KubernetesObject):
     verbs: list[str]
     version: str
 
-    def __init__(self, categories: list[str] = None, group: str = None, kind: str = None, name: str = None, namespaced: bool = None, short_names: list[str] = None, singular_name: str = None, storage_version_hash: str = None, verbs: list[str] = None, version: str = None):
-        super().__init__(categories=categories, group=group, kind=kind, name=name, namespaced=namespaced, short_names=short_names, singular_name=singular_name, storage_version_hash=storage_version_hash, verbs=verbs, version=version)
+    def __init__(
+        self,
+        categories: list[str] = None,
+        group: str = None,
+        kind: str = None,
+        name: str = None,
+        namespaced: bool = None,
+        short_names: list[str] = None,
+        singular_name: str = None,
+        storage_version_hash: str = None,
+        verbs: list[str] = None,
+        version: str = None,
+    ):
+        super().__init__(
+            categories=categories,
+            group=group,
+            kind=kind,
+            name=name,
+            namespaced=namespaced,
+            short_names=short_names,
+            singular_name=singular_name,
+            storage_version_hash=storage_version_hash,
+            verbs=verbs,
+            version=version,
+        )
 
 
 class APIResourceList(KubernetesApiResource):
@@ -141,7 +179,13 @@ class APIVersions(KubernetesApiResource):
     server_address_by_client_cidrs: list[ServerAddressByClientCIDR]
     versions: list[str]
 
-    def __init__(self, name: str, namespace: str = None, server_address_by_client_cidrs: list[ServerAddressByClientCIDR] = None, versions: list[str] = None):
+    def __init__(
+        self,
+        name: str,
+        namespace: str = None,
+        server_address_by_client_cidrs: list[ServerAddressByClientCIDR] = None,
+        versions: list[str] = None,
+    ):
         super().__init__(name, namespace, server_address_by_client_cidrs=server_address_by_client_cidrs, versions=versions)
 
 
@@ -162,8 +206,23 @@ class Condition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: Time = None, message: str = None, observed_generation: int = None, reason: str = None, status: str = None, type: str = None):
-        super().__init__(last_transition_time=last_transition_time, message=message, observed_generation=observed_generation, reason=reason, status=status, type=type)
+    def __init__(
+        self,
+        last_transition_time: Time = None,
+        message: str = None,
+        observed_generation: int = None,
+        reason: str = None,
+        status: str = None,
+        type: str = None,
+    ):
+        super().__init__(
+            last_transition_time=last_transition_time,
+            message=message,
+            observed_generation=observed_generation,
+            reason=reason,
+            status=status,
+            type=type,
+        )
 
 
 class Preconditions(KubernetesObject):
@@ -192,8 +251,25 @@ class DeleteOptions(KubernetesApiResource):
     preconditions: Preconditions
     propagation_policy: str
 
-    def __init__(self, name: str, namespace: str = None, dry_run: list[str] = None, grace_period_seconds: int = None, orphan_dependents: bool = None, preconditions: Preconditions = None, propagation_policy: str = None):
-        super().__init__(name, namespace, dry_run=dry_run, grace_period_seconds=grace_period_seconds, orphan_dependents=orphan_dependents, preconditions=preconditions, propagation_policy=propagation_policy)
+    def __init__(
+        self,
+        name: str,
+        namespace: str = None,
+        dry_run: list[str] = None,
+        grace_period_seconds: int = None,
+        orphan_dependents: bool = None,
+        preconditions: Preconditions = None,
+        propagation_policy: str = None,
+    ):
+        super().__init__(
+            name,
+            namespace,
+            dry_run=dry_run,
+            grace_period_seconds=grace_period_seconds,
+            orphan_dependents=orphan_dependents,
+            preconditions=preconditions,
+            propagation_policy=propagation_policy,
+        )
 
 
 FieldsV1: t.TypeAlias = dict[str, t.Any]
@@ -241,7 +317,9 @@ class ListMeta(KubernetesObject):
     self_link: str
 
     def __init__(self, continue_: str = None, remaining_item_count: int = None, resource_version: str = None, self_link: str = None):
-        super().__init__(continue_=continue_, remaining_item_count=remaining_item_count, resource_version=resource_version, self_link=self_link)
+        super().__init__(
+            continue_=continue_, remaining_item_count=remaining_item_count, resource_version=resource_version, self_link=self_link
+        )
 
 
 class ManagedFieldsEntry(KubernetesObject):
@@ -257,8 +335,25 @@ class ManagedFieldsEntry(KubernetesObject):
     subresource: str
     time: Time
 
-    def __init__(self, api_version: str = None, fields_type: str = None, fields_v1: FieldsV1 = None, manager: str = None, operation: str = None, subresource: str = None, time: Time = None):
-        super().__init__(api_version=api_version, fields_type=fields_type, fields_v1=fields_v1, manager=manager, operation=operation, subresource=subresource, time=time)
+    def __init__(
+        self,
+        api_version: str = None,
+        fields_type: str = None,
+        fields_v1: FieldsV1 = None,
+        manager: str = None,
+        operation: str = None,
+        subresource: str = None,
+        time: Time = None,
+    ):
+        super().__init__(
+            api_version=api_version,
+            fields_type=fields_type,
+            fields_v1=fields_v1,
+            manager=manager,
+            operation=operation,
+            subresource=subresource,
+            time=time,
+        )
 
 
 MicroTime: t.TypeAlias = Time
@@ -278,8 +373,18 @@ class OwnerReference(KubernetesObject):
     name: str
     uid: str
 
-    def __init__(self, api_version: str = None, block_owner_deletion: bool = None, controller: bool = None, kind: str = None, name: str = None, uid: str = None):
-        super().__init__(api_version=api_version, block_owner_deletion=block_owner_deletion, controller=controller, kind=kind, name=name, uid=uid)
+    def __init__(
+        self,
+        api_version: str = None,
+        block_owner_deletion: bool = None,
+        controller: bool = None,
+        kind: str = None,
+        name: str = None,
+        uid: str = None,
+    ):
+        super().__init__(
+            api_version=api_version, block_owner_deletion=block_owner_deletion, controller=controller, kind=kind, name=name, uid=uid
+        )
 
 
 class ObjectMeta(KubernetesObject):
@@ -302,8 +407,39 @@ class ObjectMeta(KubernetesObject):
     self_link: str
     uid: str
 
-    def __init__(self, annotations: dict[str, str] = None, creation_timestamp: Time = None, deletion_grace_period_seconds: int = None, deletion_timestamp: Time = None, finalizers: list[str] = None, generate_name: str = None, generation: int = None, labels: dict[str, str] = None, name: str = None, namespace: str = None, owner_references: list[OwnerReference] = None, resource_version: str = None, self_link: str = None, uid: str = None):
-        super().__init__(annotations=annotations, creation_timestamp=creation_timestamp, deletion_grace_period_seconds=deletion_grace_period_seconds, deletion_timestamp=deletion_timestamp, finalizers=finalizers, generate_name=generate_name, generation=generation, labels=labels, name=name, namespace=namespace, owner_references=owner_references, resource_version=resource_version, self_link=self_link, uid=uid)
+    def __init__(
+        self,
+        annotations: dict[str, str] = None,
+        creation_timestamp: Time = None,
+        deletion_grace_period_seconds: int = None,
+        deletion_timestamp: Time = None,
+        finalizers: list[str] = None,
+        generate_name: str = None,
+        generation: int = None,
+        labels: dict[str, str] = None,
+        name: str = None,
+        namespace: str = None,
+        owner_references: list[OwnerReference] = None,
+        resource_version: str = None,
+        self_link: str = None,
+        uid: str = None,
+    ):
+        super().__init__(
+            annotations=annotations,
+            creation_timestamp=creation_timestamp,
+            deletion_grace_period_seconds=deletion_grace_period_seconds,
+            deletion_timestamp=deletion_timestamp,
+            finalizers=finalizers,
+            generate_name=generate_name,
+            generation=generation,
+            labels=labels,
+            name=name,
+            namespace=namespace,
+            owner_references=owner_references,
+            resource_version=resource_version,
+            self_link=self_link,
+            uid=uid,
+        )
 
 
 Patch: t.TypeAlias = dict[str, t.Any]
@@ -334,7 +470,15 @@ class StatusDetails(KubernetesObject):
     retry_after_seconds: int
     uid: str
 
-    def __init__(self, causes: list[StatusCause] = None, group: str = None, kind: str = None, name: str = None, retry_after_seconds: int = None, uid: str = None):
+    def __init__(
+        self,
+        causes: list[StatusCause] = None,
+        group: str = None,
+        kind: str = None,
+        name: str = None,
+        retry_after_seconds: int = None,
+        uid: str = None,
+    ):
         super().__init__(causes=causes, group=group, kind=kind, name=name, retry_after_seconds=retry_after_seconds, uid=uid)
 
 
@@ -352,7 +496,16 @@ class Status(KubernetesApiResource):
     metadata: ListMeta
     reason: str
 
-    def __init__(self, name: str, namespace: str = None, code: int = None, details: StatusDetails = None, message: str = None, metadata: ListMeta = None, reason: str = None):
+    def __init__(
+        self,
+        name: str,
+        namespace: str = None,
+        code: int = None,
+        details: StatusDetails = None,
+        message: str = None,
+        metadata: ListMeta = None,
+        reason: str = None,
+    ):
         super().__init__(name, namespace, code=code, details=details, message=message, metadata=metadata, reason=reason)
 
 
@@ -371,5 +524,3 @@ class WatchEvent(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, object: dict[str, t.Any] = None, type: str = None):
         super().__init__(name, namespace, object=object, type=type)
-
-

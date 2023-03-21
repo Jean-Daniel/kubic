@@ -4,7 +4,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import meta
 
 
-
 class ServerStorageVersion(KubernetesObject):
     __slots__ = ()
 
@@ -59,8 +58,23 @@ class StorageVersionCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, message: str = None, observed_generation: int = None, reason: str = None, status: str = None, type: str = None):
-        super().__init__(last_transition_time=last_transition_time, message=message, observed_generation=observed_generation, reason=reason, status=status, type=type)
+    def __init__(
+        self,
+        last_transition_time: meta.Time = None,
+        message: str = None,
+        observed_generation: int = None,
+        reason: str = None,
+        status: str = None,
+        type: str = None,
+    ):
+        super().__init__(
+            last_transition_time=last_transition_time,
+            message=message,
+            observed_generation=observed_generation,
+            reason=reason,
+            status=status,
+            type=type,
+        )
 
 
 class StorageVersionList(KubernetesApiResource):
@@ -89,7 +103,10 @@ class StorageVersionStatus(KubernetesObject):
     conditions: list[StorageVersionCondition]
     storage_versions: list[ServerStorageVersion]
 
-    def __init__(self, common_encoding_version: str = None, conditions: list[StorageVersionCondition] = None, storage_versions: list[ServerStorageVersion] = None):
+    def __init__(
+        self,
+        common_encoding_version: str = None,
+        conditions: list[StorageVersionCondition] = None,
+        storage_versions: list[ServerStorageVersion] = None,
+    ):
         super().__init__(common_encoding_version=common_encoding_version, conditions=conditions, storage_versions=storage_versions)
-
-

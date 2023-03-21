@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import meta
 
 
-
 class FlowDistinguisherMethod(KubernetesObject):
     __slots__ = ()
 
@@ -63,7 +62,14 @@ class ResourcePolicyRule(KubernetesObject):
     resources: list[str]
     verbs: list[str]
 
-    def __init__(self, api_groups: list[str] = None, cluster_scope: bool = None, namespaces: list[str] = None, resources: list[str] = None, verbs: list[str] = None):
+    def __init__(
+        self,
+        api_groups: list[str] = None,
+        cluster_scope: bool = None,
+        namespaces: list[str] = None,
+        resources: list[str] = None,
+        verbs: list[str] = None,
+    ):
         super().__init__(api_groups=api_groups, cluster_scope=cluster_scope, namespaces=namespaces, resources=resources, verbs=verbs)
 
 
@@ -119,7 +125,9 @@ class Subject(KubernetesObject):
     service_account: ServiceAccountSubject
     user: UserSubject
 
-    def __init__(self, group: GroupSubject = None, kind: str = None, service_account: ServiceAccountSubject = None, user: UserSubject = None):
+    def __init__(
+        self, group: GroupSubject = None, kind: str = None, service_account: ServiceAccountSubject = None, user: UserSubject = None
+    ):
         super().__init__(group=group, kind=kind, service_account=service_account, user=user)
 
 
@@ -134,7 +142,12 @@ class PolicyRulesWithSubjects(KubernetesObject):
     resource_rules: list[ResourcePolicyRule]
     subjects: list[Subject]
 
-    def __init__(self, non_resource_rules: list[NonResourcePolicyRule] = None, resource_rules: list[ResourcePolicyRule] = None, subjects: list[Subject] = None):
+    def __init__(
+        self,
+        non_resource_rules: list[NonResourcePolicyRule] = None,
+        resource_rules: list[ResourcePolicyRule] = None,
+        subjects: list[Subject] = None,
+    ):
         super().__init__(non_resource_rules=non_resource_rules, resource_rules=resource_rules, subjects=subjects)
 
 
@@ -150,8 +163,19 @@ class FlowSchemaSpec(KubernetesObject):
     priority_level_configuration: PriorityLevelConfigurationReference
     rules: list[PolicyRulesWithSubjects]
 
-    def __init__(self, distinguisher_method: FlowDistinguisherMethod = None, matching_precedence: int = None, priority_level_configuration: PriorityLevelConfigurationReference = None, rules: list[PolicyRulesWithSubjects] = None):
-        super().__init__(distinguisher_method=distinguisher_method, matching_precedence=matching_precedence, priority_level_configuration=priority_level_configuration, rules=rules)
+    def __init__(
+        self,
+        distinguisher_method: FlowDistinguisherMethod = None,
+        matching_precedence: int = None,
+        priority_level_configuration: PriorityLevelConfigurationReference = None,
+        rules: list[PolicyRulesWithSubjects] = None,
+    ):
+        super().__init__(
+            distinguisher_method=distinguisher_method,
+            matching_precedence=matching_precedence,
+            priority_level_configuration=priority_level_configuration,
+            rules=rules,
+        )
 
 
 class FlowSchema(KubernetesApiResource):
@@ -180,7 +204,9 @@ class FlowSchemaCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None):
+    def __init__(
+        self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
+    ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
@@ -291,7 +317,9 @@ class PriorityLevelConfigurationCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None):
+    def __init__(
+        self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
+    ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
@@ -321,5 +349,3 @@ class PriorityLevelConfigurationStatus(KubernetesObject):
 
     def __init__(self, conditions: list[PriorityLevelConfigurationCondition] = None):
         super().__init__(conditions=conditions)
-
-

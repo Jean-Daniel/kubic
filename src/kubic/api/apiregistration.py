@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-
 class ServiceReference(KubernetesObject):
     __slots__ = ()
 
@@ -38,8 +37,25 @@ class APIServiceSpec(KubernetesObject):
     version: str
     version_priority: int
 
-    def __init__(self, ca_bundle: core.Base64 = None, group: str = None, group_priority_minimum: int = None, insecure_skip_tls_verify: bool = None, service: ServiceReference = None, version: str = None, version_priority: int = None):
-        super().__init__(ca_bundle=ca_bundle, group=group, group_priority_minimum=group_priority_minimum, insecure_skip_tls_verify=insecure_skip_tls_verify, service=service, version=version, version_priority=version_priority)
+    def __init__(
+        self,
+        ca_bundle: core.Base64 = None,
+        group: str = None,
+        group_priority_minimum: int = None,
+        insecure_skip_tls_verify: bool = None,
+        service: ServiceReference = None,
+        version: str = None,
+        version_priority: int = None,
+    ):
+        super().__init__(
+            ca_bundle=ca_bundle,
+            group=group,
+            group_priority_minimum=group_priority_minimum,
+            insecure_skip_tls_verify=insecure_skip_tls_verify,
+            service=service,
+            version=version,
+            version_priority=version_priority,
+        )
 
 
 class APIService(KubernetesApiResource):
@@ -70,7 +86,9 @@ class APIServiceCondition(KubernetesObject):
     status: str
     type: str
 
-    def __init__(self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None):
+    def __init__(
+        self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
+    ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
@@ -100,5 +118,3 @@ class APIServiceStatus(KubernetesObject):
 
     def __init__(self, conditions: list[APIServiceCondition] = None):
         super().__init__(conditions=conditions)
-
-

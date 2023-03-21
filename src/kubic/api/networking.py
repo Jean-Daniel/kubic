@@ -2,7 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-
 class ClusterCIDRSpec(KubernetesObject):
     __slots__ = ()
 
@@ -169,7 +168,13 @@ class IngressSpec(KubernetesObject):
     rules: list[IngressRule]
     tls: list[IngressTLS]
 
-    def __init__(self, default_backend: IngressBackend = None, ingress_class_name: str = None, rules: list[IngressRule] = None, tls: list[IngressTLS] = None):
+    def __init__(
+        self,
+        default_backend: IngressBackend = None,
+        ingress_class_name: str = None,
+        rules: list[IngressRule] = None,
+        tls: list[IngressTLS] = None,
+    ):
         super().__init__(default_backend=default_backend, ingress_class_name=ingress_class_name, rules=rules, tls=tls)
 
 
@@ -343,7 +348,13 @@ class NetworkPolicySpec(KubernetesObject):
     pod_selector: meta.LabelSelector
     policy_types: list[str]
 
-    def __init__(self, egress: list[NetworkPolicyEgressRule] = None, ingress: list[NetworkPolicyIngressRule] = None, pod_selector: meta.LabelSelector = None, policy_types: list[str] = None):
+    def __init__(
+        self,
+        egress: list[NetworkPolicyEgressRule] = None,
+        ingress: list[NetworkPolicyIngressRule] = None,
+        pod_selector: meta.LabelSelector = None,
+        policy_types: list[str] = None,
+    ):
         super().__init__(egress=egress, ingress=ingress, pod_selector=pod_selector, policy_types=policy_types)
 
 
@@ -388,5 +399,3 @@ class NetworkPolicyStatus(KubernetesObject):
 
     def __init__(self, conditions: list[meta.Condition] = None):
         super().__init__(conditions=conditions)
-
-
