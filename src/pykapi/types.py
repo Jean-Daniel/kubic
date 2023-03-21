@@ -45,7 +45,7 @@ class ApiType:
         return self.version
 
     def __eq__(self, other):
-        return self.name == other.name
+        return self.name == other.name if other else False
 
     def __str__(self):
         return self.name
@@ -68,7 +68,7 @@ class TypeAlias(ApiType):
         self.description = description
 
     def __eq__(self, other):
-        return self.name == other.name and self.type == other.type
+        return super().__eq__(other) and self.type == other.type
 
 
 class Property(t.NamedTuple):

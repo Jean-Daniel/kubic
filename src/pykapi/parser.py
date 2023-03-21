@@ -1,5 +1,4 @@
 import sys
-import typing as t
 from collections import defaultdict
 from collections.abc import Iterable
 
@@ -304,10 +303,11 @@ class Parser:
 
                 # shortcut as this is the most common case
                 if isinstance(overwrite, str):
+                    ref = {"type": "object"} if overwrite == "object" else {"$ref": overwrite}
                     if value.get("type") == "array":
-                        overwrite = {"type": "array", "items": {"$ref": overwrite}}
+                        overwrite = {"type": "array", "items": ref}
                     else:
-                        overwrite = {"$ref": overwrite}
+                        overwrite = ref
 
                 special = 0
                 # type override (for anonymous prop only)

@@ -2,6 +2,55 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
+
+class ClusterCIDRSpec(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1alpha1"
+
+    _required_ = ["per_node_host_bits"]
+
+    ipv4: str
+    ipv6: str
+    node_selector: core.NodeSelector
+    per_node_host_bits: int
+
+    def __init__(self, ipv4: str = None, ipv6: str = None, node_selector: core.NodeSelector = None, per_node_host_bits: int = None):
+        super().__init__(ipv4=ipv4, ipv6=ipv6, node_selector=node_selector, per_node_host_bits=per_node_host_bits)
+
+
+class ClusterCIDR(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_group_ = "networking.k8s.io"
+    _kind_ = "ClusterCIDR"
+    _scope_ = "namespace"
+
+    metadata: meta.ObjectMeta
+    spec: ClusterCIDRSpec
+
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ClusterCIDRSpec = None):
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
+
+
+class ClusterCIDRList(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_group_ = "networking.k8s.io"
+    _kind_ = "ClusterCIDRList"
+    _scope_ = "namespace"
+
+    _required_ = ["items"]
+
+    items: list[ClusterCIDR]
+    metadata: meta.ListMeta
+
+    def __init__(self, name: str, namespace: str = None, items: list[ClusterCIDR] = None, metadata: meta.ListMeta = None):
+        super().__init__(name, namespace, items=items, metadata=metadata)
+
+
 class ServiceBackendPort(KubernetesObject):
     __slots__ = ()
 
@@ -120,13 +169,7 @@ class IngressSpec(KubernetesObject):
     rules: list[IngressRule]
     tls: list[IngressTLS]
 
-    def __init__(
-        self,
-        default_backend: IngressBackend = None,
-        ingress_class_name: str = None,
-        rules: list[IngressRule] = None,
-        tls: list[IngressTLS] = None,
-    ):
+    def __init__(self, default_backend: IngressBackend = None, ingress_class_name: str = None, rules: list[IngressRule] = None, tls: list[IngressTLS] = None):
         super().__init__(default_backend=default_backend, ingress_class_name=ingress_class_name, rules=rules, tls=tls)
 
 
@@ -187,6 +230,51 @@ class IngressClass(KubernetesApiResource):
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: IngressClassSpec = None):
         super().__init__(name, "", metadata=metadata, spec=spec)
+
+
+class IngressClassList(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1"
+    _api_group_ = "networking.k8s.io"
+    _kind_ = "IngressClassList"
+    _scope_ = "namespace"
+
+    _required_ = ["items"]
+
+    items: list[IngressClass]
+    metadata: meta.ListMeta
+
+    def __init__(self, name: str, namespace: str = None, items: list[IngressClass] = None, metadata: meta.ListMeta = None):
+        super().__init__(name, namespace, items=items, metadata=metadata)
+
+
+class IngressList(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1"
+    _api_group_ = "networking.k8s.io"
+    _kind_ = "IngressList"
+    _scope_ = "namespace"
+
+    _required_ = ["items"]
+
+    items: list[Ingress]
+    metadata: meta.ListMeta
+
+    def __init__(self, name: str, namespace: str = None, items: list[Ingress] = None, metadata: meta.ListMeta = None):
+        super().__init__(name, namespace, items=items, metadata=metadata)
+
+
+class IngressStatus(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1"
+
+    load_balancer: core.LoadBalancerStatus
+
+    def __init__(self, load_balancer: core.LoadBalancerStatus = None):
+        super().__init__(load_balancer=load_balancer)
 
 
 class NetworkPolicyPort(KubernetesObject):
@@ -255,13 +343,7 @@ class NetworkPolicySpec(KubernetesObject):
     pod_selector: meta.LabelSelector
     policy_types: list[str]
 
-    def __init__(
-        self,
-        egress: list[NetworkPolicyEgressRule] = None,
-        ingress: list[NetworkPolicyIngressRule] = None,
-        pod_selector: meta.LabelSelector = None,
-        policy_types: list[str] = None,
-    ):
+    def __init__(self, egress: list[NetworkPolicyEgressRule] = None, ingress: list[NetworkPolicyIngressRule] = None, pod_selector: meta.LabelSelector = None, policy_types: list[str] = None):
         super().__init__(egress=egress, ingress=ingress, pod_selector=pod_selector, policy_types=policy_types)
 
 
@@ -278,3 +360,33 @@ class NetworkPolicy(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: NetworkPolicySpec = None):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
+
+
+class NetworkPolicyList(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1"
+    _api_group_ = "networking.k8s.io"
+    _kind_ = "NetworkPolicyList"
+    _scope_ = "namespace"
+
+    _required_ = ["items"]
+
+    items: list[NetworkPolicy]
+    metadata: meta.ListMeta
+
+    def __init__(self, name: str, namespace: str = None, items: list[NetworkPolicy] = None, metadata: meta.ListMeta = None):
+        super().__init__(name, namespace, items=items, metadata=metadata)
+
+
+class NetworkPolicyStatus(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1"
+
+    conditions: list[meta.Condition]
+
+    def __init__(self, conditions: list[meta.Condition] = None):
+        super().__init__(conditions=conditions)
+
+
