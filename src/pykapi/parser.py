@@ -141,7 +141,7 @@ class ApiGroup:
                 self._types[base.name] = base
         else:
             # There is multiples conflicting types with the same name
-            counter = 0
+            counter = 1
             types.sort(key=lambda i: len(i), reverse=True)
             for typs in types:
                 # We are supposed to use fullname,
@@ -151,7 +151,7 @@ class ApiGroup:
                 if any(ty.fullname != fullname for ty in typs[1:]):
                     base = typs[0]
                     # For the type with most matching types -> use the original name
-                    if counter > 0 or base.name in self._types:
+                    if counter > 1 or base.name in self._types:
                         name = f"{base.name}{counter}"
                         for ty in typs:
                             ty.fqn = QualifiedName(name, base.group, base.version)
