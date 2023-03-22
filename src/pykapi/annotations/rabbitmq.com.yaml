@@ -5,6 +5,7 @@ patches:
     affinity: "io.k8s.api.core.v1.Affinity"
     resources: "io.k8s.api.core.v1.ResourceRequirements"
     tolerations: "io.k8s.api.core.v1.Toleration"
-  RabbitmqClusterSpecOverride:
-    service: "io.k8s.api.core.v1.Service"
-    statefulSet: "io.k8s.api.apps.v1.StatefulSet"
+  OverrideService:
+    spec: "io.k8s.api.core.v1.ServiceSpec"
+  StatefulSet:
+    spec: "io.k8s.api.apps.v1.StatefulSetSpec"
