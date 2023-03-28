@@ -309,6 +309,10 @@ class _K8SApiResourceMeta(_K8SResourceMeta):
         # noinspection PyUnresolvedReferences
         return cls._kind_
 
+    @property
+    def namespaced(cls):
+        return getattr(cls, "_scope_", None) == "namespace"
+
 
 class KubernetesApiResource(KubernetesObject, metaclass=_K8SApiResourceMeta):
     __slots__ = ()

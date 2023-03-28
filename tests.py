@@ -47,6 +47,15 @@ class SpecialProperty(KubernetesObject):
     }
 
 
+class CustomResource(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "com.xenonium/v1"
+    _api_group_ = "com.xenonium"
+    _kind_ = "CustomResource"
+    _scope_ = "namespace"
+
+
 class ResourceTest(unittest.TestCase):
     def test_dir(self):
         obj = SpecialProperty()
@@ -249,3 +258,9 @@ class LoaderTest(unittest.TestCase):
         self.assertEqual("apps/v3", rsrc.api_version)
         self.assertEqual("Deployment", rsrc.kind)
         self.assertEqual("apps", rsrc.group)
+
+    def test_metaclass(self):
+        self.assertEqual("CustomResource", CustomResource.kind)
+        self.assertEqual("com.xenonium", CustomResource.group)
+        self.assertEqual("com.xenonium/v1", CustomResource.api_version)
+        self.assertTrue(CustomResource.namespaced)
