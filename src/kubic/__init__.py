@@ -57,7 +57,10 @@ class _TypedList(list):
         # required to workaround dubious StatefulSet persistent volume claim declaration.
         if issubclass(self.type, KubernetesApiResource):
             return self.type("").update(obj)
-        return self.type().update(obj)
+        try:
+            return self.type().update(obj)
+        except ValueError as e:
+            raise ValueError(f"cannot convert value of type {type(obj)} to expected type {self.type}") from e
 
     def append(self, obj):
         if obj is not None:
