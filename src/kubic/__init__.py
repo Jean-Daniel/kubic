@@ -60,7 +60,7 @@ class _TypedList(list):
         try:
             return self.type().update(obj)
         except ValueError as e:
-            raise ValueError(f"cannot convert value of type {type(obj)} to expected type {self.type}") from e
+            raise TypeError(f"cannot convert value of type {type(obj)} to expected type {self.type}") from e
 
     def append(self, obj):
         if obj is not None:
