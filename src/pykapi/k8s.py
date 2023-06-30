@@ -42,6 +42,7 @@ GROUP_MAPPING = {
     "io.k8s.api.core": "core",
     "io.k8s.api.node": "node.k8s.io",
     "io.k8s.api.apps": "apps",
+    "io.k8s.api.meta": "meta",
     "io.k8s.api.batch": "batch",
     "io.k8s.api.policy": "policy",
     "io.k8s.api.extensions": "extensions",
