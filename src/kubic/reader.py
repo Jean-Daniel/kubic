@@ -45,6 +45,14 @@ def _register_any(object_meta):
             self.spec = {}
             self.spec.update(kwargs)
 
+        # Cannot guess unknown resource scope
+        @property
+        def is_namespaced(self) -> bool:
+            if self.metadata.namespace:
+                return True
+
+            raise ValueError("try to access is_namespaced on unknown resource type: " + self._kind_)
+
     AnyApiResource = _AnyApiResource
 
     class _AnyResourceList(KubernetesApiResource):

@@ -348,7 +348,7 @@ class KubernetesApiResource(KubernetesObject, metaclass=_K8SApiResourceMeta):
         return self._kind_
 
     @property
-    def has_namespace(self) -> bool:
+    def is_namespaced(self) -> bool:
         return getattr(type(self), "_scope_", None) == "namespace"
 
     # Special case to be able to pass a whole object dict and don't have to worry about ignored fields
