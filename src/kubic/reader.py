@@ -51,7 +51,7 @@ def _register_any(object_meta):
             if self.metadata.namespace:
                 return True
 
-            raise ValueError("try to access is_namespaced on unknown resource type: " + self._kind_)
+            raise ValueError(f"try to access is_namespaced on unknown resource type: {self._kind_}.{self._api_group_}")
 
     AnyApiResource = _AnyApiResource
 
