@@ -36,7 +36,7 @@ class PodFailurePolicyRule(KubernetesObject):
 
     _api_version_ = "batch/v1"
 
-    _required_ = ["action", "on_pod_conditions"]
+    _required_ = ["action"]
 
     action: str
     on_exit_codes: PodFailurePolicyOnExitCodesRequirement

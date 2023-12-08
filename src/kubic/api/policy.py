@@ -25,11 +25,21 @@ class PodDisruptionBudgetSpec(KubernetesObject):
     max_unavailable: core.IntOrString
     min_available: core.IntOrString
     selector: meta.LabelSelector
+    unhealthy_pod_eviction_policy: str
 
     def __init__(
-        self, max_unavailable: core.IntOrString = None, min_available: core.IntOrString = None, selector: meta.LabelSelector = None
+        self,
+        max_unavailable: core.IntOrString = None,
+        min_available: core.IntOrString = None,
+        selector: meta.LabelSelector = None,
+        unhealthy_pod_eviction_policy: str = None,
     ):
-        super().__init__(max_unavailable=max_unavailable, min_available=min_available, selector=selector)
+        super().__init__(
+            max_unavailable=max_unavailable,
+            min_available=min_available,
+            selector=selector,
+            unhealthy_pod_eviction_policy=unhealthy_pod_eviction_policy,
+        )
 
 
 class PodDisruptionBudget(KubernetesApiResource):

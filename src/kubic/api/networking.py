@@ -116,6 +116,64 @@ class HTTPIngressRuleValue(KubernetesObject):
         super().__init__(paths=paths)
 
 
+class ParentReference(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1alpha1"
+
+    group: str
+    name: str
+    namespace: str
+    resource: str
+    uid: str
+
+    def __init__(self, group: str = None, name: str = None, namespace: str = None, resource: str = None, uid: str = None):
+        super().__init__(group=group, name=name, namespace=namespace, resource=resource, uid=uid)
+
+
+class IPAddressSpec(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1alpha1"
+
+    parent_ref: ParentReference
+
+    def __init__(self, parent_ref: ParentReference = None):
+        super().__init__(parent_ref=parent_ref)
+
+
+class IPAddress(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_group_ = "networking.k8s.io"
+    _kind_ = "IPAddress"
+    _scope_ = "namespace"
+
+    metadata: meta.ObjectMeta
+    spec: IPAddressSpec
+
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: IPAddressSpec = None):
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
+
+
+class IPAddressList(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_group_ = "networking.k8s.io"
+    _kind_ = "IPAddressList"
+    _scope_ = "namespace"
+
+    _required_ = ["items"]
+
+    items: list[IPAddress]
+    metadata: meta.ListMeta
+
+    def __init__(self, name: str, namespace: str = None, items: list[IPAddress] = None, metadata: meta.ListMeta = None):
+        super().__init__(name, namespace, items=items, metadata=metadata)
+
+
 class IPBlock(KubernetesObject):
     __slots__ = ()
 
@@ -271,14 +329,53 @@ class IngressList(KubernetesApiResource):
         super().__init__(name, namespace, items=items, metadata=metadata)
 
 
+class IngressPortStatus(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1"
+
+    _required_ = ["port", "protocol"]
+
+    error: str
+    port: int
+    protocol: str
+
+    def __init__(self, error: str = None, port: int = None, protocol: str = None):
+        super().__init__(error=error, port=port, protocol=protocol)
+
+
+class IngressLoadBalancerIngress(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1"
+
+    hostname: str
+    ip: str
+    ports: list[IngressPortStatus]
+
+    def __init__(self, hostname: str = None, ip: str = None, ports: list[IngressPortStatus] = None):
+        super().__init__(hostname=hostname, ip=ip, ports=ports)
+
+
+class IngressLoadBalancerStatus(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1"
+
+    ingress: list[IngressLoadBalancerIngress]
+
+    def __init__(self, ingress: list[IngressLoadBalancerIngress] = None):
+        super().__init__(ingress=ingress)
+
+
 class IngressStatus(KubernetesObject):
     __slots__ = ()
 
     _api_version_ = "networking.k8s.io/v1"
 
-    load_balancer: core.LoadBalancerStatus
+    load_balancer: IngressLoadBalancerStatus
 
-    def __init__(self, load_balancer: core.LoadBalancerStatus = None):
+    def __init__(self, load_balancer: IngressLoadBalancerStatus = None):
         super().__init__(load_balancer=load_balancer)
 
 

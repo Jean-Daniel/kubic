@@ -529,6 +529,18 @@ class CinderVolumeSource(KubernetesObject):
         super().__init__(fs_type=fs_type, read_only=read_only, secret_ref=secret_ref, volume_id=volume_id)
 
 
+class ClaimSource(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    resource_claim_name: str
+    resource_claim_template_name: str
+
+    def __init__(self, resource_claim_name: str = None, resource_claim_template_name: str = None):
+        super().__init__(resource_claim_name=resource_claim_name, resource_claim_template_name=resource_claim_template_name)
+
+
 class ClientIPConfig(KubernetesObject):
     __slots__ = ()
 
@@ -994,16 +1006,44 @@ class ContainerPort(KubernetesObject):
         super().__init__(container_port=container_port, host_ip=host_ip, host_port=host_port, name=name, protocol=protocol)
 
 
+class ContainerResizePolicy(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["resource_name", "restart_policy"]
+
+    resource_name: str
+    restart_policy: str
+
+    def __init__(self, resource_name: str = None, restart_policy: str = None):
+        super().__init__(resource_name=resource_name, restart_policy=restart_policy)
+
+
+class ResourceClaim(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["name"]
+
+    name: str
+
+    def __init__(self, name: str = None):
+        super().__init__(name=name)
+
+
 class ResourceRequirements(KubernetesObject):
     __slots__ = ()
 
     _api_version_ = "v1"
 
+    claims: list[ResourceClaim]
     limits: dict[str, Quantity]
     requests: dict[str, Quantity]
 
-    def __init__(self, limits: dict[str, Quantity] = None, requests: dict[str, Quantity] = None):
-        super().__init__(limits=limits, requests=requests)
+    def __init__(self, claims: list[ResourceClaim] = None, limits: dict[str, Quantity] = None, requests: dict[str, Quantity] = None):
+        super().__init__(claims=claims, limits=limits, requests=requests)
 
 
 class SELinuxOptions(KubernetesObject):
@@ -1170,6 +1210,7 @@ class Container(KubernetesObject):
     name: str
     ports: list[ContainerPort]
     readiness_probe: Probe
+    resize_policy: list[ContainerResizePolicy]
     resources: ResourceRequirements
     security_context: SecurityContext
     startup_probe: Probe
@@ -1195,6 +1236,7 @@ class Container(KubernetesObject):
         name: str = None,
         ports: list[ContainerPort] = None,
         readiness_probe: Probe = None,
+        resize_policy: list[ContainerResizePolicy] = None,
         resources: ResourceRequirements = None,
         security_context: SecurityContext = None,
         startup_probe: Probe = None,
@@ -1219,6 +1261,7 @@ class Container(KubernetesObject):
             name=name,
             ports=ports,
             readiness_probe=readiness_probe,
+            resize_policy=resize_policy,
             resources=resources,
             security_context=security_context,
             startup_probe=startup_probe,
@@ -1342,35 +1385,41 @@ class ContainerStatus(KubernetesObject):
         "imageID": "image_id",
     }
 
+    allocated_resources: dict[str, Quantity]
     container_id: str
     image: str
     image_id: str
     last_state: ContainerState
     name: str
     ready: bool
+    resources: ResourceRequirements
     restart_count: int
     started: bool
     state: ContainerState
 
     def __init__(
         self,
+        allocated_resources: dict[str, Quantity] = None,
         container_id: str = None,
         image: str = None,
         image_id: str = None,
         last_state: ContainerState = None,
         name: str = None,
         ready: bool = None,
+        resources: ResourceRequirements = None,
         restart_count: int = None,
         started: bool = None,
         state: ContainerState = None,
     ):
         super().__init__(
+            allocated_resources=allocated_resources,
             container_id=container_id,
             image=image,
             image_id=image_id,
             last_state=last_state,
             name=name,
             ready=ready,
+            resources=resources,
             restart_count=restart_count,
             started=started,
             state=state,
@@ -1547,6 +1596,7 @@ class EphemeralContainer(KubernetesObject):
     name: str
     ports: list[ContainerPort]
     readiness_probe: Probe
+    resize_policy: list[ContainerResizePolicy]
     resources: ResourceRequirements
     security_context: SecurityContext
     startup_probe: Probe
@@ -1573,6 +1623,7 @@ class EphemeralContainer(KubernetesObject):
         name: str = None,
         ports: list[ContainerPort] = None,
         readiness_probe: Probe = None,
+        resize_policy: list[ContainerResizePolicy] = None,
         resources: ResourceRequirements = None,
         security_context: SecurityContext = None,
         startup_probe: Probe = None,
@@ -1598,6 +1649,7 @@ class EphemeralContainer(KubernetesObject):
             name=name,
             ports=ports,
             readiness_probe=readiness_probe,
+            resize_policy=resize_policy,
             resources=resources,
             security_context=security_context,
             startup_probe=startup_probe,
@@ -1628,6 +1680,22 @@ class TypedLocalObjectReference(KubernetesObject):
         super().__init__(api_group=api_group, kind=kind, name=name)
 
 
+class TypedObjectReference(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["kind", "name"]
+
+    api_group: str
+    kind: str
+    name: str
+    namespace: str
+
+    def __init__(self, api_group: str = None, kind: str = None, name: str = None, namespace: str = None):
+        super().__init__(api_group=api_group, kind=kind, name=name, namespace=namespace)
+
+
 class PersistentVolumeClaimSpec(KubernetesObject):
     __slots__ = ()
 
@@ -1635,7 +1703,7 @@ class PersistentVolumeClaimSpec(KubernetesObject):
 
     access_modes: list[str]
     data_source: TypedLocalObjectReference
-    data_source_ref: TypedLocalObjectReference
+    data_source_ref: TypedObjectReference
     resources: ResourceRequirements
     selector: meta.LabelSelector
     storage_class_name: str
@@ -1646,7 +1714,7 @@ class PersistentVolumeClaimSpec(KubernetesObject):
         self,
         access_modes: list[str] = None,
         data_source: TypedLocalObjectReference = None,
-        data_source_ref: TypedLocalObjectReference = None,
+        data_source_ref: TypedObjectReference = None,
         resources: ResourceRequirements = None,
         selector: meta.LabelSelector = None,
         storage_class_name: str = None,
@@ -3153,6 +3221,33 @@ class PodReadinessGate(KubernetesObject):
         super().__init__(condition_type=condition_type)
 
 
+class PodResourceClaim(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["name"]
+
+    name: str
+    source: ClaimSource
+
+    def __init__(self, name: str = None, source: ClaimSource = None):
+        super().__init__(name=name, source=source)
+
+
+class PodSchedulingGate(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["name"]
+
+    name: str
+
+    def __init__(self, name: str = None):
+        super().__init__(name=name)
+
+
 class Sysctl(KubernetesObject):
     __slots__ = ()
 
@@ -3609,9 +3704,11 @@ class PodSpec(KubernetesObject):
     priority: int
     priority_class_name: str
     readiness_gates: list[PodReadinessGate]
+    resource_claims: list[PodResourceClaim]
     restart_policy: str
     runtime_class_name: str
     scheduler_name: str
+    scheduling_gates: list[PodSchedulingGate]
     security_context: PodSecurityContext
     service_account: str
     service_account_name: str
@@ -3649,9 +3746,11 @@ class PodSpec(KubernetesObject):
         priority: int = None,
         priority_class_name: str = None,
         readiness_gates: list[PodReadinessGate] = None,
+        resource_claims: list[PodResourceClaim] = None,
         restart_policy: str = None,
         runtime_class_name: str = None,
         scheduler_name: str = None,
+        scheduling_gates: list[PodSchedulingGate] = None,
         security_context: PodSecurityContext = None,
         service_account: str = None,
         service_account_name: str = None,
@@ -3688,9 +3787,11 @@ class PodSpec(KubernetesObject):
             priority=priority,
             priority_class_name=priority_class_name,
             readiness_gates=readiness_gates,
+            resource_claims=resource_claims,
             restart_policy=restart_policy,
             runtime_class_name=runtime_class_name,
             scheduler_name=scheduler_name,
+            scheduling_gates=scheduling_gates,
             security_context=security_context,
             service_account=service_account,
             service_account_name=service_account_name,
@@ -3808,6 +3909,7 @@ class PodStatus(KubernetesObject):
     pod_ips: list[PodIP]
     qos_class: str
     reason: str
+    resize: str
     start_time: meta.Time
 
     def __init__(
@@ -3824,6 +3926,7 @@ class PodStatus(KubernetesObject):
         pod_ips: list[PodIP] = None,
         qos_class: str = None,
         reason: str = None,
+        resize: str = None,
         start_time: meta.Time = None,
     ):
         super().__init__(
@@ -3839,6 +3942,7 @@ class PodStatus(KubernetesObject):
             pod_ips=pod_ips,
             qos_class=qos_class,
             reason=reason,
+            resize=resize,
             start_time=start_time,
         )
 

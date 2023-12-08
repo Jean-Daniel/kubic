@@ -49,6 +49,7 @@ GROUP_MAPPING = {
     "io.k8s.api.events": "events.k8s.io",
     "io.k8s.api.autoscaling": "autoscaling",
     "io.k8s.api.storage": "storage.k8s.io",
+    "io.k8s.api.resource": "resource.k8s.io",
     "io.k8s.api.discovery": "discovery.k8s.io",
     "io.k8s.apimachinery.pkg.apis.meta": "meta",
     "io.k8s.api.networking": "networking.k8s.io",

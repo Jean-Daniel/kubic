@@ -472,6 +472,17 @@ class RollingUpdateStatefulSetStrategy(KubernetesObject):
         super().__init__(max_unavailable=max_unavailable, partition=partition)
 
 
+class StatefulSetOrdinals(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "apps/v1"
+
+    start: int
+
+    def __init__(self, start: int = None):
+        super().__init__(start=start)
+
+
 class StatefulSetPersistentVolumeClaimRetentionPolicy(KubernetesObject):
     __slots__ = ()
 
@@ -504,6 +515,7 @@ class StatefulSetSpec(KubernetesObject):
     _required_ = ["selector", "service_name", "template"]
 
     min_ready_seconds: int
+    ordinals: StatefulSetOrdinals
     persistent_volume_claim_retention_policy: StatefulSetPersistentVolumeClaimRetentionPolicy
     pod_management_policy: str
     replicas: int
@@ -517,6 +529,7 @@ class StatefulSetSpec(KubernetesObject):
     def __init__(
         self,
         min_ready_seconds: int = None,
+        ordinals: StatefulSetOrdinals = None,
         persistent_volume_claim_retention_policy: StatefulSetPersistentVolumeClaimRetentionPolicy = None,
         pod_management_policy: str = None,
         replicas: int = None,
@@ -529,6 +542,7 @@ class StatefulSetSpec(KubernetesObject):
     ):
         super().__init__(
             min_ready_seconds=min_ready_seconds,
+            ordinals=ordinals,
             persistent_volume_claim_retention_policy=persistent_volume_claim_retention_policy,
             pod_management_policy=pod_management_policy,
             replicas=replicas,
