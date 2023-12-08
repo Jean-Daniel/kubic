@@ -1,4 +1,0 @@
-patches:
-  HTTPProxySpec:
-    tcpproxy:
-      type_name: "TCPProxy"

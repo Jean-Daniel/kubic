@@ -139,7 +139,6 @@ class AnnotationFactory:
     def __init__(self, dir_path: pathlib.Path):
         self.dir = dir_path
         self.cached = {}
-        self.builtin = resources.files("pykapi").joinpath("annotations")
 
     def __call__(self, group: str) -> dict:
         if group in self.cached:
@@ -155,12 +154,6 @@ class AnnotationFactory:
                     annotations = yaml.load(f, yaml.CSafeLoader)
             except FileNotFoundError:
                 pass
-
-        if annotations is None:
-            builtin = self.builtin.joinpath(filename)
-            if builtin.is_file():
-                with builtin.open() as f:
-                    annotations = yaml.load(f, yaml.CSafeLoader)
 
         if annotations is None:
             annotations = {}

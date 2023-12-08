@@ -1,7 +1,0 @@
-patches:
-  RequestHeaderModifier:
-    add: { type_name: RequestHeader }
-    set: { type_name: RequestHeader }
-
-  Rule:
-    matches: { type_name: Match }

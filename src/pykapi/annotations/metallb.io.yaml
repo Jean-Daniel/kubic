@@ -1,8 +1,0 @@
-patches:
-  AddressPoolSpec:
-    bgpAdvertisements:
-      type_name: AddressPoolBGPAdvertisement
-
-  CommunitySpec:
-    communities:
-      type_name: CommunityAlias
