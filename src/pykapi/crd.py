@@ -190,7 +190,7 @@ def infer_k8s_type(prop_name: str, schema: dict) -> ApiTypeRef | None:
         return ApiTypeRef(QualifiedName("ConfigMapKeySelector", "core", "v1"))
 
     if prop_name.lower().endswith("probe") and is_probe(properties):
-        return ApiTypeRef(QualifiedName("SecretReference", "core", "v1"))
+        return ApiTypeRef(QualifiedName("Probe", "core", "v1"))
 
     if prop_name.lower().endswith("secretref") and is_secret_ref(properties):
         return ApiTypeRef(QualifiedName("SecretReference", "core", "v1"))
