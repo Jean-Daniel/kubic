@@ -73,29 +73,21 @@ class CRDParser(Parser):
     def import_property(self, obj_type: ObjectType, prop_name: str, schema: dict) -> Type:
         ref = schema.get("$ref")
         if ref:
-            # for ref -> import type recursively
+            # ref to existing type
             fqn = QualifiedName.parse(ref)
-            # ApiType is just a TypeRef
             return ApiTypeRef(fqn)
+
         return super().import_property(obj_type, prop_name, schema)
 
     def import_base_property(self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str) -> Type:
         # common pattern matching
         if schema.get("type") == "object":
-            if is_label_selector(schema):
-                return ApiTypeRef(QualifiedName("LabelSelector", "meta", "v1"))
-            if is_key_selector(schema):
-                if "secret" in prop_name or "password" in prop_name or "key" in prop_name:
-                    return ApiTypeRef(QualifiedName("SecretKeySelector", "core", "v1"))
-                return ApiTypeRef(QualifiedName("ConfigMapKeySelector", "core", "v1"))
-
+            if k8s_type := infer_k8s_type(prop_name, schema):
+                return k8s_type
         return super().import_base_property(obj_type, prop_name, schema, prop_type)
 
 
-def is_label_selector(schema: dict) -> bool:
-    properties = schema.get("properties")
-    if not properties:
-        return False
+def is_label_selector(properties: dict) -> bool:
     if len(properties) != 2:
         return False
 
@@ -105,10 +97,7 @@ def is_label_selector(schema: dict) -> bool:
     return properties["matchExpressions"].get("type") == "array" and "additionalProperties" in properties["matchLabels"]
 
 
-def is_key_selector(schema: dict) -> bool:
-    properties = schema.get("properties")
-    if not properties:
-        return False
+def is_key_selector(properties: dict) -> bool:
     if len(properties) != 3:
         return False
 
@@ -120,6 +109,96 @@ def is_key_selector(schema: dict) -> bool:
             and properties["name"].get("type") == "string"
             and properties["optional"].get("type") == "boolean"
     )
+
+
+def is_secret_ref(properties: dict) -> bool:
+    if len(properties) != 2:
+        return False
+
+    if "name" not in properties or "namespace" not in properties:
+        return False
+
+    return (
+            properties["name"].get("type") == "string"
+            and properties["namespace"].get("type") == "string"
+    )
+
+
+#     nodeAffinity: "io.k8s.api.core.v1.NodeAffinity"
+#     podAffinity: "io.k8s.api.core.v1.PodAffinity"
+#     podAntiAffinity: "io.k8s.api.core.v1.PodAntiAffinity"
+
+# loosy matching of common types based on field names only.
+BUILTIN_TYPE_MAPPING: dict[str, tuple[str, set[str]]] = {
+    "affinity": ("io.k8s.api.core.v1.Affinity", {"nodeAffinity", "podAffinity", "podAntiAffinity"}),
+    "containers": ("io.k8s.api.core.v1.Container", {"args", "command", "env", "envFrom", "image", "imagePullPolicy",
+                                                    "lifecycle", "livenessProbe", "name", "ports", "readinessProbe",
+                                                    "resizePolicy", "resources", "securityContext", "startupProbe",
+                                                    "stdin", "stdinOnce", "terminationMessagePath", "terminationMessagePolicy",
+                                                    "tty", "volumeDevices", "volumeMounts", "workingDir"}),
+    "imagePullSecrets": ("io.k8s.api.core.v1.LocalObjectReference", {"name"}),
+    "matchExpressions": ("io.k8s.api.core.v1.NodeSelectorRequirement", {"key", "operator", "values"}),
+    "resources": ("io.k8s.api.core.v1.ResourceRequirements", {"claims", "limits", "requests"}),
+    "securityContext": ("io.k8s.api.core.v1.PodSecurityContext",
+                        {"fsGroup", "fsGroupChangePolicy", "runAsGroup", "runAsNonRoot", "runAsUser",
+                         "seLinuxOptions", "seccompProfile", "supplementalGroups", "sysctls", "windowsOptions"}),
+    "tolerations": ("io.k8s.api.core.v1.Toleration", {"effect", "key", "operator", "tolerationSeconds", "value"}),
+    "topologySpreadConstraints": ("io.k8s.api.core.v1.TopologySpreadConstraint",
+                                  {"labelSelector", "matchLabelKeys", "maxSkew", "minDomains",
+                                   "nodeAffinityPolicy", "nodeTaintsPolicy", "topologyKey", "whenUnsatisfiable"}),
+    "volumeMounts": ("io.k8s.api.core.v1.VolumeMount", {"mountPath", "mountPropagation", "name", "readOnly",
+                                                        "subPath", "subPathExpr"}),
+    "volumes": ("io.k8s.api.core.v1.Volume", {
+        "awsElasticBlockStore", "azureDisk", "azureFile", "cephfs", "cinder", "configMap", "csi",
+        "downwardAPI", "emptyDir", "ephemeral", "fc", "flexVolume", "flocker", "gcePersistentDisk",
+        "gitRepo", "glusterfs", "hostPath", "iscsi", "name", "nfs", "persistentVolumeClaim",
+        "photonPersistentDisk", "portworxVolume", "projected", "quobyte", "rbd", "scaleIO",
+        "secret", "storageos", "vsphereVolume", }),
+}
+BUILTIN_TYPE_MAPPING["initContainers"] = BUILTIN_TYPE_MAPPING["containers"]
+
+
+def is_volume_claim_spec(properties: dict):
+    return all(ty in properties for ty in
+               {"accessModes", "dataSource", "dataSourceRef", "resources", "selector",
+                "storageClassName", "volumeMode", "volumeName"})
+
+
+def is_probe(properties: dict):
+    return all(ty in properties for ty in
+               {"exec", "failureThreshold", "grpc", "httpGet", "initialDelaySeconds", "periodSeconds",
+                "successThreshold", "tcpSocket", "terminationGracePeriodSeconds", "timeoutSeconds"})
+
+
+# Trying to infer custom type
+def infer_k8s_type(prop_name: str, schema: dict) -> ApiTypeRef | None:
+    properties = schema.get("properties")
+    if not properties:
+        return None
+
+    builtin_type = BUILTIN_TYPE_MAPPING.get(prop_name)
+    if builtin_type and all(ty in properties for ty in builtin_type[1]):
+        fqn = QualifiedName.parse(builtin_type[0])
+        return ApiTypeRef(fqn)
+
+    if is_label_selector(properties):
+        return ApiTypeRef(QualifiedName("LabelSelector", "meta", "v1"))
+
+    if is_key_selector(properties):
+        if "secret" in prop_name or "password" in prop_name or "key" in prop_name:
+            return ApiTypeRef(QualifiedName("SecretKeySelector", "core", "v1"))
+        return ApiTypeRef(QualifiedName("ConfigMapKeySelector", "core", "v1"))
+
+    if prop_name.lower().endswith("probe") and is_probe(properties):
+        return ApiTypeRef(QualifiedName("SecretReference", "core", "v1"))
+
+    if prop_name.lower().endswith("secretref") and is_secret_ref(properties):
+        return ApiTypeRef(QualifiedName("SecretReference", "core", "v1"))
+
+    if prop_name.lower().endswith("volumeclaimspec") and is_volume_claim_spec(properties):
+        return ApiTypeRef(QualifiedName("PersistentVolumeClaimSpec", "core", "v1"))
+
+    return None
 
 
 AnnotationProvider: t.TypeAlias = Callable[[str], dict]
