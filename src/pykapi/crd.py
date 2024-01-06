@@ -127,21 +127,24 @@ def is_secret_ref(properties: dict) -> bool:
 # loosy matching of common types based on field names only.
 BUILTIN_TYPE_MAPPING: dict[str, tuple[str, set[str]]] = {
     "affinity": ("io.k8s.api.core.v1.Affinity", {"nodeAffinity", "podAffinity", "podAntiAffinity"}),
+    # containers: "resizePolicy",
     "containers": ("io.k8s.api.core.v1.Container", {"args", "command", "env", "envFrom", "image", "imagePullPolicy",
                                                     "lifecycle", "livenessProbe", "name", "ports", "readinessProbe",
-                                                    "resizePolicy", "resources", "securityContext", "startupProbe",
+                                                    "resources", "securityContext", "startupProbe",
                                                     "stdin", "stdinOnce", "terminationMessagePath", "terminationMessagePolicy",
                                                     "tty", "volumeDevices", "volumeMounts", "workingDir"}),
+    "env": ("io.k8s.api.core.v1.EnvVar", {"name", "value", "valueFrom"}),
     "imagePullSecrets": ("io.k8s.api.core.v1.LocalObjectReference", {"name"}),
     "matchExpressions": ("io.k8s.api.core.v1.NodeSelectorRequirement", {"key", "operator", "values"}),
-    "resources": ("io.k8s.api.core.v1.ResourceRequirements", {"claims", "limits", "requests"}),
+    # resources: "claims"
+    "resources": ("io.k8s.api.core.v1.ResourceRequirements", {"limits", "requests"}),
     "securityContext": ("io.k8s.api.core.v1.PodSecurityContext",
                         {"fsGroup", "fsGroupChangePolicy", "runAsGroup", "runAsNonRoot", "runAsUser",
                          "seLinuxOptions", "seccompProfile", "supplementalGroups", "sysctls", "windowsOptions"}),
     "tolerations": ("io.k8s.api.core.v1.Toleration", {"effect", "key", "operator", "tolerationSeconds", "value"}),
+    # topologySpreadConstraints: "matchLabelKeys", "nodeAffinityPolicy", "nodeTaintsPolicy"
     "topologySpreadConstraints": ("io.k8s.api.core.v1.TopologySpreadConstraint",
-                                  {"labelSelector", "matchLabelKeys", "maxSkew", "minDomains",
-                                   "nodeAffinityPolicy", "nodeTaintsPolicy", "topologyKey", "whenUnsatisfiable"}),
+                                  {"labelSelector", "maxSkew", "minDomains", "topologyKey", "whenUnsatisfiable"}),
     "volumeMounts": ("io.k8s.api.core.v1.VolumeMount", {"mountPath", "mountPropagation", "name", "readOnly",
                                                         "subPath", "subPathExpr"}),
     "volumes": ("io.k8s.api.core.v1.Volume", {
