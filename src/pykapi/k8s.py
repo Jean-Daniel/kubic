@@ -142,6 +142,7 @@ def camel_to_snake(name: str):
 
 
 ACRONYMES = {"tls", "ipam", "api"}
+PLURALS_EXCEPTION = {"kerberos", "status", "tls"}
 
 
 def type_name_from_property_name(name: str):
@@ -154,7 +155,8 @@ def type_name_from_property_name(name: str):
         return name.upper()
 
     # egress for instance
-    if name.endswith("s") and not name.endswith("ss") and not name.endswith("tatus"):
+    low_name = name.lower()
+    if name.endswith("s") and not name.endswith("ss") and not any(low_name.endswith(excluded) for excluded in PLURALS_EXCEPTION):
         name = name.removesuffix("s")
         # just in case
         if len(name) <= 3:

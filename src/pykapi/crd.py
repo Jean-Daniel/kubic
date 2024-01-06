@@ -124,10 +124,6 @@ def is_secret_ref(properties: dict) -> bool:
     )
 
 
-#     nodeAffinity: "io.k8s.api.core.v1.NodeAffinity"
-#     podAffinity: "io.k8s.api.core.v1.PodAffinity"
-#     podAntiAffinity: "io.k8s.api.core.v1.PodAntiAffinity"
-
 # loosy matching of common types based on field names only.
 BUILTIN_TYPE_MAPPING: dict[str, tuple[str, set[str]]] = {
     "affinity": ("io.k8s.api.core.v1.Affinity", {"nodeAffinity", "podAffinity", "podAntiAffinity"}),
@@ -196,26 +192,28 @@ def infer_k8s_type(prop_name: str, schema: dict) -> ApiTypeRef | None:
     if is_label_selector(properties):
         return ApiTypeRef(QualifiedName("LabelSelector", "meta", "v1"))
 
+    low_name = prop_name.lower()
     if is_key_selector(properties):
-        if "secret" in prop_name or "password" in prop_name or "key" in prop_name:
+        if any(kw in low_name for kw in ["secret", "username", "password", "key", "credentials"]):
             return ApiTypeRef(QualifiedName("SecretKeySelector", "core", "v1"))
         return ApiTypeRef(QualifiedName("ConfigMapKeySelector", "core", "v1"))
 
-    if prop_name.lower().endswith("probe") and is_probe(properties):
+    if low_name.endswith("probe") and is_probe(properties):
         return ApiTypeRef(QualifiedName("Probe", "core", "v1"))
 
-    if prop_name.lower().endswith("secretref") and is_secret_ref(properties):
+    if low_name.endswith("secretref") and is_secret_ref(properties):
         return ApiTypeRef(QualifiedName("SecretReference", "core", "v1"))
 
-    if "volumeclaimspec" in prop_name.lower() and is_volume_claim_spec(properties):
+    if "volumeclaimspec" in low_name and is_volume_claim_spec(properties):
         return ApiTypeRef(QualifiedName("PersistentVolumeClaimSpec", "core", "v1"))
 
-    # PersistentVolumeClaim
-    # PersistentVolumeClaimTemplate
-    if "volumeclaimtemplate" in prop_name.lower() and is_volume_claim_template(properties):
+    if "volumeclaimtemplate" in low_name and is_volume_claim_template(properties):
         ty = "PersistentVolumeClaim" if "kind" in properties else "PersistentVolumeClaimTemplate"
         return ApiTypeRef(QualifiedName(ty, "core", "v1"))
 
+    #     nodeAffinity: "io.k8s.api.core.v1.NodeAffinity"
+    #     podAffinity: "io.k8s.api.core.v1.PodAffinity"
+    #     podAntiAffinity: "io.k8s.api.core.v1.PodAntiAffinity"
     return None
 
 
