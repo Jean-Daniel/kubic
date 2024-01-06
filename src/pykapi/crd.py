@@ -164,6 +164,17 @@ def is_volume_claim_spec(properties: dict):
                 "storageClassName", "volumeMode", "volumeName"})
 
 
+def is_volume_claim_template(properties: dict):
+    # PersistentVolumeClaim
+    # PersistentVolumeClaimTemplate
+    spec = properties.get("spec")
+    if not spec or not spec.get("type") == "object":
+        return False
+
+    spec_properties = spec.get("properties")
+    return spec_properties and is_volume_claim_spec(spec_properties)
+
+
 def is_probe(properties: dict):
     return all(ty in properties for ty in
                {"exec", "failureThreshold", "grpc", "httpGet", "initialDelaySeconds", "periodSeconds",
@@ -176,6 +187,7 @@ def infer_k8s_type(prop_name: str, schema: dict) -> ApiTypeRef | None:
     if not properties:
         return None
 
+    # Simple type inferrence based only on prop_name and first level field names.
     builtin_type = BUILTIN_TYPE_MAPPING.get(prop_name)
     if builtin_type and all(ty in properties for ty in builtin_type[1]):
         fqn = QualifiedName.parse(builtin_type[0])
@@ -195,8 +207,14 @@ def infer_k8s_type(prop_name: str, schema: dict) -> ApiTypeRef | None:
     if prop_name.lower().endswith("secretref") and is_secret_ref(properties):
         return ApiTypeRef(QualifiedName("SecretReference", "core", "v1"))
 
-    if prop_name.lower().endswith("volumeclaimspec") and is_volume_claim_spec(properties):
+    if "volumeclaimspec" in prop_name.lower() and is_volume_claim_spec(properties):
         return ApiTypeRef(QualifiedName("PersistentVolumeClaimSpec", "core", "v1"))
+
+    # PersistentVolumeClaim
+    # PersistentVolumeClaimTemplate
+    if "volumeclaimtemplate" in prop_name.lower() and is_volume_claim_template(properties):
+        ty = "PersistentVolumeClaim" if "kind" in properties else "PersistentVolumeClaimTemplate"
+        return ApiTypeRef(QualifiedName(ty, "core", "v1"))
 
     return None
 
