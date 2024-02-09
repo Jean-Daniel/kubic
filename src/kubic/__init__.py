@@ -336,16 +336,20 @@ class KubernetesApiResource(KubernetesObject, metaclass=_K8SApiResourceMeta):
             self.metadata.namespace = namespace
 
     @property
-    def api_version(self):
+    def api_version(self) -> str:
         return self._api_version_
 
     @property
-    def group(self):
+    def group(self) -> str:
         return self._api_group_
 
     @property
-    def kind(self):
+    def kind(self) -> str:
         return self._kind_
+
+    @property
+    def name(self) -> str:
+        return self.metadata.name
 
     @property
     def is_namespaced(self) -> bool:
