@@ -73,11 +73,14 @@ class JobSpec(KubernetesObject):
 
     active_deadline_seconds: int
     backoff_limit: int
+    backoff_limit_per_index: int
     completion_mode: str
     completions: int
     manual_selector: bool
+    max_failed_indexes: int
     parallelism: int
     pod_failure_policy: PodFailurePolicy
+    pod_replacement_policy: str
     selector: meta.LabelSelector
     suspend: bool
     template: core.PodTemplateSpec
@@ -87,11 +90,14 @@ class JobSpec(KubernetesObject):
         self,
         active_deadline_seconds: int = None,
         backoff_limit: int = None,
+        backoff_limit_per_index: int = None,
         completion_mode: str = None,
         completions: int = None,
         manual_selector: bool = None,
+        max_failed_indexes: int = None,
         parallelism: int = None,
         pod_failure_policy: PodFailurePolicy = None,
+        pod_replacement_policy: str = None,
         selector: meta.LabelSelector = None,
         suspend: bool = None,
         template: core.PodTemplateSpec = None,
@@ -100,11 +106,14 @@ class JobSpec(KubernetesObject):
         super().__init__(
             active_deadline_seconds=active_deadline_seconds,
             backoff_limit=backoff_limit,
+            backoff_limit_per_index=backoff_limit_per_index,
             completion_mode=completion_mode,
             completions=completions,
             manual_selector=manual_selector,
+            max_failed_indexes=max_failed_indexes,
             parallelism=parallelism,
             pod_failure_policy=pod_failure_policy,
+            pod_replacement_policy=pod_replacement_policy,
             selector=selector,
             suspend=suspend,
             template=template,
@@ -297,9 +306,11 @@ class JobStatus(KubernetesObject):
     completion_time: meta.Time
     conditions: list[JobCondition]
     failed: int
+    failed_indexes: str
     ready: int
     start_time: meta.Time
     succeeded: int
+    terminating: int
     uncounted_terminated_pods: UncountedTerminatedPods
 
     def __init__(
@@ -309,9 +320,11 @@ class JobStatus(KubernetesObject):
         completion_time: meta.Time = None,
         conditions: list[JobCondition] = None,
         failed: int = None,
+        failed_indexes: str = None,
         ready: int = None,
         start_time: meta.Time = None,
         succeeded: int = None,
+        terminating: int = None,
         uncounted_terminated_pods: UncountedTerminatedPods = None,
     ):
         super().__init__(
@@ -320,8 +333,10 @@ class JobStatus(KubernetesObject):
             completion_time=completion_time,
             conditions=conditions,
             failed=failed,
+            failed_indexes=failed_indexes,
             ready=ready,
             start_time=start_time,
             succeeded=succeeded,
+            terminating=terminating,
             uncounted_terminated_pods=uncounted_terminated_pods,
         )

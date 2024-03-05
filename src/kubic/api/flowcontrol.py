@@ -2,6 +2,18 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import meta
 
 
+class ExemptPriorityLevelConfiguration(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+
+    lendable_percent: int
+    nominal_concurrency_shares: int
+
+    def __init__(self, lendable_percent: int = None, nominal_concurrency_shares: int = None):
+        super().__init__(lendable_percent=lendable_percent, nominal_concurrency_shares=nominal_concurrency_shares)
+
+
 class FlowDistinguisherMethod(KubernetesObject):
     __slots__ = ()
 
@@ -297,11 +309,14 @@ class PriorityLevelConfigurationSpec(KubernetesObject):
 
     _required_ = ["type"]
 
+    exempt: ExemptPriorityLevelConfiguration
     limited: LimitedPriorityLevelConfiguration
     type: str
 
-    def __init__(self, limited: LimitedPriorityLevelConfiguration = None, type: str = None):
-        super().__init__(limited=limited, type=type)
+    def __init__(
+        self, exempt: ExemptPriorityLevelConfiguration = None, limited: LimitedPriorityLevelConfiguration = None, type: str = None
+    ):
+        super().__init__(exempt=exempt, limited=limited, type=type)
 
 
 class PriorityLevelConfiguration(KubernetesApiResource):

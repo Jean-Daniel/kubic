@@ -141,7 +141,7 @@ def camel_to_snake(name: str):
     return snake
 
 
-ACRONYMES = {"tls", "ipam", "api"}
+ACRONYMES = {"tls", "ipam", "api", "cidr"}
 PLURALS_EXCEPTION = {"kerberos", "status", "tls"}
 
 

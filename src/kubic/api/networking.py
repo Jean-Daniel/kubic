@@ -485,14 +485,3 @@ class NetworkPolicyList(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, items: list[NetworkPolicy] = None, metadata: meta.ListMeta = None):
         super().__init__(name, namespace, items=items, metadata=metadata)
-
-
-class NetworkPolicyStatus(KubernetesObject):
-    __slots__ = ()
-
-    _api_version_ = "networking.k8s.io/v1"
-
-    conditions: list[meta.Condition]
-
-    def __init__(self, conditions: list[meta.Condition] = None):
-        super().__init__(conditions=conditions)

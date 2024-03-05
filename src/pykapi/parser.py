@@ -2,7 +2,8 @@ import sys
 from collections import defaultdict
 from collections.abc import Iterable
 
-from .k8s import QualifiedName, module_for_group
+from kubic import snake_to_camel
+from .k8s import QualifiedName, module_for_group, type_name_from_property_name
 from .types import (
     TypeAlias,
     ApiResourceType,
@@ -33,11 +34,6 @@ IntOrStringType = TypeAlias(
     "int | str",
     description="IntOrString is a type that can hold an int32 or a string.",
 )
-
-IDNHostname = TypeAlias(
-    QualifiedName("IDNHostname", "core", "v1"),
-    "str",
-    description="")
 
 Base64Type = TypeAlias(
     QualifiedName("Base64", "core", "v1"),
@@ -261,6 +257,11 @@ class ApiGroup:
 class Parser:
     def __init__(self):
         self._pendings: list[tuple[ObjectType, dict]] = []
+        self._string_fmts: dict[str, TypeAlias] = {
+            "int-or-string": IntOrStringType,
+            "byte": Base64Type,
+            "date-time": TimeType,
+        }
 
     def group_for_type(self, fqn: QualifiedName) -> ApiGroup:
         raise NotImplementedError()
@@ -370,18 +371,19 @@ class Parser:
 
         if prop_type == "string":
             fmt = schema.get("format")
-            if fmt == "int-or-string":
-                return IntOrStringType
-            if fmt == "byte":
-                return Base64Type
-            if fmt == "date-time":
-                return TimeType
-            # cilium cluster wide network policy
-            if fmt == "idn-hostname":
-                return IDNHostname
+            if not fmt:
+                return "str"
 
-            assert not fmt, f"string format {fmt} not supported"
-            return "str"
+            ty = self._string_fmts.get(fmt)
+            if ty:
+                return ty
+
+            name = type_name_from_property_name(fmt)
+            ty = TypeAlias(
+                QualifiedName(name, obj_type.fqn.group, obj_type.fqn.version),
+                "str", description="")
+            self._string_fmts[fmt] = ty
+            return ty
 
         if prop_type == "number":
             fmt = schema.get("format")

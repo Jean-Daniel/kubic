@@ -12,7 +12,6 @@ from pykapi.parser import (
     IntOrStringType,
     Base64Type,
     TimeType,
-    IDNHostname,
     QuantityType,
 )
 from pykapi.types import Type, ApiType, TypeAlias, ApiResourceType, ObjectType
@@ -81,7 +80,7 @@ class ApiParser(Parser):
 
     def import_types(self, names: Iterable[str]) -> list[ApiGroup]:
         # register builtin types
-        for t in (IntOrStringType, QuantityType, Base64Type, TimeType, IDNHostname):
+        for t in (IntOrStringType, QuantityType, Base64Type, TimeType):
             self.group_for_type(t).add(t)
 
         if not names:

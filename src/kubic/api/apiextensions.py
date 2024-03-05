@@ -126,12 +126,14 @@ class ValidationRule(KubernetesObject):
 
     _required_ = ["rule"]
 
+    field_path: str
     message: str
     message_expression: str
+    reason: str
     rule: str
 
-    def __init__(self, message: str = None, message_expression: str = None, rule: str = None):
-        super().__init__(message=message, message_expression=message_expression, rule=rule)
+    def __init__(self, field_path: str = None, message: str = None, message_expression: str = None, reason: str = None, rule: str = None):
+        super().__init__(field_path=field_path, message=message, message_expression=message_expression, reason=reason, rule=rule)
 
 
 class JSONSchemaProps(KubernetesObject):

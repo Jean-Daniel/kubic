@@ -256,9 +256,13 @@ class ParamRef(KubernetesObject):
 
     name: str
     namespace: str
+    parameter_not_found_action: str
+    selector: meta.LabelSelector
 
-    def __init__(self, name: str = None, namespace: str = None):
-        super().__init__(name=name, namespace=namespace)
+    def __init__(
+        self, name: str = None, namespace: str = None, parameter_not_found_action: str = None, selector: meta.LabelSelector = None
+    ):
+        super().__init__(name=name, namespace=namespace, parameter_not_found_action=parameter_not_found_action, selector=selector)
 
 
 class TypeChecking(KubernetesObject):
@@ -288,6 +292,20 @@ class Validation(KubernetesObject):
         super().__init__(expression=expression, message=message, message_expression=message_expression, reason=reason)
 
 
+class Variable(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+
+    _required_ = ["expression", "name"]
+
+    expression: str
+    name: str
+
+    def __init__(self, expression: str = None, name: str = None):
+        super().__init__(expression=expression, name=name)
+
+
 class ValidatingAdmissionPolicySpec(KubernetesObject):
     __slots__ = ()
 
@@ -299,6 +317,7 @@ class ValidatingAdmissionPolicySpec(KubernetesObject):
     match_constraints: MatchResources
     param_kind: ParamKind
     validations: list[Validation]
+    variables: list[Variable]
 
     def __init__(
         self,
@@ -308,6 +327,7 @@ class ValidatingAdmissionPolicySpec(KubernetesObject):
         match_constraints: MatchResources = None,
         param_kind: ParamKind = None,
         validations: list[Validation] = None,
+        variables: list[Variable] = None,
     ):
         super().__init__(
             audit_annotations=audit_annotations,
@@ -316,6 +336,7 @@ class ValidatingAdmissionPolicySpec(KubernetesObject):
             match_constraints=match_constraints,
             param_kind=param_kind,
             validations=validations,
+            variables=variables,
         )
 
 

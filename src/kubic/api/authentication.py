@@ -19,7 +19,7 @@ class BoundObjectReference(KubernetesObject):
 class SelfSubjectReview(KubernetesApiResource):
     __slots__ = ()
 
-    _api_version_ = "authentication.k8s.io/v1alpha1"
+    _api_version_ = "authentication.k8s.io/v1"
     _api_group_ = "authentication.k8s.io"
     _kind_ = "SelfSubjectReview"
     _scope_ = "namespace"
@@ -47,7 +47,7 @@ class UserInfo(KubernetesObject):
 class SelfSubjectReviewStatus(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "authentication.k8s.io/v1alpha1"
+    _api_version_ = "authentication.k8s.io/v1"
 
     user_info: UserInfo
 

@@ -1212,6 +1212,7 @@ class Container(KubernetesObject):
     readiness_probe: Probe
     resize_policy: list[ContainerResizePolicy]
     resources: ResourceRequirements
+    restart_policy: str
     security_context: SecurityContext
     startup_probe: Probe
     stdin: bool
@@ -1238,6 +1239,7 @@ class Container(KubernetesObject):
         readiness_probe: Probe = None,
         resize_policy: list[ContainerResizePolicy] = None,
         resources: ResourceRequirements = None,
+        restart_policy: str = None,
         security_context: SecurityContext = None,
         startup_probe: Probe = None,
         stdin: bool = None,
@@ -1263,6 +1265,7 @@ class Container(KubernetesObject):
             readiness_probe=readiness_probe,
             resize_policy=resize_policy,
             resources=resources,
+            restart_policy=restart_policy,
             security_context=security_context,
             startup_probe=startup_probe,
             stdin=stdin,
@@ -1598,6 +1601,7 @@ class EphemeralContainer(KubernetesObject):
     readiness_probe: Probe
     resize_policy: list[ContainerResizePolicy]
     resources: ResourceRequirements
+    restart_policy: str
     security_context: SecurityContext
     startup_probe: Probe
     stdin: bool
@@ -1625,6 +1629,7 @@ class EphemeralContainer(KubernetesObject):
         readiness_probe: Probe = None,
         resize_policy: list[ContainerResizePolicy] = None,
         resources: ResourceRequirements = None,
+        restart_policy: str = None,
         security_context: SecurityContext = None,
         startup_probe: Probe = None,
         stdin: bool = None,
@@ -1651,6 +1656,7 @@ class EphemeralContainer(KubernetesObject):
             readiness_probe=readiness_probe,
             resize_policy=resize_policy,
             resources=resources,
+            restart_policy=restart_policy,
             security_context=security_context,
             startup_probe=startup_probe,
             stdin=stdin,
@@ -2029,6 +2035,17 @@ class HostAlias(KubernetesObject):
 
     def __init__(self, hostnames: list[str] = None, ip: str = None):
         super().__init__(hostnames=hostnames, ip=ip)
+
+
+class HostIP(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    ip: str
+
+    def __init__(self, ip: str = None):
+        super().__init__(ip=ip)
 
 
 class HostPathVolumeSource(KubernetesObject):
@@ -3101,28 +3118,28 @@ class PersistentVolumeClaimStatus(KubernetesObject):
     _api_version_ = "v1"
 
     access_modes: list[str]
+    allocated_resource_statuses: dict[str, str]
     allocated_resources: dict[str, Quantity]
     capacity: dict[str, Quantity]
     conditions: list[PersistentVolumeClaimCondition]
     phase: str
-    resize_status: str
 
     def __init__(
         self,
         access_modes: list[str] = None,
+        allocated_resource_statuses: dict[str, str] = None,
         allocated_resources: dict[str, Quantity] = None,
         capacity: dict[str, Quantity] = None,
         conditions: list[PersistentVolumeClaimCondition] = None,
         phase: str = None,
-        resize_status: str = None,
     ):
         super().__init__(
             access_modes=access_modes,
+            allocated_resource_statuses=allocated_resource_statuses,
             allocated_resources=allocated_resources,
             capacity=capacity,
             conditions=conditions,
             phase=phase,
-            resize_status=resize_status,
         )
 
 
@@ -3162,12 +3179,13 @@ class PersistentVolumeStatus(KubernetesObject):
 
     _api_version_ = "v1"
 
+    last_phase_transition_time: meta.Time
     message: str
     phase: str
     reason: str
 
-    def __init__(self, message: str = None, phase: str = None, reason: str = None):
-        super().__init__(message=message, phase=phase, reason=reason)
+    def __init__(self, last_phase_transition_time: meta.Time = None, message: str = None, phase: str = None, reason: str = None):
+        super().__init__(last_phase_transition_time=last_phase_transition_time, message=message, phase=phase, reason=reason)
 
 
 class PodDNSConfigOption(KubernetesObject):
@@ -3881,6 +3899,20 @@ class PodList(KubernetesApiResource):
         super().__init__(name, namespace, items=items, metadata=metadata)
 
 
+class PodResourceClaimStatus(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["name"]
+
+    name: str
+    resource_claim_name: str
+
+    def __init__(self, name: str = None, resource_claim_name: str = None):
+        super().__init__(name=name, resource_claim_name=resource_claim_name)
+
+
 class PodStatus(KubernetesObject):
     __slots__ = ()
 
@@ -3888,11 +3920,13 @@ class PodStatus(KubernetesObject):
 
     _field_names_ = {
         "host_ip": "hostIP",
+        "host_ips": "hostIPs",
         "pod_ip": "podIP",
         "pod_ips": "podIPs",
     }
     _revfield_names_ = {
         "hostIP": "host_ip",
+        "hostIPs": "host_ips",
         "podIP": "pod_ip",
         "podIPs": "pod_ips",
     }
@@ -3901,6 +3935,7 @@ class PodStatus(KubernetesObject):
     container_statuses: list[ContainerStatus]
     ephemeral_container_statuses: list[ContainerStatus]
     host_ip: str
+    host_ips: list[HostIP]
     init_container_statuses: list[ContainerStatus]
     message: str
     nominated_node_name: str
@@ -3910,6 +3945,7 @@ class PodStatus(KubernetesObject):
     qos_class: str
     reason: str
     resize: str
+    resource_claim_statuses: list[PodResourceClaimStatus]
     start_time: meta.Time
 
     def __init__(
@@ -3918,6 +3954,7 @@ class PodStatus(KubernetesObject):
         container_statuses: list[ContainerStatus] = None,
         ephemeral_container_statuses: list[ContainerStatus] = None,
         host_ip: str = None,
+        host_ips: list[HostIP] = None,
         init_container_statuses: list[ContainerStatus] = None,
         message: str = None,
         nominated_node_name: str = None,
@@ -3927,6 +3964,7 @@ class PodStatus(KubernetesObject):
         qos_class: str = None,
         reason: str = None,
         resize: str = None,
+        resource_claim_statuses: list[PodResourceClaimStatus] = None,
         start_time: meta.Time = None,
     ):
         super().__init__(
@@ -3934,6 +3972,7 @@ class PodStatus(KubernetesObject):
             container_statuses=container_statuses,
             ephemeral_container_statuses=ephemeral_container_statuses,
             host_ip=host_ip,
+            host_ips=host_ips,
             init_container_statuses=init_container_statuses,
             message=message,
             nominated_node_name=nominated_node_name,
@@ -3943,6 +3982,7 @@ class PodStatus(KubernetesObject):
             qos_class=qos_class,
             reason=reason,
             resize=resize,
+            resource_claim_statuses=resource_claim_statuses,
             start_time=start_time,
         )
 

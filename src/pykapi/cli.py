@@ -2,16 +2,15 @@ import argparse
 import logging
 import os
 import pathlib
-import subprocess
 import sys
 import tempfile
 import typing as t
-from importlib import resources
-from os import fdopen, fspath
+from os import fdopen
 from tempfile import mktemp
 from urllib.request import urlretrieve
 
 import yaml
+from kubernetes import config, client
 from yaml import CSafeLoader
 
 from .api import import_api_types
@@ -162,8 +161,18 @@ class AnnotationFactory:
         return annotations
 
 
+def _sanitize_crd(crd: dict) -> dict:
+    crd.pop("status", None)
+    crd["metadata"].pop("annotations", None)
+    crd["metadata"].pop("managedFields", None)
+    crd["metadata"].pop("ownerReference", None)
+    return crd
+
+
 def import_custom_resources(args):
     files = []
+    v1: client.ApiextensionsV1Api | None = None
+    api_groups: dict[str, str] = {}
     for crd in args.crds:
         filename, ext = os.path.splitext(crd)
         if ext.lower() in (".yml", ".yaml", ".json") or os.path.isdir(crd):
@@ -178,19 +187,36 @@ def import_custom_resources(args):
         else:
             cached: pathlib.Path = pathlib.Path(mktemp(f"-{crd}.yaml"))
 
-        content = subprocess.run(
-            ["kubectl", "get", f"crds/{crd}", "-o", "json"],
-            check=True,
-            capture_output=True,
-        ).stdout
-        schema = yaml.load(content, CSafeLoader)
-        # remove noise from live schema
-        schema.pop("status", None)
-        schema["metadata"].pop("annotations", None)
-        schema["metadata"].pop("managedFields", None)
+        if v1 is None:
+            config.load_kube_config()
+            v1 = client.ApiextensionsV1Api()
+
+        # Try to interpret it as a CRD first
+        try:
+            response = v1.read_custom_resource_definition(crd)
+            schemas = [_sanitize_crd(v1.api_client.sanitize_for_serialization(response))]
+        except client.exceptions.ApiException as e:
+            if e.status != 404:
+                raise e
+
+            if not api_groups:
+                for api in client.ApisApi().get_api_versions().groups:
+                    group, _, _ = api.preferred_version.group_version.rpartition('/')
+                    api_groups[group] = api.preferred_version.version
+            v = api_groups.get(crd)
+            if not v:
+                raise ValueError(f"'{crd}' is neither a CRD nor an API Group.")
+
+            schemas = []
+            response = client.CustomObjectsApi().get_api_resources(group=crd, version=v)
+            for rsrc in response.resources:
+                if '/' in rsrc.name:
+                    continue
+                crd_schema = v1.read_custom_resource_definition(f"{rsrc.name}.{crd}")
+                schemas.append(_sanitize_crd(v1.api_client.sanitize_for_serialization(crd_schema)))
 
         with cached.open("w") as f:
-            yaml.dump(schema, f, yaml.CSafeDumper, indent=2)
+            yaml.dump_all(schemas, f, yaml.CSafeDumper, indent=2)
 
         files.append(cached)
 
@@ -226,7 +252,7 @@ def main():
     crd.add_argument("-o", "--output", type=str, default="-")
 
     schema = subparsers.add_parser("schema")
-    schema.add_argument("--version", type=str, default="1.23")
+    schema.add_argument("--version", type=str, required=True)
     schema.add_argument("-o", "--output", type=argparse.FileType('w', encoding='UTF-8'), default="-")
 
     args = parser.parse_args()

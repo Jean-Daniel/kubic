@@ -19,9 +19,21 @@ class ServerStorageVersion(KubernetesObject):
     api_server_id: str
     decodable_versions: list[str]
     encoding_version: str
+    served_versions: list[str]
 
-    def __init__(self, api_server_id: str = None, decodable_versions: list[str] = None, encoding_version: str = None):
-        super().__init__(api_server_id=api_server_id, decodable_versions=decodable_versions, encoding_version=encoding_version)
+    def __init__(
+        self,
+        api_server_id: str = None,
+        decodable_versions: list[str] = None,
+        encoding_version: str = None,
+        served_versions: list[str] = None,
+    ):
+        super().__init__(
+            api_server_id=api_server_id,
+            decodable_versions=decodable_versions,
+            encoding_version=encoding_version,
+            served_versions=served_versions,
+        )
 
 
 StorageVersionSpec: t.TypeAlias = dict[str, t.Any]
