@@ -172,7 +172,7 @@ def _sanitize_crd(crd: dict) -> dict:
 def import_custom_resources(args):
     files = []
     v1: client.ApiextensionsV1Api | None = None
-    api_groups: dict[str, str] = {}
+    api_groups: dict[str, list[str]] = {}
     for crd in args.crds:
         filename, ext = os.path.splitext(crd)
         if ext.lower() in (".yml", ".yaml", ".json") or os.path.isdir(crd):
@@ -202,18 +202,23 @@ def import_custom_resources(args):
             if not api_groups:
                 for api in client.ApisApi().get_api_versions().groups:
                     group, _, _ = api.preferred_version.group_version.rpartition('/')
-                    api_groups[group] = api.preferred_version.version
+                    api_groups[group] = sorted(version.version for version in api.versions)
             v = api_groups.get(crd)
             if not v:
                 raise ValueError(f"'{crd}' is neither a CRD nor an API Group.")
 
+            # Iterate over all version, as a group can have resources in multiple versions
             schemas = []
-            response = client.CustomObjectsApi().get_api_resources(group=crd, version=v)
-            for rsrc in response.resources:
-                if '/' in rsrc.name:
-                    continue
-                crd_schema = v1.read_custom_resource_definition(f"{rsrc.name}.{crd}")
-                schemas.append(_sanitize_crd(v1.api_client.sanitize_for_serialization(crd_schema)))
+            fetched = set()
+            for version in v:
+                response = client.CustomObjectsApi().get_api_resources(group=crd, version=version)
+                for rsrc in response.resources:
+                    # Skip already fetched (in case a CRD is declared in more than one version)
+                    if '/' in rsrc.name or rsrc.name in fetched:
+                        continue
+                    fetched.add(rsrc.name)
+                    crd_schema = v1.read_custom_resource_definition(f"{rsrc.name}.{crd}")
+                    schemas.append(_sanitize_crd(v1.api_client.sanitize_for_serialization(crd_schema)))
 
         with cached.open("w") as f:
             yaml.dump_all(schemas, f, yaml.CSafeDumper, indent=2)
