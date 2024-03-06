@@ -204,7 +204,7 @@ def infer_k8s_type(prop_name: str, schema: dict) -> ApiTypeRef | None:
     if low_name.endswith("probe") and is_probe(properties):
         return ApiTypeRef(QualifiedName("Probe", "core", "v1"))
 
-    if low_name.endswith("secretref") and is_secret_ref(properties):
+    if "secret" in low_name and is_secret_ref(properties):
         return ApiTypeRef(QualifiedName("SecretReference", "core", "v1"))
 
     if "volumeclaimspec" in low_name and is_volume_claim_spec(properties):
