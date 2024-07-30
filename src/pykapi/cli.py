@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import pathlib
+import re
 import sys
 import tempfile
 import typing as t
@@ -75,6 +76,14 @@ class CRD(t.NamedTuple):
     schema: dict
 
 
+version_re = re.compile(r"v(\d+)(?:([a-z]+)(\d+))?")
+
+
+def parse_version(vers: str) -> tuple[int, str, int]:
+    m = version_re.match(vers)
+    return m[1], m[2] or "~", m[3] or 99
+
+
 def create_crd(schema: dict) -> CRD:
     if schema.get("kind") != "CustomResourceDefinition":
         raise ValueError("Not a CustomResourceDefinition")
@@ -89,10 +98,11 @@ def create_crd(schema: dict) -> CRD:
         storage = None
         version = None
         for v in spec["versions"]:
+            ver = parse_version(v["name"])
             if v["storage"]:
-                storage = v["name"]
-            if not version or version < v["name"]:
-                version = v["name"]
+                storage = ver
+            if not version or version < ver:
+                version = ver
                 vers = v
         if storage and storage != version:
             logger.warning(f"[{group}.{kind}] latest version ({version}) is not defined as the storage version ({storage}).")
