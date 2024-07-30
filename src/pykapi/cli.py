@@ -107,7 +107,7 @@ def create_crd(schema: dict) -> CRD:
         if storage and storage != version:
             logger.warning(f"[{group}.{kind}] latest version ({version}) is not defined as the storage version ({storage}).")
     else:
-        version = spec["version"]
+        vers["name"] = spec["version"]
 
     if "schema" in vers:
         openapi = vers["schema"]["openAPIV3Schema"]
@@ -115,10 +115,10 @@ def create_crd(schema: dict) -> CRD:
         openapi = spec["validation"]["openAPIV3Schema"]
 
     if "x-kubernetes-group-version-kind" not in openapi:
-        openapi["x-kubernetes-group-version-kind"] = [{"group": group, "kind": kind, "version": version}]
+        openapi["x-kubernetes-group-version-kind"] = [{"group": group, "kind": kind, "version": vers["name"]}]
     openapi["x-scoped"] = spec.get("scope") == "Namespaced"
 
-    return CRD(QualifiedName(kind, group, version), openapi)
+    return CRD(QualifiedName(kind, group, vers["name"]), openapi)
 
 
 def read_crds(paths: list[pathlib.Path], crds: list):
