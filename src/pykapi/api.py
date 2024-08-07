@@ -158,6 +158,13 @@ class ApiParser(Parser):
                 assert (
                         fqn.version == gvk[0]["version"]
                 ), f"extract version {fqn.version} does not match type declared version {gvk[0]['version']}"
+
+                properties = schema["properties"]
+                # Trying to detect and skip Resource List
+                if "items" in properties and "spec" not in properties:
+                    logger.info(f"skipping resource List: {fqn}")
+                    return "t.Any"
+
                 typedecl = ApiResourceType(
                     fqn,
                     schema.get("description"),
