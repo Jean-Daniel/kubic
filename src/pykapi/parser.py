@@ -2,7 +2,6 @@ import sys
 from collections import defaultdict
 from collections.abc import Iterable
 
-from kubic import snake_to_camel
 from .k8s import QualifiedName, module_for_group, type_name_from_property_name
 from .types import (
     TypeAlias,
@@ -288,7 +287,6 @@ class Parser:
 
         # parse properties
         required = schema.get("required", [])
-
         patch = self.annotations_for_type(obj_type)
         is_api_resource = isinstance(obj_type, ApiResourceType)
         for prop, value in schema["properties"].items():
@@ -330,9 +328,9 @@ class Parser:
             prop_type = self.import_property(obj_type, prop, value)
             if prop_type:
                 obj_type.properties.append(
-                    NamedProperty(prop, prop_type, prop in required, snake_name)
+                    NamedProperty(prop, prop_type, prop in required, value.get("description"), snake_name)
                     if snake_name
-                    else Property(prop, prop_type, prop in required)
+                    else Property(prop, prop_type, prop in required, value.get("description"))
                 )
         obj_type.properties.sort()
 
@@ -350,7 +348,6 @@ class Parser:
                 assert isinstance(obj_type, ObjectType)
                 # this is an anonymous type -> register it for parsing later
                 ty = AnonymousType.with_property(schema.get("_type_name_", prop_name), obj_type)
-                ty.description = schema.get("description")
                 self._register_type(ty, schema)
                 return ty
 

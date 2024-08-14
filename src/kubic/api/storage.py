@@ -70,23 +70,6 @@ class CSIDriver(KubernetesApiResource):
         super().__init__(name, "", metadata=metadata, spec=spec)
 
 
-class CSIDriverList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "storage.k8s.io/v1"
-    _api_group_ = "storage.k8s.io"
-    _kind_ = "CSIDriverList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[CSIDriver]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[CSIDriver] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class VolumeNodeResources(KubernetesObject):
     __slots__ = ()
 
@@ -151,23 +134,6 @@ class CSINode(KubernetesApiResource):
         super().__init__(name, "", metadata=metadata, spec=spec)
 
 
-class CSINodeList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "storage.k8s.io/v1"
-    _api_group_ = "storage.k8s.io"
-    _kind_ = "CSINodeList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[CSINode]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[CSINode] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class CSIStorageCapacity(KubernetesApiResource):
     __slots__ = ()
 
@@ -203,23 +169,6 @@ class CSIStorageCapacity(KubernetesApiResource):
             node_topology=node_topology,
             storage_class_name=storage_class_name,
         )
-
-
-class CSIStorageCapacityList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "storage.k8s.io/v1"
-    _api_group_ = "storage.k8s.io"
-    _kind_ = "CSIStorageCapacityList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[CSIStorageCapacity]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[CSIStorageCapacity] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
 
 
 class StorageClass(KubernetesApiResource):
@@ -267,23 +216,6 @@ class StorageClass(KubernetesApiResource):
         )
 
 
-class StorageClassList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "storage.k8s.io/v1"
-    _api_group_ = "storage.k8s.io"
-    _kind_ = "StorageClassList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[StorageClass]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[StorageClass] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class VolumeAttachmentSource(KubernetesObject):
     __slots__ = ()
 
@@ -328,23 +260,6 @@ class VolumeAttachment(KubernetesApiResource):
         super().__init__(name, "", metadata=metadata, spec=spec)
 
 
-class VolumeAttachmentList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "storage.k8s.io/v1"
-    _api_group_ = "storage.k8s.io"
-    _kind_ = "VolumeAttachmentList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[VolumeAttachment]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[VolumeAttachment] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class VolumeError(KubernetesObject):
     __slots__ = ()
 
@@ -377,3 +292,23 @@ class VolumeAttachmentStatus(KubernetesObject):
         detach_error: VolumeError = None,
     ):
         super().__init__(attach_error=attach_error, attached=attached, attachment_metadata=attachment_metadata, detach_error=detach_error)
+
+
+class VolumeAttributesClass(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "storage.k8s.io/v1alpha1"
+    _api_group_ = "storage.k8s.io"
+    _kind_ = "VolumeAttributesClass"
+    _scope_ = "namespace"
+
+    _required_ = ["driver_name"]
+
+    driver_name: str
+    metadata: meta.ObjectMeta
+    parameters: dict[str, str]
+
+    def __init__(
+        self, name: str, namespace: str = None, driver_name: str = None, metadata: meta.ObjectMeta = None, parameters: dict[str, str] = None
+    ):
+        super().__init__(name, namespace, driver_name=driver_name, metadata=metadata, parameters=parameters)

@@ -12,13 +12,14 @@ from .types import (
     ObjectType,
     TypeAlias,
     ApiResourceType,
-    AnonymousType,
+    AnonymousType, ResourceType,
 )
 
 
 class TypePrinter:
-    def __init__(self, api_module="."):
+    def __init__(self, api_module: str = ".", docstrings: bool = False):
         self.api_module = api_module
+        self.docstrings = docstrings
 
     def print_group(self, group: ApiGroup, output: str):
         if output == "-":
@@ -69,19 +70,27 @@ class TypePrinter:
         stream.write(group.qualified_name(ty.type))
         stream.write("\n\n")
 
+    def print_docstring(self, description: str, stream: t.TextIO):
+        if not self.docstrings or not description:
+            return
+
+        stream.write('    """ ')
+        if "\n" in description:
+            stream.write("\n    ")
+            stream.write(description.replace("\n", "\n    "))
+            stream.write("\n    ")
+        else:
+            stream.write(description)
+        stream.write(' """\n')
+
     def print_type(self, group: ApiGroup, ty: ObjectType, stream: t.TextIO):
         stream.write("class ")
         stream.write(ty.name)
         stream.write(f"({ty.kubic_type})")
         stream.write(":\n")
 
-        # if ty.description:
-        #     stream.write('    """\n')
-        #     for line in ty.description.splitlines():
-        #         stream.write("    ")
-        #         stream.write(line)
-        #         stream.write("\n")
-        #     stream.write('    """\n')
+        if isinstance(ty, ResourceType):
+            self.print_docstring(ty.description, stream)
 
         stream.write("    __slots__ = ()\n")
 
@@ -129,6 +138,8 @@ class TypePrinter:
             stream.write(": ")
             stream.write(group.qualified_name(prop.type, ty))
             stream.write("\n")
+            # docstring
+            self.print_docstring(prop.description, stream)
 
         stream.write("\n    def __init__(self")
         if isinstance(ty, ApiResourceType):

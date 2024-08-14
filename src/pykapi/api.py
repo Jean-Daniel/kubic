@@ -14,7 +14,7 @@ from pykapi.parser import (
     TimeType,
     QuantityType,
 )
-from pykapi.types import Type, ApiType, TypeAlias, ApiResourceType, ObjectType
+from pykapi.types import Type, ApiType, TypeAlias, ApiResourceType, ObjectType, ResourceType
 
 logger = logging.getLogger("api")
 
@@ -30,6 +30,29 @@ def _is_greater_version(v1: str, v2: str) -> bool:
     elif len(v2) == 2:
         return True
     return v2 > v1
+
+
+CUSTOM_TYPES = [
+    TypeAlias(
+        QualifiedName("JSON", "apiextensions.k8s.io", "v1"),
+        'bool | int | float | str | list["JSON"], dict[str, "JSON"] | None',
+        description="Represents any valid JSON value."),
+
+    TypeAlias(
+        QualifiedName("JSONSchemaPropsOrBool", "apiextensions.k8s.io", "v1"),
+        '"JSONSchemaProps" | bool',
+        description="Represents JSONSchemaProps or a boolean value. Defaults to true for the boolean property."),
+
+    TypeAlias(
+        QualifiedName("JSONSchemaPropsOrArray", "apiextensions.k8s.io", "v1"),
+        '"JSONSchemaProps" | list["JSONSchemaProps"]',
+        description="Represents a value that can either be a JSONSchemaProps or an array of JSONSchemaProps. Mainly here for serialization purposes."),
+
+    TypeAlias(
+        QualifiedName("JSONSchemaPropsOrStringArray", "apiextensions.k8s.io", "v1"),
+        '"JSONSchemaProps" | list[str]',
+        description="Represents a JSONSchemaProps or a string array."),
+]
 
 
 class ApiParser(Parser):
@@ -72,6 +95,11 @@ class ApiParser(Parser):
         group = self._groups.get(fqn.group)
         if not group:
             group = ApiGroup(fqn.group, fqn.version)
+            # Prepopulate group with custom types
+            for ty in CUSTOM_TYPES:
+                if ty.group == fqn.group and ty.version == fqn.version:
+                    group.add(ty)
+
             self._groups[fqn.group] = group
         return group
 
@@ -171,7 +199,7 @@ class ApiParser(Parser):
                     schema.get("x-scoped", fqn.name not in CLUSTER_OBJECTS),
                 )
             else:
-                typedecl = ObjectType(fqn, schema.get("description"))
+                typedecl = ResourceType(fqn, schema.get("description"))
 
             self._register_type(typedecl, schema)
             return typedecl

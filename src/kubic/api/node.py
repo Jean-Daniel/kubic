@@ -44,20 +44,3 @@ class RuntimeClass(KubernetesApiResource):
         self, name: str, handler: str = None, metadata: meta.ObjectMeta = None, overhead: Overhead = None, scheduling: Scheduling = None
     ):
         super().__init__(name, "", handler=handler, metadata=metadata, overhead=overhead, scheduling=scheduling)
-
-
-class RuntimeClassList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "node.k8s.io/v1"
-    _api_group_ = "node.k8s.io"
-    _kind_ = "RuntimeClassList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[RuntimeClass]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[RuntimeClass] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)

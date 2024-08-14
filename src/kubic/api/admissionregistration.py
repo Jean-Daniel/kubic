@@ -5,7 +5,7 @@ from . import core, meta
 class AuditAnnotation(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     _required_ = ["key", "value_expression"]
 
@@ -19,7 +19,7 @@ class AuditAnnotation(KubernetesObject):
 class ExpressionWarning(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     _required_ = ["field_ref", "warning"]
 
@@ -47,7 +47,7 @@ class MatchCondition(KubernetesObject):
 class NamedRuleWithOperations(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     api_groups: list[str]
     api_versions: list[str]
@@ -78,7 +78,7 @@ class NamedRuleWithOperations(KubernetesObject):
 class MatchResources(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     exclude_resource_rules: list[NamedRuleWithOperations]
     match_policy: str
@@ -220,27 +220,10 @@ class MutatingWebhookConfiguration(KubernetesApiResource):
         super().__init__(name, "", metadata=metadata, webhooks=webhooks)
 
 
-class MutatingWebhookConfigurationList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "admissionregistration.k8s.io/v1"
-    _api_group_ = "admissionregistration.k8s.io"
-    _kind_ = "MutatingWebhookConfigurationList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[MutatingWebhookConfiguration]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[MutatingWebhookConfiguration] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class ParamKind(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     api_version: str
     kind: str
@@ -252,7 +235,7 @@ class ParamKind(KubernetesObject):
 class ParamRef(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     name: str
     namespace: str
@@ -268,7 +251,7 @@ class ParamRef(KubernetesObject):
 class TypeChecking(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     expression_warnings: list[ExpressionWarning]
 
@@ -279,7 +262,7 @@ class TypeChecking(KubernetesObject):
 class Validation(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     _required_ = ["expression"]
 
@@ -295,7 +278,7 @@ class Validation(KubernetesObject):
 class Variable(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     _required_ = ["expression", "name"]
 
@@ -309,7 +292,7 @@ class Variable(KubernetesObject):
 class ValidatingAdmissionPolicySpec(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     audit_annotations: list[AuditAnnotation]
     failure_policy: str
@@ -343,7 +326,7 @@ class ValidatingAdmissionPolicySpec(KubernetesObject):
 class ValidatingAdmissionPolicy(KubernetesApiResource):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
     _api_group_ = "admissionregistration.k8s.io"
     _kind_ = "ValidatingAdmissionPolicy"
     _scope_ = "namespace"
@@ -358,7 +341,7 @@ class ValidatingAdmissionPolicy(KubernetesApiResource):
 class ValidatingAdmissionPolicyBindingSpec(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     match_resources: MatchResources
     param_ref: ParamRef
@@ -380,7 +363,7 @@ class ValidatingAdmissionPolicyBindingSpec(KubernetesObject):
 class ValidatingAdmissionPolicyBinding(KubernetesApiResource):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
     _api_group_ = "admissionregistration.k8s.io"
     _kind_ = "ValidatingAdmissionPolicyBinding"
     _scope_ = "namespace"
@@ -394,42 +377,10 @@ class ValidatingAdmissionPolicyBinding(KubernetesApiResource):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
-class ValidatingAdmissionPolicyBindingList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
-    _api_group_ = "admissionregistration.k8s.io"
-    _kind_ = "ValidatingAdmissionPolicyBindingList"
-    _scope_ = "namespace"
-
-    items: list[ValidatingAdmissionPolicyBinding]
-    metadata: meta.ListMeta
-
-    def __init__(
-        self, name: str, namespace: str = None, items: list[ValidatingAdmissionPolicyBinding] = None, metadata: meta.ListMeta = None
-    ):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
-class ValidatingAdmissionPolicyList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
-    _api_group_ = "admissionregistration.k8s.io"
-    _kind_ = "ValidatingAdmissionPolicyList"
-    _scope_ = "namespace"
-
-    items: list[ValidatingAdmissionPolicy]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[ValidatingAdmissionPolicy] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class ValidatingAdmissionPolicyStatus(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "admissionregistration.k8s.io/v1alpha1"
+    _api_version_ = "admissionregistration.k8s.io/v1"
 
     conditions: list[meta.Condition]
     observed_generation: int
@@ -500,22 +451,3 @@ class ValidatingWebhookConfiguration(KubernetesApiResource):
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, webhooks: list[ValidatingWebhook] = None):
         super().__init__(name, "", metadata=metadata, webhooks=webhooks)
-
-
-class ValidatingWebhookConfigurationList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "admissionregistration.k8s.io/v1"
-    _api_group_ = "admissionregistration.k8s.io"
-    _kind_ = "ValidatingWebhookConfigurationList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[ValidatingWebhookConfiguration]
-    metadata: meta.ListMeta
-
-    def __init__(
-        self, name: str, namespace: str = None, items: list[ValidatingWebhookConfiguration] = None, metadata: meta.ListMeta = None
-    ):
-        super().__init__(name, namespace, items=items, metadata=metadata)

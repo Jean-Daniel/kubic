@@ -60,6 +60,7 @@ GROUP_MAPPING = {
     "io.k8s.api.authorization": "authorization.k8s.io",
     "io.k8s.api.authentication": "authentication.k8s.io",
     "io.k8s.api.flowcontrol": "flowcontrol.apiserver.k8s.io",
+    "io.k8s.api.storagemigration": "storagemigration.k8s.io",
     "io.k8s.api.apiserverinternal": "internal.apiserver.k8s.io",
     "io.k8s.api.admissionregistration": "admissionregistration.k8s.io",
     "io.k8s.kube-aggregator.pkg.apis.apiregistration": "apiregistration.k8s.io",

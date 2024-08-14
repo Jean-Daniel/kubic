@@ -2,35 +2,265 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-class ResourceHandle(KubernetesObject):
+class OpaqueDeviceConfiguration(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    data: str
-    driver_name: str
+    _required_ = ["driver", "parameters"]
 
-    def __init__(self, data: str = None, driver_name: str = None):
-        super().__init__(data=data, driver_name=driver_name)
+    driver: str
+    parameters: core.RawExtension
+
+    def __init__(self, driver: str = None, parameters: core.RawExtension = None):
+        super().__init__(driver=driver, parameters=parameters)
+
+
+class DeviceAllocationConfiguration(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["source"]
+
+    opaque: OpaqueDeviceConfiguration
+    requests: list[str]
+    source: str
+
+    def __init__(self, opaque: OpaqueDeviceConfiguration = None, requests: list[str] = None, source: str = None):
+        super().__init__(opaque=opaque, requests=requests, source=source)
+
+
+class DeviceRequestAllocationResult(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["device", "driver", "pool", "request"]
+
+    device: str
+    driver: str
+    pool: str
+    request: str
+
+    def __init__(self, device: str = None, driver: str = None, pool: str = None, request: str = None):
+        super().__init__(device=device, driver=driver, pool=pool, request=request)
+
+
+class DeviceAllocationResult(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    config: list[DeviceAllocationConfiguration]
+    results: list[DeviceRequestAllocationResult]
+
+    def __init__(self, config: list[DeviceAllocationConfiguration] = None, results: list[DeviceRequestAllocationResult] = None):
+        super().__init__(config=config, results=results)
 
 
 class AllocationResult(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    available_on_nodes: core.NodeSelector
-    resource_handles: list[ResourceHandle]
-    shareable: bool
+    controller: str
+    devices: DeviceAllocationResult
+    node_selector: core.NodeSelector
 
-    def __init__(self, available_on_nodes: core.NodeSelector = None, resource_handles: list[ResourceHandle] = None, shareable: bool = None):
-        super().__init__(available_on_nodes=available_on_nodes, resource_handles=resource_handles, shareable=shareable)
+    def __init__(self, controller: str = None, devices: DeviceAllocationResult = None, node_selector: core.NodeSelector = None):
+        super().__init__(controller=controller, devices=devices, node_selector=node_selector)
+
+
+class DeviceAttribute(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    bool: bool
+    int: int
+    string: str
+    version: str
+
+    def __init__(self, bool: bool = None, int: int = None, string: str = None, version: str = None):
+        super().__init__(bool=bool, int=int, string=string, version=version)
+
+
+class BasicDevice(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    attributes: dict[str, DeviceAttribute]
+    capacity: dict[str, core.Quantity]
+
+    def __init__(self, attributes: dict[str, DeviceAttribute] = None, capacity: dict[str, core.Quantity] = None):
+        super().__init__(attributes=attributes, capacity=capacity)
+
+
+class CELDeviceSelector(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["expression"]
+
+    expression: str
+
+    def __init__(self, expression: str = None):
+        super().__init__(expression=expression)
+
+
+class Device(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["name"]
+
+    basic: BasicDevice
+    name: str
+
+    def __init__(self, basic: BasicDevice = None, name: str = None):
+        super().__init__(basic=basic, name=name)
+
+
+class DeviceClaimConfiguration(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    opaque: OpaqueDeviceConfiguration
+    requests: list[str]
+
+    def __init__(self, opaque: OpaqueDeviceConfiguration = None, requests: list[str] = None):
+        super().__init__(opaque=opaque, requests=requests)
+
+
+class DeviceConstraint(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    match_attribute: str
+    requests: list[str]
+
+    def __init__(self, match_attribute: str = None, requests: list[str] = None):
+        super().__init__(match_attribute=match_attribute, requests=requests)
+
+
+class DeviceSelector(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    cel: CELDeviceSelector
+
+    def __init__(self, cel: CELDeviceSelector = None):
+        super().__init__(cel=cel)
+
+
+class DeviceRequest(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["device_class_name", "name"]
+
+    admin_access: bool
+    allocation_mode: str
+    count: int
+    device_class_name: str
+    name: str
+    selectors: list[DeviceSelector]
+
+    def __init__(
+        self,
+        admin_access: bool = None,
+        allocation_mode: str = None,
+        count: int = None,
+        device_class_name: str = None,
+        name: str = None,
+        selectors: list[DeviceSelector] = None,
+    ):
+        super().__init__(
+            admin_access=admin_access,
+            allocation_mode=allocation_mode,
+            count=count,
+            device_class_name=device_class_name,
+            name=name,
+            selectors=selectors,
+        )
+
+
+class DeviceClaim(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    config: list[DeviceClaimConfiguration]
+    constraints: list[DeviceConstraint]
+    requests: list[DeviceRequest]
+
+    def __init__(
+        self,
+        config: list[DeviceClaimConfiguration] = None,
+        constraints: list[DeviceConstraint] = None,
+        requests: list[DeviceRequest] = None,
+    ):
+        super().__init__(config=config, constraints=constraints, requests=requests)
+
+
+class DeviceClassConfiguration(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    opaque: OpaqueDeviceConfiguration
+
+    def __init__(self, opaque: OpaqueDeviceConfiguration = None):
+        super().__init__(opaque=opaque)
+
+
+class DeviceClassSpec(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    config: list[DeviceClassConfiguration]
+    selectors: list[DeviceSelector]
+    suitable_nodes: core.NodeSelector
+
+    def __init__(
+        self,
+        config: list[DeviceClassConfiguration] = None,
+        selectors: list[DeviceSelector] = None,
+        suitable_nodes: core.NodeSelector = None,
+    ):
+        super().__init__(config=config, selectors=selectors, suitable_nodes=suitable_nodes)
+
+
+class DeviceClass(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+    _api_group_ = "resource.k8s.io"
+    _kind_ = "DeviceClass"
+    _scope_ = "namespace"
+
+    _required_ = ["spec"]
+
+    metadata: meta.ObjectMeta
+    spec: DeviceClassSpec
+
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: DeviceClassSpec = None):
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
 class PodSchedulingContextSpec(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
     potential_nodes: list[str]
     selected_node: str
@@ -42,7 +272,7 @@ class PodSchedulingContextSpec(KubernetesObject):
 class PodSchedulingContext(KubernetesApiResource):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
     _api_group_ = "resource.k8s.io"
     _kind_ = "PodSchedulingContext"
     _scope_ = "namespace"
@@ -56,27 +286,12 @@ class PodSchedulingContext(KubernetesApiResource):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
-class PodSchedulingContextList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-    _api_group_ = "resource.k8s.io"
-    _kind_ = "PodSchedulingContextList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[PodSchedulingContext]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[PodSchedulingContext] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class ResourceClaimSchedulingStatus(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["name"]
 
     name: str
     unsuitable_nodes: list[str]
@@ -88,7 +303,7 @@ class ResourceClaimSchedulingStatus(KubernetesObject):
 class PodSchedulingContextStatus(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
     resource_claims: list[ResourceClaimSchedulingStatus]
 
@@ -96,42 +311,22 @@ class PodSchedulingContextStatus(KubernetesObject):
         super().__init__(resource_claims=resource_claims)
 
 
-class ResourceClaimParametersReference(KubernetesObject):
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    _required_ = ["kind", "name"]
-
-    api_group: str
-    kind: str
-    name: str
-
-    def __init__(self, api_group: str = None, kind: str = None, name: str = None):
-        super().__init__(api_group=api_group, kind=kind, name=name)
-
-
 class ResourceClaimSpec(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    _required_ = ["resource_class_name"]
+    controller: str
+    devices: DeviceClaim
 
-    allocation_mode: str
-    parameters_ref: ResourceClaimParametersReference
-    resource_class_name: str
-
-    def __init__(
-        self, allocation_mode: str = None, parameters_ref: ResourceClaimParametersReference = None, resource_class_name: str = None
-    ):
-        super().__init__(allocation_mode=allocation_mode, parameters_ref=parameters_ref, resource_class_name=resource_class_name)
+    def __init__(self, controller: str = None, devices: DeviceClaim = None):
+        super().__init__(controller=controller, devices=devices)
 
 
 class ResourceClaim(KubernetesApiResource):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
     _api_group_ = "resource.k8s.io"
     _kind_ = "ResourceClaim"
     _scope_ = "namespace"
@@ -148,7 +343,7 @@ class ResourceClaim(KubernetesApiResource):
 class ResourceClaimConsumerReference(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
     _required_ = ["name", "resource", "uid"]
 
@@ -161,49 +356,28 @@ class ResourceClaimConsumerReference(KubernetesObject):
         super().__init__(api_group=api_group, name=name, resource=resource, uid=uid)
 
 
-class ResourceClaimList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-    _api_group_ = "resource.k8s.io"
-    _kind_ = "ResourceClaimList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[ResourceClaim]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[ResourceClaim] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class ResourceClaimStatus(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
     allocation: AllocationResult
     deallocation_requested: bool
-    driver_name: str
     reserved_for: list[ResourceClaimConsumerReference]
 
     def __init__(
         self,
         allocation: AllocationResult = None,
         deallocation_requested: bool = None,
-        driver_name: str = None,
         reserved_for: list[ResourceClaimConsumerReference] = None,
     ):
-        super().__init__(
-            allocation=allocation, deallocation_requested=deallocation_requested, driver_name=driver_name, reserved_for=reserved_for
-        )
+        super().__init__(allocation=allocation, deallocation_requested=deallocation_requested, reserved_for=reserved_for)
 
 
 class ResourceClaimTemplateSpec(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
     _required_ = ["spec"]
 
@@ -217,7 +391,7 @@ class ResourceClaimTemplateSpec(KubernetesObject):
 class ResourceClaimTemplate(KubernetesApiResource):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
     _api_group_ = "resource.k8s.io"
     _kind_ = "ResourceClaimTemplate"
     _scope_ = "namespace"
@@ -231,80 +405,59 @@ class ResourceClaimTemplate(KubernetesApiResource):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
-class ResourceClaimTemplateList(KubernetesApiResource):
+class ResourcePool(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
-    _api_group_ = "resource.k8s.io"
-    _kind_ = "ResourceClaimTemplateList"
-    _scope_ = "namespace"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    _required_ = ["items"]
+    _required_ = ["generation", "name", "resource_slice_count"]
 
-    items: list[ResourceClaimTemplate]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[ResourceClaimTemplate] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
-class ResourceClassParametersReference(KubernetesObject):
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    _required_ = ["kind", "name"]
-
-    api_group: str
-    kind: str
+    generation: int
     name: str
-    namespace: str
+    resource_slice_count: int
 
-    def __init__(self, api_group: str = None, kind: str = None, name: str = None, namespace: str = None):
-        super().__init__(api_group=api_group, kind=kind, name=name, namespace=namespace)
+    def __init__(self, generation: int = None, name: str = None, resource_slice_count: int = None):
+        super().__init__(generation=generation, name=name, resource_slice_count=resource_slice_count)
 
 
-class ResourceClass(KubernetesApiResource):
+class ResourceSliceSpec(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
-    _api_group_ = "resource.k8s.io"
-    _kind_ = "ResourceClass"
-    _scope_ = "namespace"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    _required_ = ["driver_name"]
+    _required_ = ["driver", "pool"]
 
-    driver_name: str
-    metadata: meta.ObjectMeta
-    parameters_ref: ResourceClassParametersReference
-    suitable_nodes: core.NodeSelector
+    all_nodes: bool
+    devices: list[Device]
+    driver: str
+    node_name: str
+    node_selector: core.NodeSelector
+    pool: ResourcePool
 
     def __init__(
         self,
-        name: str,
-        namespace: str = None,
-        driver_name: str = None,
-        metadata: meta.ObjectMeta = None,
-        parameters_ref: ResourceClassParametersReference = None,
-        suitable_nodes: core.NodeSelector = None,
+        all_nodes: bool = None,
+        devices: list[Device] = None,
+        driver: str = None,
+        node_name: str = None,
+        node_selector: core.NodeSelector = None,
+        pool: ResourcePool = None,
     ):
-        super().__init__(
-            name, namespace, driver_name=driver_name, metadata=metadata, parameters_ref=parameters_ref, suitable_nodes=suitable_nodes
-        )
+        super().__init__(all_nodes=all_nodes, devices=devices, driver=driver, node_name=node_name, node_selector=node_selector, pool=pool)
 
 
-class ResourceClassList(KubernetesApiResource):
+class ResourceSlice(KubernetesApiResource):
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
     _api_group_ = "resource.k8s.io"
-    _kind_ = "ResourceClassList"
+    _kind_ = "ResourceSlice"
     _scope_ = "namespace"
 
-    _required_ = ["items"]
+    _required_ = ["spec"]
 
-    items: list[ResourceClass]
-    metadata: meta.ListMeta
+    metadata: meta.ObjectMeta
+    spec: ResourceSliceSpec
 
-    def __init__(self, name: str, namespace: str = None, items: list[ResourceClass] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ResourceSliceSpec = None):
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

@@ -75,6 +75,7 @@ class Property(t.NamedTuple):
     name: str
     type: "Type"
     required: bool
+    description: str
 
     @property
     def snake_name(self):
@@ -85,15 +86,15 @@ class NamedProperty(t.NamedTuple):
     name: str
     type: "Type"
     required: bool
+    description: str
     snake_name: str
 
 
 class ObjectType(ApiType):
-    __slots__ = ("properties", "description")
+    __slots__ = ("properties",)
 
-    def __init__(self, fqn: QualifiedName, description: str):
+    def __init__(self, fqn: QualifiedName):
         super().__init__(fqn)
-        self.description = description
         self.properties: list[Property] = []
 
     def __eq__(self, other):
@@ -112,7 +113,15 @@ class ObjectType(ApiType):
         return (prop for prop in self.properties if not prop.required)
 
 
-class ApiResourceType(ObjectType):
+class ResourceType(ObjectType):
+    __slots__ = ("description",)
+
+    def __init__(self, name: QualifiedName, description: str):
+        super().__init__(name)
+        self.description = description
+
+
+class ApiResourceType(ResourceType):
     __slots__ = ("scoped",)
 
     def __init__(self, name: QualifiedName, description: str, scoped: bool):
@@ -132,7 +141,7 @@ class AnonymousType(ObjectType):
     __slots__ = ("parent", "_basename", "prop_name")
 
     def __init__(self, fqn: QualifiedName, parent: ObjectType, prop_name: str):
-        super().__init__(fqn, "")
+        super().__init__(fqn)
         self.parent = parent
         self._basename = fqn.name
         self.prop_name = prop_name

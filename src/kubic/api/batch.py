@@ -64,6 +64,31 @@ class PodFailurePolicy(KubernetesObject):
         super().__init__(rules=rules)
 
 
+class SuccessPolicyRule(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "batch/v1"
+
+    succeeded_count: int
+    succeeded_indexes: str
+
+    def __init__(self, succeeded_count: int = None, succeeded_indexes: str = None):
+        super().__init__(succeeded_count=succeeded_count, succeeded_indexes=succeeded_indexes)
+
+
+class SuccessPolicy(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "batch/v1"
+
+    _required_ = ["rules"]
+
+    rules: list[SuccessPolicyRule]
+
+    def __init__(self, rules: list[SuccessPolicyRule] = None):
+        super().__init__(rules=rules)
+
+
 class JobSpec(KubernetesObject):
     __slots__ = ()
 
@@ -76,12 +101,14 @@ class JobSpec(KubernetesObject):
     backoff_limit_per_index: int
     completion_mode: str
     completions: int
+    managed_by: str
     manual_selector: bool
     max_failed_indexes: int
     parallelism: int
     pod_failure_policy: PodFailurePolicy
     pod_replacement_policy: str
     selector: meta.LabelSelector
+    success_policy: SuccessPolicy
     suspend: bool
     template: core.PodTemplateSpec
     ttl_seconds_after_finished: int
@@ -93,12 +120,14 @@ class JobSpec(KubernetesObject):
         backoff_limit_per_index: int = None,
         completion_mode: str = None,
         completions: int = None,
+        managed_by: str = None,
         manual_selector: bool = None,
         max_failed_indexes: int = None,
         parallelism: int = None,
         pod_failure_policy: PodFailurePolicy = None,
         pod_replacement_policy: str = None,
         selector: meta.LabelSelector = None,
+        success_policy: SuccessPolicy = None,
         suspend: bool = None,
         template: core.PodTemplateSpec = None,
         ttl_seconds_after_finished: int = None,
@@ -109,12 +138,14 @@ class JobSpec(KubernetesObject):
             backoff_limit_per_index=backoff_limit_per_index,
             completion_mode=completion_mode,
             completions=completions,
+            managed_by=managed_by,
             manual_selector=manual_selector,
             max_failed_indexes=max_failed_indexes,
             parallelism=parallelism,
             pod_failure_policy=pod_failure_policy,
             pod_replacement_policy=pod_replacement_policy,
             selector=selector,
+            success_policy=success_policy,
             suspend=suspend,
             template=template,
             ttl_seconds_after_finished=ttl_seconds_after_finished,
@@ -187,23 +218,6 @@ class CronJob(KubernetesApiResource):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
-class CronJobList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "batch/v1"
-    _api_group_ = "batch"
-    _kind_ = "CronJobList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[CronJob]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[CronJob] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class CronJobStatus(KubernetesObject):
     __slots__ = ()
 
@@ -265,23 +279,6 @@ class JobCondition(KubernetesObject):
             status=status,
             type=type,
         )
-
-
-class JobList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "batch/v1"
-    _api_group_ = "batch"
-    _kind_ = "JobList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[Job]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[Job] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
 
 
 class UncountedTerminatedPods(KubernetesObject):

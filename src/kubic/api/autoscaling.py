@@ -226,23 +226,6 @@ class HorizontalPodAutoscalerCondition(KubernetesObject):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
-class HorizontalPodAutoscalerList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "autoscaling/v1"
-    _api_group_ = "autoscaling"
-    _kind_ = "HorizontalPodAutoscalerList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[HorizontalPodAutoscaler]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[HorizontalPodAutoscaler] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class HorizontalPodAutoscalerStatus(KubernetesObject):
     __slots__ = ()
 

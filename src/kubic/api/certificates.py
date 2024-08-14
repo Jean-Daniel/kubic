@@ -91,23 +91,6 @@ class CertificateSigningRequestCondition(KubernetesObject):
         )
 
 
-class CertificateSigningRequestList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "certificates.k8s.io/v1"
-    _api_group_ = "certificates.k8s.io"
-    _kind_ = "CertificateSigningRequestList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[CertificateSigningRequest]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[CertificateSigningRequest] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class CertificateSigningRequestStatus(KubernetesObject):
     __slots__ = ()
 
@@ -149,20 +132,3 @@ class ClusterTrustBundle(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ClusterTrustBundleSpec = None):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
-
-
-class ClusterTrustBundleList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "certificates.k8s.io/v1alpha1"
-    _api_group_ = "certificates.k8s.io"
-    _kind_ = "ClusterTrustBundleList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[ClusterTrustBundle]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[ClusterTrustBundle] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)

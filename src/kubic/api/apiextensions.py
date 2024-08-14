@@ -107,6 +107,15 @@ class CustomResourceDefinitionNames(KubernetesObject):
         super().__init__(categories=categories, kind=kind, list_kind=list_kind, plural=plural, short_names=short_names, singular=singular)
 
 
+JSONSchemaPropsOrBool: t.TypeAlias = "JSONSchemaProps" | bool
+
+
+JSON: t.TypeAlias = bool | int | float | str | list["JSON"], dict[str, "JSON"] | None
+
+
+JSONSchemaPropsOrStringArray: t.TypeAlias = "JSONSchemaProps" | list[str]
+
+
 class ExternalDocumentation(KubernetesObject):
     __slots__ = ()
 
@@ -119,6 +128,9 @@ class ExternalDocumentation(KubernetesObject):
         super().__init__(description=description, url=url)
 
 
+JSONSchemaPropsOrArray: t.TypeAlias = "JSONSchemaProps" | list["JSONSchemaProps"]
+
+
 class ValidationRule(KubernetesObject):
     __slots__ = ()
 
@@ -129,11 +141,27 @@ class ValidationRule(KubernetesObject):
     field_path: str
     message: str
     message_expression: str
+    optional_old_self: bool
     reason: str
     rule: str
 
-    def __init__(self, field_path: str = None, message: str = None, message_expression: str = None, reason: str = None, rule: str = None):
-        super().__init__(field_path=field_path, message=message, message_expression=message_expression, reason=reason, rule=rule)
+    def __init__(
+        self,
+        field_path: str = None,
+        message: str = None,
+        message_expression: str = None,
+        optional_old_self: bool = None,
+        reason: str = None,
+        rule: str = None,
+    ):
+        super().__init__(
+            field_path=field_path,
+            message=message,
+            message_expression=message_expression,
+            optional_old_self=optional_old_self,
+            reason=reason,
+            rule=rule,
+        )
 
 
 class JSONSchemaProps(KubernetesObject):
@@ -167,22 +195,22 @@ class JSONSchemaProps(KubernetesObject):
 
     ref_: str
     schema_: str
-    additional_items: t.Any
-    additional_properties: t.Any
+    additional_items: JSONSchemaPropsOrBool
+    additional_properties: JSONSchemaPropsOrBool
     all_of: list["JSONSchemaProps"]
     any_of: list["JSONSchemaProps"]
-    default: t.Any
+    default: JSON
     definitions: dict[str, "JSONSchemaProps"]
-    dependencies: dict[str, t.Any]
+    dependencies: dict[str, JSONSchemaPropsOrStringArray]
     description: str
-    enum: list[t.Any]
-    example: t.Any
+    enum: list[JSON]
+    example: JSON
     exclusive_maximum: bool
     exclusive_minimum: bool
     external_docs: ExternalDocumentation
     format: str
     id: str
-    items: t.Any
+    items: JSONSchemaPropsOrArray
     max_items: int
     max_length: int
     max_properties: int
@@ -214,22 +242,22 @@ class JSONSchemaProps(KubernetesObject):
         self,
         ref_: str = None,
         schema_: str = None,
-        additional_items: t.Any = None,
-        additional_properties: t.Any = None,
+        additional_items: JSONSchemaPropsOrBool = None,
+        additional_properties: JSONSchemaPropsOrBool = None,
         all_of: list["JSONSchemaProps"] = None,
         any_of: list["JSONSchemaProps"] = None,
-        default: t.Any = None,
+        default: JSON = None,
         definitions: dict[str, "JSONSchemaProps"] = None,
-        dependencies: dict[str, t.Any] = None,
+        dependencies: dict[str, JSONSchemaPropsOrStringArray] = None,
         description: str = None,
-        enum: list[t.Any] = None,
-        example: t.Any = None,
+        enum: list[JSON] = None,
+        example: JSON = None,
         exclusive_maximum: bool = None,
         exclusive_minimum: bool = None,
         external_docs: ExternalDocumentation = None,
         format: str = None,
         id: str = None,
-        items: t.Any = None,
+        items: JSONSchemaPropsOrArray = None,
         max_items: int = None,
         max_length: int = None,
         max_properties: int = None,
@@ -323,6 +351,19 @@ class CustomResourceValidation(KubernetesObject):
         super().__init__(openapi_v3_schema=openapi_v3_schema)
 
 
+class SelectableField(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "apiextensions.k8s.io/v1"
+
+    _required_ = ["json_path"]
+
+    json_path: str
+
+    def __init__(self, json_path: str = None):
+        super().__init__(json_path=json_path)
+
+
 class CustomResourceSubresourceScale(KubernetesObject):
     __slots__ = ()
 
@@ -367,6 +408,7 @@ class CustomResourceDefinitionVersion(KubernetesObject):
     deprecation_warning: str
     name: str
     schema: CustomResourceValidation
+    selectable_fields: list[SelectableField]
     served: bool
     storage: bool
     subresources: CustomResourceSubresources
@@ -378,6 +420,7 @@ class CustomResourceDefinitionVersion(KubernetesObject):
         deprecation_warning: str = None,
         name: str = None,
         schema: CustomResourceValidation = None,
+        selectable_fields: list[SelectableField] = None,
         served: bool = None,
         storage: bool = None,
         subresources: CustomResourceSubresources = None,
@@ -388,6 +431,7 @@ class CustomResourceDefinitionVersion(KubernetesObject):
             deprecation_warning=deprecation_warning,
             name=name,
             schema=schema,
+            selectable_fields=selectable_fields,
             served=served,
             storage=storage,
             subresources=subresources,
@@ -456,23 +500,6 @@ class CustomResourceDefinitionCondition(KubernetesObject):
         self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
     ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
-
-
-class CustomResourceDefinitionList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "apiextensions.k8s.io/v1"
-    _api_group_ = "apiextensions.k8s.io"
-    _kind_ = "CustomResourceDefinitionList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[CustomResourceDefinition]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[CustomResourceDefinition] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
 
 
 class CustomResourceDefinitionStatus(KubernetesObject):

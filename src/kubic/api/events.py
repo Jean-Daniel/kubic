@@ -81,20 +81,3 @@ class Event(KubernetesApiResource):
             series=series,
             type=type,
         )
-
-
-class EventList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "events.k8s.io/v1"
-    _api_group_ = "events.k8s.io"
-    _kind_ = "EventList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[Event]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[Event] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)

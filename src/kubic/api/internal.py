@@ -61,7 +61,7 @@ class StorageVersionCondition(KubernetesObject):
 
     _api_version_ = "internal.apiserver.k8s.io/v1alpha1"
 
-    _required_ = ["reason", "status", "type"]
+    _required_ = ["message", "reason", "status", "type"]
 
     last_transition_time: meta.Time
     message: str
@@ -87,23 +87,6 @@ class StorageVersionCondition(KubernetesObject):
             status=status,
             type=type,
         )
-
-
-class StorageVersionList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "internal.apiserver.k8s.io/v1alpha1"
-    _api_group_ = "internal.apiserver.k8s.io"
-    _kind_ = "StorageVersionList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[StorageVersion]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[StorageVersion] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
 
 
 class StorageVersionStatus(KubernetesObject):

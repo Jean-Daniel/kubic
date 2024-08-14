@@ -113,40 +113,6 @@ class ClusterRoleBinding(KubernetesApiResource):
         super().__init__(name, "", metadata=metadata, role_ref=role_ref, subjects=subjects)
 
 
-class ClusterRoleBindingList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "rbac.authorization.k8s.io/v1"
-    _api_group_ = "rbac.authorization.k8s.io"
-    _kind_ = "ClusterRoleBindingList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[ClusterRoleBinding]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[ClusterRoleBinding] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
-class ClusterRoleList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "rbac.authorization.k8s.io/v1"
-    _api_group_ = "rbac.authorization.k8s.io"
-    _kind_ = "ClusterRoleList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[ClusterRole]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[ClusterRole] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class Role(KubernetesApiResource):
     __slots__ = ()
 
@@ -180,37 +146,3 @@ class RoleBinding(KubernetesApiResource):
         self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, role_ref: RoleRef = None, subjects: list[Subject] = None
     ):
         super().__init__(name, namespace, metadata=metadata, role_ref=role_ref, subjects=subjects)
-
-
-class RoleBindingList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "rbac.authorization.k8s.io/v1"
-    _api_group_ = "rbac.authorization.k8s.io"
-    _kind_ = "RoleBindingList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[RoleBinding]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[RoleBinding] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
-class RoleList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "rbac.authorization.k8s.io/v1"
-    _api_group_ = "rbac.authorization.k8s.io"
-    _kind_ = "RoleList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[Role]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[Role] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)

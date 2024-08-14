@@ -5,7 +5,7 @@ from . import meta
 class ExemptPriorityLevelConfiguration(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     lendable_percent: int
     nominal_concurrency_shares: int
@@ -17,7 +17,7 @@ class ExemptPriorityLevelConfiguration(KubernetesObject):
 class FlowDistinguisherMethod(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["type"]
 
@@ -30,7 +30,7 @@ class FlowDistinguisherMethod(KubernetesObject):
 class PriorityLevelConfigurationReference(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["name"]
 
@@ -43,7 +43,7 @@ class PriorityLevelConfigurationReference(KubernetesObject):
 class NonResourcePolicyRule(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["non_resource_urls", "verbs"]
 
@@ -64,7 +64,7 @@ class NonResourcePolicyRule(KubernetesObject):
 class ResourcePolicyRule(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["api_groups", "resources", "verbs"]
 
@@ -88,7 +88,7 @@ class ResourcePolicyRule(KubernetesObject):
 class GroupSubject(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["name"]
 
@@ -101,7 +101,7 @@ class GroupSubject(KubernetesObject):
 class ServiceAccountSubject(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["name", "namespace"]
 
@@ -115,7 +115,7 @@ class ServiceAccountSubject(KubernetesObject):
 class UserSubject(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["name"]
 
@@ -128,7 +128,7 @@ class UserSubject(KubernetesObject):
 class Subject(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["kind"]
 
@@ -146,7 +146,7 @@ class Subject(KubernetesObject):
 class PolicyRulesWithSubjects(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["subjects"]
 
@@ -166,7 +166,7 @@ class PolicyRulesWithSubjects(KubernetesObject):
 class FlowSchemaSpec(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["priority_level_configuration"]
 
@@ -193,7 +193,7 @@ class FlowSchemaSpec(KubernetesObject):
 class FlowSchema(KubernetesApiResource):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
     _api_group_ = "flowcontrol.apiserver.k8s.io"
     _kind_ = "FlowSchema"
     _scope_ = "cluster"
@@ -208,7 +208,7 @@ class FlowSchema(KubernetesApiResource):
 class FlowSchemaCondition(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     last_transition_time: meta.Time
     message: str
@@ -222,27 +222,10 @@ class FlowSchemaCondition(KubernetesObject):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
-class FlowSchemaList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
-    _api_group_ = "flowcontrol.apiserver.k8s.io"
-    _kind_ = "FlowSchemaList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[FlowSchema]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[FlowSchema] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class FlowSchemaStatus(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     conditions: list[FlowSchemaCondition]
 
@@ -253,7 +236,7 @@ class FlowSchemaStatus(KubernetesObject):
 class QueuingConfiguration(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     hand_size: int
     queue_length_limit: int
@@ -266,7 +249,7 @@ class QueuingConfiguration(KubernetesObject):
 class LimitResponse(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["type"]
 
@@ -280,32 +263,32 @@ class LimitResponse(KubernetesObject):
 class LimitedPriorityLevelConfiguration(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
-    assured_concurrency_shares: int
     borrowing_limit_percent: int
     lendable_percent: int
     limit_response: LimitResponse
+    nominal_concurrency_shares: int
 
     def __init__(
         self,
-        assured_concurrency_shares: int = None,
         borrowing_limit_percent: int = None,
         lendable_percent: int = None,
         limit_response: LimitResponse = None,
+        nominal_concurrency_shares: int = None,
     ):
         super().__init__(
-            assured_concurrency_shares=assured_concurrency_shares,
             borrowing_limit_percent=borrowing_limit_percent,
             lendable_percent=lendable_percent,
             limit_response=limit_response,
+            nominal_concurrency_shares=nominal_concurrency_shares,
         )
 
 
 class PriorityLevelConfigurationSpec(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     _required_ = ["type"]
 
@@ -322,7 +305,7 @@ class PriorityLevelConfigurationSpec(KubernetesObject):
 class PriorityLevelConfiguration(KubernetesApiResource):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
     _api_group_ = "flowcontrol.apiserver.k8s.io"
     _kind_ = "PriorityLevelConfiguration"
     _scope_ = "cluster"
@@ -337,7 +320,7 @@ class PriorityLevelConfiguration(KubernetesApiResource):
 class PriorityLevelConfigurationCondition(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     last_transition_time: meta.Time
     message: str
@@ -351,27 +334,10 @@ class PriorityLevelConfigurationCondition(KubernetesObject):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
-class PriorityLevelConfigurationList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
-    _api_group_ = "flowcontrol.apiserver.k8s.io"
-    _kind_ = "PriorityLevelConfigurationList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[PriorityLevelConfiguration]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[PriorityLevelConfiguration] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class PriorityLevelConfigurationStatus(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "flowcontrol.apiserver.k8s.io/v1beta2"
+    _api_version_ = "flowcontrol.apiserver.k8s.io/v1"
 
     conditions: list[PriorityLevelConfigurationCondition]
 

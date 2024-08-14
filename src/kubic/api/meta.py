@@ -272,6 +272,21 @@ class DeleteOptions(KubernetesApiResource):
         )
 
 
+class FieldSelectorRequirement(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "meta/v1"
+
+    _required_ = ["key", "operator"]
+
+    key: str
+    operator: str
+    values: list[str]
+
+    def __init__(self, key: str = None, operator: str = None, values: list[str] = None):
+        super().__init__(key=key, operator=operator, values=values)
+
+
 FieldsV1: t.TypeAlias = dict[str, t.Any]
 
 

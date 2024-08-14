@@ -2,54 +2,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-class ClusterCIDRSpec(KubernetesObject):
-    __slots__ = ()
-
-    _api_version_ = "networking.k8s.io/v1alpha1"
-
-    _required_ = ["per_node_host_bits"]
-
-    ipv4: str
-    ipv6: str
-    node_selector: core.NodeSelector
-    per_node_host_bits: int
-
-    def __init__(self, ipv4: str = None, ipv6: str = None, node_selector: core.NodeSelector = None, per_node_host_bits: int = None):
-        super().__init__(ipv4=ipv4, ipv6=ipv6, node_selector=node_selector, per_node_host_bits=per_node_host_bits)
-
-
-class ClusterCIDR(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "networking.k8s.io/v1alpha1"
-    _api_group_ = "networking.k8s.io"
-    _kind_ = "ClusterCIDR"
-    _scope_ = "namespace"
-
-    metadata: meta.ObjectMeta
-    spec: ClusterCIDRSpec
-
-    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ClusterCIDRSpec = None):
-        super().__init__(name, namespace, metadata=metadata, spec=spec)
-
-
-class ClusterCIDRList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "networking.k8s.io/v1alpha1"
-    _api_group_ = "networking.k8s.io"
-    _kind_ = "ClusterCIDRList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[ClusterCIDR]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[ClusterCIDR] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class ServiceBackendPort(KubernetesObject):
     __slots__ = ()
 
@@ -119,22 +71,25 @@ class HTTPIngressRuleValue(KubernetesObject):
 class ParentReference(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_version_ = "networking.k8s.io/v1beta1"
+
+    _required_ = ["name", "resource"]
 
     group: str
     name: str
     namespace: str
     resource: str
-    uid: str
 
-    def __init__(self, group: str = None, name: str = None, namespace: str = None, resource: str = None, uid: str = None):
-        super().__init__(group=group, name=name, namespace=namespace, resource=resource, uid=uid)
+    def __init__(self, group: str = None, name: str = None, namespace: str = None, resource: str = None):
+        super().__init__(group=group, name=name, namespace=namespace, resource=resource)
 
 
 class IPAddressSpec(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_version_ = "networking.k8s.io/v1beta1"
+
+    _required_ = ["parent_ref"]
 
     parent_ref: ParentReference
 
@@ -145,7 +100,7 @@ class IPAddressSpec(KubernetesObject):
 class IPAddress(KubernetesApiResource):
     __slots__ = ()
 
-    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_version_ = "networking.k8s.io/v1beta1"
     _api_group_ = "networking.k8s.io"
     _kind_ = "IPAddress"
     _scope_ = "namespace"
@@ -155,23 +110,6 @@ class IPAddress(KubernetesApiResource):
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: IPAddressSpec = None):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
-
-
-class IPAddressList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "networking.k8s.io/v1alpha1"
-    _api_group_ = "networking.k8s.io"
-    _kind_ = "IPAddressList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[IPAddress]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[IPAddress] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
 
 
 class IPBlock(KubernetesObject):
@@ -293,40 +231,6 @@ class IngressClass(KubernetesApiResource):
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: IngressClassSpec = None):
         super().__init__(name, "", metadata=metadata, spec=spec)
-
-
-class IngressClassList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "networking.k8s.io/v1"
-    _api_group_ = "networking.k8s.io"
-    _kind_ = "IngressClassList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[IngressClass]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[IngressClass] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
-class IngressList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "networking.k8s.io/v1"
-    _api_group_ = "networking.k8s.io"
-    _kind_ = "IngressList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[Ingress]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[Ingress] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
 
 
 class IngressPortStatus(KubernetesObject):
@@ -470,18 +374,38 @@ class NetworkPolicy(KubernetesApiResource):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
-class NetworkPolicyList(KubernetesApiResource):
+class ServiceCIDRSpec(KubernetesObject):
     __slots__ = ()
 
-    _api_version_ = "networking.k8s.io/v1"
+    _api_version_ = "networking.k8s.io/v1beta1"
+
+    cidrs: list[str]
+
+    def __init__(self, cidrs: list[str] = None):
+        super().__init__(cidrs=cidrs)
+
+
+class ServiceCIDR(KubernetesApiResource):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1beta1"
     _api_group_ = "networking.k8s.io"
-    _kind_ = "NetworkPolicyList"
+    _kind_ = "ServiceCIDR"
     _scope_ = "namespace"
 
-    _required_ = ["items"]
+    metadata: meta.ObjectMeta
+    spec: ServiceCIDRSpec
 
-    items: list[NetworkPolicy]
-    metadata: meta.ListMeta
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ServiceCIDRSpec = None):
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
-    def __init__(self, name: str, namespace: str = None, items: list[NetworkPolicy] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
+
+class ServiceCIDRStatus(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "networking.k8s.io/v1beta1"
+
+    conditions: list[meta.Condition]
+
+    def __init__(self, conditions: list[meta.Condition] = None):
+        super().__init__(conditions=conditions)

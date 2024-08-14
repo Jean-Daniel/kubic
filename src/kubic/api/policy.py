@@ -57,23 +57,6 @@ class PodDisruptionBudget(KubernetesApiResource):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
-class PodDisruptionBudgetList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "policy/v1"
-    _api_group_ = "policy"
-    _kind_ = "PodDisruptionBudgetList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[PodDisruptionBudget]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[PodDisruptionBudget] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class PodDisruptionBudgetStatus(KubernetesObject):
     __slots__ = ()
 

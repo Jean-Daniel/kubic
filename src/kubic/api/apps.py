@@ -22,23 +22,6 @@ class ControllerRevision(KubernetesApiResource):
         super().__init__(name, namespace, data=data, metadata=metadata, revision=revision)
 
 
-class ControllerRevisionList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "apps/v1"
-    _api_group_ = "apps"
-    _kind_ = "ControllerRevisionList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[ControllerRevision]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[ControllerRevision] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class RollingUpdateDaemonSet(KubernetesObject):
     __slots__ = ()
 
@@ -125,23 +108,6 @@ class DaemonSetCondition(KubernetesObject):
         self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
     ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
-
-
-class DaemonSetList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "apps/v1"
-    _api_group_ = "apps"
-    _kind_ = "DaemonSetList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[DaemonSet]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[DaemonSet] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
 
 
 class DaemonSetStatus(KubernetesObject):
@@ -300,23 +266,6 @@ class DeploymentCondition(KubernetesObject):
         )
 
 
-class DeploymentList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "apps/v1"
-    _api_group_ = "apps"
-    _kind_ = "DeploymentList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[Deployment]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[Deployment] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class DeploymentStatus(KubernetesObject):
     __slots__ = ()
 
@@ -408,23 +357,6 @@ class ReplicaSetCondition(KubernetesObject):
         self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
     ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
-
-
-class ReplicaSetList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "apps/v1"
-    _api_group_ = "apps"
-    _kind_ = "ReplicaSetList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[ReplicaSet]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[ReplicaSet] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
 
 
 class ReplicaSetStatus(KubernetesObject):
@@ -587,23 +519,6 @@ class StatefulSetCondition(KubernetesObject):
         self, last_transition_time: meta.Time = None, message: str = None, reason: str = None, status: str = None, type: str = None
     ):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
-
-
-class StatefulSetList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "apps/v1"
-    _api_group_ = "apps"
-    _kind_ = "StatefulSetList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[StatefulSet]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[StatefulSet] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
 
 
 class StatefulSetStatus(KubernetesObject):

@@ -2,6 +2,30 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import meta
 
 
+class FieldSelectorAttributes(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "authorization.k8s.io/v1"
+
+    raw_selector: str
+    requirements: list[meta.FieldSelectorRequirement]
+
+    def __init__(self, raw_selector: str = None, requirements: list[meta.FieldSelectorRequirement] = None):
+        super().__init__(raw_selector=raw_selector, requirements=requirements)
+
+
+class LabelSelectorAttributes(KubernetesObject):
+    __slots__ = ()
+
+    _api_version_ = "authorization.k8s.io/v1"
+
+    raw_selector: str
+    requirements: list[meta.LabelSelectorRequirement]
+
+    def __init__(self, raw_selector: str = None, requirements: list[meta.LabelSelectorRequirement] = None):
+        super().__init__(raw_selector=raw_selector, requirements=requirements)
+
+
 class NonResourceAttributes(KubernetesObject):
     __slots__ = ()
 
@@ -19,7 +43,9 @@ class ResourceAttributes(KubernetesObject):
 
     _api_version_ = "authorization.k8s.io/v1"
 
+    field_selector: FieldSelectorAttributes
     group: str
+    label_selector: LabelSelectorAttributes
     name: str
     namespace: str
     resource: str
@@ -29,7 +55,9 @@ class ResourceAttributes(KubernetesObject):
 
     def __init__(
         self,
+        field_selector: FieldSelectorAttributes = None,
         group: str = None,
+        label_selector: LabelSelectorAttributes = None,
         name: str = None,
         namespace: str = None,
         resource: str = None,
@@ -38,7 +66,15 @@ class ResourceAttributes(KubernetesObject):
         version: str = None,
     ):
         super().__init__(
-            group=group, name=name, namespace=namespace, resource=resource, subresource=subresource, verb=verb, version=version
+            field_selector=field_selector,
+            group=group,
+            label_selector=label_selector,
+            name=name,
+            namespace=namespace,
+            resource=resource,
+            subresource=subresource,
+            verb=verb,
+            version=version,
         )
 
 

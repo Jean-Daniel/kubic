@@ -92,23 +92,6 @@ class APIServiceCondition(KubernetesObject):
         super().__init__(last_transition_time=last_transition_time, message=message, reason=reason, status=status, type=type)
 
 
-class APIServiceList(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "apiregistration.k8s.io/v1"
-    _api_group_ = "apiregistration.k8s.io"
-    _kind_ = "APIServiceList"
-    _scope_ = "namespace"
-
-    _required_ = ["items"]
-
-    items: list[APIService]
-    metadata: meta.ListMeta
-
-    def __init__(self, name: str, namespace: str = None, items: list[APIService] = None, metadata: meta.ListMeta = None):
-        super().__init__(name, namespace, items=items, metadata=metadata)
-
-
 class APIServiceStatus(KubernetesObject):
     __slots__ = ()
 

@@ -55,14 +55,14 @@ def import_k8s_api(args):
             annotations
         )
 
-        print_groups(groups, args.output)
+        print_groups(groups, args.output, docstrings=args.docstrings)
     finally:
         if tmp:
             os.remove(tmp)
 
 
-def print_groups(groups: list[ApiGroup], output: str, api_module: str = "."):
-    printer = TypePrinter(api_module=api_module)
+def print_groups(groups: list[ApiGroup], output: str, api_module: str = ".", docstrings: bool = False):
+    printer = TypePrinter(api_module=api_module, docstrings=docstrings)
     for group in groups:
         filename = output
         if filename != "-":
@@ -240,7 +240,7 @@ def import_custom_resources(args):
     annotations = AnnotationFactory(args.annotations)
     groups = import_crds(crds, annotations)
 
-    print_groups(groups, args.output, api_module=args.api_module)
+    print_groups(groups, args.output, api_module=args.api_module, docstrings=args.docstrings)
 
 
 def main():
@@ -257,11 +257,13 @@ def main():
     group.add_argument("--version", type=str, help="Kubernetes release version (like 1.23)")
     group.add_argument("-s", "--schema", type=pathlib.Path)
     api.add_argument("--annotations", type=str)
+    api.add_argument("--docstrings", action="store_true", help="generate docstrings")
     api.add_argument("-o", "--output", type=str, default="-")
 
     crd = subparsers.add_parser("crd")
     crd.add_argument("--api_module", type=str, required=True)
     crd.add_argument("--annotations", type=pathlib.Path, help="annotations directory")
+    crd.add_argument("--docstrings", action="store_true", help="generate docstrings")
     crd.add_argument("--cache_dir", type=pathlib.Path)
     crd.add_argument("crds", nargs="*", type=str)
     crd.add_argument("-o", "--output", type=str, default="-")
