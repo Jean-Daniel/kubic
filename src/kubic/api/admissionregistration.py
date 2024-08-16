@@ -12,7 +12,7 @@ class AuditAnnotation(KubernetesObject):
     _required_ = ["key", "value_expression"]
 
     key: str
-    """ 
+    """
     key specifies the audit annotation key. The audit annotation keys of a ValidatingAdmissionPolicy must be unique. The key must be a qualified name ([A-Za-z0-9][-A-Za-z0-9_.]*) no more than 63 bytes in length.
     
     The key is combined with the resource name of the ValidatingAdmissionPolicy to construct an audit annotation key: "{ValidatingAdmissionPolicy name}/{key}".
@@ -20,15 +20,15 @@ class AuditAnnotation(KubernetesObject):
     If an admission webhook uses the same resource name as this ValidatingAdmissionPolicy and the same audit annotation key, the annotation key will be identical. In this case, the first annotation written with the key will be included in the audit event and all subsequent annotations with the same key will be discarded.
     
     Required.
-     """
+    """
     value_expression: str
-    """ 
+    """
     valueExpression represents the expression which is evaluated by CEL to produce an audit annotation value. The expression must evaluate to either a string or null value. If the expression evaluates to a string, the audit annotation is included with the string value. If the expression evaluates to null or empty string the audit annotation will be omitted. The valueExpression may be no longer than 5kb in length. If the result of the valueExpression is more than 10kb in length, it will be truncated to 10kb.
     
     If multiple ValidatingAdmissionPolicyBinding resources match an API request, then the valueExpression will be evaluated for each binding. All unique values produced by the valueExpressions will be joined together in a comma-separated list.
     
     Required.
-     """
+    """
 
     def __init__(self, key: str = None, value_expression: str = None):
         super().__init__(key=key, value_expression=value_expression)
@@ -62,7 +62,7 @@ class MatchCondition(KubernetesObject):
     _required_ = ["expression", "name"]
 
     expression: str
-    """ 
+    """
     Expression represents the expression which will be evaluated by CEL. Must evaluate to bool. CEL expressions have access to the contents of the AdmissionRequest and Authorizer, organized into CEL variables:
     
     'object' - The object from the incoming request. The value is null for DELETE requests. 'oldObject' - The existing object. The value is null for CREATE requests. 'request' - Attributes of the admission request(/pkg/apis/admission/types.go#AdmissionRequest). 'authorizer' - A CEL Authorizer. May be used to perform authorization checks for the principal (user or service account) of the request.
@@ -72,13 +72,13 @@ class MatchCondition(KubernetesObject):
     Documentation on CEL: https://kubernetes.io/docs/reference/using-api/cel/
     
     Required.
-     """
+    """
     name: str
-    """ 
+    """
     Name is an identifier for this match condition, used for strategic merging of MatchConditions, as well as providing an identifier for logging purposes. A good name should be descriptive of the associated expression. Name must be a qualified name consisting of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]') with an optional DNS subdomain prefix and '/' (e.g. 'example.com/MyName')
     
     Required.
-     """
+    """
 
     def __init__(self, expression: str = None, name: str = None):
         super().__init__(expression=expression, name=name)
@@ -100,7 +100,7 @@ class NamedRuleWithOperations(KubernetesObject):
     resource_names: list[str]
     """ ResourceNames is an optional white list of names that the rule applies to.  An empty set means that everything is allowed. """
     resources: list[str]
-    """ 
+    """
     Resources is a list of resources this rule applies to.
     
     For example: 'pods' means pods. 'pods/log' means the log subresource of pods. '*' means all resources, but not subresources. 'pods/*' means all subresources of pods. '*/scale' means all scale subresources. '*/*' means all resources and their subresources.
@@ -108,7 +108,7 @@ class NamedRuleWithOperations(KubernetesObject):
     If wildcard is present, the validation rule will ensure resources do not overlap with each other.
     
     Depending on the enclosing object, subresources might not be allowed. Required.
-     """
+    """
     scope: str
     """ scope specifies the scope of this rule. Valid values are "Cluster", "Namespaced", and "*" "Cluster" means that only cluster-scoped resources will match this rule. Namespace API objects are cluster-scoped. "Namespaced" means that only namespaced resources will match this rule. "*" means that there are no scope restrictions. Subresources match the scope of their parent resource. Default is "*". """
 
@@ -141,7 +141,7 @@ class MatchResources(KubernetesObject):
     exclude_resource_rules: list[NamedRuleWithOperations]
     """ ExcludeResourceRules describes what operations on what resources/subresources the ValidatingAdmissionPolicy should not care about. The exclude rules take precedence over include rules (if a resource matches both, it is excluded) """
     match_policy: str
-    """ 
+    """
     matchPolicy defines how the "MatchResources" list is used to match incoming requests. Allowed values are "Exact" or "Equivalent".
     
     - Exact: match a request only if it exactly matches a specified rule. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, but "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would not be sent to the ValidatingAdmissionPolicy.
@@ -149,9 +149,9 @@ class MatchResources(KubernetesObject):
     - Equivalent: match a request if modifies a resource listed in rules, even via another API group or version. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, and "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would be converted to apps/v1 and sent to the ValidatingAdmissionPolicy.
     
     Defaults to "Equivalent"
-     """
+    """
     namespace_selector: meta.LabelSelector
-    """ 
+    """
     NamespaceSelector decides whether to run the admission control policy on an object based on whether the namespace for that object matches the selector. If the object itself is a namespace, the matching is performed on object.metadata.labels. If the object is another cluster scoped resource, it never skips the policy.
     
     For example, to run the webhook on any objects whose namespace is not associated with "runlevel" of "0" or "1";  you will set the selector as follows: "namespaceSelector": {
@@ -183,7 +183,7 @@ class MatchResources(KubernetesObject):
     See https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/ for more examples of label selectors.
     
     Default to the empty LabelSelector, which matches everything.
-     """
+    """
     object_selector: meta.LabelSelector
     """ ObjectSelector decides whether to run the validation based on if the object has matching labels. objectSelector is evaluated against both the oldObject and newObject that would be sent to the cel validation, and is considered to match if either object matches the selector. A null object (oldObject in the case of create, or newObject in the case of delete) or an object that cannot have labels (like a DeploymentRollback or a PodProxyOptions object) is not considered to match. Use the object selector only if the webhook is opt-in, because end users may skip the admission webhook by setting the labels. Default to the empty LabelSelector, which matches everything. """
     resource_rules: list[NamedRuleWithOperations]
@@ -238,13 +238,13 @@ class WebhookClientConfig(KubernetesObject):
     ca_bundle: core.Base64
     """ `caBundle` is a PEM encoded CA bundle which will be used to validate the webhook's server certificate. If unspecified, system trust roots on the apiserver are used. """
     service: ServiceReference
-    """ 
+    """
     `service` is a reference to the service for this webhook. Either `service` or `url` must be specified.
     
     If the webhook is running within the cluster, then you should use `service`.
-     """
+    """
     url: str
-    """ 
+    """
     `url` gives the location of the webhook, in standard URL form (`scheme://host:port/path`). Exactly one of `url` or `service` must be specified.
     
     The `host` should not refer to a service running in the cluster; use the `service` field instead. The host might be resolved via external DNS in some apiservers (e.g., `kube-apiserver` cannot resolve in-cluster DNS as that would be a layering violation). `host` may also be an IP address.
@@ -256,7 +256,7 @@ class WebhookClientConfig(KubernetesObject):
     A path is optional, and if present may be any string permissible in a URL. You may use the path to pass an arbitrary string to the webhook, for example, a cluster identifier.
     
     Attempting to use a user or basic auth e.g. "user:password@" is not allowed. Fragments ("#...") and query parameters ("?...") are not allowed, either.
-     """
+    """
 
     def __init__(self, ca_bundle: core.Base64 = None, service: ServiceReference = None, url: str = None):
         super().__init__(ca_bundle=ca_bundle, service=service, url=url)
@@ -276,7 +276,7 @@ class RuleWithOperations(KubernetesObject):
     operations: list[str]
     """ Operations is the operations the admission hook cares about - CREATE, UPDATE, DELETE, CONNECT or * for all of those operations and any future admission operations that are added. If '*' is present, the length of the slice must be one. Required. """
     resources: list[str]
-    """ 
+    """
     Resources is a list of resources this rule applies to.
     
     For example: 'pods' means pods. 'pods/log' means the log subresource of pods. '*' means all resources, but not subresources. 'pods/*' means all subresources of pods. '*/scale' means all scale subresources. '*/*' means all resources and their subresources.
@@ -284,7 +284,7 @@ class RuleWithOperations(KubernetesObject):
     If wildcard is present, the validation rule will ensure resources do not overlap with each other.
     
     Depending on the enclosing object, subresources might not be allowed. Required.
-     """
+    """
     scope: str
     """ scope specifies the scope of this rule. Valid values are "Cluster", "Namespaced", and "*" "Cluster" means that only cluster-scoped resources will match this rule. Namespace API objects are cluster-scoped. "Namespaced" means that only namespaced resources will match this rule. "*" means that there are no scope restrictions. Subresources match the scope of their parent resource. Default is "*". """
 
@@ -315,7 +315,7 @@ class MutatingWebhook(KubernetesObject):
     failure_policy: str
     """ FailurePolicy defines how unrecognized errors from the admission endpoint are handled - allowed values are Ignore or Fail. Defaults to Fail. """
     match_conditions: list[MatchCondition]
-    """ 
+    """
     MatchConditions is a list of conditions that must be met for a request to be sent to this webhook. Match conditions filter requests that have already been matched by the rules, namespaceSelector, and objectSelector. An empty list of matchConditions matches all requests. There are a maximum of 64 match conditions allowed.
     
     The exact matching logic is (in order):
@@ -324,9 +324,9 @@ class MutatingWebhook(KubernetesObject):
       3. If any matchCondition evaluates to an error (but none are FALSE):
          - If failurePolicy=Fail, reject the request
          - If failurePolicy=Ignore, the error is ignored and the webhook is skipped
-     """
+    """
     match_policy: str
-    """ 
+    """
     matchPolicy defines how the "rules" list is used to match incoming requests. Allowed values are "Exact" or "Equivalent".
     
     - Exact: match a request only if it exactly matches a specified rule. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, but "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would not be sent to the webhook.
@@ -334,11 +334,11 @@ class MutatingWebhook(KubernetesObject):
     - Equivalent: match a request if modifies a resource listed in rules, even via another API group or version. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, and "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would be converted to apps/v1 and sent to the webhook.
     
     Defaults to "Equivalent"
-     """
+    """
     name: str
     """ The name of the admission webhook. Name should be fully qualified, e.g., imagepolicy.kubernetes.io, where "imagepolicy" is the name of the webhook, and kubernetes.io is the name of the organization. Required. """
     namespace_selector: meta.LabelSelector
-    """ 
+    """
     NamespaceSelector decides whether to run the webhook on an object based on whether the namespace for that object matches the selector. If the object itself is a namespace, the matching is performed on object.metadata.labels. If the object is another cluster scoped resource, it never skips the webhook.
     
     For example, to run the webhook on any objects whose namespace is not associated with "runlevel" of "0" or "1";  you will set the selector as follows: "namespaceSelector": {
@@ -370,11 +370,11 @@ class MutatingWebhook(KubernetesObject):
     See https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/ for more examples of label selectors.
     
     Default to the empty LabelSelector, which matches everything.
-     """
+    """
     object_selector: meta.LabelSelector
     """ ObjectSelector decides whether to run the webhook based on if the object has matching labels. objectSelector is evaluated against both the oldObject and newObject that would be sent to the webhook, and is considered to match if either object matches the selector. A null object (oldObject in the case of create, or newObject in the case of delete) or an object that cannot have labels (like a DeploymentRollback or a PodProxyOptions object) is not considered to match. Use the object selector only if the webhook is opt-in, because end users may skip the admission webhook by setting the labels. Default to the empty LabelSelector, which matches everything. """
     reinvocation_policy: str
-    """ 
+    """
     reinvocationPolicy indicates whether this webhook should be called multiple times as part of a single admission evaluation. Allowed values are "Never" and "IfNeeded".
     
     Never: the webhook will not be called more than once in a single admission evaluation.
@@ -382,7 +382,7 @@ class MutatingWebhook(KubernetesObject):
     IfNeeded: the webhook will be called at least one additional time as part of the admission evaluation if the object being admitted is modified by other admission plugins after the initial webhook call. Webhooks that specify this option *must* be idempotent, able to process objects they previously admitted. Note: * the number of additional invocations is not guaranteed to be exactly one. * if additional invocations result in further modifications to the object, webhooks are not guaranteed to be invoked again. * webhooks that use this option may be reordered to minimize the number of additional invocations. * to validate an object after all mutations are guaranteed complete, use a validating admission webhook instead.
     
     Defaults to "Never".
-     """
+    """
     rules: list[RuleWithOperations]
     """ Rules describes what operations on what resources/subresources the webhook cares about. The webhook cares about an operation if it matches _any_ Rule. However, in order to prevent ValidatingAdmissionWebhooks and MutatingAdmissionWebhooks from putting the cluster in a state which cannot be recovered from without completely disabling the plugin, ValidatingAdmissionWebhooks and MutatingAdmissionWebhooks are never called on admission requests for ValidatingWebhookConfiguration and MutatingWebhookConfiguration objects. """
     side_effects: str
@@ -464,15 +464,15 @@ class ParamRef(KubernetesObject):
     _api_version_ = "admissionregistration.k8s.io/v1"
 
     name: str
-    """ 
+    """
     name is the name of the resource being referenced.
     
     One of `name` or `selector` must be set, but `name` and `selector` are mutually exclusive properties. If one is set, the other must be unset.
     
     A single parameter used for all admission requests can be configured by setting the `name` field, leaving `selector` blank, and setting namespace if `paramKind` is namespace-scoped.
-     """
+    """
     namespace: str
-    """ 
+    """
     namespace is the namespace of the referenced resource. Allows limiting the search for params to a specific namespace. Applies to both `name` and `selector` fields.
     
     A per-namespace parameter may be used by specifying a namespace-scoped `paramKind` in the policy and leaving this field empty.
@@ -480,23 +480,23 @@ class ParamRef(KubernetesObject):
     - If `paramKind` is cluster-scoped, this field MUST be unset. Setting this field results in a configuration error.
     
     - If `paramKind` is namespace-scoped, the namespace of the object being evaluated for admission will be used when this field is left unset. Take care that if this is left empty the binding must not match any cluster-scoped resources, which will result in an error.
-     """
+    """
     parameter_not_found_action: str
-    """ 
+    """
     `parameterNotFoundAction` controls the behavior of the binding when the resource exists, and name or selector is valid, but there are no parameters matched by the binding. If the value is set to `Allow`, then no matched parameters will be treated as successful validation by the binding. If set to `Deny`, then no matched parameters will be subject to the `failurePolicy` of the policy.
     
     Allowed values are `Allow` or `Deny`
     
     Required
-     """
+    """
     selector: meta.LabelSelector
-    """ 
+    """
     selector can be used to match multiple param objects based on their labels. Supply selector: {} to match all resources of the ParamKind.
     
     If multiple params are found, they are all evaluated with the policy expressions and the results are ANDed together.
     
     One of `name` or `selector` must be set, but `name` and `selector` are mutually exclusive properties. If one is set, the other must be unset.
-     """
+    """
 
     def __init__(
         self, name: str = None, namespace: str = None, parameter_not_found_action: str = None, selector: meta.LabelSelector = None
@@ -528,7 +528,7 @@ class Validation(KubernetesObject):
     _required_ = ["expression"]
 
     expression: str
-    """ 
+    """
     Expression represents the expression which will be evaluated by CEL. ref: https://github.com/google/cel-spec CEL expressions have access to the contents of the API request/response, organized into CEL variables as well as some other useful variables:
     
     - 'object' - The object from the incoming request. The value is null for DELETE requests. - 'oldObject' - The existing object. The value is null for CREATE requests. - 'request' - Attributes of the API request([ref](/pkg/apis/admission/types.go#AdmissionRequest)). - 'params' - Parameter resource referred to by the policy binding being evaluated. Only populated if the policy has a ParamKind. - 'namespaceObject' - The namespace object that the incoming object belongs to. The value is null for cluster-scoped resources. - 'variables' - Map of composited variables, from its name to its lazily evaluated value.
@@ -555,7 +555,7 @@ class Validation(KubernetesObject):
         are overwritten by values in `Y` when the key sets of `X` and `Y` intersect. Elements in `Y` with
         non-intersecting keys are appended, retaining their partial order.
     Required.
-     """
+    """
     message: str
     """ Message represents the message displayed when validation fails. The message is required if the Expression contains line breaks. The message must not contain line breaks. If unset, the message is "failed rule: {Rule}". e.g. "must be a URL with the host matching spec.host" If the Expression contains line breaks. Message is required. The message must not contain line breaks. If unset, the message is "failed Expression: {Expression}". """
     message_expression: str
@@ -595,7 +595,7 @@ class ValidatingAdmissionPolicySpec(KubernetesObject):
     audit_annotations: list[AuditAnnotation]
     """ auditAnnotations contains CEL expressions which are used to produce audit annotations for the audit event of the API request. validations and auditAnnotations may not both be empty; a least one of validations or auditAnnotations is required. """
     failure_policy: str
-    """ 
+    """
     failurePolicy defines how to handle failures for the admission policy. Failures can occur from CEL expression parse errors, type check errors, runtime errors and invalid or mis-configured policy definitions or bindings.
     
     A policy is invalid if spec.paramKind refers to a non-existent Kind. A binding is invalid if spec.paramRef.name refers to a non-existent resource.
@@ -605,9 +605,9 @@ class ValidatingAdmissionPolicySpec(KubernetesObject):
     When failurePolicy is set to Fail, ValidatingAdmissionPolicyBinding validationActions define how failures are enforced.
     
     Allowed values are Ignore or Fail. Defaults to Fail.
-     """
+    """
     match_conditions: list[MatchCondition]
-    """ 
+    """
     MatchConditions is a list of conditions that must be met for a request to be validated. Match conditions filter requests that have already been matched by the rules, namespaceSelector, and objectSelector. An empty list of matchConditions matches all requests. There are a maximum of 64 match conditions allowed.
     
     If a parameter object is provided, it can be accessed via the `params` handle in the same manner as validation expressions.
@@ -618,7 +618,7 @@ class ValidatingAdmissionPolicySpec(KubernetesObject):
       3. If any matchCondition evaluates to an error (but none are FALSE):
          - If failurePolicy=Fail, reject the request
          - If failurePolicy=Ignore, the policy is skipped
-     """
+    """
     match_constraints: MatchResources
     """ MatchConstraints specifies what resources this policy is designed to validate. The AdmissionPolicy cares about a request if it matches _all_ Constraints. However, in order to prevent clusters from being put into an unstable state that cannot be recovered from via the API ValidatingAdmissionPolicy cannot match ValidatingAdmissionPolicy and ValidatingAdmissionPolicyBinding. Required. """
     param_kind: ParamKind
@@ -626,11 +626,11 @@ class ValidatingAdmissionPolicySpec(KubernetesObject):
     validations: list[Validation]
     """ Validations contain CEL expressions which is used to apply the validation. Validations and AuditAnnotations may not both be empty; a minimum of one Validations or AuditAnnotations is required. """
     variables: list[Variable]
-    """ 
+    """
     Variables contain definitions of variables that can be used in composition of other expressions. Each variable is defined as a named CEL expression. The variables defined here will be available under `variables` in other expressions of the policy except MatchConditions because MatchConditions are evaluated before the rest of the policy.
     
     The expression of a variable can refer to other variables defined earlier in the list but not those after. Thus, Variables must be sorted by the order of first appearance and acyclic.
-     """
+    """
 
     def __init__(
         self,
@@ -686,7 +686,7 @@ class ValidatingAdmissionPolicyBindingSpec(KubernetesObject):
     policy_name: str
     """ PolicyName references a ValidatingAdmissionPolicy name which the ValidatingAdmissionPolicyBinding binds to. If the referenced resource does not exist, this binding is considered invalid and will be ignored Required. """
     validation_actions: list[str]
-    """ 
+    """
     validationActions declares how Validations of the referenced ValidatingAdmissionPolicy are enforced. If a validation evaluates to false it is always enforced according to these actions.
     
     Failures defined by the ValidatingAdmissionPolicy's FailurePolicy are enforced according to these actions only if the FailurePolicy is set to Fail, otherwise the failures are ignored. This includes compilation errors, runtime errors and misconfigurations of the policy.
@@ -706,7 +706,7 @@ class ValidatingAdmissionPolicyBindingSpec(KubernetesObject):
     "Deny" and "Warn" may not be used together since this combination needlessly duplicates the validation failure both in the API response body and the HTTP warning headers.
     
     Required.
-     """
+    """
 
     def __init__(
         self,
@@ -781,7 +781,7 @@ class ValidatingWebhook(KubernetesObject):
     failure_policy: str
     """ FailurePolicy defines how unrecognized errors from the admission endpoint are handled - allowed values are Ignore or Fail. Defaults to Fail. """
     match_conditions: list[MatchCondition]
-    """ 
+    """
     MatchConditions is a list of conditions that must be met for a request to be sent to this webhook. Match conditions filter requests that have already been matched by the rules, namespaceSelector, and objectSelector. An empty list of matchConditions matches all requests. There are a maximum of 64 match conditions allowed.
     
     The exact matching logic is (in order):
@@ -790,9 +790,9 @@ class ValidatingWebhook(KubernetesObject):
       3. If any matchCondition evaluates to an error (but none are FALSE):
          - If failurePolicy=Fail, reject the request
          - If failurePolicy=Ignore, the error is ignored and the webhook is skipped
-     """
+    """
     match_policy: str
-    """ 
+    """
     matchPolicy defines how the "rules" list is used to match incoming requests. Allowed values are "Exact" or "Equivalent".
     
     - Exact: match a request only if it exactly matches a specified rule. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, but "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would not be sent to the webhook.
@@ -800,11 +800,11 @@ class ValidatingWebhook(KubernetesObject):
     - Equivalent: match a request if modifies a resource listed in rules, even via another API group or version. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, and "rules" only included `apiGroups:["apps"], apiVersions:["v1"], resources: ["deployments"]`, a request to apps/v1beta1 or extensions/v1beta1 would be converted to apps/v1 and sent to the webhook.
     
     Defaults to "Equivalent"
-     """
+    """
     name: str
     """ The name of the admission webhook. Name should be fully qualified, e.g., imagepolicy.kubernetes.io, where "imagepolicy" is the name of the webhook, and kubernetes.io is the name of the organization. Required. """
     namespace_selector: meta.LabelSelector
-    """ 
+    """
     NamespaceSelector decides whether to run the webhook on an object based on whether the namespace for that object matches the selector. If the object itself is a namespace, the matching is performed on object.metadata.labels. If the object is another cluster scoped resource, it never skips the webhook.
     
     For example, to run the webhook on any objects whose namespace is not associated with "runlevel" of "0" or "1";  you will set the selector as follows: "namespaceSelector": {
@@ -836,7 +836,7 @@ class ValidatingWebhook(KubernetesObject):
     See https://kubernetes.io/docs/concepts/overview/working-with-objects/labels for more examples of label selectors.
     
     Default to the empty LabelSelector, which matches everything.
-     """
+    """
     object_selector: meta.LabelSelector
     """ ObjectSelector decides whether to run the webhook based on if the object has matching labels. objectSelector is evaluated against both the oldObject and newObject that would be sent to the webhook, and is considered to match if either object matches the selector. A null object (oldObject in the case of create, or newObject in the case of delete) or an object that cannot have labels (like a DeploymentRollback or a PodProxyOptions object) is not considered to match. Use the object selector only if the webhook is opt-in, because end users may skip the admission webhook by setting the labels. Default to the empty LabelSelector, which matches everything. """
     rules: list[RuleWithOperations]

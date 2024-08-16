@@ -35,7 +35,7 @@ class PodDisruptionBudgetSpec(KubernetesObject):
     selector: meta.LabelSelector
     """ Label query over pods whose evictions are managed by the disruption budget. A null selector will match no pods, while an empty ({}) selector will select all pods within the namespace. """
     unhealthy_pod_eviction_policy: str
-    """ 
+    """
     UnhealthyPodEvictionPolicy defines the criteria for when unhealthy pods should be considered for eviction. Current implementation considers healthy pods, as pods that have status.conditions item with type="Ready",status="True".
     
     Valid policies are IfHealthyBudget and AlwaysAllow. If no policy is specified, the default behavior will be used, which corresponds to the IfHealthyBudget policy.
@@ -47,7 +47,7 @@ class PodDisruptionBudgetSpec(KubernetesObject):
     Additional policies may be added in the future. Clients making eviction decisions should disallow eviction of unhealthy pods if they encounter an unrecognized policy in this field.
     
     This field is beta-level. The eviction API uses this field when the feature gate PDBUnhealthyPodEvictionPolicy is enabled (enabled by default).
-     """
+    """
 
     def __init__(
         self,
@@ -93,7 +93,7 @@ class PodDisruptionBudgetStatus(KubernetesObject):
     _required_ = ["current_healthy", "desired_healthy", "disruptions_allowed", "expected_pods"]
 
     conditions: list[meta.Condition]
-    """ 
+    """
     Conditions contain conditions for PDB. The disruption controller sets the DisruptionAllowed condition. The following are known values for the reason field (additional reasons could be added in the future): - SyncFailed: The controller encountered an error and wasn't able to compute
                   the number of allowed disruptions. Therefore no disruptions are
                   allowed and the status of the condition will be False.
@@ -103,7 +103,7 @@ class PodDisruptionBudgetStatus(KubernetesObject):
     - SufficientPods: There are more pods than required by the PodDisruptionBudget.
                       The condition will be True, and the number of allowed
                       disruptions are provided by the disruptionsAllowed property.
-     """
+    """
     current_healthy: int
     """ current number of healthy pods """
     desired_healthy: int

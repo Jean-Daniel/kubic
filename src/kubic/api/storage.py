@@ -28,21 +28,21 @@ class CSIDriverSpec(KubernetesObject):
     _api_version_ = "storage.k8s.io/v1"
 
     attach_required: bool
-    """ 
+    """
     attachRequired indicates this CSI volume driver requires an attach operation (because it implements the CSI ControllerPublishVolume() method), and that the Kubernetes attach detach controller should call the attach volume interface which checks the volumeattachment status and waits until the volume is attached before proceeding to mounting. The CSI external-attacher coordinates with CSI volume driver and updates the volumeattachment status when the attach operation is complete. If the CSIDriverRegistry feature gate is enabled and the value is specified to false, the attach operation will be skipped. Otherwise the attach operation will be called.
     
     This field is immutable.
-     """
+    """
     fs_group_policy: str
-    """ 
+    """
     fsGroupPolicy defines if the underlying volume supports changing ownership and permission of the volume before being mounted. Refer to the specific FSGroupPolicy values for additional details.
     
     This field was immutable in Kubernetes < 1.29 and now is mutable.
     
     Defaults to ReadWriteOnceWithFSType, which will examine each volume to determine if Kubernetes should modify ownership and permissions of the volume. With the default policy the defined fsGroup will only be applied if a fstype is defined and the volume's access mode contains ReadWriteOnce.
-     """
+    """
     pod_info_on_mount: bool
-    """ 
+    """
     podInfoOnMount indicates this CSI volume driver requires additional pod information (like podName, podUID, etc.) during mount operations, if set to true. If set to false, pod information will not be passed on mount. Default is false.
     
     The CSI driver specifies podInfoOnMount as part of driver deployment. If true, Kubelet will pass pod information as VolumeContext in the CSI NodePublishVolume() calls. The CSI driver is responsible for parsing and validating the information passed in as VolumeContext.
@@ -53,15 +53,15 @@ class CSIDriverSpec(KubernetesObject):
     "csi.storage.k8s.io/ephemeral" is a new feature in Kubernetes 1.16. It is only required for drivers which support both the "Persistent" and "Ephemeral" VolumeLifecycleMode. Other drivers can leave pod info disabled and/or ignore this field. As Kubernetes 1.15 doesn't support this field, drivers can only support one mode when deployed on such a cluster and the deployment determines which mode that is, for example via a command line parameter of the driver.
     
     This field was immutable in Kubernetes < 1.29 and now is mutable.
-     """
+    """
     requires_republish: bool
-    """ 
+    """
     requiresRepublish indicates the CSI driver wants `NodePublishVolume` being periodically called to reflect any possible change in the mounted volume. This field defaults to false.
     
     Note: After a successful initial NodePublishVolume call, subsequent calls to NodePublishVolume should only update the contents of the volume. New mount points will not be seen by a running container.
-     """
+    """
     se_linux_mount: bool
-    """ 
+    """
     seLinuxMount specifies if the CSI driver supports "-o context" mount option.
     
     When "true", the CSI driver must ensure that all volumes provided by this CSI driver can be mounted separately with different `-o context` options. This is typical for storage backends that provide volumes as filesystems on block devices or as independent shared volumes. Kubernetes will call NodeStage / NodePublish with "-o context=xyz" mount option when mounting a ReadWriteOncePod volume used in Pod that has explicitly set SELinux context. In the future, it may be expanded to other volume AccessModes. In any case, Kubernetes will ensure that the volume is mounted only with a single SELinux context.
@@ -69,9 +69,9 @@ class CSIDriverSpec(KubernetesObject):
     When "false", Kubernetes won't pass any special SELinux mount options to the driver. This is typical for volumes that represent subdirectories of a bigger shared filesystem.
     
     Default is "false".
-     """
+    """
     storage_capacity: bool
-    """ 
+    """
     storageCapacity indicates that the CSI volume driver wants pod scheduling to consider the storage capacity that the driver deployment will report by creating CSIStorageCapacity objects with capacity information, if set to true.
     
     The check can be enabled immediately when deploying a driver. In that case, provisioning new volumes with late binding will pause until the driver deployment has published some suitable CSIStorageCapacity object.
@@ -79,9 +79,9 @@ class CSIDriverSpec(KubernetesObject):
     Alternatively, the driver can be deployed with the field unset or false and it can be flipped later when storage capacity information has been published.
     
     This field was immutable in Kubernetes <= 1.22 and now is mutable.
-     """
+    """
     token_requests: list[TokenRequest]
-    """ 
+    """
     tokenRequests indicates the CSI driver needs pods' service account tokens it is mounting volume for to do necessary authentication. Kubelet will pass the tokens in VolumeContext in the CSI NodePublishVolume calls. The CSI driver should parse and validate the following VolumeContext: "csi.storage.k8s.io/serviceAccount.tokens": {
       "<audience>": {
         "token": <token>,
@@ -91,9 +91,9 @@ class CSIDriverSpec(KubernetesObject):
     }
     
     Note: Audience in each TokenRequest should be different and at most one token is empty string. To receive a new token after expiry, RequiresRepublish can be used to trigger NodePublishVolume periodically.
-     """
+    """
     volume_lifecycle_modes: list[str]
-    """ 
+    """
     volumeLifecycleModes defines what kind of volumes this CSI volume driver supports. The default if the list is empty is "Persistent", which is the usage defined by the CSI specification and implemented in Kubernetes via the usual PV/PVC mechanism.
     
     The other mode is "Ephemeral". In this mode, volumes are defined inline inside the pod spec with CSIVolumeSource and their lifecycle is tied to the lifecycle of that pod. A driver has to be aware of this because it is only going to get a NodePublishVolume call for such a volume.
@@ -101,7 +101,7 @@ class CSIDriverSpec(KubernetesObject):
     For more information about implementing this mode, see https://kubernetes-csi.github.io/docs/ephemeral-local-volumes.html A driver can support one or more of these modes and more modes may be added in the future.
     
     This field is beta. This field is immutable.
-     """
+    """
 
     def __init__(
         self,
@@ -250,25 +250,25 @@ class CSIStorageCapacity(KubernetesApiResource):
     _required_ = ["storage_class_name"]
 
     capacity: core.Quantity
-    """ 
+    """
     capacity is the value reported by the CSI driver in its GetCapacityResponse for a GetCapacityRequest with topology and parameters that match the previous fields.
     
     The semantic is currently (CSI spec 1.2) defined as: The available capacity, in bytes, of the storage that can be used to provision volumes. If not set, that information is currently unavailable.
-     """
+    """
     maximum_volume_size: core.Quantity
-    """ 
+    """
     maximumVolumeSize is the value reported by the CSI driver in its GetCapacityResponse for a GetCapacityRequest with topology and parameters that match the previous fields.
     
     This is defined since CSI spec 1.4.0 as the largest size that may be used in a CreateVolumeRequest.capacity_range.required_bytes field to create a volume with the same parameters as those in GetCapacityRequest. The corresponding value in the Kubernetes API is ResourceRequirements.Requests in a volume claim.
-     """
+    """
     metadata: meta.ObjectMeta
-    """ 
+    """
     Standard object's metadata. The name has no particular meaning. It must be a DNS subdomain (dots allowed, 253 characters). To ensure that there are no conflicts with other CSI drivers on the cluster, the recommendation is to use csisc-<uuid>, a generated name, or a reverse-domain name which ends with the unique CSI driver name.
     
     Objects are namespaced.
     
     More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
-     """
+    """
     node_topology: meta.LabelSelector
     """ nodeTopology defines which nodes have access to the storage for which capacity was reported. If not set, the storage is not accessible from any node in the cluster. If empty, the storage is accessible from all nodes. This field is immutable. """
     storage_class_name: str
@@ -476,11 +476,11 @@ class VolumeAttributesClass(KubernetesApiResource):
     metadata: meta.ObjectMeta
     """ Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata """
     parameters: dict[str, str]
-    """ 
+    """
     parameters hold volume attributes defined by the CSI driver. These values are opaque to the Kubernetes and are passed directly to the CSI driver. The underlying storage provider supports changing these attributes on an existing volume, however the parameters field itself is immutable. To invoke a volume update, a new VolumeAttributesClass should be created with new parameters, and the PersistentVolumeClaim should be updated to reference the new VolumeAttributesClass.
     
     This field is required and must contain at least one key/value pair. The keys cannot be empty, and the maximum number of parameters is 512, with a cumulative max size of 256K. If the CSI driver rejects invalid parameters, the target PersistentVolumeClaim will be set to an "Infeasible" state in the modifyVolumeStatus field.
-     """
+    """
 
     def __init__(
         self, name: str, namespace: str = None, driver_name: str = None, metadata: meta.ObjectMeta = None, parameters: dict[str, str] = None

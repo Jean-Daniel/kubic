@@ -12,7 +12,7 @@ class CertificateSigningRequestSpec(KubernetesObject):
     _required_ = ["request", "signer_name"]
 
     expiration_seconds: int
-    """ 
+    """
     expirationSeconds is the requested duration of validity of the issued certificate. The certificate signer may issue a certificate with a different validity duration so a client must check the delta between the notBefore and and notAfter fields in the issued certificate to determine the actual duration.
     
     The v1.22+ in-tree implementations of the well-known Kubernetes signers will honor this field as long as the requested duration is not greater than the maximum duration they will honor per the --cluster-signing-duration CLI flag to the Kubernetes controller manager.
@@ -25,7 +25,7 @@ class CertificateSigningRequestSpec(KubernetesObject):
       3. Signer whose configured minimum is longer than the requested duration
     
     The minimum valid value for expirationSeconds is 600, i.e. 10 minutes.
-     """
+    """
     extra: dict[str, list[str]]
     """ extra contains extra attributes of the user that created the CertificateSigningRequest. Populated by the API server on creation and immutable. """
     groups: list[str]
@@ -33,7 +33,7 @@ class CertificateSigningRequestSpec(KubernetesObject):
     request: core.Base64
     """ request contains an x509 certificate signing request encoded in a "CERTIFICATE REQUEST" PEM block. When serialized as JSON or YAML, the data is additionally base64-encoded. """
     signer_name: str
-    """ 
+    """
     signerName indicates the requested signer, and is a qualified name.
     
     List/watch requests for CertificateSigningRequests can filter on this field using a "spec.signerName=NAME" fieldSelector.
@@ -55,11 +55,11 @@ class CertificateSigningRequestSpec(KubernetesObject):
      4. Required, permitted, or forbidden key usages / extended key usages.
      5. Expiration/certificate lifetime: whether it is fixed by the signer, configurable by the admin.
      6. Whether or not requests for CA certificates are allowed.
-     """
+    """
     uid: str
     """ uid contains the uid of the user that created the CertificateSigningRequest. Populated by the API server on creation and immutable. """
     usages: list[str]
-    """ 
+    """
     usages specifies a set of key usages requested in the issued certificate.
     
     Requests for TLS client certificates typically request: "digital signature", "key encipherment", "client auth".
@@ -74,7 +74,7 @@ class CertificateSigningRequestSpec(KubernetesObject):
      "code signing", "email protection", "s/mime",
      "ipsec end system", "ipsec tunnel", "ipsec user",
      "timestamping", "ocsp signing", "microsoft sgc", "netscape sgc"
-     """
+    """
     username: str
     """ username contains the name of the user that created the CertificateSigningRequest. Populated by the API server on creation and immutable. """
 
@@ -149,7 +149,7 @@ class CertificateSigningRequestCondition(KubernetesObject):
     status: str
     """ status of the condition, one of True, False, Unknown. Approved, Denied, and Failed conditions may not be "False" or "Unknown". """
     type: str
-    """ 
+    """
     type of the condition. Known conditions are "Approved", "Denied", and "Failed".
     
     An "Approved" condition is added via the /approval subresource, indicating the request was approved and should be issued by the signer.
@@ -161,7 +161,7 @@ class CertificateSigningRequestCondition(KubernetesObject):
     Approved and Denied conditions are mutually exclusive. Approved, Denied, and Failed conditions cannot be removed once added.
     
     Only one condition of a given type is allowed.
-     """
+    """
 
     def __init__(
         self,
@@ -190,7 +190,7 @@ class CertificateSigningRequestStatus(KubernetesObject):
     _api_version_ = "certificates.k8s.io/v1"
 
     certificate: core.Base64
-    """ 
+    """
     certificate is populated with an issued certificate by the signer after an Approved condition is present. This field is set via the /status subresource. Once populated, this field is immutable.
     
     If the certificate signing request is denied, a condition of type "Denied" is added and this field remains empty. If the signer cannot issue the certificate, a condition of type "Failed" is added and this field remains empty.
@@ -213,7 +213,7 @@ class CertificateSigningRequestStatus(KubernetesObject):
         ...
         -----END CERTIFICATE-----
         )
-     """
+    """
     conditions: list[CertificateSigningRequestCondition]
     """ conditions applied to the request. Known conditions are "Approved", "Denied", and "Failed". """
 
@@ -231,7 +231,7 @@ class ClusterTrustBundleSpec(KubernetesObject):
     _required_ = ["trust_bundle"]
 
     signer_name: str
-    """ 
+    """
     signerName indicates the associated signer, if any.
     
     In order to create or update a ClusterTrustBundle that sets signerName, you must have the following cluster-scoped permission: group=certificates.k8s.io resource=signers resourceName=<the signer name> verb=attest.
@@ -241,15 +241,15 @@ class ClusterTrustBundleSpec(KubernetesObject):
     If signerName is empty, then the ClusterTrustBundle object's name must not have such a prefix.
     
     List/watch requests for ClusterTrustBundles can filter on this field using a `spec.signerName=NAME` field selector.
-     """
+    """
     trust_bundle: str
-    """ 
+    """
     trustBundle contains the individual X.509 trust anchors for this bundle, as PEM bundle of PEM-wrapped, DER-formatted X.509 certificates.
     
     The data must consist only of PEM certificate blocks that parse as valid X.509 certificates.  Each certificate must include a basic constraints extension with the CA bit set.  The API server will reject objects that contain duplicate certificates, or that use PEM block headers.
     
     Users of ClusterTrustBundles, including Kubelet, are free to reorder and deduplicate certificate blocks in this file according to their own logic, as well as to drop PEM block headers and inter-block data.
-     """
+    """
 
     def __init__(self, signer_name: str = None, trust_bundle: str = None):
         super().__init__(signer_name=signer_name, trust_bundle=trust_bundle)

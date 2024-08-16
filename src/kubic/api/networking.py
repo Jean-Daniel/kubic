@@ -66,7 +66,7 @@ class HTTPIngressPath(KubernetesObject):
     path: str
     """ path is matched against the path of an incoming request. Currently it can contain characters disallowed from the conventional "path" part of a URL as defined by RFC 3986. Paths must begin with a '/' and must be present when using PathType with value "Exact" or "Prefix". """
     path_type: str
-    """ 
+    """
     pathType determines the interpretation of the path matching. PathType can be one of the following values: * Exact: Matches the URL path exactly. * Prefix: Matches based on a URL path prefix split by '/'. Matching is
       done on a path element by element basis. A path element refers is the
       list of labels in the path split by the '/' separator. A request is a
@@ -78,7 +78,7 @@ class HTTPIngressPath(KubernetesObject):
       the IngressClass. Implementations can treat this as a separate PathType
       or treat it identically to Prefix or Exact path types.
     Implementations are required to support all path types.
-     """
+    """
 
     def __init__(self, backend: IngressBackend = None, path: str = None, path_type: str = None):
         super().__init__(backend=backend, path=path, path_type=path_type)
@@ -187,7 +187,7 @@ class IngressRule(KubernetesObject):
     _api_version_ = "networking.k8s.io/v1"
 
     host: str
-    """ 
+    """
     host is the fully qualified domain name of a network host, as defined by RFC 3986. Note the following deviations from the "host" part of the URI as defined in RFC 3986: 1. IPs are not allowed. Currently an IngressRuleValue can only apply to
        the IP in the Spec of the parent Ingress.
     2. The `:` delimiter is not respected because ports are not allowed.
@@ -196,7 +196,7 @@ class IngressRule(KubernetesObject):
     Both these may change in the future. Incoming requests are matched against the host before the IngressRuleValue. If the host is unspecified, the Ingress routes all traffic based on the specified IngressRuleValue.
     
     host can be "precise" which is a domain name without the terminating dot of a network host (e.g. "foo.bar.com") or "wildcard", which is a domain name prefixed with a single wildcard label (e.g. "*.foo.com"). The wildcard character '*' must appear by itself as the first DNS label and matches only a single label. You cannot have a wildcard label by itself (e.g. Host == "*"). Requests will be matched against the Host field in the following way: 1. If host is precise, the request matches this rule if the http host header is equal to Host. 2. If host is a wildcard, then the request matches this rule if the http host header is to equal to the suffix (removing the first label) of the wildcard rule.
-     """
+    """
     http: HTTPIngressRuleValue
 
     def __init__(self, host: str = None, http: HTTPIngressRuleValue = None):
@@ -333,12 +333,12 @@ class IngressPortStatus(KubernetesObject):
     _required_ = ["port", "protocol"]
 
     error: str
-    """ 
+    """
     error is to record the problem with the service port The format of the error shall comply with the following rules: - built-in error values shall be specified in this file and those shall use
       CamelCase names
     - cloud provider specific error values must have names that comply with the
       format foo.example.com/CamelCase.
-     """
+    """
     port: int
     """ port is the port number of the ingress port. """
     protocol: str
@@ -422,17 +422,17 @@ class NetworkPolicyPeer(KubernetesObject):
     ip_block: IPBlock
     """ ipBlock defines policy on a particular IPBlock. If this field is set then neither of the other fields can be. """
     namespace_selector: meta.LabelSelector
-    """ 
+    """
     namespaceSelector selects namespaces using cluster-scoped labels. This field follows standard label selector semantics; if present but empty, it selects all namespaces.
     
     If podSelector is also set, then the NetworkPolicyPeer as a whole selects the pods matching podSelector in the namespaces selected by namespaceSelector. Otherwise it selects all pods in the namespaces selected by namespaceSelector.
-     """
+    """
     pod_selector: meta.LabelSelector
-    """ 
+    """
     podSelector is a label selector which selects pods. This field follows standard label selector semantics; if present but empty, it selects all pods.
     
     If namespaceSelector is also set, then the NetworkPolicyPeer as a whole selects the pods matching podSelector in the Namespaces selected by NamespaceSelector. Otherwise it selects the pods matching podSelector in the policy's own namespace.
-     """
+    """
 
     def __init__(self, ip_block: IPBlock = None, namespace_selector: meta.LabelSelector = None, pod_selector: meta.LabelSelector = None):
         super().__init__(ip_block=ip_block, namespace_selector=namespace_selector, pod_selector=pod_selector)

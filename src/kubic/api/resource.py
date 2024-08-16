@@ -75,11 +75,11 @@ class ResourceHandle(KubernetesObject):
     _api_version_ = "resource.k8s.io/v1alpha2"
 
     data: str
-    """ 
+    """
     Data contains the opaque data associated with this ResourceHandle. It is set by the controller component of the resource driver whose name matches the DriverName set in the ResourceClaimStatus this ResourceHandle is embedded in. It is set at allocation time and is intended for processing by the kubelet plugin whose name matches the DriverName set in this ResourceHandle.
     
     The maximum size of this field is 16KiB. This may get increased in the future, but not reduced.
-     """
+    """
     driver_name: str
     """ DriverName specifies the name of the resource driver whose kubelet plugin should be invoked to process this ResourceHandle's data once it lands on a node. This may differ from the DriverName set in ResourceClaimStatus this ResourceHandle is embedded in. """
     structured_data: StructuredResourceHandle
@@ -97,17 +97,17 @@ class AllocationResult(KubernetesObject):
     _api_version_ = "resource.k8s.io/v1alpha2"
 
     available_on_nodes: core.NodeSelector
-    """ 
+    """
     This field will get set by the resource driver after it has allocated the resource to inform the scheduler where it can schedule Pods using the ResourceClaim.
     
     Setting this field is optional. If null, the resource is available everywhere.
-     """
+    """
     resource_handles: list[ResourceHandle]
-    """ 
+    """
     ResourceHandles contain the state associated with an allocation that should be maintained throughout the lifetime of a claim. Each ResourceHandle contains data that should be passed to a specific kubelet plugin once it lands on a node. This data is returned by the driver after a successful allocation and is opaque to Kubernetes. Driver documentation may explain to users how to interpret this data if needed.
     
     Setting this field is optional. It has a maximum size of 32 entries. If null (or empty), it is assumed this allocation will be processed by a single kubelet plugin with no ResourceHandle data attached. The name of the kubelet plugin invoked will match the DriverName set in the ResourceClaimStatus this AllocationResult is embedded in.
-     """
+    """
     shareable: bool
     """ Shareable determines whether the resource supports more than one consumer at a time. """
 
@@ -125,14 +125,14 @@ class NamedResourcesRequest(KubernetesObject):
     _required_ = ["selector"]
 
     selector: str
-    """ 
+    """
     Selector is a CEL expression which must evaluate to true if a resource instance is suitable. The language is as defined in https://kubernetes.io/docs/reference/using-api/cel/
     
     In addition, for each type NamedResourcesin AttributeValue there is a map that resolves to the corresponding value of the instance under evaluation. For example:
     
        attributes.quantity["a"].isGreaterThan(quantity("0")) &&
        attributes.stringslice["b"].isSorted()
-     """
+    """
 
     def __init__(self, selector: str = None):
         super().__init__(selector=selector)
@@ -256,14 +256,14 @@ class NamedResourcesFilter(KubernetesObject):
     _required_ = ["selector"]
 
     selector: str
-    """ 
+    """
     Selector is a CEL expression which must evaluate to true if a resource instance is suitable. The language is as defined in https://kubernetes.io/docs/reference/using-api/cel/
     
     In addition, for each type NamedResourcesin AttributeValue there is a map that resolves to the corresponding value of the instance under evaluation. For example:
     
        attributes.quantity["a"].isGreaterThan(quantity("0")) &&
        attributes.stringslice["b"].isSorted()
-     """
+    """
 
     def __init__(self, selector: str = None):
         super().__init__(selector=selector)
@@ -311,11 +311,11 @@ class PodSchedulingContextSpec(KubernetesObject):
     _api_version_ = "resource.k8s.io/v1alpha2"
 
     potential_nodes: list[str]
-    """ 
+    """
     PotentialNodes lists nodes where the Pod might be able to run.
     
     The size of this field is limited to 128. This is large enough for many clusters. Larger clusters may need more attempts to find a node that suits all pending resources. This may get increased in the future, but not reduced.
-     """
+    """
     selected_node: str
     """ SelectedNode is the node for which allocation of ResourceClaims that are referenced by the Pod and that use "WaitForFirstConsumer" allocation is to be attempted. """
 
@@ -358,11 +358,11 @@ class ResourceClaimSchedulingStatus(KubernetesObject):
     name: str
     """ Name matches the pod.spec.resourceClaims[*].Name field. """
     unsuitable_nodes: list[str]
-    """ 
+    """
     UnsuitableNodes lists nodes that the ResourceClaim cannot be allocated for.
     
     The size of this field is limited to 128, the same as for PodSchedulingSpec.PotentialNodes. This may get increased in the future, but not reduced.
-     """
+    """
 
     def __init__(self, name: str = None, unsuitable_nodes: list[str] = None):
         super().__init__(name=name, unsuitable_nodes=unsuitable_nodes)
@@ -414,11 +414,11 @@ class ResourceClaimSpec(KubernetesObject):
     allocation_mode: str
     """ Allocation can start immediately or when a Pod wants to use the resource. "WaitForFirstConsumer" is the default. """
     parameters_ref: ResourceClaimParametersReference
-    """ 
+    """
     ParametersRef references a separate object with arbitrary parameters that will be used by the driver when allocating a resource for the claim.
     
     The object must be in the same namespace as the ResourceClaim.
-     """
+    """
     resource_class_name: str
     """ ResourceClassName references the driver and additional parameters via the name of a ResourceClass that was created as part of the driver deployment. """
 
@@ -486,11 +486,11 @@ class ResourceClaimParameters(KubernetesApiResource):
     _scope_ = "namespace"
 
     driver_requests: list[DriverRequests]
-    """ 
+    """
     DriverRequests describes all resources that are needed for the allocated claim. A single claim may use resources coming from different drivers. For each driver, this array has at most one entry which then may have one or more per-driver requests.
     
     May be empty, in which case the claim can always be allocated.
-     """
+    """
     generated_from: ResourceClaimParametersReference
     """ If this object was created from some other resource, then this links back to that resource. This field is used to find the in-tree representation of the claim parameters when the parameter reference of the claim refers to some unknown type. """
     metadata: meta.ObjectMeta
@@ -522,21 +522,21 @@ class ResourceClaimStatus(KubernetesObject):
     allocation: AllocationResult
     """ Allocation is set by the resource driver once a resource or set of resources has been allocated successfully. If this is not specified, the resources have not been allocated yet. """
     deallocation_requested: bool
-    """ 
+    """
     DeallocationRequested indicates that a ResourceClaim is to be deallocated.
     
     The driver then must deallocate this claim and reset the field together with clearing the Allocation field.
     
     While DeallocationRequested is set, no new consumers may be added to ReservedFor.
-     """
+    """
     driver_name: str
     """ DriverName is a copy of the driver name from the ResourceClass at the time when allocation started. """
     reserved_for: list[ResourceClaimConsumerReference]
-    """ 
+    """
     ReservedFor indicates which entities are currently allowed to use the claim. A Pod which references a ResourceClaim which is not reserved for that Pod will not be started.
     
     There can be at most 32 such reservations. This may get increased in the future, but not reduced.
-     """
+    """
 
     def __init__(
         self,
@@ -583,11 +583,11 @@ class ResourceClaimTemplate(KubernetesApiResource):
     metadata: meta.ObjectMeta
     """ Standard object metadata """
     spec: ResourceClaimTemplateSpec
-    """ 
+    """
     Describes the ResourceClaim that is to be generated.
     
     This field is immutable. A ResourceClaim will get created by the control plane for a Pod when needed and then not get updated anymore.
-     """
+    """
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ResourceClaimTemplateSpec = None):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
@@ -632,11 +632,11 @@ class ResourceClass(KubernetesApiResource):
     _required_ = ["driver_name"]
 
     driver_name: str
-    """ 
+    """
     DriverName defines the name of the dynamic resource driver that is used for allocation of a ResourceClaim that uses this class.
     
     Resource drivers have a unique name in forward domain order (acme.example.com).
-     """
+    """
     metadata: meta.ObjectMeta
     """ Standard object metadata """
     parameters_ref: ResourceClassParametersReference
@@ -644,11 +644,11 @@ class ResourceClass(KubernetesApiResource):
     structured_parameters: bool
     """ If and only if allocation of claims using this class is handled via structured parameters, then StructuredParameters must be set to true. """
     suitable_nodes: core.NodeSelector
-    """ 
+    """
     Only nodes matching the selector will be considered by the scheduler when trying to find a Node that fits a Pod when that Pod uses a ResourceClaim that has not been allocated yet.
     
     Setting this field is optional. If null, all nodes are candidates.
-     """
+    """
 
     def __init__(
         self,
@@ -755,11 +755,11 @@ class ResourceSlice(KubernetesApiResource):
     named_resources: NamedResourcesResources
     """ NamedResources describes available resources using the named resources model. """
     node_name: str
-    """ 
+    """
     NodeName identifies the node which provides the resources if they are local to a node.
     
     A field selector can be used to list only ResourceSlice objects with a certain node name.
-     """
+    """
 
     def __init__(
         self,

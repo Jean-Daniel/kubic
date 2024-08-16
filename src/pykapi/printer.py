@@ -73,19 +73,20 @@ class TypePrinter:
             return
 
         stream.write(indent)
-        stream.write('""" ')
         description = description.replace("\\", "\\\\")
         if "\n" in description:
-            stream.write("\n")
+            stream.write('"""\n')
             stream.write(indent)
             if indent:
                 description = description.replace("\n", f"\n{indent}")
             stream.write(description)
             stream.write("\n")
             stream.write(indent)
+            stream.write('"""\n')
         else:
+            stream.write('""" ')
             stream.write(description)
-        stream.write(' """\n')
+            stream.write(' """\n')
 
     def print_type(self, group: ApiGroup, ty: ObjectType, stream: t.TextIO):
         stream.write("class ")

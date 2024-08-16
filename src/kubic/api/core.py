@@ -265,12 +265,12 @@ class AppArmorProfile(KubernetesObject):
     localhost_profile: str
     """ localhostProfile indicates a profile loaded on the node that should be used. The profile must be preconfigured on the node to work. Must match the loaded name of the profile. Must be set if and only if type is "Localhost". """
     type: str
-    """ 
+    """
     type indicates which kind of AppArmor profile will be applied. Valid options are:
       Localhost - a profile pre-loaded on the node.
       RuntimeDefault - the container runtime's default profile.
       Unconfined - no AppArmor enforcement.
-     """
+    """
 
     def __init__(self, localhost_profile: str = None, type: str = None):
         super().__init__(localhost_profile=localhost_profile, type=type)
@@ -725,13 +725,13 @@ class ClaimSource(KubernetesObject):
     resource_claim_name: str
     """ ResourceClaimName is the name of a ResourceClaim object in the same namespace as this pod. """
     resource_claim_template_name: str
-    """ 
+    """
     ResourceClaimTemplateName is the name of a ResourceClaimTemplate object in the same namespace as this pod.
     
     The template will be used to create a new ResourceClaim, which will be bound to this pod. When this pod is deleted, the ResourceClaim will also be deleted. The pod name and resource name, along with a generated component, will be used to form a unique name for the ResourceClaim, which will be recorded in pod.status.resourceClaimStatuses.
     
     This field is immutable and no changes will be made to the corresponding ResourceClaim by the control plane after creating the ResourceClaim.
-     """
+    """
 
     def __init__(self, resource_claim_name: str = None, resource_claim_template_name: str = None):
         super().__init__(resource_claim_name=resource_claim_name, resource_claim_template_name=resource_claim_template_name)
@@ -1273,11 +1273,11 @@ class GRPCAction(KubernetesObject):
     port: int
     """ Port number of the gRPC service. Number must be in the range 1 to 65535. """
     service: str
-    """ 
+    """
     Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).
     
     If this is not specified, the default behavior is defined by gRPC.
-     """
+    """
 
     def __init__(self, port: int = None, service: str = None):
         super().__init__(port=port, service=service)
@@ -1411,13 +1411,13 @@ class ResourceRequirements(KubernetesObject):
     _api_version_ = "v1"
 
     claims: list[ResourceClaim]
-    """ 
+    """
     Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
     
     This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
     
     This field is immutable. It can only be set for containers.
-     """
+    """
     limits: dict[str, Quantity]
     """ Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ """
     requests: dict[str, Quantity]
@@ -1459,11 +1459,11 @@ class SeccompProfile(KubernetesObject):
     localhost_profile: str
     """ localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must be set if type is "Localhost". Must NOT be set for any other type. """
     type: str
-    """ 
+    """
     type indicates which kind of seccomp profile will be applied. Valid options are:
     
     Localhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied.
-     """
+    """
 
     def __init__(self, localhost_profile: str = None, type: str = None):
         super().__init__(localhost_profile=localhost_profile, type=type)
@@ -1599,7 +1599,7 @@ class VolumeMount(KubernetesObject):
     read_only: bool
     """ Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. """
     recursive_read_only: str
-    """ 
+    """
     RecursiveReadOnly specifies whether read-only mounts should be handled recursively.
     
     If ReadOnly is false, this field has no meaning and must be unspecified.
@@ -1609,7 +1609,7 @@ class VolumeMount(KubernetesObject):
     If this field is set to IfPossible or Enabled, MountPropagation must be set to None (or be unspecified, which defaults to None).
     
     If this field is not specified, it is treated as an equivalent of Disabled.
-     """
+    """
     sub_path: str
     """ Path within the volume from which the container's volume should be mounted. Defaults to "" (volume's root). """
     sub_path_expr: str
@@ -1920,11 +1920,11 @@ class ContainerStatus(KubernetesObject):
     name: str
     """ Name is a DNS_LABEL representing the unique name of the container. Each container in a pod must have a unique name across all container types. Cannot be updated. """
     ready: bool
-    """ 
+    """
     Ready specifies whether the container is currently passing its readiness check. The value will change as readiness probes keep executing. If no readiness probes are specified, this field defaults to true once the container is fully started (see Started field).
     
     The value is typically used to determine whether a container is ready to accept traffic.
-     """
+    """
     resources: ResourceRequirements
     """ Resources represents the compute resource requests and limits that have been successfully enacted on the running container after it has been started or has been successfully resized. """
     restart_count: int
@@ -2092,7 +2092,7 @@ class EndpointPort(KubernetesObject):
     _required_ = ["port"]
 
     app_protocol: str
-    """ 
+    """
     The application protocol for this port. This is used as a hint for implementations to offer richer behavior for protocols that they understand. This field follows standard Kubernetes label syntax. Valid values are either:
     
     * Un-prefixed protocol names - reserved for IANA standard service names (as per RFC-6335 and https://www.iana.org/assignments/service-names).
@@ -2103,7 +2103,7 @@ class EndpointPort(KubernetesObject):
       * 'kubernetes.io/wss' - WebSocket over TLS as described in https://www.rfc-editor.org/rfc/rfc6455
     
     * Other protocols should use implementation-defined prefixed names such as mycompany.com/my-custom-protocol.
-     """
+    """
     name: str
     """ The name of this port.  This must match the 'name' field in the corresponding ServicePort. Must be a DNS_LABEL. Optional only if one port is defined. """
     port: int
@@ -2230,11 +2230,11 @@ class EphemeralContainer(KubernetesObject):
     stdin_once: bool
     """ Whether the container runtime should close the stdin channel after it has been opened by a single attach. When stdin is true the stdin stream will remain open across multiple attach sessions. If stdinOnce is set to true, stdin is opened on container start, is empty until the first client attaches to stdin, and then remains open and accepts data until the client disconnects, at which time stdin is closed and remains closed until the container is restarted. If this flag is false, a container processes that reads from stdin will never receive an EOF. Default is false """
     target_container_name: str
-    """ 
+    """
     If set, the name of the container from PodSpec that this ephemeral container targets. The ephemeral container will be run in the namespaces (IPC, PID, etc) of this container. If not set then the ephemeral container uses the namespaces configured in the Pod spec.
     
     The container runtime must implement support for this feature. If the runtime does not support namespace targeting then the result of setting this field is undefined.
-     """
+    """
     termination_message_path: str
     """ Optional: Path at which the file to which the container's termination message will be written is mounted into the container's filesystem. Message written is intended to be brief final status, such as an assertion failure message. Will be truncated by the node if greater than 4096 bytes. The total message length across all containers will be limited to 12kb. Defaults to /dev/termination-log. Cannot be updated. """
     termination_message_policy: str
@@ -2373,7 +2373,7 @@ class PersistentVolumeClaimSpec(KubernetesObject):
     data_source: TypedLocalObjectReference
     """ dataSource field can be used to specify either: * An existing VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot) * An existing PVC (PersistentVolumeClaim) If the provisioner or an external controller can support the specified data source, it will create a new volume based on the contents of the specified data source. When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef, and dataSourceRef contents will be copied to dataSource when dataSourceRef.namespace is not specified. If the namespace is specified, then dataSourceRef will not be copied to dataSource. """
     data_source_ref: TypedObjectReference
-    """ 
+    """
     dataSourceRef specifies the object from which to populate the volume with data, if a non-empty volume is desired. This may be any object from a non-empty API group (non core object) or a PersistentVolumeClaim object. When this field is specified, volume binding will only succeed if the type of the specified object matches some installed volume populator or dynamic provisioner. This field will replace the functionality of the dataSource field and as such if both fields are non-empty, they must have the same value. For backwards compatibility, when namespace isn't specified in dataSourceRef, both fields (dataSource and dataSourceRef) will be set to the same value automatically if one of them is empty and the other is non-empty. When namespace is specified in dataSourceRef, dataSource isn't set to the same value and must be empty. There are three important differences between dataSource and dataSourceRef: * While dataSource only allows two specific types of objects, dataSourceRef
       allows any non-core object, as well as PersistentVolumeClaim objects.
     * While dataSource ignores disallowed values (dropping them), dataSourceRef
@@ -2382,7 +2382,7 @@ class PersistentVolumeClaimSpec(KubernetesObject):
     * While dataSource only allows local objects, dataSourceRef allows objects
       in any namespaces.
     (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled. (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
-     """
+    """
     resources: VolumeResourceRequirements
     """ resources represents the minimum resources the volume should have. If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements that are lower than previous value but must still be higher than capacity recorded in the status field of the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources """
     selector: meta.LabelSelector
@@ -2447,7 +2447,7 @@ class EphemeralVolumeSource(KubernetesObject):
     _api_version_ = "v1"
 
     volume_claim_template: PersistentVolumeClaimTemplate
-    """ 
+    """
     Will be used to create a stand-alone PVC to provision the volume. The pod in which this EphemeralVolumeSource is embedded will be the owner of the PVC, i.e. the PVC will be deleted together with the pod.  The name of the PVC will be `<pod name>-<volume name>` where `<volume name>` is the name from the `PodSpec.Volumes` array entry. Pod validation will reject the pod if the concatenated name is not valid for a PVC (for example, too long).
     
     An existing PVC with that name that is not owned by the pod will *not* be used for the pod to avoid using an unrelated volume by mistake. Starting the pod is then blocked until the unrelated PVC is removed. If such a pre-created PVC is meant to be used by the pod, the PVC has to updated with an owner reference to the pod once the pod exists. Normally this should not be necessary, but it may be useful when manually reconstructing a broken cluster.
@@ -2455,7 +2455,7 @@ class EphemeralVolumeSource(KubernetesObject):
     This field is read-only and no changes will be made by Kubernetes to the PVC after it has been created.
     
     Required, must not be nil.
-     """
+    """
 
     def __init__(self, volume_claim_template: PersistentVolumeClaimTemplate = None):
         super().__init__(volume_claim_template=volume_claim_template)
@@ -3080,12 +3080,12 @@ class PortStatus(KubernetesObject):
     _required_ = ["port", "protocol"]
 
     error: str
-    """ 
+    """
     Error is to record the problem with the service port The format of the error shall comply with the following rules: - built-in error values shall be specified in this file and those shall use
       CamelCase names
     - cloud provider specific error values must have names that comply with the
       format foo.example.com/CamelCase.
-     """
+    """
     port: int
     """ Port is the port number of the service port of which status is recorded here """
     protocol: str
@@ -3157,7 +3157,7 @@ class ModifyVolumeStatus(KubernetesObject):
     _required_ = ["status"]
 
     status: str
-    """ 
+    """
     status is the status of the ControllerModifyVolume operation. It can be in any of following states:
      - Pending
        Pending indicates that the PersistentVolumeClaim cannot be modified due to unmet requirements, such as
@@ -3168,7 +3168,7 @@ class ModifyVolumeStatus(KubernetesObject):
       Infeasible indicates that the request has been rejected as invalid by the CSI driver. To
     	  resolve the error, a valid VolumeAttributesClass needs to be specified.
     Note: New statuses can be added in the future. Consumers should check for unknown statuses and fail appropriately.
-     """
+    """
     target_volume_attributes_class_name: str
     """ targetVolumeAttributesClassName is the name of the VolumeAttributesClass the PVC currently being reconciled """
 
@@ -4145,7 +4145,7 @@ class PersistentVolumeClaimStatus(KubernetesObject):
     access_modes: list[str]
     """ accessModes contains the actual access modes the volume backing the PVC has. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1 """
     allocated_resource_statuses: dict[str, str]
-    """ 
+    """
     allocatedResourceStatuses stores status of resource being resized for the given PVC. Key names follow standard Kubernetes label syntax. Valid values are either:
     	* Un-prefixed keys:
     		- storage - the capacity of the volume.
@@ -4176,9 +4176,9 @@ class PersistentVolumeClaimStatus(KubernetesObject):
     A controller that receives PVC update with previously unknown resourceName or ClaimResourceStatus should ignore the update for the purpose it was designed. For example - a controller that only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid resources associated with PVC.
     
     This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
-     """
+    """
     allocated_resources: dict[str, Quantity]
-    """ 
+    """
     allocatedResources tracks the resources allocated to a PVC including its capacity. Key names follow standard Kubernetes label syntax. Valid values are either:
     	* Un-prefixed keys:
     		- storage - the capacity of the volume.
@@ -4190,7 +4190,7 @@ class PersistentVolumeClaimStatus(KubernetesObject):
     A controller that receives PVC update with previously unknown resourceName should ignore the update for the purpose it was designed. For example - a controller that only is responsible for resizing capacity of the volume, should ignore PVC updates that change other valid resources associated with PVC.
     
     This is an alpha field and requires enabling RecoverVolumeExpansionFailure feature.
-     """
+    """
     capacity: dict[str, Quantity]
     """ capacity represents the actual resources of the underlying volume. """
     conditions: list[PersistentVolumeClaimCondition]
@@ -4390,13 +4390,13 @@ class PodSecurityContext(KubernetesObject):
     app_armor_profile: AppArmorProfile
     """ appArmorProfile is the AppArmor options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows. """
     fs_group: int
-    """ 
+    """
     A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod:
     
     1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw----
     
     If unset, the Kubelet will not modify the ownership and permissions of any volume. Note that this field cannot be set when spec.os.name is windows.
-     """
+    """
     fs_group_change_policy: str
     """ fsGroupChangePolicy defines behavior of changing ownership and permission of the volume before being exposed inside Pod. This field will only apply to volume types which support fsGroup based ownership(and permissions). It will have no effect on ephemeral volume types such as: secret, configmaps and emptydir. Valid values are "OnRootMismatch" and "Always". If not specified, "Always" is used. Note that this field cannot be set when spec.os.name is windows. """
     run_as_group: int
@@ -4479,40 +4479,40 @@ class TopologySpreadConstraint(KubernetesObject):
     label_selector: meta.LabelSelector
     """ LabelSelector is used to find matching pods. Pods that match this label selector are counted to determine the number of pods in their corresponding topology domain. """
     match_label_keys: list[str]
-    """ 
+    """
     MatchLabelKeys is a set of pod label keys to select the pods over which spreading will be calculated. The keys are used to lookup values from the incoming pod labels, those key-value labels are ANDed with labelSelector to select the group of existing pods over which spreading will be calculated for the incoming pod. The same key is forbidden to exist in both MatchLabelKeys and LabelSelector. MatchLabelKeys cannot be set when LabelSelector isn't set. Keys that don't exist in the incoming pod labels will be ignored. A null or empty list means only match against labelSelector.
     
     This is a beta field and requires the MatchLabelKeysInPodTopologySpread feature gate to be enabled (enabled by default).
-     """
+    """
     max_skew: int
     """ MaxSkew describes the degree to which pods may be unevenly distributed. When `whenUnsatisfiable=DoNotSchedule`, it is the maximum permitted difference between the number of matching pods in the target topology and the global minimum. The global minimum is the minimum number of matching pods in an eligible domain or zero if the number of eligible domains is less than MinDomains. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 2/2/1: In this case, the global minimum is 1. | zone1 | zone2 | zone3 | |  P P  |  P P  |   P   | - if MaxSkew is 1, incoming pod can only be scheduled to zone3 to become 2/2/2; scheduling it onto zone1(zone2) would make the ActualSkew(3-1) on zone1(zone2) violate MaxSkew(1). - if MaxSkew is 2, incoming pod can be scheduled onto any zone. When `whenUnsatisfiable=ScheduleAnyway`, it is used to give higher precedence to topologies that satisfy it. It's a required field. Default value is 1 and 0 is not allowed. """
     min_domains: int
-    """ 
+    """
     MinDomains indicates a minimum number of eligible domains. When the number of eligible domains with matching topology keys is less than minDomains, Pod Topology Spread treats "global minimum" as 0, and then the calculation of Skew is performed. And when the number of eligible domains with matching topology keys equals or greater than minDomains, this value has no effect on scheduling. As a result, when the number of eligible domains is less than minDomains, scheduler won't schedule more than maxSkew Pods to those domains. If value is nil, the constraint behaves as if MinDomains is equal to 1. Valid values are integers greater than 0. When value is not nil, WhenUnsatisfiable must be DoNotSchedule.
     
     For example, in a 3-zone cluster, MaxSkew is set to 2, MinDomains is set to 5 and pods with the same labelSelector spread as 2/2/2: | zone1 | zone2 | zone3 | |  P P  |  P P  |  P P  | The number of domains is less than 5(MinDomains), so "global minimum" is treated as 0. In this situation, new pod with the same labelSelector cannot be scheduled, because computed skew will be 3(3 - 0) if new Pod is scheduled to any of the three zones, it will violate MaxSkew.
-     """
+    """
     node_affinity_policy: str
-    """ 
+    """
     NodeAffinityPolicy indicates how we will treat Pod's nodeAffinity/nodeSelector when calculating pod topology spread skew. Options are: - Honor: only nodes matching nodeAffinity/nodeSelector are included in the calculations. - Ignore: nodeAffinity/nodeSelector are ignored. All nodes are included in the calculations.
     
     If this value is nil, the behavior is equivalent to the Honor policy. This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
-     """
+    """
     node_taints_policy: str
-    """ 
+    """
     NodeTaintsPolicy indicates how we will treat node taints when calculating pod topology spread skew. Options are: - Honor: nodes without taints, along with tainted nodes for which the incoming pod has a toleration, are included. - Ignore: node taints are ignored. All nodes are included.
     
     If this value is nil, the behavior is equivalent to the Ignore policy. This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
-     """
+    """
     topology_key: str
     """ TopologyKey is the key of node labels. Nodes that have a label with this key and identical values are considered to be in the same topology. We consider each <key, value> as a "bucket", and try to put balanced number of pods into each bucket. We define a domain as a particular instance of a topology. Also, we define an eligible domain as a domain whose nodes meet the requirements of nodeAffinityPolicy and nodeTaintsPolicy. e.g. If TopologyKey is "kubernetes.io/hostname", each Node is a domain of that topology. And, if TopologyKey is "topology.kubernetes.io/zone", each zone is a domain of that topology. It's a required field. """
     when_unsatisfiable: str
-    """ 
+    """
     WhenUnsatisfiable indicates how to deal with a pod if it doesn't satisfy the spread constraint. - DoNotSchedule (default) tells the scheduler not to schedule it. - ScheduleAnyway tells the scheduler to schedule the pod in any location,
       but giving higher precedence to topologies that would help reduce the
       skew.
     A constraint is considered "Unsatisfiable" for an incoming pod if and only if every possible node assignment for that pod would violate "MaxSkew" on some topology. For example, in a 3-zone cluster, MaxSkew is set to 1, and pods with the same labelSelector spread as 3/1/1: | zone1 | zone2 | zone3 | | P P P |   P   |   P   | If WhenUnsatisfiable is set to DoNotSchedule, incoming pod can only be scheduled to zone2(zone3) to become 3/2/1(3/1/2) as ActualSkew(2-1) on zone2(zone3) satisfies MaxSkew(1). In other words, the cluster can still be imbalanced, but scheduler won't make it *more* imbalanced. It's a required field.
-     """
+    """
 
     def __init__(
         self,
@@ -4594,7 +4594,7 @@ class VolumeProjection(KubernetesObject):
     }
 
     cluster_trust_bundle: ClusterTrustBundleProjection
-    """ 
+    """
     ClusterTrustBundle allows a pod to access the `.spec.trustBundle` field of ClusterTrustBundle objects in an auto-updating file.
     
     Alpha, gated by the ClusterTrustBundleProjection feature gate.
@@ -4602,7 +4602,7 @@ class VolumeProjection(KubernetesObject):
     ClusterTrustBundle objects can either be selected by name, or by the combination of signer name and a label selector.
     
     Kubelet performs aggressive normalization of the PEM contents written into the pod filesystem.  Esoteric PEM features such as inter-block comments and block headers are stripped.  Certificates are deduplicated. The ordering of certificates within the file is arbitrary, and Kubelet may change the order over time.
-     """
+    """
     config_map: ConfigMapProjection
     """ configMap information about the configMap data to project """
     downward_api: DownwardAPIProjection
@@ -4843,7 +4843,7 @@ class Volume(KubernetesObject):
     empty_dir: EmptyDirVolumeSource
     """ emptyDir represents a temporary directory that shares a pod's lifetime. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir """
     ephemeral: EphemeralVolumeSource
-    """ 
+    """
     ephemeral represents a volume that is handled by a cluster storage driver. The volume's lifecycle is tied to the pod that defines it - it will be created before the pod starts, and deleted when the pod is removed.
     
     Use this if: a) the volume is only needed while the pod runs, b) features of normal volumes like restoring from snapshot or capacity
@@ -4858,7 +4858,7 @@ class Volume(KubernetesObject):
     Use CSI for light-weight local ephemeral volumes if the CSI driver is meant to be used that way - see the documentation of the driver for more information.
     
     A pod can use both types of ephemeral volumes and persistent volumes at the same time.
-     """
+    """
     fc: FCVolumeSource
     """ fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod. """
     flex_volume: FlexVolumeSource
@@ -5024,13 +5024,13 @@ class PodSpec(KubernetesObject):
     node_selector: dict[str, str]
     """ NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/ """
     os: PodOS
-    """ 
+    """
     Specifies the OS of the containers in the pod. Some pod and container fields are restricted if this is set.
     
     If the OS field is set to linux, the following fields must be unset: -securityContext.windowsOptions
     
     If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.hostUsers - spec.securityContext.appArmorProfile - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.appArmorProfile - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup
-     """
+    """
     overhead: dict[str, Quantity]
     """ Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller. If the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests. The RuntimeClass admission controller will reject Pod create requests which have the overhead already set. If RuntimeClass is configured and selected in the PodSpec, Overhead will be set to the value defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero. More info: https://git.k8s.io/enhancements/keps/sig-node/688-pod-overhead/README.md """
     preemption_policy: str
@@ -5042,13 +5042,13 @@ class PodSpec(KubernetesObject):
     readiness_gates: list[PodReadinessGate]
     """ If specified, all readiness gates will be evaluated for pod readiness. A pod is ready when all its containers are ready AND all conditions specified in the readiness gates have status equal to "True" More info: https://git.k8s.io/enhancements/keps/sig-network/580-pod-readiness-gates """
     resource_claims: list[PodResourceClaim]
-    """ 
+    """
     ResourceClaims defines which ResourceClaims must be allocated and reserved before the Pod is allowed to start. The resources will be made available to those containers which consume them by name.
     
     This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
     
     This field is immutable.
-     """
+    """
     restart_policy: str
     """ Restart policy for all containers within the pod. One of Always, OnFailure, Never. In some contexts, only a subset of those values may be permitted. Default to Always. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy """
     runtime_class_name: str
@@ -5056,11 +5056,11 @@ class PodSpec(KubernetesObject):
     scheduler_name: str
     """ If specified, the pod will be dispatched by specified scheduler. If not specified, the pod will be dispatched by default scheduler. """
     scheduling_gates: list[PodSchedulingGate]
-    """ 
+    """
     SchedulingGates is an opaque list of values that if specified will block scheduling the pod. If schedulingGates is not empty, the pod will stay in the SchedulingGated state and the scheduler will not attempt to schedule the pod.
     
     SchedulingGates can only be set at pod creation time, and be removed only afterwards.
-     """
+    """
     security_context: PodSecurityContext
     """ SecurityContext holds pod-level security attributes and common container settings. Optional: Defaults to empty.  See type description for default values of each field. """
     service_account: str
@@ -5296,13 +5296,13 @@ class PodStatus(KubernetesObject):
     nominated_node_name: str
     """ nominatedNodeName is set only when this pod preempts other pods on the node, but it cannot be scheduled right away as preemption victims receive their graceful termination periods. This field does not guarantee that the pod will be scheduled on this node. Scheduler may decide to place the pod elsewhere if other nodes become available sooner. Scheduler may also decide to give the resources on this node to a higher priority pod that is created after preemption. As a result, this field may be different than PodSpec.nodeName when the pod is scheduled. """
     phase: str
-    """ 
+    """
     The phase of a Pod is a simple, high-level summary of where the Pod is in its lifecycle. The conditions array, the reason and message fields, and the individual container status arrays contain more detail about the pod's status. There are five possible phase values:
     
     Pending: The pod has been accepted by the Kubernetes system, but one or more of the container images has not been created. This includes time before being scheduled as well as time spent downloading images over the network, which could take a while. Running: The pod has been bound to a node, and all of the containers have been created. At least one container is still running, or is in the process of starting or restarting. Succeeded: All containers in the pod have terminated in success, and will not be restarted. Failed: All containers in the pod have terminated, and at least one container has terminated in failure. The container either exited with non-zero status or was terminated by the system. Unknown: For some reason the state of the pod could not be obtained, typically due to an error in communicating with the host of the pod.
     
     More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-phase
-     """
+    """
     pod_ip: str
     """ podIP address allocated to the pod. Routable at least within the cluster. Empty if not yet allocated. """
     pod_ips: list[PodIP]
@@ -5393,7 +5393,7 @@ class PodTemplate(KubernetesApiResource):
 
 
 RawExtension: t.TypeAlias = dict[str, t.Any]
-""" 
+"""
 RawExtension is used to hold extensions in external versions.
 
 To use this, make a field which has RawExtension as its type in your external, versioned struct, and Object in your internal struct. You also need to register your various plugin types.
@@ -5432,7 +5432,7 @@ To use this, make a field which has RawExtension as its type in your external, v
 	}
 
 So what happens? Decode first uses json or yaml to unmarshal the serialized data into your external MyAPIObject. That causes the raw JSON to be stored, but not unpacked. The next step is to copy (using pkg/conversion) into the internal struct. The runtime package's DefaultScheme has conversion functions installed which will unpack the JSON stored in RawExtension, turning it into the correct object type, and storing it in the Object. (TODO: In the case where the object is of an unknown type, a runtime.Unknown object will be created and stored.)
- """
+"""
 
 
 class ReplicationControllerSpec(KubernetesObject):
@@ -5674,7 +5674,7 @@ class ServicePort(KubernetesObject):
     _required_ = ["port"]
 
     app_protocol: str
-    """ 
+    """
     The application protocol for this port. This is used as a hint for implementations to offer richer behavior for protocols that they understand. This field follows standard Kubernetes label syntax. Valid values are either:
     
     * Un-prefixed protocol names - reserved for IANA standard service names (as per RFC-6335 and https://www.iana.org/assignments/service-names).
@@ -5685,7 +5685,7 @@ class ServicePort(KubernetesObject):
       * 'kubernetes.io/wss' - WebSocket over TLS as described in https://www.rfc-editor.org/rfc/rfc6455
     
     * Other protocols should use implementation-defined prefixed names such as mycompany.com/my-custom-protocol.
-     """
+    """
     name: str
     """ The name of this port within the service. This must be a DNS_LABEL. All ports within a ServiceSpec must have unique names. When considering the endpoints for a Service, this must match the 'name' field in the EndpointPort. Optional if only one ServicePort is defined on this service. """
     node_port: int
@@ -5755,11 +5755,11 @@ class ServiceSpec(KubernetesObject):
     cluster_ip: str
     """ clusterIP is the IP address of the service and is usually assigned randomly. If an address is specified manually, is in-range (as per system configuration), and is not in use, it will be allocated to the service; otherwise creation of the service will fail. This field may not be changed through updates unless the type field is also being changed to ExternalName (which requires this field to be blank) or the type field is being changed from ExternalName (in which case this field may optionally be specified, as describe above).  Valid values are "None", empty string (""), or a valid IP address. Setting this to "None" makes a "headless service" (no virtual IP), which is useful when direct endpoint connections are preferred and proxying is not required.  Only applies to types ClusterIP, NodePort, and LoadBalancer. If this field is specified when creating a Service of type ExternalName, creation will fail. This field will be wiped when updating a Service to type ExternalName. More info: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies """
     cluster_ips: list[str]
-    """ 
+    """
     ClusterIPs is a list of IP addresses assigned to this service, and are usually assigned randomly.  If an address is specified manually, is in-range (as per system configuration), and is not in use, it will be allocated to the service; otherwise creation of the service will fail. This field may not be changed through updates unless the type field is also being changed to ExternalName (which requires this field to be empty) or the type field is being changed from ExternalName (in which case this field may optionally be specified, as describe above).  Valid values are "None", empty string (""), or a valid IP address.  Setting this to "None" makes a "headless service" (no virtual IP), which is useful when direct endpoint connections are preferred and proxying is not required.  Only applies to types ClusterIP, NodePort, and LoadBalancer. If this field is specified when creating a Service of type ExternalName, creation will fail. This field will be wiped when updating a Service to type ExternalName.  If this field is not specified, it will be initialized from the clusterIP field.  If this field is specified, clients must ensure that clusterIPs[0] and clusterIP have the same value.
     
     This field may hold a maximum of two entries (dual-stack IPs, in either order). These IPs must correspond to the values of the ipFamilies field. Both clusterIPs and ipFamilies are governed by the ipFamilyPolicy field. More info: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
-     """
+    """
     external_ips: list[str]
     """ externalIPs is a list of IP addresses for which nodes in the cluster will also accept traffic for this service.  These IPs are not managed by Kubernetes.  The user is responsible for ensuring that traffic arrives at a node with this IP.  A common example is external load-balancers that are not part of the Kubernetes system. """
     external_name: str
@@ -5771,11 +5771,11 @@ class ServiceSpec(KubernetesObject):
     internal_traffic_policy: str
     """ InternalTrafficPolicy describes how nodes distribute service traffic they receive on the ClusterIP. If set to "Local", the proxy will assume that pods only want to talk to endpoints of the service on the same node as the pod, dropping the traffic if there are no local endpoints. The default value, "Cluster", uses the standard behavior of routing to all endpoints evenly (possibly modified by topology and other features). """
     ip_families: list[str]
-    """ 
+    """
     IPFamilies is a list of IP families (e.g. IPv4, IPv6) assigned to this service. This field is usually assigned automatically based on cluster configuration and the ipFamilyPolicy field. If this field is specified manually, the requested family is available in the cluster, and ipFamilyPolicy allows it, it will be used; otherwise creation of the service will fail. This field is conditionally mutable: it allows for adding or removing a secondary IP family, but it does not allow changing the primary IP family of the Service. Valid values are "IPv4" and "IPv6".  This field only applies to Services of types ClusterIP, NodePort, and LoadBalancer, and does apply to "headless" services. This field will be wiped when updating a Service to type ExternalName.
     
     This field may hold a maximum of two entries (dual-stack families, in either order).  These families must correspond to the values of the clusterIPs field, if specified. Both clusterIPs and ipFamilies are governed by the ipFamilyPolicy field.
-     """
+    """
     ip_family_policy: str
     """ IPFamilyPolicy represents the dual-stack-ness requested or required by this Service. If there is no value provided, then this field will be set to SingleStack. Services can be "SingleStack" (a single IP family), "PreferDualStack" (two IP families on dual-stack configured clusters or a single IP family on single-stack clusters), or "RequireDualStack" (two IP families on dual-stack configured clusters, otherwise fail). The ipFamilies and clusterIPs fields depend on the value of this field. This field will be wiped when updating a service to type ExternalName. """
     load_balancer_class: str

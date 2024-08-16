@@ -107,7 +107,7 @@ class EndpointPort(KubernetesObject):
     _api_version_ = "discovery.k8s.io/v1"
 
     app_protocol: str
-    """ 
+    """
     The application protocol for this port. This is used as a hint for implementations to offer richer behavior for protocols that they understand. This field follows standard Kubernetes label syntax. Valid values are either:
     
     * Un-prefixed protocol names - reserved for IANA standard service names (as per RFC-6335 and https://www.iana.org/assignments/service-names).
@@ -118,7 +118,7 @@ class EndpointPort(KubernetesObject):
       * 'kubernetes.io/wss' - WebSocket over TLS as described in https://www.rfc-editor.org/rfc/rfc6455
     
     * Other protocols should use implementation-defined prefixed names such as mycompany.com/my-custom-protocol.
-     """
+    """
     name: str
     """ name represents the name of this port. All ports in an EndpointSlice must have a unique name. If the EndpointSlice is derived from a Kubernetes service, this corresponds to the Service.ports[].name. Name must either be an empty string or pass DNS_LABEL validation: * must be no more than 63 characters long. * must consist of lower case alphanumeric characters or '-'. * must start and end with an alphanumeric character. Default is empty string. """
     port: int
