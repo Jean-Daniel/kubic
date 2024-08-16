@@ -40,17 +40,17 @@ CUSTOM_TYPES = [
 
     TypeAlias(
         QualifiedName("JSONSchemaPropsOrBool", "apiextensions.k8s.io", "v1"),
-        '"JSONSchemaProps" | bool',
+        't.Union["JSONSchemaProps", bool]',
         description="Represents JSONSchemaProps or a boolean value. Defaults to true for the boolean property."),
 
     TypeAlias(
         QualifiedName("JSONSchemaPropsOrArray", "apiextensions.k8s.io", "v1"),
-        '"JSONSchemaProps" | list["JSONSchemaProps"]',
+        't.Union["JSONSchemaProps", list["JSONSchemaProps"]]',
         description="Represents a value that can either be a JSONSchemaProps or an array of JSONSchemaProps. Mainly here for serialization purposes."),
 
     TypeAlias(
         QualifiedName("JSONSchemaPropsOrStringArray", "apiextensions.k8s.io", "v1"),
-        '"JSONSchemaProps" | list[str]',
+        't.Union["JSONSchemaProps" | list[str]]',
         description="Represents a JSONSchemaProps or a string array."),
 ]
 

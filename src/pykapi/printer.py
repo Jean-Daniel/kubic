@@ -60,25 +60,29 @@ class TypePrinter:
                 self.print_type(group, ty, stream)
             stream.write("\n")
 
-    @staticmethod
-    def print_type_alias(group: ApiGroup, ty: TypeAlias, stream: t.TextIO):
+    def print_type_alias(self, group: ApiGroup, ty: TypeAlias, stream: t.TextIO):
         stream.write(ty.name)
-        if sys.version_info >= (3, 10):
-            stream.write(": t.TypeAlias = ")
-        else:
-            stream.write(" = ")
+        stream.write(": t.TypeAlias = ")
         stream.write(group.qualified_name(ty.type))
-        stream.write("\n\n")
+        stream.write("\n")
+        self.print_docstring(ty.description, stream)
+        stream.write("\n")
 
-    def print_docstring(self, description: str, stream: t.TextIO):
+    def print_docstring(self, description: str, stream: t.TextIO, indent=""):
         if not self.docstrings or not description:
             return
 
-        stream.write('    """ ')
+        stream.write(indent)
+        stream.write('""" ')
         if "\n" in description:
-            stream.write("\n    ")
-            stream.write(description.replace("\n", "\n    "))
-            stream.write("\n    ")
+            stream.write("\n")
+            stream.write(indent)
+            if indent:
+                stream.write(description.replace("\n", f"\n{indent}"))
+            else:
+                stream.write(description)
+            stream.write("\n")
+            stream.write(indent)
         else:
             stream.write(description)
         stream.write(' """\n')
@@ -90,7 +94,7 @@ class TypePrinter:
         stream.write(":\n")
 
         if isinstance(ty, ResourceType):
-            self.print_docstring(ty.description, stream)
+            self.print_docstring(ty.description, stream, "    ")
 
         stream.write("    __slots__ = ()\n")
 
@@ -139,7 +143,7 @@ class TypePrinter:
             stream.write(group.qualified_name(prop.type, ty))
             stream.write("\n")
             # docstring
-            self.print_docstring(prop.description, stream)
+            self.print_docstring(prop.description, stream, "    ")
 
         stream.write("\n    def __init__(self")
         if isinstance(ty, ApiResourceType):

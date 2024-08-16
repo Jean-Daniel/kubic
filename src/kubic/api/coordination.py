@@ -3,17 +3,22 @@ from . import meta
 
 
 class LeaseSpec(KubernetesObject):
+    """LeaseSpec is a specification of a Lease."""
+
     __slots__ = ()
 
     _api_version_ = "coordination.k8s.io/v1"
 
     acquire_time: meta.MicroTime
+    """ acquireTime is a time when the current lease was acquired. """
     holder_identity: str
+    """ holderIdentity contains the identity of the holder of a current lease. """
     lease_duration_seconds: int
+    """ leaseDurationSeconds is a duration that candidates for a lease need to wait to force acquire it. This is measure against time of last observed renewTime. """
     lease_transitions: int
-    preferred_holder: str
+    """ leaseTransitions is the number of transitions of a lease between holders. """
     renew_time: meta.MicroTime
-    strategy: str
+    """ renewTime is a time when the current holder of a lease has last updated the lease. """
 
     def __init__(
         self,
@@ -21,22 +26,20 @@ class LeaseSpec(KubernetesObject):
         holder_identity: str = None,
         lease_duration_seconds: int = None,
         lease_transitions: int = None,
-        preferred_holder: str = None,
         renew_time: meta.MicroTime = None,
-        strategy: str = None,
     ):
         super().__init__(
             acquire_time=acquire_time,
             holder_identity=holder_identity,
             lease_duration_seconds=lease_duration_seconds,
             lease_transitions=lease_transitions,
-            preferred_holder=preferred_holder,
             renew_time=renew_time,
-            strategy=strategy,
         )
 
 
 class Lease(KubernetesApiResource):
+    """Lease defines a lease concept."""
+
     __slots__ = ()
 
     _api_version_ = "coordination.k8s.io/v1"
@@ -45,55 +48,9 @@ class Lease(KubernetesApiResource):
     _scope_ = "namespace"
 
     metadata: meta.ObjectMeta
+    """ More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata """
     spec: LeaseSpec
+    """ spec contains the specification of the Lease. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status """
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: LeaseSpec = None):
-        super().__init__(name, namespace, metadata=metadata, spec=spec)
-
-
-class LeaseCandidateSpec(KubernetesObject):
-    __slots__ = ()
-
-    _api_version_ = "coordination.k8s.io/v1alpha1"
-
-    _required_ = ["lease_name", "preferred_strategies"]
-
-    binary_version: str
-    emulation_version: str
-    lease_name: str
-    ping_time: meta.MicroTime
-    preferred_strategies: list[str]
-    renew_time: meta.MicroTime
-
-    def __init__(
-        self,
-        binary_version: str = None,
-        emulation_version: str = None,
-        lease_name: str = None,
-        ping_time: meta.MicroTime = None,
-        preferred_strategies: list[str] = None,
-        renew_time: meta.MicroTime = None,
-    ):
-        super().__init__(
-            binary_version=binary_version,
-            emulation_version=emulation_version,
-            lease_name=lease_name,
-            ping_time=ping_time,
-            preferred_strategies=preferred_strategies,
-            renew_time=renew_time,
-        )
-
-
-class LeaseCandidate(KubernetesApiResource):
-    __slots__ = ()
-
-    _api_version_ = "coordination.k8s.io/v1alpha1"
-    _api_group_ = "coordination.k8s.io"
-    _kind_ = "LeaseCandidate"
-    _scope_ = "namespace"
-
-    metadata: meta.ObjectMeta
-    spec: LeaseCandidateSpec
-
-    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: LeaseCandidateSpec = None):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
