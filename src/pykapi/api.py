@@ -38,6 +38,7 @@ CUSTOM_TYPES = [
         'bool | int | float | str | list["JSON"], dict[str, "JSON"] | None',
         description="Represents any valid JSON value."),
 
+    # Cannot use '|' for unions with type forward declaration.
     TypeAlias(
         QualifiedName("JSONSchemaPropsOrBool", "apiextensions.k8s.io", "v1"),
         't.Union["JSONSchemaProps", bool]',
@@ -50,7 +51,7 @@ CUSTOM_TYPES = [
 
     TypeAlias(
         QualifiedName("JSONSchemaPropsOrStringArray", "apiextensions.k8s.io", "v1"),
-        't.Union["JSONSchemaProps" | list[str]]',
+        't.Union["JSONSchemaProps", list[str]]',
         description="Represents a JSONSchemaProps or a string array."),
 ]
 

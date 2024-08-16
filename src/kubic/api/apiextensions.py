@@ -169,7 +169,7 @@ JSON: t.TypeAlias = bool | int | float | str | list["JSON"], dict[str, "JSON"] |
 """ Represents any valid JSON value. """
 
 
-JSONSchemaPropsOrStringArray: t.TypeAlias = t.Union["JSONSchemaProps" | list[str]]
+JSONSchemaPropsOrStringArray: t.TypeAlias = t.Union["JSONSchemaProps", list[str]]
 """ Represents a JSONSchemaProps or a string array. """
 
 
