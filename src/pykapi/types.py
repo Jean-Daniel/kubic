@@ -65,7 +65,7 @@ class TypeAlias(ApiType):
     def __init__(self, fqn: QualifiedName, ty: "Type", description: str | None):
         super().__init__(fqn)
         self.type = ty
-        self.description = description.strip() if description else None
+        self.description = description
 
     def __eq__(self, other):
         return super().__eq__(other) and self.type == other.type
@@ -118,7 +118,7 @@ class ResourceType(ObjectType):
 
     def __init__(self, name: QualifiedName, description: str | None):
         super().__init__(name)
-        self.description = description.strip() if description else None
+        self.description = description
 
 
 class ApiResourceType(ResourceType):

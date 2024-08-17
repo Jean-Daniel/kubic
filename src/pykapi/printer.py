@@ -73,7 +73,7 @@ class TypePrinter:
             return
 
         stream.write(indent)
-        description = description.replace("\\", "\\\\")
+        description = description.strip().replace("\\", "\\\\")
         if "\n" in description:
             stream.write('"""\n')
             stream.write(indent)
