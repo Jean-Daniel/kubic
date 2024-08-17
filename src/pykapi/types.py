@@ -62,10 +62,10 @@ class ApiTypeRef(ApiType):
 class TypeAlias(ApiType):
     __slots__ = ("type", "description")
 
-    def __init__(self, fqn: QualifiedName, ty: "Type", description: str):
+    def __init__(self, fqn: QualifiedName, ty: "Type", description: str | None):
         super().__init__(fqn)
         self.type = ty
-        self.description = description
+        self.description = description.strip() if description else None
 
     def __eq__(self, other):
         return super().__eq__(other) and self.type == other.type
@@ -75,7 +75,7 @@ class Property(t.NamedTuple):
     name: str
     type: "Type"
     required: bool
-    description: str
+    description: str | None
 
     @property
     def snake_name(self):
@@ -86,7 +86,7 @@ class NamedProperty(t.NamedTuple):
     name: str
     type: "Type"
     required: bool
-    description: str
+    description: str | None
     snake_name: str
 
 
@@ -116,15 +116,15 @@ class ObjectType(ApiType):
 class ResourceType(ObjectType):
     __slots__ = ("description",)
 
-    def __init__(self, name: QualifiedName, description: str):
+    def __init__(self, name: QualifiedName, description: str | None):
         super().__init__(name)
-        self.description = description
+        self.description = description.strip() if description else None
 
 
 class ApiResourceType(ResourceType):
     __slots__ = ("scoped",)
 
-    def __init__(self, name: QualifiedName, description: str, scoped: bool):
+    def __init__(self, name: QualifiedName, description: str | None, scoped: bool):
         super().__init__(name, description)
         self.scoped = scoped
 
