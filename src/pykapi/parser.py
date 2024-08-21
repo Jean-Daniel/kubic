@@ -131,7 +131,11 @@ class ApiGroup:
             base = types[0][0]
             if base.name in self._types:
                 # a base type with this name already exists
+                # FIXME: should guess a common name.
                 self._rename(base)
+                # Apply change to other matching types
+                for ty in types[0][1:]:
+                    ty.fqn = base.fqn
             else:
                 self._types[base.name] = base
         else:
