@@ -111,6 +111,13 @@ def is_key_selector(properties: dict) -> bool:
     )
 
 
+def is_local_object_reference(properties: dict) -> bool:
+    if len(properties) != 1:
+        return False
+
+    return "name" in properties
+
+
 def is_secret_ref(properties: dict) -> bool:
     if len(properties) != 2:
         return False
@@ -200,6 +207,10 @@ def infer_k8s_type(prop_name: str, schema: dict) -> ApiTypeRef | None:
         if any(kw in low_name for kw in ["secret", "username", "password", "key", "credentials"]):
             return ApiTypeRef(QualifiedName("SecretKeySelector", "core", "v1"))
         return ApiTypeRef(QualifiedName("ConfigMapKeySelector", "core", "v1"))
+
+    if is_local_object_reference(properties):
+        if any(kw in low_name for kw in ["secret", "reference"]):
+            return ApiTypeRef(QualifiedName("LocalObjectReference", "core", "v1"))
 
     if low_name.endswith("probe") and is_probe(properties):
         return ApiTypeRef(QualifiedName("Probe", "core", "v1"))
