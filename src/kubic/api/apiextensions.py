@@ -165,7 +165,7 @@ JSONSchemaPropsOrBool: t.TypeAlias = t.Union["JSONSchemaProps", bool]
 """ Represents JSONSchemaProps or a boolean value. Defaults to true for the boolean property. """
 
 
-JSON: t.TypeAlias = bool | int | float | str | list["JSON"], dict[str, "JSON"] | None
+JSON: t.TypeAlias = bool | int | float | str | list["JSON"] | dict[str, "JSON"] | None
 """ Represents any valid JSON value. """
 
 

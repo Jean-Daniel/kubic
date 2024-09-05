@@ -35,7 +35,7 @@ def _is_greater_version(v1: str, v2: str) -> bool:
 CUSTOM_TYPES = [
     TypeAlias(
         QualifiedName("JSON", "apiextensions.k8s.io", "v1"),
-        'bool | int | float | str | list["JSON"], dict[str, "JSON"] | None',
+        'bool | int | float | str | list["JSON"] | dict[str, "JSON"] | None',
         description="Represents any valid JSON value."),
 
     # Cannot use '|' for unions with type forward declaration.
