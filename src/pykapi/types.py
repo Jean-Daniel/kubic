@@ -67,6 +67,9 @@ class TypeAlias(ApiType):
         self.type = ty
         self.description = description
 
+    def __hash__(self):
+        return hash(self.type)
+
     def __eq__(self, other):
         return super().__eq__(other) and self.type == other.type
 
@@ -76,6 +79,14 @@ class Property(t.NamedTuple):
     type: "Type"
     required: bool
     description: str | None
+
+    def __hash__(self):
+        return hash((self.name, self.type, self.required))
+
+    def __eq__(self, other):
+        return self.name == other.name \
+            and self.type == other.type \
+            and self.required == other.required
 
     @property
     def snake_name(self):
@@ -88,6 +99,16 @@ class NamedProperty(t.NamedTuple):
     required: bool
     description: str | None
     snake_name: str
+
+    def __hash__(self):
+        return hash((self.name, self.type, self.required, self.snake_name))
+
+    # exclude description from type equality
+    def __eq__(self, other: t.Self):
+        return self.name == other.name \
+            and self.type == other.type \
+            and self.required == other.required \
+            and self.snake_name == other.snake_name
 
 
 class ObjectType(ApiType):
