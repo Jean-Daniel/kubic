@@ -106,17 +106,18 @@ def module_for_group(group) -> str:
 
 
 KEYWORDS = {
-    "if",
-    "not",
-    "for",
-    "def",
-    "class",
-    "from",
-    "import",
-    "except",
     "break",
-    "global",
+    "class",
     "continue",
+    "def",
+    "except",
+    "for",
+    "from",
+    "global",
+    "if",
+    "import",
+    "not",
+    "self",
 }
 
 # used to fix camel_to_snake edge cases (URLs -> _url_s for instance)
