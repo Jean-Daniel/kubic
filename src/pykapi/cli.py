@@ -181,6 +181,7 @@ def _sanitize_crd(crd: dict) -> dict:
 
 def import_custom_resources(args):
     files = []
+    tmpfiles = []
     v1: client.ApiextensionsV1Api | None = None
     api_groups: dict[str, list[str]] = {}
     for crd in args.crds:
@@ -196,6 +197,7 @@ def import_custom_resources(args):
                 continue
         else:
             cached: pathlib.Path = pathlib.Path(mktemp(f"-{crd}.yaml"))
+            tmpfiles.append(cached)
 
         if v1 is None:
             config.load_kube_config()
@@ -223,12 +225,15 @@ def import_custom_resources(args):
             for version in v:
                 response = client.CustomObjectsApi().get_api_resources(group=crd, version=version)
                 for rsrc in response.resources:
-                    # Skip already fetched (in case a CRD is declared in more than one version)
+                    # - Skip already fetched (in case a CRD is declared in more than one version)
+                    # - Names containing slash are usually status resource (ciliumnode/status…)
                     if '/' in rsrc.name or rsrc.name in fetched:
                         continue
                     fetched.add(rsrc.name)
                     crd_schema = v1.read_custom_resource_definition(f"{rsrc.name}.{crd}")
                     schemas.append(_sanitize_crd(v1.api_client.sanitize_for_serialization(crd_schema)))
+            # Reponse order is not deterministic but we need a stable order to always get the same output
+            schemas.sort(key=lambda r: r["metadata"]["name"])
 
         with cached.open("w") as f:
             yaml.dump_all(schemas, f, yaml.CSafeDumper, indent=2)
@@ -236,11 +241,16 @@ def import_custom_resources(args):
         files.append(cached)
 
     crds = []
-    read_crds(files, crds)
-    annotations = AnnotationFactory(args.annotations)
-    groups = import_crds(crds, annotations)
+    try:
+        read_crds(files, crds)
+        annotations = AnnotationFactory(args.annotations)
+        groups = import_crds(crds, annotations)
 
-    print_groups(groups, args.output, api_module=args.api_module, docstrings=args.docstrings)
+        print_groups(groups, args.output, api_module=args.api_module, docstrings=args.docstrings)
+    finally:
+        # cleanup temp files
+        for tmp in tmpfiles:
+            tmp.unlink(missing_ok=True)
 
 
 def main():
