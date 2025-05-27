@@ -360,14 +360,14 @@ class KubernetesApiResource(KubernetesObject, metaclass=_K8SApiResourceMeta):
         if key == "api_version" or key == "apiVersion":
             if value.lower() != self.api_version.lower():
                 raise AttributeError(f"apiVersion is a read-only attribute ({self.api_version} ≠ {value})")
-            return
+            return None
 
         if key == "kind":
             if value.lower() != self.kind.lower():
                 raise AttributeError(f"kind is a read-only attribute ({self.kind} ≠ {value})")
-            return
+            return None
 
-        if key == "status":
-            return
+        if key == "status" or key == "managedFields":
+            return None
 
         return super()._update(key, value)
