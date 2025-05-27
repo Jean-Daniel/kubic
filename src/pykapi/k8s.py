@@ -2,6 +2,8 @@ import re
 import typing as t
 from functools import cache
 
+from kubic import snake_to_camel
+
 # List of types that are not scoped to namespace
 CLUSTER_OBJECTS = {
     "ComponentStatus",
@@ -155,6 +157,10 @@ def type_name_from_property_name(name: str):
     # assuming 2 and 3 letters words are acronyms (do it before remote trailing S)
     if len(name) <= 3:
         return name.upper()
+
+    # Unfortunately, it is possible
+    if '_' in name:
+        name = snake_to_camel(name)
 
     # egress for instance
     low_name = name.lower()

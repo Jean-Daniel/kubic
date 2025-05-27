@@ -99,6 +99,10 @@ def register_modules(spec: ModuleSpec):
 KubernetesApiResourceTy = t.TypeVar("KubernetesApiResourceTy", bound=KubernetesApiResource)
 
 
+def resolve_api_resource(api_version: str, kind: str) -> t.Type[R] | None:
+    return _rsrc_index.get(_ObjID(api_version, kind.lower()))
+
+
 def create_api_resource(obj: dict) -> KubernetesApiResourceTy:
     if isinstance(obj, KubernetesApiResource):
         return obj
@@ -108,7 +112,7 @@ def create_api_resource(obj: dict) -> KubernetesApiResourceTy:
     if not api_version or not kind:
         raise ValueError("K8S resource must have 'apiVersion' and 'kind'")
 
-    rsrc = _rsrc_index.get(_ObjID(api_version, kind.lower()))
+    rsrc = resolve_api_resource(api_version, kind)
     if not rsrc:
         # assuming that object that contains items instead of spec is a ResourceList (ConfigMapList, …)
         items = obj.pop("items", None)
