@@ -115,7 +115,7 @@ def create_api_resource(obj: dict) -> KubernetesApiResourceTy:
     rsrc = resolve_api_resource(api_version, kind)
     if not rsrc:
         # assuming that object that contains items instead of spec is a ResourceList (ConfigMapList, …)
-        items = obj.pop("items", None)
+        items = obj.get("items", None)
         if items:
             return AnyResourceList(api_version, kind, "", items=[create_api_resource(item) for item in items])
         return AnyApiResource(api_version, kind, "").update(obj)

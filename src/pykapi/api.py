@@ -224,7 +224,7 @@ def import_api_types(schema: str, annotations: dict, *names) -> list[ApiGroup]:
                 "name": {"snake_name": "group_name"}
             },
             "meta.v1.WatchEvent": {
-                # Thie is core.RawExtension, but it creates a circular dependency
+                # This is core.RawExtension, but it creates a circular dependency
                 "object": "object"
             },
             "apiextensions.k8s.io.v1.CustomResourceValidation": {

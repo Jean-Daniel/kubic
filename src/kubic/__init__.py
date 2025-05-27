@@ -90,7 +90,7 @@ class _TypedList(list):
 
     def __iadd__(self, other):
         if other is None:
-            return
+            return None
 
         # convenient method to add a single item
         if isinstance(other, self.type):
@@ -118,6 +118,8 @@ def _create_generic_type(hint):
     if origin is dict:
         # assumes all parameters are base types
         return dict()
+
+    return None
 
 
 class KubernetesObject(dict, metaclass=_K8SResourceMeta):
@@ -197,6 +199,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
 
         camel_name = self._field_names_.get(key) or snake_to_camel(key)
         self[camel_name] = value
+        return None
 
     def __delattr__(self, item):
         self._item_hint(item)  # check key validity
@@ -367,7 +370,11 @@ class KubernetesApiResource(KubernetesObject, metaclass=_K8SApiResourceMeta):
                 raise AttributeError(f"kind is a read-only attribute ({self.kind} ≠ {value})")
             return None
 
-        if key == "status" or key == "managedFields":
+        if key == "status":
             return None
+
+        if key == "metadata" and isinstance(value, dict) and "managedFields" in value:
+            value = dict(value)
+            del value["managedFields"]
 
         return super()._update(key, value)
