@@ -148,7 +148,7 @@ class ApiParser(Parser):
 
         super().import_resource(obj_type, schema)
 
-    def import_property(self, obj_type: ApiType, prop_name: str, schema: dict) -> Type:
+    def import_property(self, obj_type: ApiType, prop_name: str, schema: dict, is_plural: bool) -> Type:
         # API Importer only
         ref = schema.get("$ref")
         if ref:
@@ -156,7 +156,7 @@ class ApiParser(Parser):
             ty = self.import_ref(ref.removeprefix("#/definitions/"))
             return ty
 
-        return super().import_property(obj_type, prop_name, schema)
+        return super().import_property(obj_type, prop_name, schema, is_plural)
 
     def import_ref(self, ref: str) -> Type:
         fqn = QualifiedName.parse(ref)
@@ -207,7 +207,7 @@ class ApiParser(Parser):
 
         # Type Alias
         alias = TypeAlias(fqn, "", schema.get("description"))
-        alias.type = self.import_property(alias, fqn.name, schema)
+        alias.type = self.import_property(alias, fqn.name, schema, is_plural=False)
         group.add(alias)
         return alias
 
