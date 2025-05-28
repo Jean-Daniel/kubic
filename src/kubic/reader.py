@@ -100,7 +100,10 @@ KubernetesApiResourceTy = t.TypeVar("KubernetesApiResourceTy", bound=KubernetesA
 
 
 def resolve_api_resource(api_version: str, kind: str) -> t.Type[R] | None:
-    group, _, _ = api_version.partition('/')
+    group, sep, _ = api_version.partition('/')
+    # special case for 'v1' -> means 'core/v1' and core is empty group
+    if not sep:
+        group = ''
     return _rsrc_index.get(_ObjID(group, kind.lower()))
 
 
