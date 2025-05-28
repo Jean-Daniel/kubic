@@ -16,7 +16,7 @@ AnyResourceList: t.Type[R] = None
 
 
 class _ObjID(t.NamedTuple):
-    api_version: str
+    group: str
     kind: str
 
 
@@ -83,7 +83,7 @@ def register_module(module: ModuleType):
         if not inspect.isclass(cls):
             continue
         if hasattr(cls, "_kind_"):
-            oid = _ObjID(cls._api_version_, cls._kind_.lower())
+            oid = _ObjID(cls._api_group_, cls._kind_.lower())
             _rsrc_index[oid] = cls
         elif name == "ObjectMeta" and getattr(cls, "_api_version_", None) == "meta/v1":
             _register_any(cls)
@@ -100,7 +100,8 @@ KubernetesApiResourceTy = t.TypeVar("KubernetesApiResourceTy", bound=KubernetesA
 
 
 def resolve_api_resource(api_version: str, kind: str) -> t.Type[R] | None:
-    return _rsrc_index.get(_ObjID(api_version, kind.lower()))
+    group, _, _ = api_version.partition('/')
+    return _rsrc_index.get(_ObjID(group, kind.lower()))
 
 
 def create_api_resource(obj: dict) -> KubernetesApiResourceTy:
@@ -113,7 +114,8 @@ def create_api_resource(obj: dict) -> KubernetesApiResourceTy:
         raise ValueError("K8S resource must have 'apiVersion' and 'kind'")
 
     rsrc = resolve_api_resource(api_version, kind)
-    if not rsrc:
+    # in case of version discrepancy, fallback to AnyApiResource
+    if not rsrc or rsrc.api_version != api_version:
         # assuming that object that contains items instead of spec is a ResourceList (ConfigMapList, …)
         items = obj.get("items", None)
         if items:
