@@ -180,8 +180,8 @@ class AnonymousType(ObjectType):
         return self.name
 
     @classmethod
-    def with_property(cls, prop_name: str, parent: ObjectType) -> "AnonymousType":
-        base_name = type_name_from_property_name(prop_name)
+    def with_property(cls, prop_name: str, parent: ObjectType, is_plural: bool) -> "AnonymousType":
+        base_name = type_name_from_property_name(prop_name, is_plural)
         # Spec is a commonly used name.
         # To avoid having a lot of conflicting Spec types -> use fullname by default.
         if base_name == "Spec":

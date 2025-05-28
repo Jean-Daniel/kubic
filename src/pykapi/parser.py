@@ -329,7 +329,7 @@ class Parser:
                             value.get("type") != "array" or overwrite.get("type") == "array"
                     ), f"{obj_type.name}.{prop}: {value.get('type')} ≠ {overwrite.get('type')}"
                     value = overwrite
-            prop_type = self.import_property(obj_type, prop, value)
+            prop_type = self.import_property(obj_type, prop, value, is_plural=False)
             if prop_type:
                 obj_type.properties.append(
                     NamedProperty(prop, prop_type, prop in required, value.get("description"), snake_name)
@@ -338,20 +338,20 @@ class Parser:
                 )
         obj_type.properties.sort()
 
-    def import_property(self, obj_type: ApiType, prop_name: str, schema: dict) -> Type:
+    def import_property(self, obj_type: ApiType, prop_name: str, schema: dict, is_plural: bool) -> Type:
         ty = schema.get("type")
         if ty:
-            return self.import_base_property(obj_type, prop_name, schema, ty)
+            return self.import_base_property(obj_type, prop_name, schema, ty, is_plural)
 
         return self.import_complex_property(obj_type, prop_name, schema)
 
-    def import_base_property(self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str) -> Type:
+    def import_base_property(self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str, is_plural: bool) -> Type:
         if prop_type == "object":
             # if no properties, this is just an alias for generic object
             if "properties" in schema:
                 assert isinstance(obj_type, ObjectType)
                 # this is an anonymous type -> register it for parsing later
-                ty = AnonymousType.with_property(schema.get("_type_name_", prop_name), obj_type)
+                ty = AnonymousType.with_property(schema.get("_type_name_", prop_name), obj_type, is_plural)
                 self._register_type(ty, schema)
                 return ty
 
@@ -359,7 +359,7 @@ class Parser:
                 details = schema["additionalProperties"]
                 if "_type_name_" in schema:
                     details["_type_name_"] = schema["_type_name_"]
-                vtype = self.import_property(obj_type, prop_name, details)
+                vtype = self.import_property(obj_type, prop_name, details, is_plural=True)
                 return GenericType("dict", ("str", vtype))
 
             return GenericType("dict", ("str", "t.Any"))
@@ -379,7 +379,7 @@ class Parser:
             if ty:
                 return ty
 
-            name = type_name_from_property_name(fmt)
+            name = type_name_from_property_name(fmt, is_plural=False)
             ty = TypeAlias(
                 QualifiedName(name, obj_type.fqn.group, obj_type.fqn.version),
                 "str", description="")
@@ -398,7 +398,7 @@ class Parser:
             if details:
                 if "_type_name_" in schema:
                     details["_type_name_"] = schema["_type_name_"]
-                vtype = self.import_property(obj_type, prop_name, details)
+                vtype = self.import_property(obj_type, prop_name, details, is_plural=True)
                 return GenericType("list", (vtype,))
             return "list"
 

@@ -70,21 +70,21 @@ class CRDParser(Parser):
 
         super().import_resource(obj_type, schema)
 
-    def import_property(self, obj_type: ObjectType, prop_name: str, schema: dict) -> Type:
+    def import_property(self, obj_type: ObjectType, prop_name: str, schema: dict, is_plural: bool) -> Type:
         ref = schema.get("$ref")
         if ref:
             # ref to existing type
             fqn = QualifiedName.parse(ref)
             return ApiTypeRef(fqn)
 
-        return super().import_property(obj_type, prop_name, schema)
+        return super().import_property(obj_type, prop_name, schema, is_plural)
 
-    def import_base_property(self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str) -> Type:
+    def import_base_property(self, obj_type: ApiType, prop_name: str, schema: dict, prop_type: str, is_plural: bool) -> Type:
         # common pattern matching
         if schema.get("type") == "object":
             if k8s_type := infer_k8s_type(prop_name, schema):
                 return k8s_type
-        return super().import_base_property(obj_type, prop_name, schema, prop_type)
+        return super().import_base_property(obj_type, prop_name, schema, prop_type, is_plural)
 
 
 def is_label_selector(properties: dict) -> bool:

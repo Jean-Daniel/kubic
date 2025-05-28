@@ -149,7 +149,7 @@ ACRONYMES = {"tls", "ipam", "api", "cidr"}
 PLURALS_EXCEPTION = {"kerberos", "status", "tls"}
 
 
-def type_name_from_property_name(name: str):
+def type_name_from_property_name(name: str, is_plural: bool):
     # true when type_name is specified in annotation
     if name[0].isupper():
         return name
@@ -164,7 +164,7 @@ def type_name_from_property_name(name: str):
 
     # egress for instance
     low_name = name.lower()
-    if name.endswith("s") and not name.endswith("ss") and not any(low_name.endswith(excluded) for excluded in PLURALS_EXCEPTION):
+    if is_plural and name.endswith("s") and not name.endswith("ss") and not any(low_name.endswith(excluded) for excluded in PLURALS_EXCEPTION):
         name = name.removesuffix("s")
         # just in case
         if len(name) <= 3:
@@ -174,7 +174,8 @@ def type_name_from_property_name(name: str):
 
     if "-" in name:
         parts = name.split("-")
-        name = "".join(type_name_from_property_name(p) for p in parts)
+        # FIXME: only last part should be plural
+        name = "".join(type_name_from_property_name(p, is_plural) for p in parts)
 
     for ac in ACRONYMES:
         if name.startswith(ac):
