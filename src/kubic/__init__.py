@@ -67,6 +67,7 @@ class _TypedList(list):
             super().append(self._cast(obj))
 
     def insert(self, index: int, obj):
+        # do not create null entries
         if obj is not None:
             super().insert(index, self._cast(obj))
 
@@ -80,7 +81,9 @@ class _TypedList(list):
                 self.append(item)
 
     def __setitem__(self, key, value):
-        self.insert(key, value)
+        # do not create null entries
+        if value is not None:
+            super().__setitem__(key, self._cast(value))
 
     def __add__(self, other: list):
         result = _TypedList(self.type)
