@@ -2,14 +2,15 @@ import typing as t
 from collections import defaultdict
 from collections.abc import Callable
 
+from pykapi.k8s import module_for_group
 from .k8s import QualifiedName
 from .parser import Parser, ApiGroup
 from .types import ApiResourceType, ObjectType, AnonymousType, Type, ApiType, ApiTypeRef
 
 
 class CRDGroup(ApiGroup):
-    def __init__(self, name: str, version: str):
-        super().__init__(name, version)
+    def __init__(self, name: str, version: str, module: str):
+        super().__init__(name, version, module)
         self.aliases = set()
 
     def __contains__(self, item):
@@ -23,9 +24,9 @@ class CRDGroup(ApiGroup):
 
 
 class CRDParser(Parser):
-    def __init__(self, group: str, version: str, annotations: dict):
+    def __init__(self, group: str, version: str, module: str, annotations: dict):
         super().__init__()
-        self.group = CRDGroup(group, version)
+        self.group = CRDGroup(group, version, module)
         # patching root schema
         self.annotations = annotations
 
@@ -237,11 +238,16 @@ AnnotationProvider: t.TypeAlias = Callable[[str], dict]
 def import_crds(crds: list[tuple[QualifiedName, dict]], annotations: AnnotationProvider) -> list[ApiGroup]:
     # in case there is CRDs from many groups/versions.
     # FIXME: disable group by version as some CRDs have etherogenous version (cilium)
+    modules = {}
     crds_by_groups = defaultdict(list)
     patches_by_group = defaultdict(dict)
     for fqn, schema in crds:
         a = annotations(fqn.group)
-        group = a.get("module", fqn.group)
+        group = a.get("group", fqn.group)
+        module = a.get("module")
+        if module or (group not in modules):
+            modules[group] = module or module_for_group(group)
+
         crds_by_groups[group].append((fqn, schema))
         # merge all patches into a single map
         patches = a.get("patches")
@@ -251,7 +257,7 @@ def import_crds(crds: list[tuple[QualifiedName, dict]], annotations: AnnotationP
 
     groups = []
     for group, crds in crds_by_groups.items():
-        parser = CRDParser(group, "", patches_by_group[group])
+        parser = CRDParser(group, version="", module=modules[group], annotations=patches_by_group[group])
         groups.append(parser.process(*crds))
 
     return groups

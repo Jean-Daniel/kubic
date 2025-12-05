@@ -16,7 +16,7 @@ from yaml import CSafeLoader
 
 from .api import import_api_types
 from .crd import import_crds
-from .k8s import QualifiedName, module_for_group
+from .k8s import QualifiedName
 from .parser import ApiGroup
 from .printer import TypePrinter
 
@@ -66,7 +66,7 @@ def print_groups(groups: list[ApiGroup], output: str, api_module: str = ".", doc
     for group in groups:
         filename = output
         if filename != "-":
-            module = module_for_group(group.name)
+            module = group.module
             filename = os.path.join(filename, f"{module}.py")
         printer.print_group(group, filename)
 

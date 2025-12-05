@@ -42,8 +42,9 @@ Base64Type = TypeAlias(
 
 
 class ApiGroup:
-    def __init__(self, name: str, version: str):
+    def __init__(self, name: str, version: str, module: str):
         self.name = name
+        self.module = module
         self.version = version
 
         # group types

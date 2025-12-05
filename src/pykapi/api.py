@@ -5,7 +5,7 @@ from collections.abc import Iterable
 
 import yaml
 
-from pykapi.k8s import QualifiedName, CLUSTER_OBJECTS
+from pykapi.k8s import QualifiedName, CLUSTER_OBJECTS, module_for_group
 from pykapi.parser import (
     Parser,
     ApiGroup,
@@ -95,7 +95,7 @@ class ApiParser(Parser):
     def group_for_type(self, fqn: QualifiedName) -> ApiGroup:
         group = self._groups.get(fqn.group)
         if not group:
-            group = ApiGroup(fqn.group, fqn.version)
+            group = ApiGroup(fqn.group, fqn.version, module_for_group(fqn.group))
             # Prepopulate group with custom types
             for ty in CUSTOM_TYPES:
                 if ty.group == fqn.group and ty.version == fqn.version:

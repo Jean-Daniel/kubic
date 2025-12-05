@@ -104,7 +104,7 @@ MODULE_NAMES = {"operator.victoriametrics.com": "victoriametrics"}
 
 
 def module_for_group(group) -> str:
-    return MODULE_NAMES.get(group) or group.split(".", maxsplit=1)[0].replace("-", "_")
+    return group.split(".", maxsplit=1)[0].replace("-", "_")
 
 
 KEYWORDS = {
