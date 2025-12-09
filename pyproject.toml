@@ -2,6 +2,20 @@
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.black]
+[project]
+name = "kubic"
+version = "3.0.0"
+requires-python = ">=3.12"
+description = "Kubernetes API wrapper"
+keywords = ["kubernetes"]
+license = "BSD-3-Clause"
+dependencies = [
+    "pyyaml",
+    "kubernetes"
+]
+
+[project.scripts]
+pykapi = "pykapi.cli:main"
+
+[tool.ruff]
 line-length = 140
-target-version = ['py38']
