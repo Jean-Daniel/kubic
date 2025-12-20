@@ -4,7 +4,6 @@ from kubic import KubernetesApiResource, KubernetesObject
 from ..api import core, meta
 
 
-
 class AWS(KubernetesObject):
     __slots__ = ()
 
@@ -13,7 +12,13 @@ class AWS(KubernetesObject):
     security_groups_ids: list[str]
     security_groups_names: list[str]
 
-    def __init__(self, labels: dict[str, str] = None, region: str = None, security_groups_ids: list[str] = None, security_groups_names: list[str] = None):
+    def __init__(
+        self,
+        labels: dict[str, str] = None,
+        region: str = None,
+        security_groups_ids: list[str] = None,
+        security_groups_names: list[str] = None,
+    ):
         super().__init__(labels=labels, region=region, security_groups_ids=security_groups_ids, security_groups_names=security_groups_names)
 
 
@@ -92,7 +97,9 @@ class AdvertisedPathAttribute(KubernetesObject):
       (path attributes apply to routes announced for allocated CIDRs of selected CiliumPodIPPools).
     """
 
-    def __init__(self, communities: Communities = None, local_preference: int = None, selector: meta.LabelSelector = None, selector_type: str = None):
+    def __init__(
+        self, communities: Communities = None, local_preference: int = None, selector: meta.LabelSelector = None, selector_type: str = None
+    ):
         super().__init__(communities=communities, local_preference=local_preference, selector=selector, selector_type=selector_type)
 
 
@@ -146,7 +153,13 @@ class Advertisement(KubernetesObject):
     service: AdvertisementService
     """ Service defines configuration options for advertisementType service. """
 
-    def __init__(self, advertisement_type: str = None, attributes: Attributes = None, selector: meta.LabelSelector = None, service: AdvertisementService = None):
+    def __init__(
+        self,
+        advertisement_type: str = None,
+        attributes: Attributes = None,
+        selector: meta.LabelSelector = None,
+        service: AdvertisementService = None,
+    ):
         super().__init__(advertisement_type=advertisement_type, attributes=attributes, selector=selector, service=service)
 
 
@@ -201,8 +214,27 @@ class AlibabaCloud(KubernetesObject):
     vswitches: list[str]
     """ VSwitches is the ID of vSwitch available for ENI """
 
-    def __init__(self, availability_zone: str = None, cidr_block: str = None, instance_type: str = None, security_group_tags: dict[str, str] = None, security_groups: list[str] = None, vpc_id: str = None, vswitch_tags: dict[str, str] = None, vswitches: list[str] = None):
-        super().__init__(availability_zone=availability_zone, cidr_block=cidr_block, instance_type=instance_type, security_group_tags=security_group_tags, security_groups=security_groups, vpc_id=vpc_id, vswitch_tags=vswitch_tags, vswitches=vswitches)
+    def __init__(
+        self,
+        availability_zone: str = None,
+        cidr_block: str = None,
+        instance_type: str = None,
+        security_group_tags: dict[str, str] = None,
+        security_groups: list[str] = None,
+        vpc_id: str = None,
+        vswitch_tags: dict[str, str] = None,
+        vswitches: list[str] = None,
+    ):
+        super().__init__(
+            availability_zone=availability_zone,
+            cidr_block=cidr_block,
+            instance_type=instance_type,
+            security_group_tags=security_group_tags,
+            security_groups=security_groups,
+            vpc_id=vpc_id,
+            vswitch_tags=vswitch_tags,
+            vswitches=vswitches,
+        )
 
 
 CIDR: t.TypeAlias = str
@@ -330,8 +362,17 @@ class BgpInstancePeer(KubernetesObject):
     If not specified, the default BGP configuration is used for this peer.
     """
 
-    def __init__(self, local_address: str = None, name: str = None, peer_asn: int = None, peer_address: str = None, peer_config_ref: PeerConfigRef = None):
-        super().__init__(local_address=local_address, name=name, peer_asn=peer_asn, peer_address=peer_address, peer_config_ref=peer_config_ref)
+    def __init__(
+        self,
+        local_address: str = None,
+        name: str = None,
+        peer_asn: int = None,
+        peer_address: str = None,
+        peer_config_ref: PeerConfigRef = None,
+    ):
+        super().__init__(
+            local_address=local_address, name=name, peer_asn=peer_asn, peer_address=peer_address, peer_config_ref=peer_config_ref
+        )
 
 
 class BgpInstancePeer1(KubernetesObject):
@@ -411,7 +452,8 @@ class CiliumBGPAdvertisementSpec(KubernetesObject):
 
 
 class CiliumBGPAdvertisement(KubernetesApiResource):
-    """ CiliumBGPAdvertisement is the Schema for the ciliumbgpadvertisements API """
+    """CiliumBGPAdvertisement is the Schema for the ciliumbgpadvertisements API"""
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
@@ -479,7 +521,8 @@ class CiliumBGPClusterConfigSpec(KubernetesObject):
 
 
 class CiliumBGPClusterConfig(KubernetesApiResource):
-    """ CiliumBGPClusterConfig is the Schema for the CiliumBGPClusterConfig API """
+    """CiliumBGPClusterConfig is the Schema for the CiliumBGPClusterConfig API"""
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
@@ -537,7 +580,9 @@ class CiliumBGPNodeConfigSpecBgpInstance(KubernetesObject):
     If not specified, the router ID will be derived from the node local address.
     """
 
-    def __init__(self, local_asn: int = None, local_port: int = None, name: str = None, peers: list[BgpInstancePeer] = None, router_id: Ipv4 = None):
+    def __init__(
+        self, local_asn: int = None, local_port: int = None, name: str = None, peers: list[BgpInstancePeer] = None, router_id: Ipv4 = None
+    ):
         super().__init__(local_asn=local_asn, local_port=local_port, name=name, peers=peers, router_id=router_id)
 
 
@@ -558,6 +603,7 @@ class CiliumBGPNodeConfig(KubernetesApiResource):
     CiliumBGPNodeConfig is node local configuration for BGP agent. Name of the object should be node name.
     This resource will be created by Cilium operator and is read-only for the users.
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
@@ -619,6 +665,7 @@ class CiliumBGPNodeConfigOverride(KubernetesApiResource):
     the names in CiliumBGPNodeConfigOverride and CiliumBGPNodeConfig must match exactly. This
     matching ensures that specific node configurations are applied correctly and only where intended.
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
@@ -703,7 +750,11 @@ class Timers(KubernetesObject):
     """
 
     def __init__(self, connect_retry_time_seconds: int = None, hold_time_seconds: int = None, keep_alive_time_seconds: int = None):
-        super().__init__(connect_retry_time_seconds=connect_retry_time_seconds, hold_time_seconds=hold_time_seconds, keep_alive_time_seconds=keep_alive_time_seconds)
+        super().__init__(
+            connect_retry_time_seconds=connect_retry_time_seconds,
+            hold_time_seconds=hold_time_seconds,
+            keep_alive_time_seconds=keep_alive_time_seconds,
+        )
 
 
 class Transport(KubernetesObject):
@@ -775,8 +826,23 @@ class CiliumBGPPeerConfigSpec(KubernetesObject):
     If not specified, the default transport parameters are used.
     """
 
-    def __init__(self, auth_secret_ref: str = None, ebgp_multihop: int = None, families: list[CiliumBGPPeerConfigSpecFamily] = None, graceful_restart: GracefulRestart = None, timers: Timers = None, transport: Transport = None):
-        super().__init__(auth_secret_ref=auth_secret_ref, ebgp_multihop=ebgp_multihop, families=families, graceful_restart=graceful_restart, timers=timers, transport=transport)
+    def __init__(
+        self,
+        auth_secret_ref: str = None,
+        ebgp_multihop: int = None,
+        families: list[CiliumBGPPeerConfigSpecFamily] = None,
+        graceful_restart: GracefulRestart = None,
+        timers: Timers = None,
+        transport: Transport = None,
+    ):
+        super().__init__(
+            auth_secret_ref=auth_secret_ref,
+            ebgp_multihop=ebgp_multihop,
+            families=families,
+            graceful_restart=graceful_restart,
+            timers=timers,
+            transport=transport,
+        )
 
 
 class CiliumBGPPeerConfig(KubernetesApiResource):
@@ -885,8 +951,33 @@ class Neighbor(KubernetesObject):
     valid port numbers that can be specified. If unset, defaults to 179.
     """
 
-    def __init__(self, advertised_path_attributes: list[AdvertisedPathAttribute] = None, auth_secret_ref: str = None, connect_retry_time_seconds: int = None, e_bgp_multihop_ttl: int = None, families: list[NeighborFamily] = None, graceful_restart: GracefulRestart = None, hold_time_seconds: int = None, keep_alive_time_seconds: int = None, peer_asn: int = None, peer_address: CIDR = None, peer_port: int = None):
-        super().__init__(advertised_path_attributes=advertised_path_attributes, auth_secret_ref=auth_secret_ref, connect_retry_time_seconds=connect_retry_time_seconds, e_bgp_multihop_ttl=e_bgp_multihop_ttl, families=families, graceful_restart=graceful_restart, hold_time_seconds=hold_time_seconds, keep_alive_time_seconds=keep_alive_time_seconds, peer_asn=peer_asn, peer_address=peer_address, peer_port=peer_port)
+    def __init__(
+        self,
+        advertised_path_attributes: list[AdvertisedPathAttribute] = None,
+        auth_secret_ref: str = None,
+        connect_retry_time_seconds: int = None,
+        e_bgp_multihop_ttl: int = None,
+        families: list[NeighborFamily] = None,
+        graceful_restart: GracefulRestart = None,
+        hold_time_seconds: int = None,
+        keep_alive_time_seconds: int = None,
+        peer_asn: int = None,
+        peer_address: CIDR = None,
+        peer_port: int = None,
+    ):
+        super().__init__(
+            advertised_path_attributes=advertised_path_attributes,
+            auth_secret_ref=auth_secret_ref,
+            connect_retry_time_seconds=connect_retry_time_seconds,
+            e_bgp_multihop_ttl=e_bgp_multihop_ttl,
+            families=families,
+            graceful_restart=graceful_restart,
+            hold_time_seconds=hold_time_seconds,
+            keep_alive_time_seconds=keep_alive_time_seconds,
+            peer_asn=peer_asn,
+            peer_address=peer_address,
+            peer_port=peer_port,
+        )
 
 
 class VirtualRouter(KubernetesObject):
@@ -942,8 +1033,23 @@ class VirtualRouter(KubernetesObject):
     If empty / nil no services will be announced.
     """
 
-    def __init__(self, export_pod_cidr: bool = None, local_asn: int = None, neighbors: list[Neighbor] = None, pod_ip_pool_selector: meta.LabelSelector = None, service_advertisements: list[str] = None, service_selector: meta.LabelSelector = None):
-        super().__init__(export_pod_cidr=export_pod_cidr, local_asn=local_asn, neighbors=neighbors, pod_ip_pool_selector=pod_ip_pool_selector, service_advertisements=service_advertisements, service_selector=service_selector)
+    def __init__(
+        self,
+        export_pod_cidr: bool = None,
+        local_asn: int = None,
+        neighbors: list[Neighbor] = None,
+        pod_ip_pool_selector: meta.LabelSelector = None,
+        service_advertisements: list[str] = None,
+        service_selector: meta.LabelSelector = None,
+    ):
+        super().__init__(
+            export_pod_cidr=export_pod_cidr,
+            local_asn=local_asn,
+            neighbors=neighbors,
+            pod_ip_pool_selector=pod_ip_pool_selector,
+            service_advertisements=service_advertisements,
+            service_selector=service_selector,
+        )
 
 
 class CiliumBGPPeeringPolicySpec(KubernetesObject):
@@ -973,6 +1079,7 @@ class CiliumBGPPeeringPolicy(KubernetesApiResource):
     CiliumBGPPeeringPolicy is a Kubernetes third-party resource for instructing
     Cilium's BGP control plane to create virtual BGP routers.
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
@@ -1015,6 +1122,7 @@ class CiliumCIDRGroup(KubernetesApiResource):
     outside the clusters) that can be referenced as a single entity from
     CiliumNetworkPolicies.
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
@@ -1064,7 +1172,13 @@ class CiliumClusterwideEnvoyConfigSpec(KubernetesObject):
     services: list[Service]
     """ Services specifies Kubernetes services for which traffic is forwarded to an Envoy listener for L7 load balancing. Backends of these services are automatically synced to Envoy usign EDS. """
 
-    def __init__(self, backend_services: list[BackendService] = None, node_selector: meta.LabelSelector = None, resources: list[dict[str, t.Any]] = None, services: list[Service] = None):
+    def __init__(
+        self,
+        backend_services: list[BackendService] = None,
+        node_selector: meta.LabelSelector = None,
+        resources: list[dict[str, t.Any]] = None,
+        services: list[Service] = None,
+    ):
         super().__init__(backend_services=backend_services, node_selector=node_selector, resources=resources, services=services)
 
 
@@ -1159,7 +1273,9 @@ class ToCIDRSet(KubernetesObject):
     apply to any other CIDR prefixes in any other CIDRRules.
     """
 
-    def __init__(self, cidr: CIDR = None, cidr_group_ref: str = None, cidr_group_selector: meta.LabelSelector = None, except_: list[CIDR] = None):
+    def __init__(
+        self, cidr: CIDR = None, cidr_group_ref: str = None, cidr_group_selector: meta.LabelSelector = None, except_: list[CIDR] = None
+    ):
         super().__init__(cidr=cidr, cidr_group_ref=cidr_group_ref, cidr_group_selector=cidr_group_selector, except_=except_)
 
 
@@ -1430,7 +1546,14 @@ class Http(KubernetesObject):
     If omitted or empty, all paths are all allowed.
     """
 
-    def __init__(self, header_matches: list[HeaderMatche] = None, headers: list[str] = None, host: IDNHostname = None, method: str = None, path: str = None):
+    def __init__(
+        self,
+        header_matches: list[HeaderMatche] = None,
+        headers: list[str] = None,
+        host: IDNHostname = None,
+        method: str = None,
+        path: str = None,
+    ):
         super().__init__(header_matches=header_matches, headers=headers, host=host, method=method, path=path)
 
 
@@ -1528,7 +1651,14 @@ class Rules(KubernetesObject):
     l7proto: str
     """ Name of the L7 protocol for which the Key-value pair rules apply. """
 
-    def __init__(self, dns: list[DNS] = None, http: list[Http] = None, kafka: list[Kafka] = None, l7: list[dict[str, str]] = None, l7proto: str = None):
+    def __init__(
+        self,
+        dns: list[DNS] = None,
+        http: list[Http] = None,
+        kafka: list[Kafka] = None,
+        l7: list[dict[str, str]] = None,
+        l7proto: str = None,
+    ):
         super().__init__(dns=dns, http=http, kafka=kafka, l7=l7, l7proto=l7proto)
 
 
@@ -1627,8 +1757,23 @@ class ToPort2(KubernetesObject):
     originated from a remote source and terminated by the L7 proxy.
     """
 
-    def __init__(self, listener: Listener = None, originating_tls: OriginatingTLS = None, ports: list[Port] = None, rules: Rules = None, server_names: list[str] = None, terminating_tls: TerminatingTLS = None):
-        super().__init__(listener=listener, originating_tls=originating_tls, ports=ports, rules=rules, server_names=server_names, terminating_tls=terminating_tls)
+    def __init__(
+        self,
+        listener: Listener = None,
+        originating_tls: OriginatingTLS = None,
+        ports: list[Port] = None,
+        rules: Rules = None,
+        server_names: list[str] = None,
+        terminating_tls: TerminatingTLS = None,
+    ):
+        super().__init__(
+            listener=listener,
+            originating_tls=originating_tls,
+            ports=ports,
+            rules=rules,
+            server_names=server_names,
+            terminating_tls=terminating_tls,
+        )
 
 
 class K8sService(KubernetesObject):
@@ -1798,8 +1943,35 @@ class Egress(KubernetesObject):
     Currently Cilium only supports toServices for K8s services.
     """
 
-    def __init__(self, authentication: Authentication = None, icmps: list[Icmp] = None, to_cidr: list[CIDR] = None, to_cidr_set: list[ToCIDRSet] = None, to_endpoints: list[meta.LabelSelector] = None, to_entities: list[str] = None, to_fqdns: list[ToFQDN] = None, to_groups: list[ToGroup] = None, to_nodes: list[meta.LabelSelector] = None, to_ports: list[ToPort2] = None, to_requires: list[meta.LabelSelector] = None, to_services: list[ToService] = None):
-        super().__init__(authentication=authentication, icmps=icmps, to_cidr=to_cidr, to_cidr_set=to_cidr_set, to_endpoints=to_endpoints, to_entities=to_entities, to_fqdns=to_fqdns, to_groups=to_groups, to_nodes=to_nodes, to_ports=to_ports, to_requires=to_requires, to_services=to_services)
+    def __init__(
+        self,
+        authentication: Authentication = None,
+        icmps: list[Icmp] = None,
+        to_cidr: list[CIDR] = None,
+        to_cidr_set: list[ToCIDRSet] = None,
+        to_endpoints: list[meta.LabelSelector] = None,
+        to_entities: list[str] = None,
+        to_fqdns: list[ToFQDN] = None,
+        to_groups: list[ToGroup] = None,
+        to_nodes: list[meta.LabelSelector] = None,
+        to_ports: list[ToPort2] = None,
+        to_requires: list[meta.LabelSelector] = None,
+        to_services: list[ToService] = None,
+    ):
+        super().__init__(
+            authentication=authentication,
+            icmps=icmps,
+            to_cidr=to_cidr,
+            to_cidr_set=to_cidr_set,
+            to_endpoints=to_endpoints,
+            to_entities=to_entities,
+            to_fqdns=to_fqdns,
+            to_groups=to_groups,
+            to_nodes=to_nodes,
+            to_ports=to_ports,
+            to_requires=to_requires,
+            to_services=to_services,
+        )
 
 
 class ToPort(KubernetesObject):
@@ -1924,8 +2096,31 @@ class EgressDeny(KubernetesObject):
     Currently Cilium only supports toServices for K8s services.
     """
 
-    def __init__(self, icmps: list[Icmp] = None, to_cidr: list[CIDR] = None, to_cidr_set: list[ToCIDRSet] = None, to_endpoints: list[meta.LabelSelector] = None, to_entities: list[str] = None, to_groups: list[ToGroup] = None, to_nodes: list[meta.LabelSelector] = None, to_ports: list[ToPort] = None, to_requires: list[meta.LabelSelector] = None, to_services: list[ToService] = None):
-        super().__init__(icmps=icmps, to_cidr=to_cidr, to_cidr_set=to_cidr_set, to_endpoints=to_endpoints, to_entities=to_entities, to_groups=to_groups, to_nodes=to_nodes, to_ports=to_ports, to_requires=to_requires, to_services=to_services)
+    def __init__(
+        self,
+        icmps: list[Icmp] = None,
+        to_cidr: list[CIDR] = None,
+        to_cidr_set: list[ToCIDRSet] = None,
+        to_endpoints: list[meta.LabelSelector] = None,
+        to_entities: list[str] = None,
+        to_groups: list[ToGroup] = None,
+        to_nodes: list[meta.LabelSelector] = None,
+        to_ports: list[ToPort] = None,
+        to_requires: list[meta.LabelSelector] = None,
+        to_services: list[ToService] = None,
+    ):
+        super().__init__(
+            icmps=icmps,
+            to_cidr=to_cidr,
+            to_cidr_set=to_cidr_set,
+            to_endpoints=to_endpoints,
+            to_entities=to_entities,
+            to_groups=to_groups,
+            to_nodes=to_nodes,
+            to_ports=to_ports,
+            to_requires=to_requires,
+            to_services=to_services,
+        )
 
 
 class EnableDefaultDeny(KubernetesObject):
@@ -1977,7 +2172,9 @@ class FromCIDRSet(KubernetesObject):
     apply to any other CIDR prefixes in any other CIDRRules.
     """
 
-    def __init__(self, cidr: CIDR = None, cidr_group_ref: str = None, cidr_group_selector: meta.LabelSelector = None, except_: list[CIDR] = None):
+    def __init__(
+        self, cidr: CIDR = None, cidr_group_ref: str = None, cidr_group_selector: meta.LabelSelector = None, except_: list[CIDR] = None
+    ):
         super().__init__(cidr=cidr, cidr_group_ref=cidr_group_ref, cidr_group_selector=cidr_group_selector, except_=except_)
 
 
@@ -2100,8 +2297,31 @@ class Ingress(KubernetesObject):
     connections on port 80/tcp.
     """
 
-    def __init__(self, authentication: Authentication = None, from_cidr: list[CIDR] = None, from_cidr_set: list[FromCIDRSet] = None, from_endpoints: list[meta.LabelSelector] = None, from_entities: list[str] = None, from_groups: list[FromGroup] = None, from_nodes: list[meta.LabelSelector] = None, from_requires: list[meta.LabelSelector] = None, icmps: list[Icmp] = None, to_ports: list[ToPort2] = None):
-        super().__init__(authentication=authentication, from_cidr=from_cidr, from_cidr_set=from_cidr_set, from_endpoints=from_endpoints, from_entities=from_entities, from_groups=from_groups, from_nodes=from_nodes, from_requires=from_requires, icmps=icmps, to_ports=to_ports)
+    def __init__(
+        self,
+        authentication: Authentication = None,
+        from_cidr: list[CIDR] = None,
+        from_cidr_set: list[FromCIDRSet] = None,
+        from_endpoints: list[meta.LabelSelector] = None,
+        from_entities: list[str] = None,
+        from_groups: list[FromGroup] = None,
+        from_nodes: list[meta.LabelSelector] = None,
+        from_requires: list[meta.LabelSelector] = None,
+        icmps: list[Icmp] = None,
+        to_ports: list[ToPort2] = None,
+    ):
+        super().__init__(
+            authentication=authentication,
+            from_cidr=from_cidr,
+            from_cidr_set=from_cidr_set,
+            from_endpoints=from_endpoints,
+            from_entities=from_entities,
+            from_groups=from_groups,
+            from_nodes=from_nodes,
+            from_requires=from_requires,
+            icmps=icmps,
+            to_ports=to_ports,
+        )
 
 
 class IngressDeny(KubernetesObject):
@@ -2211,8 +2431,29 @@ class IngressDeny(KubernetesObject):
     connections on port 80/tcp.
     """
 
-    def __init__(self, from_cidr: list[CIDR] = None, from_cidr_set: list[FromCIDRSet] = None, from_endpoints: list[meta.LabelSelector] = None, from_entities: list[str] = None, from_groups: list[FromGroup] = None, from_nodes: list[meta.LabelSelector] = None, from_requires: list[meta.LabelSelector] = None, icmps: list[Icmp] = None, to_ports: list[ToPort] = None):
-        super().__init__(from_cidr=from_cidr, from_cidr_set=from_cidr_set, from_endpoints=from_endpoints, from_entities=from_entities, from_groups=from_groups, from_nodes=from_nodes, from_requires=from_requires, icmps=icmps, to_ports=to_ports)
+    def __init__(
+        self,
+        from_cidr: list[CIDR] = None,
+        from_cidr_set: list[FromCIDRSet] = None,
+        from_endpoints: list[meta.LabelSelector] = None,
+        from_entities: list[str] = None,
+        from_groups: list[FromGroup] = None,
+        from_nodes: list[meta.LabelSelector] = None,
+        from_requires: list[meta.LabelSelector] = None,
+        icmps: list[Icmp] = None,
+        to_ports: list[ToPort] = None,
+    ):
+        super().__init__(
+            from_cidr=from_cidr,
+            from_cidr_set=from_cidr_set,
+            from_endpoints=from_endpoints,
+            from_entities=from_entities,
+            from_groups=from_groups,
+            from_nodes=from_nodes,
+            from_requires=from_requires,
+            icmps=icmps,
+            to_ports=to_ports,
+        )
 
 
 class Label(KubernetesObject):
@@ -2300,8 +2541,29 @@ class CiliumClusterwideNetworkPolicySpec(KubernetesObject):
     exclusive. Can only be used in CiliumClusterwideNetworkPolicies.
     """
 
-    def __init__(self, description: str = None, egress: list[Egress] = None, egress_deny: list[EgressDeny] = None, enable_default_deny: EnableDefaultDeny = None, endpoint_selector: meta.LabelSelector = None, ingress: list[Ingress] = None, ingress_deny: list[IngressDeny] = None, labels: list[Label] = None, node_selector: meta.LabelSelector = None):
-        super().__init__(description=description, egress=egress, egress_deny=egress_deny, enable_default_deny=enable_default_deny, endpoint_selector=endpoint_selector, ingress=ingress, ingress_deny=ingress_deny, labels=labels, node_selector=node_selector)
+    def __init__(
+        self,
+        description: str = None,
+        egress: list[Egress] = None,
+        egress_deny: list[EgressDeny] = None,
+        enable_default_deny: EnableDefaultDeny = None,
+        endpoint_selector: meta.LabelSelector = None,
+        ingress: list[Ingress] = None,
+        ingress_deny: list[IngressDeny] = None,
+        labels: list[Label] = None,
+        node_selector: meta.LabelSelector = None,
+    ):
+        super().__init__(
+            description=description,
+            egress=egress,
+            egress_deny=egress_deny,
+            enable_default_deny=enable_default_deny,
+            endpoint_selector=endpoint_selector,
+            ingress=ingress,
+            ingress_deny=ingress_deny,
+            labels=labels,
+            node_selector=node_selector,
+        )
 
 
 class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
@@ -2310,6 +2572,7 @@ class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
     modified version of CiliumNetworkPolicy which is cluster scoped rather than
     namespace scoped.
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
@@ -2325,12 +2588,19 @@ class CiliumClusterwideNetworkPolicy(KubernetesApiResource):
     specs: list[CiliumClusterwideNetworkPolicySpec]
     """ Specs is a list of desired Cilium specific rule specification. """
 
-    def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: CiliumClusterwideNetworkPolicySpec = None, specs: list[CiliumClusterwideNetworkPolicySpec] = None):
+    def __init__(
+        self,
+        name: str,
+        metadata: meta.ObjectMeta = None,
+        spec: CiliumClusterwideNetworkPolicySpec = None,
+        specs: list[CiliumClusterwideNetworkPolicySpec] = None,
+    ):
         super().__init__(name, "", metadata=metadata, spec=spec, specs=specs)
 
 
 class CiliumEndpoint(KubernetesApiResource):
-    """ CiliumEndpoint is the status of a Cilium policy rule. """
+    """CiliumEndpoint is the status of a Cilium policy rule."""
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
@@ -2408,12 +2678,20 @@ class Endpoint(KubernetesObject):
     networking: Networking
     """ EndpointNetworking is the addressing information of an endpoint. """
 
-    def __init__(self, encryption: Encryption = None, id: int = None, name: str = None, named_ports: list[NamedPort] = None, networking: Networking = None):
+    def __init__(
+        self,
+        encryption: Encryption = None,
+        id: int = None,
+        name: str = None,
+        named_ports: list[NamedPort] = None,
+        networking: Networking = None,
+    ):
         super().__init__(encryption=encryption, id=id, name=name, named_ports=named_ports, networking=networking)
 
 
 class CiliumEndpointSlice(KubernetesApiResource):
-    """ CiliumEndpointSlice contains a group of CoreCiliumendpoints. """
+    """CiliumEndpointSlice contains a group of CoreCiliumendpoints."""
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
@@ -2445,7 +2723,13 @@ class CiliumEnvoyConfigSpec(KubernetesObject):
     services: list[Service]
     """ Services specifies Kubernetes services for which traffic is forwarded to an Envoy listener for L7 load balancing. Backends of these services are automatically synced to Envoy usign EDS. """
 
-    def __init__(self, backend_services: list[BackendService] = None, node_selector: meta.LabelSelector = None, resources: list[dict[str, t.Any]] = None, services: list[Service] = None):
+    def __init__(
+        self,
+        backend_services: list[BackendService] = None,
+        node_selector: meta.LabelSelector = None,
+        resources: list[dict[str, t.Any]] = None,
+        services: list[Service] = None,
+    ):
         super().__init__(backend_services=backend_services, node_selector=node_selector, resources=resources, services=services)
 
 
@@ -2507,6 +2791,7 @@ class CiliumExternalWorkload(KubernetesApiResource):
     will always be defined as the name of the current cluster, which
     defaults to "default".
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
@@ -2539,9 +2824,10 @@ class CiliumIdentity(KubernetesApiResource):
     The labels under metav1.ObjectMeta can be used when searching for
     CiliumIdentity instances that include particular labels. This can be done
     with invocations such as:
-    
-    	kubectl get ciliumid -l 'foo=bar'
+
+        kubectl get ciliumid -l 'foo=bar'
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
@@ -2610,8 +2896,21 @@ class CiliumL2AnnouncementPolicySpec(KubernetesObject):
     If nil this policy applies to all services.
     """
 
-    def __init__(self, external_ips: bool = None, interfaces: list[str] = None, load_balancer_ips: bool = None, node_selector: meta.LabelSelector = None, service_selector: meta.LabelSelector = None):
-        super().__init__(external_ips=external_ips, interfaces=interfaces, load_balancer_ips=load_balancer_ips, node_selector=node_selector, service_selector=service_selector)
+    def __init__(
+        self,
+        external_ips: bool = None,
+        interfaces: list[str] = None,
+        load_balancer_ips: bool = None,
+        node_selector: meta.LabelSelector = None,
+        service_selector: meta.LabelSelector = None,
+    ):
+        super().__init__(
+            external_ips=external_ips,
+            interfaces=interfaces,
+            load_balancer_ips=load_balancer_ips,
+            node_selector=node_selector,
+            service_selector=service_selector,
+        )
 
 
 class CiliumL2AnnouncementPolicy(KubernetesApiResource):
@@ -2620,6 +2919,7 @@ class CiliumL2AnnouncementPolicy(KubernetesApiResource):
     is used to defined which nodes should announce what services on the
     L2 network.
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
@@ -2663,7 +2963,13 @@ class CiliumLoadBalancerIPPoolSpec(KubernetesObject):
     service_selector: meta.LabelSelector
     """ ServiceSelector selects a set of services which are eligible to receive IPs from this """
 
-    def __init__(self, allow_first_last_ips: str = None, blocks: list[Block] = None, disabled: bool = None, service_selector: meta.LabelSelector = None):
+    def __init__(
+        self,
+        allow_first_last_ips: str = None,
+        blocks: list[Block] = None,
+        disabled: bool = None,
+        service_selector: meta.LabelSelector = None,
+    ):
         super().__init__(allow_first_last_ips=allow_first_last_ips, blocks=blocks, disabled=disabled, service_selector=service_selector)
 
 
@@ -2673,6 +2979,7 @@ class CiliumLoadBalancerIPPool(KubernetesApiResource):
     is used to defined pools of IPs which the operator can use to to allocate
     and advertise IPs for Services of type LoadBalancer.
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
@@ -2764,8 +3071,29 @@ class CiliumNetworkPolicySpec(KubernetesObject):
     exclusive. Can only be used in CiliumClusterwideNetworkPolicies.
     """
 
-    def __init__(self, description: str = None, egress: list[Egress] = None, egress_deny: list[EgressDeny] = None, enable_default_deny: EnableDefaultDeny = None, endpoint_selector: meta.LabelSelector = None, ingress: list[Ingress] = None, ingress_deny: list[IngressDeny] = None, labels: list[Label] = None, node_selector: meta.LabelSelector = None):
-        super().__init__(description=description, egress=egress, egress_deny=egress_deny, enable_default_deny=enable_default_deny, endpoint_selector=endpoint_selector, ingress=ingress, ingress_deny=ingress_deny, labels=labels, node_selector=node_selector)
+    def __init__(
+        self,
+        description: str = None,
+        egress: list[Egress] = None,
+        egress_deny: list[EgressDeny] = None,
+        enable_default_deny: EnableDefaultDeny = None,
+        endpoint_selector: meta.LabelSelector = None,
+        ingress: list[Ingress] = None,
+        ingress_deny: list[IngressDeny] = None,
+        labels: list[Label] = None,
+        node_selector: meta.LabelSelector = None,
+    ):
+        super().__init__(
+            description=description,
+            egress=egress,
+            egress_deny=egress_deny,
+            enable_default_deny=enable_default_deny,
+            endpoint_selector=endpoint_selector,
+            ingress=ingress,
+            ingress_deny=ingress_deny,
+            labels=labels,
+            node_selector=node_selector,
+        )
 
 
 class CiliumNetworkPolicy(KubernetesApiResource):
@@ -2773,6 +3101,7 @@ class CiliumNetworkPolicy(KubernetesApiResource):
     CiliumNetworkPolicy is a Kubernetes third-party resource with an extended
     version of NetworkPolicy.
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
@@ -2788,7 +3117,14 @@ class CiliumNetworkPolicy(KubernetesApiResource):
     specs: list[CiliumNetworkPolicySpec]
     """ Specs is a list of desired Cilium specific rule specification. """
 
-    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: CiliumNetworkPolicySpec = None, specs: list[CiliumNetworkPolicySpec] = None):
+    def __init__(
+        self,
+        name: str,
+        namespace: str = None,
+        metadata: meta.ObjectMeta = None,
+        spec: CiliumNetworkPolicySpec = None,
+        specs: list[CiliumNetworkPolicySpec] = None,
+    ):
         super().__init__(name, namespace, metadata=metadata, spec=spec, specs=specs)
 
 
@@ -2935,8 +3271,45 @@ class ENI(KubernetesObject):
     vpc_id: str
     """ VpcID is the VPC ID to use when allocating ENIs. """
 
-    def __init__(self, availability_zone: str = None, delete_on_termination: bool = None, disable_prefix_delegation: bool = None, exclude_interface_tags: dict[str, str] = None, first_interface_index: int = None, instance_id: str = None, instance_type: str = None, max_above_watermark: int = None, min_allocate: int = None, node_subnet_id: str = None, pre_allocate: int = None, security_group_tags: dict[str, str] = None, security_groups: list[str] = None, subnet_ids: list[str] = None, subnet_tags: dict[str, str] = None, use_primary_address: bool = None, vpc_id: str = None):
-        super().__init__(availability_zone=availability_zone, delete_on_termination=delete_on_termination, disable_prefix_delegation=disable_prefix_delegation, exclude_interface_tags=exclude_interface_tags, first_interface_index=first_interface_index, instance_id=instance_id, instance_type=instance_type, max_above_watermark=max_above_watermark, min_allocate=min_allocate, node_subnet_id=node_subnet_id, pre_allocate=pre_allocate, security_group_tags=security_group_tags, security_groups=security_groups, subnet_ids=subnet_ids, subnet_tags=subnet_tags, use_primary_address=use_primary_address, vpc_id=vpc_id)
+    def __init__(
+        self,
+        availability_zone: str = None,
+        delete_on_termination: bool = None,
+        disable_prefix_delegation: bool = None,
+        exclude_interface_tags: dict[str, str] = None,
+        first_interface_index: int = None,
+        instance_id: str = None,
+        instance_type: str = None,
+        max_above_watermark: int = None,
+        min_allocate: int = None,
+        node_subnet_id: str = None,
+        pre_allocate: int = None,
+        security_group_tags: dict[str, str] = None,
+        security_groups: list[str] = None,
+        subnet_ids: list[str] = None,
+        subnet_tags: dict[str, str] = None,
+        use_primary_address: bool = None,
+        vpc_id: str = None,
+    ):
+        super().__init__(
+            availability_zone=availability_zone,
+            delete_on_termination=delete_on_termination,
+            disable_prefix_delegation=disable_prefix_delegation,
+            exclude_interface_tags=exclude_interface_tags,
+            first_interface_index=first_interface_index,
+            instance_id=instance_id,
+            instance_type=instance_type,
+            max_above_watermark=max_above_watermark,
+            min_allocate=min_allocate,
+            node_subnet_id=node_subnet_id,
+            pre_allocate=pre_allocate,
+            security_group_tags=security_group_tags,
+            security_groups=security_groups,
+            subnet_ids=subnet_ids,
+            subnet_tags=subnet_tags,
+            use_primary_address=use_primary_address,
+            vpc_id=vpc_id,
+        )
 
 
 class Health(KubernetesObject):
@@ -3152,8 +3525,29 @@ class IPAM(KubernetesObject):
     filter Elastic IP Addresses.
     """
 
-    def __init__(self, ipv6_pool: dict[str, Ipv6Pool] = None, max_above_watermark: int = None, max_allocate: int = None, min_allocate: int = None, pod_cidrs: list[str] = None, pool: dict[str, Pool] = None, pools: Pools = None, pre_allocate: int = None, static_ip_tags: dict[str, str] = None):
-        super().__init__(ipv6_pool=ipv6_pool, max_above_watermark=max_above_watermark, max_allocate=max_allocate, min_allocate=min_allocate, pod_cidrs=pod_cidrs, pool=pool, pools=pools, pre_allocate=pre_allocate, static_ip_tags=static_ip_tags)
+    def __init__(
+        self,
+        ipv6_pool: dict[str, Ipv6Pool] = None,
+        max_above_watermark: int = None,
+        max_allocate: int = None,
+        min_allocate: int = None,
+        pod_cidrs: list[str] = None,
+        pool: dict[str, Pool] = None,
+        pools: Pools = None,
+        pre_allocate: int = None,
+        static_ip_tags: dict[str, str] = None,
+    ):
+        super().__init__(
+            ipv6_pool=ipv6_pool,
+            max_above_watermark=max_above_watermark,
+            max_allocate=max_allocate,
+            min_allocate=min_allocate,
+            pod_cidrs=pod_cidrs,
+            pool=pool,
+            pools=pools,
+            pre_allocate=pre_allocate,
+            static_ip_tags=static_ip_tags,
+        )
 
 
 class CiliumNodeSpec(KubernetesObject):
@@ -3203,8 +3597,33 @@ class CiliumNodeSpec(KubernetesObject):
     nodeidentity: int
     """ NodeIdentity is the Cilium numeric identity allocated for the node, if any. """
 
-    def __init__(self, addresses: list[Addresse] = None, alibaba_cloud: AlibabaCloud = None, azure: Azure = None, bootid: str = None, encryption: Encryption = None, eni: ENI = None, health: Health = None, ingress: CiliumNodeSpecIngress = None, instance_id: str = None, ipam: IPAM = None, nodeidentity: int = None):
-        super().__init__(addresses=addresses, alibaba_cloud=alibaba_cloud, azure=azure, bootid=bootid, encryption=encryption, eni=eni, health=health, ingress=ingress, instance_id=instance_id, ipam=ipam, nodeidentity=nodeidentity)
+    def __init__(
+        self,
+        addresses: list[Addresse] = None,
+        alibaba_cloud: AlibabaCloud = None,
+        azure: Azure = None,
+        bootid: str = None,
+        encryption: Encryption = None,
+        eni: ENI = None,
+        health: Health = None,
+        ingress: CiliumNodeSpecIngress = None,
+        instance_id: str = None,
+        ipam: IPAM = None,
+        nodeidentity: int = None,
+    ):
+        super().__init__(
+            addresses=addresses,
+            alibaba_cloud=alibaba_cloud,
+            azure=azure,
+            bootid=bootid,
+            encryption=encryption,
+            eni=eni,
+            health=health,
+            ingress=ingress,
+            instance_id=instance_id,
+            ipam=ipam,
+            nodeidentity=nodeidentity,
+        )
 
 
 class CiliumNode(KubernetesApiResource):
@@ -3213,6 +3632,7 @@ class CiliumNode(KubernetesApiResource):
     to control various node specific configuration aspects and a status section
     to represent the status of the node.
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
@@ -3257,10 +3677,11 @@ class CiliumNodeConfig(KubernetesApiResource):
     """
     CiliumNodeConfig is a list of configuration key-value pairs. It is applied to
     nodes indicated by a label selector.
-    
+
     If multiple overrides apply to the same node, they will be ordered by name
     with later Overrides overwriting any conflicting keys.
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2"
@@ -3309,6 +3730,7 @@ class CiliumPodIPPool(KubernetesApiResource):
     CiliumPodIPPool defines an IP pool that can be used for pooled IPAM (i.e. the multi-pool IPAM
     mode).
     """
+
     __slots__ = ()
 
     _api_version_ = "cilium.io/v2alpha1"
@@ -3323,5 +3745,3 @@ class CiliumPodIPPool(KubernetesApiResource):
 
     def __init__(self, name: str, metadata: meta.ObjectMeta = None, spec: CiliumPodIPPoolSpec = None):
         super().__init__(name, "", metadata=metadata, spec=spec)
-
-

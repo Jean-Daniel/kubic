@@ -4,7 +4,7 @@ from collections.abc import MutableSequence
 
 import kubic.api
 import kubic.crds
-from kubic import KubernetesObject, KubernetesApiResource
+from kubic import KubernetesApiResource, KubernetesObject
 from kubic.api.apps import Deployment
 from kubic.api.meta import ObjectMeta
 from kubic.reader import create_api_resource, register_modules
@@ -41,10 +41,7 @@ class SpecialProperty(KubernetesObject):
     # values from a dictionary to convert camelCase names
     # into snake names. Only names that can be naively converted to
     # snake case are generated.
-    _revfield_names_ = {
-        "from": "from_",
-        "loadURLs": "load_urls"
-    }
+    _revfield_names_ = {"from": "from_", "loadURLs": "load_urls"}
 
 
 class CustomResource(KubernetesApiResource):
@@ -102,9 +99,7 @@ class ResourceTest(unittest.TestCase):
             self.assertIsInstance(leave, LeaveType)
 
         # when setting a list, its content should be converted in the expected object type.
-        obj.spec.leaves = [{
-            "value": "hello"
-        }]
+        obj.spec.leaves = [{"value": "hello"}]
         self.assertTrue(len(obj.spec.leaves) == 1)
         self.assertIsInstance(obj.spec.leaves[0], LeaveType)
         self.assertEqual(obj.spec.leaves[0].value, "hello")
@@ -147,17 +142,7 @@ class ResourceTest(unittest.TestCase):
     def test_from_dict(self):
         # When initializing from a dict
         # it should be recursively converted to type safe objects.
-        obj = BaseType.from_dict({
-            "spec": {
-                "value": "Hello",
-                "leave": {
-                    "value": "leave"
-                },
-                "leaves": [{
-                    "value": "or let die"
-                }]
-            }
-        })
+        obj = BaseType.from_dict({"spec": {"value": "Hello", "leave": {"value": "leave"}, "leaves": [{"value": "or let die"}]}})
         self.assertIsInstance(obj, BaseType)
         self.assertIsInstance(obj.spec, SubType)
         self.assertIsInstance(obj.spec.leave, LeaveType)
@@ -207,22 +192,13 @@ class ResourceTest(unittest.TestCase):
 
 
 class LoaderTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls) -> None:
         register_modules(kubic.api.__spec__)
         register_modules(kubic.crds.__spec__)
 
     def test_create(self):
-        spec = {
-            "apiVersion": "apps/v1",
-            "kind": "Deployment",
-            "spec": {},
-            "metadata": {
-                "name": "myobject"
-            },
-            "status": {}
-        }
+        spec = {"apiVersion": "apps/v1", "kind": "Deployment", "spec": {}, "metadata": {"name": "myobject"}, "status": {}}
         rsrc = create_api_resource(spec)
         self.assertIsInstance(rsrc, Deployment)
         self.assertIsInstance(rsrc.metadata, ObjectMeta)
@@ -242,15 +218,7 @@ class LoaderTest(unittest.TestCase):
         self.assertEqual("Deployment", rsrc.kind)
 
     def test_create_any(self):
-        spec = {
-            "apiVersion": "apps/v3",
-            "kind": "Deployment",
-            "spec": {},
-            "metadata": {
-                "name": "myobject"
-            },
-            "status": {}
-        }
+        spec = {"apiVersion": "apps/v3", "kind": "Deployment", "spec": {}, "metadata": {"name": "myobject"}, "status": {}}
         rsrc = create_api_resource(spec)
         self.assertIsInstance(rsrc, KubernetesApiResource)
         self.assertIsInstance(rsrc.metadata, ObjectMeta)

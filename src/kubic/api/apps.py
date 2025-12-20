@@ -347,7 +347,7 @@ class DeploymentStatus(KubernetesObject):
     _api_version_ = "apps/v1"
 
     available_replicas: int
-    """ Total number of available pods (ready for at least minReadySeconds) targeted by this deployment. """
+    """ Total number of available non-terminating pods (ready for at least minReadySeconds) targeted by this deployment. """
     collision_count: int
     """ Count of hash collisions for the Deployment. The Deployment controller uses this field as a collision avoidance mechanism when it needs to create the name for the newest ReplicaSet. """
     conditions: list[DeploymentCondition]
@@ -355,13 +355,19 @@ class DeploymentStatus(KubernetesObject):
     observed_generation: int
     """ The generation observed by the deployment controller. """
     ready_replicas: int
-    """ readyReplicas is the number of pods targeted by this Deployment with a Ready Condition. """
+    """ Total number of non-terminating pods targeted by this Deployment with a Ready Condition. """
     replicas: int
-    """ Total number of non-terminated pods targeted by this deployment (their labels match the selector). """
+    """ Total number of non-terminating pods targeted by this deployment (their labels match the selector). """
+    terminating_replicas: int
+    """
+    Total number of terminating pods targeted by this deployment. Terminating pods have a non-null .metadata.deletionTimestamp and have not yet reached the Failed or Succeeded .status.phase.
+    
+    This is an alpha field. Enable DeploymentReplicaSetTerminatingReplicas to be able to use this field.
+    """
     unavailable_replicas: int
     """ Total number of unavailable pods targeted by this deployment. This is the total number of pods that are still required for the deployment to have 100% available capacity. They may either be pods that are running but not yet available or pods that still have not been created. """
     updated_replicas: int
-    """ Total number of non-terminated pods targeted by this deployment that have the desired template spec. """
+    """ Total number of non-terminating pods targeted by this deployment that have the desired template spec. """
 
     def __init__(
         self,
@@ -371,6 +377,7 @@ class DeploymentStatus(KubernetesObject):
         observed_generation: int = None,
         ready_replicas: int = None,
         replicas: int = None,
+        terminating_replicas: int = None,
         unavailable_replicas: int = None,
         updated_replicas: int = None,
     ):
@@ -381,6 +388,7 @@ class DeploymentStatus(KubernetesObject):
             observed_generation=observed_generation,
             ready_replicas=ready_replicas,
             replicas=replicas,
+            terminating_replicas=terminating_replicas,
             unavailable_replicas=unavailable_replicas,
             updated_replicas=updated_replicas,
         )
@@ -398,11 +406,11 @@ class ReplicaSetSpec(KubernetesObject):
     min_ready_seconds: int
     """ Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for it to be considered available. Defaults to 0 (pod will be considered available as soon as it is ready) """
     replicas: int
-    """ Replicas is the number of desired replicas. This is a pointer to distinguish between explicit zero and unspecified. Defaults to 1. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller """
+    """ Replicas is the number of desired pods. This is a pointer to distinguish between explicit zero and unspecified. Defaults to 1. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset """
     selector: meta.LabelSelector
     """ Selector is a label query over pods that should match the replica count. Label keys and values that must match in order to be controlled by this replica set. It must match the pod template's labels. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors """
     template: core.PodTemplateSpec
-    """ Template is the object that describes the pod that will be created if insufficient replicas are detected. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#pod-template """
+    """ Template is the object that describes the pod that will be created if insufficient replicas are detected. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/#pod-template """
 
     def __init__(
         self,
@@ -469,17 +477,23 @@ class ReplicaSetStatus(KubernetesObject):
     _required_ = ["replicas"]
 
     available_replicas: int
-    """ The number of available replicas (ready for at least minReadySeconds) for this replica set. """
+    """ The number of available non-terminating pods (ready for at least minReadySeconds) for this replica set. """
     conditions: list[ReplicaSetCondition]
     """ Represents the latest available observations of a replica set's current state. """
     fully_labeled_replicas: int
-    """ The number of pods that have labels matching the labels of the pod template of the replicaset. """
+    """ The number of non-terminating pods that have labels matching the labels of the pod template of the replicaset. """
     observed_generation: int
     """ ObservedGeneration reflects the generation of the most recently observed ReplicaSet. """
     ready_replicas: int
-    """ readyReplicas is the number of pods targeted by this ReplicaSet with a Ready Condition. """
+    """ The number of non-terminating pods targeted by this ReplicaSet with a Ready Condition. """
     replicas: int
-    """ Replicas is the most recently observed number of replicas. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller """
+    """ Replicas is the most recently observed number of non-terminating pods. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset """
+    terminating_replicas: int
+    """
+    The number of terminating pods for this replica set. Terminating pods have a non-null .metadata.deletionTimestamp and have not yet reached the Failed or Succeeded .status.phase.
+    
+    This is an alpha field. Enable DeploymentReplicaSetTerminatingReplicas to be able to use this field.
+    """
 
     def __init__(
         self,
@@ -489,6 +503,7 @@ class ReplicaSetStatus(KubernetesObject):
         observed_generation: int = None,
         ready_replicas: int = None,
         replicas: int = None,
+        terminating_replicas: int = None,
     ):
         super().__init__(
             available_replicas=available_replicas,
@@ -497,6 +512,7 @@ class ReplicaSetStatus(KubernetesObject):
             observed_generation=observed_generation,
             ready_replicas=ready_replicas,
             replicas=replicas,
+            terminating_replicas=terminating_replicas,
         )
 
 
@@ -574,14 +590,14 @@ class StatefulSetSpec(KubernetesObject):
 
     _api_version_ = "apps/v1"
 
-    _required_ = ["selector", "service_name", "template"]
+    _required_ = ["selector", "template"]
 
     min_ready_seconds: int
     """ Minimum number of seconds for which a newly created pod should be ready without any of its container crashing for it to be considered available. Defaults to 0 (pod will be considered available as soon as it is ready) """
     ordinals: StatefulSetOrdinals
-    """ ordinals controls the numbering of replica indices in a StatefulSet. The default ordinals behavior assigns a "0" index to the first replica and increments the index by one for each additional replica requested. Using the ordinals field requires the StatefulSetStartOrdinal feature gate to be enabled, which is beta. """
+    """ ordinals controls the numbering of replica indices in a StatefulSet. The default ordinals behavior assigns a "0" index to the first replica and increments the index by one for each additional replica requested. """
     persistent_volume_claim_retention_policy: StatefulSetPersistentVolumeClaimRetentionPolicy
-    """ persistentVolumeClaimRetentionPolicy describes the lifecycle of persistent volume claims created from volumeClaimTemplates. By default, all persistent volume claims are created as needed and retained until manually deleted. This policy allows the lifecycle to be altered, for example by deleting persistent volume claims when their stateful set is deleted, or when their pod is scaled down. This requires the StatefulSetAutoDeletePVC feature gate to be enabled, which is alpha.  +optional """
+    """ persistentVolumeClaimRetentionPolicy describes the lifecycle of persistent volume claims created from volumeClaimTemplates. By default, all persistent volume claims are created as needed and retained until manually deleted. This policy allows the lifecycle to be altered, for example by deleting persistent volume claims when their stateful set is deleted, or when their pod is scaled down. """
     pod_management_policy: str
     """ podManagementPolicy controls how pods are created during initial scale up, when replacing pods on nodes, or when scaling down. The default policy is `OrderedReady`, where pods are created in increasing order (pod-0, then pod-1, etc) and the controller will wait until each pod is ready before continuing. When scaling down, the pods are removed in the opposite order. The alternative policy is `Parallel` which will create pods in parallel to match the desired scale without waiting, and on scale down will delete all pods at once. """
     replicas: int

@@ -16,16 +16,13 @@ from .types import (
     NamedProperty,
 )
 
-TimeType = TypeAlias(
-    QualifiedName("Time", "meta", "v1"),
-    "str",
-    description="ISO date-time")
+TimeType = TypeAlias(QualifiedName("Time", "meta", "v1"), "str", description="ISO date-time")
 
 QuantityType = TypeAlias(
     QualifiedName("Quantity", "core", "v1"),
     "str | int | float",
     description="Quantity is a fixed-point representation of a number. "
-                "It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.",
+    "It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.",
 )
 
 IntOrStringType = TypeAlias(
@@ -326,9 +323,9 @@ class Parser:
 
                 if len(overwrite) > special:
                     # make sure array are replaced by array
-                    assert (
-                            value.get("type") != "array" or overwrite.get("type") == "array"
-                    ), f"{obj_type.name}.{prop}: {value.get('type')} ≠ {overwrite.get('type')}"
+                    assert value.get("type") != "array" or overwrite.get("type") == "array", (
+                        f"{obj_type.name}.{prop}: {value.get('type')} ≠ {overwrite.get('type')}"
+                    )
                     value = overwrite
             prop_type = self.import_property(obj_type, prop, value, is_plural=False)
             if prop_type:
@@ -381,9 +378,7 @@ class Parser:
                 return ty
 
             name = type_name_from_property_name(fmt, is_plural=False)
-            ty = TypeAlias(
-                QualifiedName(name, obj_type.fqn.group, obj_type.fqn.version),
-                "str", description="")
+            ty = TypeAlias(QualifiedName(name, obj_type.fqn.group, obj_type.fqn.version), "str", description="")
             self._string_fmts[fmt] = ty
             return ty
 

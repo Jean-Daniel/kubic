@@ -142,9 +142,9 @@ class PodAffinityTerm(KubernetesObject):
     label_selector: meta.LabelSelector
     """ A label query over a set of resources, in this case pods. If it's null, this PodAffinityTerm matches with no Pods. """
     match_label_keys: list[str]
-    """ MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both matchLabelKeys and labelSelector. Also, matchLabelKeys cannot be set when labelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate. """
+    """ MatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `labelSelector` as `key in (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both matchLabelKeys and labelSelector. Also, matchLabelKeys cannot be set when labelSelector isn't set. """
     mismatch_label_keys: list[str]
-    """ MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both mismatchLabelKeys and labelSelector. Also, mismatchLabelKeys cannot be set when labelSelector isn't set. This is an alpha field and requires enabling MatchLabelKeysInPodAffinity feature gate. """
+    """ MismatchLabelKeys is a set of pod label keys to select which pods will be taken into consideration. The keys are used to lookup values from the incoming pod labels, those key-value labels are merged with `labelSelector` as `key notin (value)` to select the group of existing pods which pods will be taken into consideration for the incoming pod's pod (anti) affinity. Keys that don't exist in the incoming pod labels will be ignored. The default value is empty. The same key is forbidden to exist in both mismatchLabelKeys and labelSelector. Also, mismatchLabelKeys cannot be set when labelSelector isn't set. """
     namespace_selector: meta.LabelSelector
     """ A label query over the set of namespaces that the term applies to. The term is applied to the union of the namespaces selected by this field and the ones listed in the namespaces field. null selector and null or empty namespaces list means "this pod's namespace". An empty selector ({}) matches all namespaces. """
     namespaces: list[str]
@@ -425,7 +425,7 @@ class ObjectReference(KubernetesObject):
 
 
 class Binding(KubernetesApiResource):
-    """Binding ties one object to another; for example, a pod is bound to a node by a scheduler. Deprecated in 1.7, please use the bindings subresource of pods instead."""
+    """Binding ties one object to another; for example, a pod is bound to a node by a scheduler."""
 
     __slots__ = ()
 
@@ -462,7 +462,7 @@ class SecretReference(KubernetesObject):
 
 
 class CSIPersistentVolumeSource(KubernetesObject):
-    """Represents storage that is managed by an external CSI volume driver (Beta feature)"""
+    """Represents storage that is managed by an external CSI volume driver"""
 
     __slots__ = ()
 
@@ -709,32 +709,6 @@ class CinderVolumeSource(KubernetesObject):
 
     def __init__(self, fs_type: str = None, read_only: bool = None, secret_ref: LocalObjectReference = None, volume_id: str = None):
         super().__init__(fs_type=fs_type, read_only=read_only, secret_ref=secret_ref, volume_id=volume_id)
-
-
-class ClaimSource(KubernetesObject):
-    """
-    ClaimSource describes a reference to a ResourceClaim.
-
-    Exactly one of these fields should be set.  Consumers of this type must treat an empty object as if it has an unknown value.
-    """
-
-    __slots__ = ()
-
-    _api_version_ = "v1"
-
-    resource_claim_name: str
-    """ ResourceClaimName is the name of a ResourceClaim object in the same namespace as this pod. """
-    resource_claim_template_name: str
-    """
-    ResourceClaimTemplateName is the name of a ResourceClaimTemplate object in the same namespace as this pod.
-    
-    The template will be used to create a new ResourceClaim, which will be bound to this pod. When this pod is deleted, the ResourceClaim will also be deleted. The pod name and resource name, along with a generated component, will be used to form a unique name for the ResourceClaim, which will be recorded in pod.status.resourceClaimStatuses.
-    
-    This field is immutable and no changes will be made to the corresponding ResourceClaim by the control plane after creating the ResourceClaim.
-    """
-
-    def __init__(self, resource_claim_name: str = None, resource_claim_template_name: str = None):
-        super().__init__(resource_claim_name=resource_claim_name, resource_claim_template_name=resource_claim_template_name)
 
 
 class ClientIPConfig(KubernetesObject):
@@ -1112,7 +1086,7 @@ class SecretEnvSource(KubernetesObject):
 
 
 class EnvFromSource(KubernetesObject):
-    """EnvFromSource represents the source of a set of ConfigMaps"""
+    """EnvFromSource represents the source of a set of ConfigMaps or Secrets"""
 
     __slots__ = ()
 
@@ -1121,7 +1095,7 @@ class EnvFromSource(KubernetesObject):
     config_map_ref: ConfigMapEnvSource
     """ The ConfigMap to select from """
     prefix: str
-    """ An optional identifier to prepend to each key in the ConfigMap. Must be a C_IDENTIFIER. """
+    """ Optional text to prepend to the name of each environment variable. Must be a C_IDENTIFIER. """
     secret_ref: SecretEnvSource
     """ The Secret to select from """
 
@@ -1233,13 +1207,13 @@ class LifecycleHandler(KubernetesObject):
     _api_version_ = "v1"
 
     exec: ExecAction
-    """ Exec specifies the action to take. """
+    """ Exec specifies a command to execute in the container. """
     http_get: HTTPGetAction
-    """ HTTPGet specifies the http request to perform. """
+    """ HTTPGet specifies an HTTP GET request to perform. """
     sleep: SleepAction
-    """ Sleep represents the duration that the container should sleep before being terminated. """
+    """ Sleep represents a duration that the container should sleep. """
     tcp_socket: TCPSocketAction
-    """ Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept for the backward compatibility. There are no validation of this field and lifecycle hooks will fail in runtime when tcp handler is specified. """
+    """ Deprecated. TCPSocket is NOT supported as a LifecycleHandler and kept for backward compatibility. There is no validation of this field and lifecycle hooks will fail at runtime when it is specified. """
 
     def __init__(
         self, exec: ExecAction = None, http_get: HTTPGetAction = None, sleep: SleepAction = None, tcp_socket: TCPSocketAction = None
@@ -1258,12 +1232,16 @@ class Lifecycle(KubernetesObject):
     """ PostStart is called immediately after a container is created. If the handler fails, the container is terminated and restarted according to its restart policy. Other management of the container blocks until the hook completes. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks """
     pre_stop: LifecycleHandler
     """ PreStop is called immediately before a container is terminated due to an API request or management event such as liveness/startup probe failure, preemption, resource contention, etc. The handler is not called if the container crashes or exits. The Pod's termination grace period countdown begins before the PreStop hook is executed. Regardless of the outcome of the handler, the container will eventually terminate within the Pod's termination grace period (unless delayed by finalizers). Other management of the container blocks until the hook completes or until the termination grace period is reached. More info: https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/#container-hooks """
+    stop_signal: str
+    """ StopSignal defines which signal will be sent to a container when it is being stopped. If not specified, the default is defined by the container runtime in use. StopSignal can only be set for Pods with a non-empty .spec.os.name """
 
-    def __init__(self, post_start: LifecycleHandler = None, pre_stop: LifecycleHandler = None):
-        super().__init__(post_start=post_start, pre_stop=pre_stop)
+    def __init__(self, post_start: LifecycleHandler = None, pre_stop: LifecycleHandler = None, stop_signal: str = None):
+        super().__init__(post_start=post_start, pre_stop=pre_stop, stop_signal=stop_signal)
 
 
 class GRPCAction(KubernetesObject):
+    """GRPCAction specifies an action involving a GRPC service."""
+
     __slots__ = ()
 
     _api_version_ = "v1"
@@ -1291,13 +1269,13 @@ class Probe(KubernetesObject):
     _api_version_ = "v1"
 
     exec: ExecAction
-    """ Exec specifies the action to take. """
+    """ Exec specifies a command to execute in the container. """
     failure_threshold: int
     """ Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1. """
     grpc: GRPCAction
-    """ GRPC specifies an action involving a GRPC port. """
+    """ GRPC specifies a GRPC HealthCheckRequest. """
     http_get: HTTPGetAction
-    """ HTTPGet specifies the http request to perform. """
+    """ HTTPGet specifies an HTTP GET request to perform. """
     initial_delay_seconds: int
     """ Number of seconds after the container has started before liveness probes are initiated. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes """
     period_seconds: int
@@ -1305,7 +1283,7 @@ class Probe(KubernetesObject):
     success_threshold: int
     """ Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Must be 1 for liveness and startup. Minimum value is 1. """
     tcp_socket: TCPSocketAction
-    """ TCPSocket specifies an action involving a TCP port. """
+    """ TCPSocket specifies a connection to a TCP port. """
     termination_grace_period_seconds: int
     """ Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is a beta field and requires enabling ProbeTerminationGracePeriod feature gate. Minimum value is 1. spec.terminationGracePeriodSeconds is used if unset. """
     timeout_seconds: int
@@ -1398,9 +1376,11 @@ class ResourceClaim(KubernetesObject):
 
     name: str
     """ Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container. """
+    request: str
+    """ Request is the name chosen for a request in the referenced claim. If empty, everything from the claim is made available, otherwise only the result of this request. """
 
-    def __init__(self, name: str = None):
-        super().__init__(name=name)
+    def __init__(self, name: str = None, request: str = None):
+        super().__init__(name=name, request=request)
 
 
 class ResourceRequirements(KubernetesObject):
@@ -1516,7 +1496,7 @@ class SecurityContext(KubernetesObject):
     privileged: bool
     """ Run container in privileged mode. Processes in privileged containers are essentially equivalent to root on the host. Defaults to false. Note that this field cannot be set when spec.os.name is windows. """
     proc_mount: str
-    """ procMount denotes the type of proc mount to use for the containers. The default is DefaultProcMount which uses the container runtime defaults for readonly paths and masked paths. This requires the ProcMountType feature flag to be enabled. Note that this field cannot be set when spec.os.name is windows. """
+    """ procMount denotes the type of proc mount to use for the containers. The default value is Default which uses the container runtime defaults for readonly paths and masked paths. This requires the ProcMountType feature flag to be enabled. Note that this field cannot be set when spec.os.name is windows. """
     read_only_root_filesystem: bool
     """ Whether this container has a read-only root filesystem. Default is false. Note that this field cannot be set when spec.os.name is windows. """
     run_as_group: int
@@ -1867,6 +1847,93 @@ class ContainerState(KubernetesObject):
         super().__init__(running=running, terminated=terminated, waiting=waiting)
 
 
+class ResourceHealth(KubernetesObject):
+    """ResourceHealth represents the health of a resource. It has the latest device health information. This is a part of KEP https://kep.k8s.io/4680."""
+
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["resource_id"]
+
+    _field_names_ = {
+        "resource_id": "resourceID",
+    }
+    _revfield_names_ = {
+        "resourceID": "resource_id",
+    }
+
+    health: str
+    """
+    Health of the resource. can be one of:
+     - Healthy: operates as normal
+     - Unhealthy: reported unhealthy. We consider this a temporary health issue
+                  since we do not have a mechanism today to distinguish
+                  temporary and permanent issues.
+     - Unknown: The status cannot be determined.
+                For example, Device Plugin got unregistered and hasn't been re-registered since.
+    
+    In future we may want to introduce the PermanentlyUnhealthy Status.
+    """
+    resource_id: str
+    """ ResourceID is the unique identifier of the resource. See the ResourceID type for more information. """
+
+    def __init__(self, health: str = None, resource_id: str = None):
+        super().__init__(health=health, resource_id=resource_id)
+
+
+class ResourceStatus(KubernetesObject):
+    """ResourceStatus represents the status of a single resource allocated to a Pod."""
+
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["name"]
+
+    name: str
+    """ Name of the resource. Must be unique within the pod and in case of non-DRA resource, match one of the resources from the pod spec. For DRA resources, the value must be "claim:<claim_name>/<request>". When this status is reported about a container, the "claim_name" and "request" must match one of the claims of this container. """
+    resources: list[ResourceHealth]
+    """ List of unique resources health. Each element in the list contains an unique resource ID and its health. At a minimum, for the lifetime of a Pod, resource ID must uniquely identify the resource allocated to the Pod on the Node. If other Pod on the same Node reports the status with the same resource ID, it must be the same resource they share. See ResourceID type definition for a specific format it has in various use cases. """
+
+    def __init__(self, name: str = None, resources: list[ResourceHealth] = None):
+        super().__init__(name=name, resources=resources)
+
+
+class LinuxContainerUser(KubernetesObject):
+    """LinuxContainerUser represents user identity information in Linux containers"""
+
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    _required_ = ["gid", "uid"]
+
+    gid: int
+    """ GID is the primary gid initially attached to the first process in the container """
+    supplemental_groups: list[int]
+    """ SupplementalGroups are the supplemental groups initially attached to the first process in the container """
+    uid: int
+    """ UID is the primary uid initially attached to the first process in the container """
+
+    def __init__(self, gid: int = None, supplemental_groups: list[int] = None, uid: int = None):
+        super().__init__(gid=gid, supplemental_groups=supplemental_groups, uid=uid)
+
+
+class ContainerUser(KubernetesObject):
+    """ContainerUser represents user identity information"""
+
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    linux: LinuxContainerUser
+    """ Linux holds user identity information initially attached to the first process of the containers in Linux. Note that the actual running identity can be changed if the process has enough privilege to do so. """
+
+    def __init__(self, linux: LinuxContainerUser = None):
+        super().__init__(linux=linux)
+
+
 class VolumeMountStatus(KubernetesObject):
     """VolumeMountStatus shows status of volume mounts."""
 
@@ -1909,6 +1976,8 @@ class ContainerStatus(KubernetesObject):
 
     allocated_resources: dict[str, Quantity]
     """ AllocatedResources represents the compute resources allocated for this container by the node. Kubelet sets this value to Container.Resources.Requests upon successful pod admission and after successfully admitting desired pod resize. """
+    allocated_resources_status: list[ResourceStatus]
+    """ AllocatedResourcesStatus represents the status of various resources allocated for this Pod. """
     container_id: str
     """ ContainerID is the ID of the container in the format '<type>://<container_id>'. Where type is a container runtime identifier, returned from Version call of CRI API (for example "containerd"). """
     image: str
@@ -1933,12 +2002,17 @@ class ContainerStatus(KubernetesObject):
     """ Started indicates whether the container has finished its postStart lifecycle hook and passed its startup probe. Initialized as false, becomes true after startupProbe is considered successful. Resets to false when the container is restarted, or if kubelet loses state temporarily. In both cases, startup probes will run again. Is always true when no startupProbe is defined and container is running and has passed the postStart lifecycle hook. The null value must be treated the same as false. """
     state: ContainerState
     """ State holds details about the container's current condition. """
+    stop_signal: str
+    """ StopSignal reports the effective stop signal for this container """
+    user: ContainerUser
+    """ User represents user identity information initially attached to the first process of the container """
     volume_mounts: list[VolumeMountStatus]
     """ Status of volume mounts. """
 
     def __init__(
         self,
         allocated_resources: dict[str, Quantity] = None,
+        allocated_resources_status: list[ResourceStatus] = None,
         container_id: str = None,
         image: str = None,
         image_id: str = None,
@@ -1949,10 +2023,13 @@ class ContainerStatus(KubernetesObject):
         restart_count: int = None,
         started: bool = None,
         state: ContainerState = None,
+        stop_signal: str = None,
+        user: ContainerUser = None,
         volume_mounts: list[VolumeMountStatus] = None,
     ):
         super().__init__(
             allocated_resources=allocated_resources,
+            allocated_resources_status=allocated_resources_status,
             container_id=container_id,
             image=image,
             image_id=image_id,
@@ -1963,6 +2040,8 @@ class ContainerStatus(KubernetesObject):
             restart_count=restart_count,
             started=started,
             state=state,
+            stop_signal=stop_signal,
+            user=user,
             volume_mounts=volume_mounts,
         )
 
@@ -2061,7 +2140,7 @@ class EmptyDirVolumeSource(KubernetesObject):
 
 
 class EndpointAddress(KubernetesObject):
-    """EndpointAddress is a tuple that describes single IP address."""
+    """EndpointAddress is a tuple that describes single IP address. Deprecated: This API is deprecated in v1.33+."""
 
     __slots__ = ()
 
@@ -2083,7 +2162,7 @@ class EndpointAddress(KubernetesObject):
 
 
 class EndpointPort(KubernetesObject):
-    """EndpointPort is a tuple that describes a single port."""
+    """EndpointPort is a tuple that describes a single port. Deprecated: This API is deprecated in v1.33+."""
 
     __slots__ = ()
 
@@ -2120,14 +2199,16 @@ class EndpointSubset(KubernetesObject):
     EndpointSubset is a group of addresses with a common set of ports. The expanded set of endpoints is the Cartesian product of Addresses x Ports. For example, given:
 
         {
-          Addresses: [{"ip": "10.10.1.1"}, {"ip": "10.10.2.2"}],
-          Ports:     [{"name": "a", "port": 8675}, {"name": "b", "port": 309}]
+              Addresses: [{"ip": "10.10.1.1"}, {"ip": "10.10.2.2"}],
+              Ports:     [{"name": "a", "port": 8675}, {"name": "b", "port": 309}]
         }
 
     The resulting set of endpoints can be viewed as:
 
         a: [ 10.10.1.1:8675, 10.10.2.2:8675 ],
         b: [ 10.10.1.1:309, 10.10.2.2:309 ]
+
+    Deprecated: This API is deprecated in v1.33+.
     """
 
     __slots__ = ()
@@ -2151,17 +2232,21 @@ class Endpoints(KubernetesApiResource):
     """
     Endpoints is a collection of endpoints that implement the actual service. Example:
 
-         Name: "mysvc",
-         Subsets: [
-           {
-             Addresses: [{"ip": "10.10.1.1"}, {"ip": "10.10.2.2"}],
-             Ports: [{"name": "a", "port": 8675}, {"name": "b", "port": 309}]
-           },
-           {
-             Addresses: [{"ip": "10.10.3.3"}],
-             Ports: [{"name": "a", "port": 93}, {"name": "b", "port": 76}]
-           },
+             Name: "mysvc",
+             Subsets: [
+               {
+                 Addresses: [{"ip": "10.10.1.1"}, {"ip": "10.10.2.2"}],
+                 Ports: [{"name": "a", "port": 8675}, {"name": "b", "port": 309}]
+               },
+               {
+                 Addresses: [{"ip": "10.10.3.3"}],
+                 Ports: [{"name": "a", "port": 93}, {"name": "b", "port": 76}]
+               },
         ]
+
+    Endpoints is a legacy API and does not contain information about all Service features. Use discoveryv1.EndpointSlice for complete information about Service endpoints.
+
+    Deprecated: This API is deprecated in v1.33+. Use discoveryv1.EndpointSlice.
     """
 
     __slots__ = ()
@@ -2326,6 +2411,8 @@ class TypedLocalObjectReference(KubernetesObject):
 
 
 class TypedObjectReference(KubernetesObject):
+    """TypedObjectReference contains enough information to let you locate the typed referenced object"""
+
     __slots__ = ()
 
     _api_version_ = "v1"
@@ -2390,7 +2477,7 @@ class PersistentVolumeClaimSpec(KubernetesObject):
     storage_class_name: str
     """ storageClassName is the name of the StorageClass required by the claim. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1 """
     volume_attributes_class_name: str
-    """ volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim. If specified, the CSI driver will create or update the volume with the attributes defined in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName, it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass will be applied to the claim but it's not allowed to reset this field to empty string once it is set. If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass will be set by the persistentvolume controller if it exists. If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource exists. More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/ (Alpha) Using this field requires the VolumeAttributesClass feature gate to be enabled. """
+    """ volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim. If specified, the CSI driver will create or update the volume with the attributes defined in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName, it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass will be applied to the claim but it's not allowed to reset this field to empty string once it is set. If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass will be set by the persistentvolume controller if it exists. If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource exists. More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/ (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default). """
     volume_mode: str
     """ volumeMode defines what type of volume is required by the claim. Value of Filesystem is implied when not included in claim spec. """
     volume_name: str
@@ -2810,6 +2897,8 @@ class HostIP(KubernetesObject):
 
     _api_version_ = "v1"
 
+    _required_ = ["ip"]
+
     ip: str
     """ IP is the IP address assigned to the host """
 
@@ -2957,6 +3046,22 @@ class ISCSIVolumeSource(KubernetesObject):
         )
 
 
+class ImageVolumeSource(KubernetesObject):
+    """ImageVolumeSource represents a image volume resource."""
+
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    pull_policy: str
+    """ Policy for pulling OCI objects. Possible values are: Always: the kubelet always attempts to pull the reference. Container creation will fail If the pull fails. Never: the kubelet never pulls the reference and only uses a local image or artifact. Container creation will fail if the reference isn't present. IfNotPresent: the kubelet pulls if the reference isn't already present on disk. Container creation will fail if the reference isn't present and the pull fails. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. """
+    reference: str
+    """ Required: Image or artifact reference to be used. Behaves in the same way as pod.spec.containers[*].image. Pull secrets will be assembled in the same way as for the container image by looking up node credentials, SA image pull secrets, and pod spec image pull secrets. More info: https://kubernetes.io/docs/concepts/containers/images This field is optional to allow higher level config management to default or override container images in workload controllers like Deployments and StatefulSets. """
+
+    def __init__(self, pull_policy: str = None, reference: str = None):
+        super().__init__(pull_policy=pull_policy, reference=reference)
+
+
 class Info(KubernetesObject):
     """Info contains versioning information. how we'll want to distribute that information."""
 
@@ -2968,34 +3073,52 @@ class Info(KubernetesObject):
 
     build_date: str
     compiler: str
+    emulation_major: str
+    """ EmulationMajor is the major version of the emulation version """
+    emulation_minor: str
+    """ EmulationMinor is the minor version of the emulation version """
     git_commit: str
     git_tree_state: str
     git_version: str
     go_version: str
     major: str
+    """ Major is the major version of the binary version """
+    min_compatibility_major: str
+    """ MinCompatibilityMajor is the major version of the minimum compatibility version """
+    min_compatibility_minor: str
+    """ MinCompatibilityMinor is the minor version of the minimum compatibility version """
     minor: str
+    """ Minor is the minor version of the binary version """
     platform: str
 
     def __init__(
         self,
         build_date: str = None,
         compiler: str = None,
+        emulation_major: str = None,
+        emulation_minor: str = None,
         git_commit: str = None,
         git_tree_state: str = None,
         git_version: str = None,
         go_version: str = None,
         major: str = None,
+        min_compatibility_major: str = None,
+        min_compatibility_minor: str = None,
         minor: str = None,
         platform: str = None,
     ):
         super().__init__(
             build_date=build_date,
             compiler=compiler,
+            emulation_major=emulation_major,
+            emulation_minor=emulation_minor,
             git_commit=git_commit,
             git_tree_state=git_tree_state,
             git_version=git_version,
             go_version=go_version,
             major=major,
+            min_compatibility_major=min_compatibility_major,
+            min_compatibility_minor=min_compatibility_minor,
             minor=minor,
             platform=platform,
         )
@@ -3073,6 +3196,8 @@ class LimitRange(KubernetesApiResource):
 
 
 class PortStatus(KubernetesObject):
+    """PortStatus represents the error condition of a service port"""
+
     __slots__ = ()
 
     _api_version_ = "v1"
@@ -3130,7 +3255,7 @@ class LoadBalancerStatus(KubernetesObject):
 
 
 class LocalVolumeSource(KubernetesObject):
-    """Local represents directly-attached storage with node affinity (Beta feature)"""
+    """Local represents directly-attached storage with node affinity"""
 
     __slots__ = ()
 
@@ -3239,8 +3364,11 @@ class NamespaceCondition(KubernetesObject):
     _required_ = ["status", "type"]
 
     last_transition_time: meta.Time
+    """ Last time the condition transitioned from one status to another. """
     message: str
+    """ Human-readable message indicating details about last transition. """
     reason: str
+    """ Unique, one-word, CamelCase reason for the condition's last transition. """
     status: str
     """ Status of the condition, one of True, False, Unknown. """
     type: str
@@ -3478,8 +3606,22 @@ class NodeDaemonEndpoints(KubernetesObject):
         super().__init__(kubelet_endpoint=kubelet_endpoint)
 
 
+class NodeFeatures(KubernetesObject):
+    """NodeFeatures describes the set of features implemented by the CRI implementation. The features contained in the NodeFeatures should depend only on the cri implementation independent of runtime handlers."""
+
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    supplemental_groups_policy: bool
+    """ SupplementalGroupsPolicy is set to true if the runtime supports SupplementalGroupsPolicy and ContainerUser. """
+
+    def __init__(self, supplemental_groups_policy: bool = None):
+        super().__init__(supplemental_groups_policy=supplemental_groups_policy)
+
+
 class NodeRuntimeHandlerFeatures(KubernetesObject):
-    """NodeRuntimeHandlerFeatures is a set of runtime features."""
+    """NodeRuntimeHandlerFeatures is a set of features implemented by the runtime handler."""
 
     __slots__ = ()
 
@@ -3487,9 +3629,11 @@ class NodeRuntimeHandlerFeatures(KubernetesObject):
 
     recursive_read_only_mounts: bool
     """ RecursiveReadOnlyMounts is set to true if the runtime handler supports RecursiveReadOnlyMounts. """
+    user_namespaces: bool
+    """ UserNamespaces is set to true if the runtime handler supports UserNamespaces, including for volumes. """
 
-    def __init__(self, recursive_read_only_mounts: bool = None):
-        super().__init__(recursive_read_only_mounts=recursive_read_only_mounts)
+    def __init__(self, recursive_read_only_mounts: bool = None, user_namespaces: bool = None):
+        super().__init__(recursive_read_only_mounts=recursive_read_only_mounts, user_namespaces=user_namespaces)
 
 
 class NodeRuntimeHandler(KubernetesObject):
@@ -3506,6 +3650,20 @@ class NodeRuntimeHandler(KubernetesObject):
 
     def __init__(self, features: NodeRuntimeHandlerFeatures = None, name: str = None):
         super().__init__(features=features, name=name)
+
+
+class NodeSwapStatus(KubernetesObject):
+    """NodeSwapStatus represents swap memory information."""
+
+    __slots__ = ()
+
+    _api_version_ = "v1"
+
+    capacity: int
+    """ Total amount of swap memory in bytes. """
+
+    def __init__(self, capacity: int = None):
+        super().__init__(capacity=capacity)
 
 
 class NodeSystemInfo(KubernetesObject):
@@ -3548,7 +3706,7 @@ class NodeSystemInfo(KubernetesObject):
     kernel_version: str
     """ Kernel Version reported by the node from 'uname -r' (e.g. 3.16.0-0.bpo.4-amd64). """
     kube_proxy_version: str
-    """ KubeProxy Version reported by the node. """
+    """ Deprecated: KubeProxy Version reported by the node. """
     kubelet_version: str
     """ Kubelet Version reported by the node. """
     machine_id: str
@@ -3557,6 +3715,8 @@ class NodeSystemInfo(KubernetesObject):
     """ The Operating System reported by the node """
     os_image: str
     """ OS Image reported by the node from /etc/os-release (e.g. Debian GNU/Linux 7 (wheezy)). """
+    swap: NodeSwapStatus
+    """ Swap Info reported by the node. """
     system_uuid: str
     """ SystemUUID reported by the node. For unique machine identification MachineID is preferred. This field is specific to Red Hat hosts https://access.redhat.com/documentation/en-us/red_hat_subscription_management/1/html/rhsm/uuid """
 
@@ -3571,6 +3731,7 @@ class NodeSystemInfo(KubernetesObject):
         machine_id: str = None,
         operating_system: str = None,
         os_image: str = None,
+        swap: NodeSwapStatus = None,
         system_uuid: str = None,
     ):
         super().__init__(
@@ -3583,6 +3744,7 @@ class NodeSystemInfo(KubernetesObject):
             machine_id=machine_id,
             operating_system=operating_system,
             os_image=os_image,
+            swap=swap,
             system_uuid=system_uuid,
         )
 
@@ -3595,21 +3757,23 @@ class NodeStatus(KubernetesObject):
     _api_version_ = "v1"
 
     addresses: list[NodeAddress]
-    """ List of addresses reachable to the node. Queried from cloud provider, if available. More info: https://kubernetes.io/docs/concepts/nodes/node/#addresses Note: This field is declared as mergeable, but the merge key is not sufficiently unique, which can cause data corruption when it is merged. Callers should instead use a full-replacement patch. See https://pr.k8s.io/79391 for an example. Consumers should assume that addresses can change during the lifetime of a Node. However, there are some exceptions where this may not be possible, such as Pods that inherit a Node's address in its own status or consumers of the downward API (status.hostIP). """
+    """ List of addresses reachable to the node. Queried from cloud provider, if available. More info: https://kubernetes.io/docs/reference/node/node-status/#addresses Note: This field is declared as mergeable, but the merge key is not sufficiently unique, which can cause data corruption when it is merged. Callers should instead use a full-replacement patch. See https://pr.k8s.io/79391 for an example. Consumers should assume that addresses can change during the lifetime of a Node. However, there are some exceptions where this may not be possible, such as Pods that inherit a Node's address in its own status or consumers of the downward API (status.hostIP). """
     allocatable: dict[str, Quantity]
     """ Allocatable represents the resources of a node that are available for scheduling. Defaults to Capacity. """
     capacity: dict[str, Quantity]
-    """ Capacity represents the total resources of a node. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity """
+    """ Capacity represents the total resources of a node. More info: https://kubernetes.io/docs/reference/node/node-status/#capacity """
     conditions: list[NodeCondition]
-    """ Conditions is an array of current observed node conditions. More info: https://kubernetes.io/docs/concepts/nodes/node/#condition """
+    """ Conditions is an array of current observed node conditions. More info: https://kubernetes.io/docs/reference/node/node-status/#condition """
     config: NodeConfigStatus
     """ Status of the config assigned to the node via the dynamic Kubelet config feature. """
     daemon_endpoints: NodeDaemonEndpoints
     """ Endpoints of daemons running on the Node. """
+    features: NodeFeatures
+    """ Features describes the set of features implemented by the CRI implementation. """
     images: list[ContainerImage]
     """ List of container images on this node """
     node_info: NodeSystemInfo
-    """ Set of ids/uuids to uniquely identify the node. More info: https://kubernetes.io/docs/concepts/nodes/node/#info """
+    """ Set of ids/uuids to uniquely identify the node. More info: https://kubernetes.io/docs/reference/node/node-status/#info """
     phase: str
     """ NodePhase is the recently observed lifecycle phase of the node. More info: https://kubernetes.io/docs/concepts/nodes/node/#phase The field is never populated, and now is deprecated. """
     runtime_handlers: list[NodeRuntimeHandler]
@@ -3627,6 +3791,7 @@ class NodeStatus(KubernetesObject):
         conditions: list[NodeCondition] = None,
         config: NodeConfigStatus = None,
         daemon_endpoints: NodeDaemonEndpoints = None,
+        features: NodeFeatures = None,
         images: list[ContainerImage] = None,
         node_info: NodeSystemInfo = None,
         phase: str = None,
@@ -3641,6 +3806,7 @@ class NodeStatus(KubernetesObject):
             conditions=conditions,
             config=config,
             daemon_endpoints=daemon_endpoints,
+            features=features,
             images=images,
             node_info=node_info,
             phase=phase,
@@ -3929,31 +4095,31 @@ class PersistentVolumeSpec(KubernetesObject):
     access_modes: list[str]
     """ accessModes contains all ways the volume can be mounted. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes """
     aws_elastic_block_store: AWSElasticBlockStoreVolumeSource
-    """ awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore """
+    """ awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. Deprecated: AWSElasticBlockStore is deprecated. All operations for the in-tree awsElasticBlockStore type are redirected to the ebs.csi.aws.com CSI driver. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore """
     azure_disk: AzureDiskVolumeSource
-    """ azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod. """
+    """ azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod. Deprecated: AzureDisk is deprecated. All operations for the in-tree azureDisk type are redirected to the disk.csi.azure.com CSI driver. """
     azure_file: AzureFilePersistentVolumeSource
-    """ azureFile represents an Azure File Service mount on the host and bind mount to the pod. """
+    """ azureFile represents an Azure File Service mount on the host and bind mount to the pod. Deprecated: AzureFile is deprecated. All operations for the in-tree azureFile type are redirected to the file.csi.azure.com CSI driver. """
     capacity: dict[str, Quantity]
     """ capacity is the description of the persistent volume's resources and capacity. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity """
     cephfs: CephFSPersistentVolumeSource
-    """ cephFS represents a Ceph FS mount on the host that shares a pod's lifetime """
+    """ cephFS represents a Ceph FS mount on the host that shares a pod's lifetime. Deprecated: CephFS is deprecated and the in-tree cephfs type is no longer supported. """
     cinder: CinderPersistentVolumeSource
-    """ cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md """
+    """ cinder represents a cinder volume attached and mounted on kubelets host machine. Deprecated: Cinder is deprecated. All operations for the in-tree cinder type are redirected to the cinder.csi.openstack.org CSI driver. More info: https://examples.k8s.io/mysql-cinder-pd/README.md """
     claim_ref: ObjectReference
     """ claimRef is part of a bi-directional binding between PersistentVolume and PersistentVolumeClaim. Expected to be non-nil when bound. claim.VolumeName is the authoritative bind between PV and PVC. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#binding """
     csi: CSIPersistentVolumeSource
-    """ csi represents storage that is handled by an external CSI driver (Beta feature). """
+    """ csi represents storage that is handled by an external CSI driver. """
     fc: FCVolumeSource
     """ fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod. """
     flex_volume: FlexPersistentVolumeSource
-    """ flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin. """
+    """ flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin. Deprecated: FlexVolume is deprecated. Consider using a CSIDriver instead. """
     flocker: FlockerVolumeSource
-    """ flocker represents a Flocker volume attached to a kubelet's host machine and exposed to the pod for its usage. This depends on the Flocker control service being running """
+    """ flocker represents a Flocker volume attached to a kubelet's host machine and exposed to the pod for its usage. This depends on the Flocker control service being running. Deprecated: Flocker is deprecated and the in-tree flocker type is no longer supported. """
     gce_persistent_disk: GCEPersistentDiskVolumeSource
-    """ gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. Provisioned by an admin. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk """
+    """ gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. Provisioned by an admin. Deprecated: GCEPersistentDisk is deprecated. All operations for the in-tree gcePersistentDisk type are redirected to the pd.csi.storage.gke.io CSI driver. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk """
     glusterfs: GlusterfsPersistentVolumeSource
-    """ glusterfs represents a Glusterfs volume that is attached to a host and exposed to the pod. Provisioned by an admin. More info: https://examples.k8s.io/volumes/glusterfs/README.md """
+    """ glusterfs represents a Glusterfs volume that is attached to a host and exposed to the pod. Provisioned by an admin. Deprecated: Glusterfs is deprecated and the in-tree glusterfs type is no longer supported. More info: https://examples.k8s.io/volumes/glusterfs/README.md """
     host_path: HostPathVolumeSource
     """ hostPath represents a directory on the host. Provisioned by a developer or tester. This is useful for single-node development and testing only! On-host storage is not supported in any way and WILL NOT WORK in a multi-node cluster. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath """
     iscsi: ISCSIPersistentVolumeSource
@@ -3969,25 +4135,25 @@ class PersistentVolumeSpec(KubernetesObject):
     persistent_volume_reclaim_policy: str
     """ persistentVolumeReclaimPolicy defines what happens to a persistent volume when released from its claim. Valid options are Retain (default for manually created PersistentVolumes), Delete (default for dynamically provisioned PersistentVolumes), and Recycle (deprecated). Recycle must be supported by the volume plugin underlying this PersistentVolume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#reclaiming """
     photon_persistent_disk: PhotonPersistentDiskVolumeSource
-    """ photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine """
+    """ photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine. Deprecated: PhotonPersistentDisk is deprecated and the in-tree photonPersistentDisk type is no longer supported. """
     portworx_volume: PortworxVolumeSource
-    """ portworxVolume represents a portworx volume attached and mounted on kubelets host machine """
+    """ portworxVolume represents a portworx volume attached and mounted on kubelets host machine. Deprecated: PortworxVolume is deprecated. All operations for the in-tree portworxVolume type are redirected to the pxd.portworx.com CSI driver when the CSIMigrationPortworx feature-gate is on. """
     quobyte: QuobyteVolumeSource
-    """ quobyte represents a Quobyte mount on the host that shares a pod's lifetime """
+    """ quobyte represents a Quobyte mount on the host that shares a pod's lifetime. Deprecated: Quobyte is deprecated and the in-tree quobyte type is no longer supported. """
     rbd: RBDPersistentVolumeSource
-    """ rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md """
+    """ rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. Deprecated: RBD is deprecated and the in-tree rbd type is no longer supported. More info: https://examples.k8s.io/volumes/rbd/README.md """
     scale_io: ScaleIOPersistentVolumeSource
-    """ scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes. """
+    """ scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes. Deprecated: ScaleIO is deprecated and the in-tree scaleIO type is no longer supported. """
     storage_class_name: str
     """ storageClassName is the name of StorageClass to which this persistent volume belongs. Empty value means that this volume does not belong to any StorageClass. """
     storageos: StorageOSPersistentVolumeSource
-    """ storageOS represents a StorageOS volume that is attached to the kubelet's host machine and mounted into the pod More info: https://examples.k8s.io/volumes/storageos/README.md """
+    """ storageOS represents a StorageOS volume that is attached to the kubelet's host machine and mounted into the pod. Deprecated: StorageOS is deprecated and the in-tree storageos type is no longer supported. More info: https://examples.k8s.io/volumes/storageos/README.md """
     volume_attributes_class_name: str
-    """ Name of VolumeAttributesClass to which this persistent volume belongs. Empty value is not allowed. When this field is not set, it indicates that this volume does not belong to any VolumeAttributesClass. This field is mutable and can be changed by the CSI driver after a volume has been updated successfully to a new class. For an unbound PersistentVolume, the volumeAttributesClassName will be matched with unbound PersistentVolumeClaims during the binding process. This is an alpha field and requires enabling VolumeAttributesClass feature. """
+    """ Name of VolumeAttributesClass to which this persistent volume belongs. Empty value is not allowed. When this field is not set, it indicates that this volume does not belong to any VolumeAttributesClass. This field is mutable and can be changed by the CSI driver after a volume has been updated successfully to a new class. For an unbound PersistentVolume, the volumeAttributesClassName will be matched with unbound PersistentVolumeClaims during the binding process. This is a beta field and requires enabling VolumeAttributesClass feature (off by default). """
     volume_mode: str
     """ volumeMode defines if a volume is intended to be used with a formatted filesystem or to remain in raw block state. Value of Filesystem is implied when not included in spec. """
     vsphere_volume: VsphereVirtualDiskVolumeSource
-    """ vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine """
+    """ vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine. Deprecated: VsphereVolume is deprecated. All operations for the in-tree vsphereVolume type are redirected to the csi.vsphere.vmware.com CSI driver. """
 
     def __init__(
         self,
@@ -4114,7 +4280,9 @@ class PersistentVolumeClaimCondition(KubernetesObject):
     reason: str
     """ reason is a unique, this should be a short, machine understandable string that gives the reason for condition's last transition. If it reports "Resizing" that means the underlying persistent volume is being resized. """
     status: str
+    """ Status is the status of the condition. Can be True, False, Unknown. More info: https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#:~:text=state%20of%20pvc-,conditions.status,-(string)%2C%20required """
     type: str
+    """ Type is the type of the condition. More info: https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-claim-v1/#:~:text=set%20to%20%27ResizeStarted%27.-,PersistentVolumeClaimCondition,-contains%20details%20about """
 
     def __init__(
         self,
@@ -4196,9 +4364,9 @@ class PersistentVolumeClaimStatus(KubernetesObject):
     conditions: list[PersistentVolumeClaimCondition]
     """ conditions is the current Condition of persistent volume claim. If underlying persistent volume is being resized then the Condition will be set to 'Resizing'. """
     current_volume_attributes_class_name: str
-    """ currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using. When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim This is an alpha field and requires enabling VolumeAttributesClass feature. """
+    """ currentVolumeAttributesClassName is the current name of the VolumeAttributesClass the PVC is using. When unset, there is no VolumeAttributeClass applied to this PersistentVolumeClaim This is a beta field and requires enabling VolumeAttributesClass feature (off by default). """
     modify_volume_status: ModifyVolumeStatus
-    """ ModifyVolumeStatus represents the status object of ControllerModifyVolume operation. When this is unset, there is no ModifyVolume operation being attempted. This is an alpha field and requires enabling VolumeAttributesClass feature. """
+    """ ModifyVolumeStatus represents the status object of ControllerModifyVolume operation. When this is unset, there is no ModifyVolume operation being attempted. This is a beta field and requires enabling VolumeAttributesClass feature (off by default). """
     phase: str
     """ phase represents the current phase of PersistentVolumeClaim. """
 
@@ -4251,7 +4419,7 @@ class PersistentVolumeStatus(KubernetesObject):
     _api_version_ = "v1"
 
     last_phase_transition_time: meta.Time
-    """ lastPhaseTransitionTime is the time the phase transitioned from one to another and automatically resets to current time everytime a volume phase transitions. This is a beta field and requires the PersistentVolumeLastPhaseTransitionTime feature to be enabled (enabled by default). """
+    """ lastPhaseTransitionTime is the time the phase transitioned from one to another and automatically resets to current time everytime a volume phase transitions. """
     message: str
     """ message is a human-readable message indicating details about why the volume is in this state. """
     phase: str
@@ -4271,8 +4439,9 @@ class PodDNSConfigOption(KubernetesObject):
     _api_version_ = "v1"
 
     name: str
-    """ Required. """
+    """ Name is this DNS resolver option's name. Required. """
     value: str
+    """ Value is this DNS resolver option's value. """
 
     def __init__(self, name: str = None, value: str = None):
         super().__init__(name=name, value=value)
@@ -4329,7 +4498,11 @@ class PodReadinessGate(KubernetesObject):
 
 
 class PodResourceClaim(KubernetesObject):
-    """PodResourceClaim references exactly one ResourceClaim through a ClaimSource. It adds a name to it that uniquely identifies the ResourceClaim inside the Pod. Containers that need access to the ResourceClaim reference it with this name."""
+    """
+    PodResourceClaim references exactly one ResourceClaim, either directly or by naming a ResourceClaimTemplate which is then turned into a ResourceClaim for the pod.
+
+    It adds a name to it that uniquely identifies the ResourceClaim inside the Pod. Containers that need access to the ResourceClaim reference it with this name.
+    """
 
     __slots__ = ()
 
@@ -4339,11 +4512,25 @@ class PodResourceClaim(KubernetesObject):
 
     name: str
     """ Name uniquely identifies this resource claim inside the pod. This must be a DNS_LABEL. """
-    source: ClaimSource
-    """ Source describes where to find the ResourceClaim. """
+    resource_claim_name: str
+    """
+    ResourceClaimName is the name of a ResourceClaim object in the same namespace as this pod.
+    
+    Exactly one of ResourceClaimName and ResourceClaimTemplateName must be set.
+    """
+    resource_claim_template_name: str
+    """
+    ResourceClaimTemplateName is the name of a ResourceClaimTemplate object in the same namespace as this pod.
+    
+    The template will be used to create a new ResourceClaim, which will be bound to this pod. When this pod is deleted, the ResourceClaim will also be deleted. The pod name and resource name, along with a generated component, will be used to form a unique name for the ResourceClaim, which will be recorded in pod.status.resourceClaimStatuses.
+    
+    This field is immutable and no changes will be made to the corresponding ResourceClaim by the control plane after creating the ResourceClaim.
+    
+    Exactly one of ResourceClaimName and ResourceClaimTemplateName must be set.
+    """
 
-    def __init__(self, name: str = None, source: ClaimSource = None):
-        super().__init__(name=name, source=source)
+    def __init__(self, name: str = None, resource_claim_name: str = None, resource_claim_template_name: str = None):
+        super().__init__(name=name, resource_claim_name=resource_claim_name, resource_claim_template_name=resource_claim_template_name)
 
 
 class PodSchedulingGate(KubernetesObject):
@@ -4405,12 +4592,28 @@ class PodSecurityContext(KubernetesObject):
     """ Indicates that the container must run as a non-root user. If true, the Kubelet will validate the image at runtime to ensure that it does not run as UID 0 (root) and fail to start the container if it does. If unset or false, no such validation will be performed. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. """
     run_as_user: int
     """ The UID to run the entrypoint of the container process. Defaults to user specified in image metadata if unspecified. May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows. """
+    se_linux_change_policy: str
+    """
+    seLinuxChangePolicy defines how the container's SELinux label is applied to all volumes used by the Pod. It has no effect on nodes that do not support SELinux or to volumes does not support SELinux. Valid values are "MountOption" and "Recursive".
+    
+    "Recursive" means relabeling of all files on all Pod volumes by the container runtime. This may be slow for large volumes, but allows mixing privileged and unprivileged Pods sharing the same volume on the same node.
+    
+    "MountOption" mounts all eligible Pod volumes with `-o context` mount option. This requires all Pods that share the same volume to use the same SELinux label. It is not possible to share the same volume among privileged and unprivileged Pods. Eligible volumes are in-tree FibreChannel and iSCSI volumes, and all CSI volumes whose CSI driver announces SELinux support by setting spec.seLinuxMount: true in their CSIDriver instance. Other volumes are always re-labelled recursively. "MountOption" value is allowed only when SELinuxMount feature gate is enabled.
+    
+    If not specified and SELinuxMount feature gate is enabled, "MountOption" is used. If not specified and SELinuxMount feature gate is disabled, "MountOption" is used for ReadWriteOncePod volumes and "Recursive" for all other volumes.
+    
+    This field affects only Pods that have SELinux label set, either in PodSecurityContext or in SecurityContext of all containers.
+    
+    All Pods that use the same volume should use the same seLinuxChangePolicy, otherwise some pods can get stuck in ContainerCreating state. Note that this field cannot be set when spec.os.name is windows.
+    """
     se_linux_options: SELinuxOptions
     """ The SELinux context to be applied to all containers. If unspecified, the container runtime will allocate a random SELinux context for each container.  May also be set in SecurityContext.  If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence for that container. Note that this field cannot be set when spec.os.name is windows. """
     seccomp_profile: SeccompProfile
     """ The seccomp options to use by the containers in this pod. Note that this field cannot be set when spec.os.name is windows. """
     supplemental_groups: list[int]
-    """ A list of groups applied to the first process run in each container, in addition to the container's primary GID, the fsGroup (if specified), and group memberships defined in the container image for the uid of the container process. If unspecified, no additional groups are added to any container. Note that group memberships defined in the container image for the uid of the container process are still effective, even if they are not included in this list. Note that this field cannot be set when spec.os.name is windows. """
+    """ A list of groups applied to the first process run in each container, in addition to the container's primary GID and fsGroup (if specified).  If the SupplementalGroupsPolicy feature is enabled, the supplementalGroupsPolicy field determines whether these are in addition to or instead of any group memberships defined in the container image. If unspecified, no additional groups are added, though group memberships defined in the container image may still be used, depending on the supplementalGroupsPolicy field. Note that this field cannot be set when spec.os.name is windows. """
+    supplemental_groups_policy: str
+    """ Defines how supplemental groups of the first container processes are calculated. Valid values are "Merge" and "Strict". If not specified, "Merge" is used. (Alpha) Using the field requires the SupplementalGroupsPolicy feature gate to be enabled and the container runtime must implement support for this feature. Note that this field cannot be set when spec.os.name is windows. """
     sysctls: list[Sysctl]
     """ Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. Note that this field cannot be set when spec.os.name is windows. """
     windows_options: WindowsSecurityContextOptions
@@ -4424,9 +4627,11 @@ class PodSecurityContext(KubernetesObject):
         run_as_group: int = None,
         run_as_non_root: bool = None,
         run_as_user: int = None,
+        se_linux_change_policy: str = None,
         se_linux_options: SELinuxOptions = None,
         seccomp_profile: SeccompProfile = None,
         supplemental_groups: list[int] = None,
+        supplemental_groups_policy: str = None,
         sysctls: list[Sysctl] = None,
         windows_options: WindowsSecurityContextOptions = None,
     ):
@@ -4437,9 +4642,11 @@ class PodSecurityContext(KubernetesObject):
             run_as_group=run_as_group,
             run_as_non_root=run_as_non_root,
             run_as_user=run_as_user,
+            se_linux_change_policy=se_linux_change_policy,
             se_linux_options=se_linux_options,
             seccomp_profile=seccomp_profile,
             supplemental_groups=supplemental_groups,
+            supplemental_groups_policy=supplemental_groups_policy,
             sysctls=sysctls,
             windows_options=windows_options,
         )
@@ -4496,13 +4703,13 @@ class TopologySpreadConstraint(KubernetesObject):
     """
     NodeAffinityPolicy indicates how we will treat Pod's nodeAffinity/nodeSelector when calculating pod topology spread skew. Options are: - Honor: only nodes matching nodeAffinity/nodeSelector are included in the calculations. - Ignore: nodeAffinity/nodeSelector are ignored. All nodes are included in the calculations.
     
-    If this value is nil, the behavior is equivalent to the Honor policy. This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
+    If this value is nil, the behavior is equivalent to the Honor policy.
     """
     node_taints_policy: str
     """
     NodeTaintsPolicy indicates how we will treat node taints when calculating pod topology spread skew. Options are: - Honor: nodes without taints, along with tainted nodes for which the incoming pod has a toleration, are included. - Ignore: node taints are ignored. All nodes are included.
     
-    If this value is nil, the behavior is equivalent to the Ignore policy. This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
+    If this value is nil, the behavior is equivalent to the Ignore policy.
     """
     topology_key: str
     """ TopologyKey is the key of node labels. Nodes that have a label with this key and identical values are considered to be in the same topology. We consider each <key, value> as a "bucket", and try to put balanced number of pods into each bucket. We define a domain as a particular instance of a topology. Also, we define an eligible domain as a domain whose nodes meet the requirements of nodeAffinityPolicy and nodeTaintsPolicy. e.g. If TopologyKey is "kubernetes.io/hostname", each Node is a domain of that topology. And, if TopologyKey is "topology.kubernetes.io/zone", each zone is a domain of that topology. It's a required field. """
@@ -4580,7 +4787,7 @@ class ServiceAccountTokenProjection(KubernetesObject):
 
 
 class VolumeProjection(KubernetesObject):
-    """Projection that may be projected along with other supported volume types"""
+    """Projection that may be projected along with other supported volume types. Exactly one of these fields must be set."""
 
     __slots__ = ()
 
@@ -4639,7 +4846,7 @@ class ProjectedVolumeSource(KubernetesObject):
     default_mode: int
     """ defaultMode are the mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set. """
     sources: list[VolumeProjection]
-    """ sources is the list of volume projections """
+    """ sources is the list of volume projections. Each entry in this list handles one source. """
 
     def __init__(self, default_mode: int = None, sources: list[VolumeProjection] = None):
         super().__init__(default_mode=default_mode, sources=sources)
@@ -4825,19 +5032,19 @@ class Volume(KubernetesObject):
     }
 
     aws_elastic_block_store: AWSElasticBlockStoreVolumeSource
-    """ awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore """
+    """ awsElasticBlockStore represents an AWS Disk resource that is attached to a kubelet's host machine and then exposed to the pod. Deprecated: AWSElasticBlockStore is deprecated. All operations for the in-tree awsElasticBlockStore type are redirected to the ebs.csi.aws.com CSI driver. More info: https://kubernetes.io/docs/concepts/storage/volumes#awselasticblockstore """
     azure_disk: AzureDiskVolumeSource
-    """ azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod. """
+    """ azureDisk represents an Azure Data Disk mount on the host and bind mount to the pod. Deprecated: AzureDisk is deprecated. All operations for the in-tree azureDisk type are redirected to the disk.csi.azure.com CSI driver. """
     azure_file: AzureFileVolumeSource
-    """ azureFile represents an Azure File Service mount on the host and bind mount to the pod. """
+    """ azureFile represents an Azure File Service mount on the host and bind mount to the pod. Deprecated: AzureFile is deprecated. All operations for the in-tree azureFile type are redirected to the file.csi.azure.com CSI driver. """
     cephfs: CephFSVolumeSource
-    """ cephFS represents a Ceph FS mount on the host that shares a pod's lifetime """
+    """ cephFS represents a Ceph FS mount on the host that shares a pod's lifetime. Deprecated: CephFS is deprecated and the in-tree cephfs type is no longer supported. """
     cinder: CinderVolumeSource
-    """ cinder represents a cinder volume attached and mounted on kubelets host machine. More info: https://examples.k8s.io/mysql-cinder-pd/README.md """
+    """ cinder represents a cinder volume attached and mounted on kubelets host machine. Deprecated: Cinder is deprecated. All operations for the in-tree cinder type are redirected to the cinder.csi.openstack.org CSI driver. More info: https://examples.k8s.io/mysql-cinder-pd/README.md """
     config_map: ConfigMapVolumeSource
     """ configMap represents a configMap that should populate this volume """
     csi: CSIVolumeSource
-    """ csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers (Beta feature). """
+    """ csi (Container Storage Interface) represents ephemeral storage that is handled by certain external CSI drivers. """
     downward_api: DownwardAPIVolumeSource
     """ downwardAPI represents downward API about the pod that should populate this volume """
     empty_dir: EmptyDirVolumeSource
@@ -4862,17 +5069,25 @@ class Volume(KubernetesObject):
     fc: FCVolumeSource
     """ fc represents a Fibre Channel resource that is attached to a kubelet's host machine and then exposed to the pod. """
     flex_volume: FlexVolumeSource
-    """ flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin. """
+    """ flexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin. Deprecated: FlexVolume is deprecated. Consider using a CSIDriver instead. """
     flocker: FlockerVolumeSource
-    """ flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running """
+    """ flocker represents a Flocker volume attached to a kubelet's host machine. This depends on the Flocker control service being running. Deprecated: Flocker is deprecated and the in-tree flocker type is no longer supported. """
     gce_persistent_disk: GCEPersistentDiskVolumeSource
-    """ gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk """
+    """ gcePersistentDisk represents a GCE Disk resource that is attached to a kubelet's host machine and then exposed to the pod. Deprecated: GCEPersistentDisk is deprecated. All operations for the in-tree gcePersistentDisk type are redirected to the pd.csi.storage.gke.io CSI driver. More info: https://kubernetes.io/docs/concepts/storage/volumes#gcepersistentdisk """
     git_repo: GitRepoVolumeSource
-    """ gitRepo represents a git repository at a particular revision. DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container. """
+    """ gitRepo represents a git repository at a particular revision. Deprecated: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container. """
     glusterfs: GlusterfsVolumeSource
-    """ glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/glusterfs/README.md """
+    """ glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime. Deprecated: Glusterfs is deprecated and the in-tree glusterfs type is no longer supported. More info: https://examples.k8s.io/volumes/glusterfs/README.md """
     host_path: HostPathVolumeSource
     """ hostPath represents a pre-existing file or directory on the host machine that is directly exposed to the container. This is generally used for system agents or other privileged things that are allowed to see the host machine. Most containers will NOT need this. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath """
+    image: ImageVolumeSource
+    """
+    image represents an OCI object (a container image or artifact) pulled and mounted on the kubelet's host machine. The volume is resolved at pod startup depending on which PullPolicy value is provided:
+    
+    - Always: the kubelet always attempts to pull the reference. Container creation will fail If the pull fails. - Never: the kubelet never pulls the reference and only uses a local image or artifact. Container creation will fail if the reference isn't present. - IfNotPresent: the kubelet pulls if the reference isn't already present on disk. Container creation will fail if the reference isn't present and the pull fails.
+    
+    The volume gets re-resolved if the pod gets deleted and recreated, which means that new remote content will become available on pod recreation. A failure to resolve or pull the image during pod startup will block containers from starting and may add significant latency. Failures will be retried using normal volume backoff and will be reported on the pod reason and message. The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field. The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images. The volume will be mounted read-only (ro) and non-executable files (noexec). Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33. The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
+    """
     iscsi: ISCSIVolumeSource
     """ iscsi represents an ISCSI Disk resource that is attached to a kubelet's host machine and then exposed to the pod. More info: https://examples.k8s.io/volumes/iscsi/README.md """
     name: str
@@ -4882,23 +5097,23 @@ class Volume(KubernetesObject):
     persistent_volume_claim: PersistentVolumeClaimVolumeSource
     """ persistentVolumeClaimVolumeSource represents a reference to a PersistentVolumeClaim in the same namespace. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#persistentvolumeclaims """
     photon_persistent_disk: PhotonPersistentDiskVolumeSource
-    """ photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine """
+    """ photonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine. Deprecated: PhotonPersistentDisk is deprecated and the in-tree photonPersistentDisk type is no longer supported. """
     portworx_volume: PortworxVolumeSource
-    """ portworxVolume represents a portworx volume attached and mounted on kubelets host machine """
+    """ portworxVolume represents a portworx volume attached and mounted on kubelets host machine. Deprecated: PortworxVolume is deprecated. All operations for the in-tree portworxVolume type are redirected to the pxd.portworx.com CSI driver when the CSIMigrationPortworx feature-gate is on. """
     projected: ProjectedVolumeSource
     """ projected items for all in one resources secrets, configmaps, and downward API """
     quobyte: QuobyteVolumeSource
-    """ quobyte represents a Quobyte mount on the host that shares a pod's lifetime """
+    """ quobyte represents a Quobyte mount on the host that shares a pod's lifetime. Deprecated: Quobyte is deprecated and the in-tree quobyte type is no longer supported. """
     rbd: RBDVolumeSource
-    """ rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. More info: https://examples.k8s.io/volumes/rbd/README.md """
+    """ rbd represents a Rados Block Device mount on the host that shares a pod's lifetime. Deprecated: RBD is deprecated and the in-tree rbd type is no longer supported. More info: https://examples.k8s.io/volumes/rbd/README.md """
     scale_io: ScaleIOVolumeSource
-    """ scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes. """
+    """ scaleIO represents a ScaleIO persistent volume attached and mounted on Kubernetes nodes. Deprecated: ScaleIO is deprecated and the in-tree scaleIO type is no longer supported. """
     secret: SecretVolumeSource
     """ secret represents a secret that should populate this volume. More info: https://kubernetes.io/docs/concepts/storage/volumes#secret """
     storageos: StorageOSVolumeSource
-    """ storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes. """
+    """ storageOS represents a StorageOS volume attached and mounted on Kubernetes nodes. Deprecated: StorageOS is deprecated and the in-tree storageos type is no longer supported. """
     vsphere_volume: VsphereVirtualDiskVolumeSource
-    """ vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine """
+    """ vsphereVolume represents a vSphere volume attached and mounted on kubelets host machine. Deprecated: VsphereVolume is deprecated. All operations for the in-tree vsphereVolume type are redirected to the csi.vsphere.vmware.com CSI driver. """
 
     def __init__(
         self,
@@ -4919,6 +5134,7 @@ class Volume(KubernetesObject):
         git_repo: GitRepoVolumeSource = None,
         glusterfs: GlusterfsVolumeSource = None,
         host_path: HostPathVolumeSource = None,
+        image: ImageVolumeSource = None,
         iscsi: ISCSIVolumeSource = None,
         name: str = None,
         nfs: NFSVolumeSource = None,
@@ -4951,6 +5167,7 @@ class Volume(KubernetesObject):
             git_repo=git_repo,
             glusterfs=glusterfs,
             host_path=host_path,
+            image=image,
             iscsi=iscsi,
             name=name,
             nfs=nfs,
@@ -5018,9 +5235,9 @@ class PodSpec(KubernetesObject):
     image_pull_secrets: list[LocalObjectReference]
     """ ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec. If specified, these secrets will be passed to individual puller implementations for them to use. More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod """
     init_containers: list[Container]
-    """ List of initialization containers belonging to the pod. Init containers are executed in order prior to containers being started. If any init container fails, the pod is considered to have failed and is handled according to its restartPolicy. The name for an init container or normal container must be unique among all containers. Init containers may not have Lifecycle actions, Readiness probes, Liveness probes, or Startup probes. The resourceRequirements of an init container are taken into account during scheduling by finding the highest request/limit for each resource type, and then using the max of of that value or the sum of the normal containers. Limits are applied to init containers in a similar fashion. Init containers cannot currently be added or removed. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/ """
+    """ List of initialization containers belonging to the pod. Init containers are executed in order prior to containers being started. If any init container fails, the pod is considered to have failed and is handled according to its restartPolicy. The name for an init container or normal container must be unique among all containers. Init containers may not have Lifecycle actions, Readiness probes, Liveness probes, or Startup probes. The resourceRequirements of an init container are taken into account during scheduling by finding the highest request/limit for each resource type, and then using the max of that value or the sum of the normal containers. Limits are applied to init containers in a similar fashion. Init containers cannot currently be added or removed. Cannot be updated. More info: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/ """
     node_name: str
-    """ NodeName is a request to schedule this pod onto a specific node. If it is non-empty, the scheduler simply schedules this pod onto that node, assuming that it fits resource requirements. """
+    """ NodeName indicates in which node this pod is scheduled. If empty, this pod is a candidate for scheduling by the scheduler defined in schedulerName. Once this field is set, the kubelet for this node becomes responsible for the lifecycle of this pod. This field should not be used to express a desire for the pod to be scheduled on a specific node. https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodename """
     node_selector: dict[str, str]
     """ NodeSelector is a selector which must be true for the pod to fit on a node. Selector which must match a node's labels for the pod to be scheduled on that node. More info: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/ """
     os: PodOS
@@ -5029,7 +5246,7 @@ class PodSpec(KubernetesObject):
     
     If the OS field is set to linux, the following fields must be unset: -securityContext.windowsOptions
     
-    If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.hostUsers - spec.securityContext.appArmorProfile - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.containers[*].securityContext.appArmorProfile - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup
+    If the OS field is set to windows, following fields must be unset: - spec.hostPID - spec.hostIPC - spec.hostUsers - spec.securityContext.appArmorProfile - spec.securityContext.seLinuxOptions - spec.securityContext.seccompProfile - spec.securityContext.fsGroup - spec.securityContext.fsGroupChangePolicy - spec.securityContext.sysctls - spec.shareProcessNamespace - spec.securityContext.runAsUser - spec.securityContext.runAsGroup - spec.securityContext.supplementalGroups - spec.securityContext.supplementalGroupsPolicy - spec.containers[*].securityContext.appArmorProfile - spec.containers[*].securityContext.seLinuxOptions - spec.containers[*].securityContext.seccompProfile - spec.containers[*].securityContext.capabilities - spec.containers[*].securityContext.readOnlyRootFilesystem - spec.containers[*].securityContext.privileged - spec.containers[*].securityContext.allowPrivilegeEscalation - spec.containers[*].securityContext.procMount - spec.containers[*].securityContext.runAsUser - spec.containers[*].securityContext.runAsGroup
     """
     overhead: dict[str, Quantity]
     """ Overhead represents the resource overhead associated with running a pod for a given RuntimeClass. This field will be autopopulated at admission time by the RuntimeClass admission controller. If the RuntimeClass admission controller is enabled, overhead must not be set in Pod create requests. The RuntimeClass admission controller will reject Pod create requests which have the overhead already set. If RuntimeClass is configured and selected in the PodSpec, Overhead will be set to the value defined in the corresponding RuntimeClass, otherwise it will remain unset and treated as zero. More info: https://git.k8s.io/enhancements/keps/sig-node/688-pod-overhead/README.md """
@@ -5048,6 +5265,14 @@ class PodSpec(KubernetesObject):
     This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
     
     This field is immutable.
+    """
+    resources: ResourceRequirements
+    """
+    Resources is the total amount of CPU and Memory resources required by all containers in the pod. It supports specifying Requests and Limits for "cpu" and "memory" resource names only. ResourceClaims are not supported.
+    
+    This field enables fine-grained control over resource allocation for the entire pod, allowing resource sharing among containers in a pod.
+    
+    This is an alpha field and requires enabling the PodLevelResources feature gate.
     """
     restart_policy: str
     """ Restart policy for all containers within the pod. One of Always, OnFailure, Never. In some contexts, only a subset of those values may be permitted. Default to Always. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#restart-policy """
@@ -5068,7 +5293,7 @@ class PodSpec(KubernetesObject):
     service_account_name: str
     """ ServiceAccountName is the name of the ServiceAccount to use to run this pod. More info: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/ """
     set_hostname_as_fqdn: bool
-    """ If true the pod's hostname will be configured as the pod's FQDN, rather than the leaf name (the default). In Linux containers, this means setting the FQDN in the hostname field of the kernel (the nodename field of struct utsname). In Windows containers, this means setting the registry value of hostname for the registry key HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters to FQDN. If a pod does not have FQDN, this has no effect. Default to false. """
+    """ If true the pod's hostname will be configured as the pod's FQDN, rather than the leaf name (the default). In Linux containers, this means setting the FQDN in the hostname field of the kernel (the nodename field of struct utsname). In Windows containers, this means setting the registry value of hostname for the registry key HKEY_LOCAL_MACHINE\\\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip\\\\Parameters to FQDN. If a pod does not have FQDN, this has no effect. Default to false. """
     share_process_namespace: bool
     """ Share a single process namespace between all of the containers in a pod. When this is set containers will be able to view and signal processes from other containers in the same pod, and the first process in each container will not be assigned PID 1. HostPID and ShareProcessNamespace cannot both be set. Optional: Default to false. """
     subdomain: str
@@ -5109,6 +5334,7 @@ class PodSpec(KubernetesObject):
         priority_class_name: str = None,
         readiness_gates: list[PodReadinessGate] = None,
         resource_claims: list[PodResourceClaim] = None,
+        resources: ResourceRequirements = None,
         restart_policy: str = None,
         runtime_class_name: str = None,
         scheduler_name: str = None,
@@ -5150,6 +5376,7 @@ class PodSpec(KubernetesObject):
             priority_class_name=priority_class_name,
             readiness_gates=readiness_gates,
             resource_claims=resource_claims,
+            resources=resources,
             restart_policy=restart_policy,
             runtime_class_name=runtime_class_name,
             scheduler_name=scheduler_name,
@@ -5201,6 +5428,8 @@ class PodCondition(KubernetesObject):
     """ Last time the condition transitioned from one status to another. """
     message: str
     """ Human-readable message indicating details about last transition. """
+    observed_generation: int
+    """ If set, this represents the .metadata.generation that the pod condition was set based upon. This is an alpha field. Enable PodObservedGenerationTracking to be able to use this field. """
     reason: str
     """ Unique, one-word, CamelCase reason for the condition's last transition. """
     status: str
@@ -5213,6 +5442,7 @@ class PodCondition(KubernetesObject):
         last_probe_time: meta.Time = None,
         last_transition_time: meta.Time = None,
         message: str = None,
+        observed_generation: int = None,
         reason: str = None,
         status: str = None,
         type: str = None,
@@ -5221,6 +5451,7 @@ class PodCondition(KubernetesObject):
             last_probe_time=last_probe_time,
             last_transition_time=last_transition_time,
             message=message,
+            observed_generation=observed_generation,
             reason=reason,
             status=status,
             type=type,
@@ -5233,6 +5464,8 @@ class PodIP(KubernetesObject):
     __slots__ = ()
 
     _api_version_ = "v1"
+
+    _required_ = ["ip"]
 
     ip: str
     """ IP is the IP address assigned to the pod """
@@ -5253,7 +5486,7 @@ class PodResourceClaimStatus(KubernetesObject):
     name: str
     """ Name uniquely identifies this resource claim inside the pod. This must match the name of an entry in pod.spec.resourceClaims, which implies that the string must be a DNS_LABEL. """
     resource_claim_name: str
-    """ ResourceClaimName is the name of the ResourceClaim that was generated for the Pod in the namespace of the Pod. It this is unset, then generating a ResourceClaim was not necessary. The pod.spec.resourceClaims entry can be ignored in this case. """
+    """ ResourceClaimName is the name of the ResourceClaim that was generated for the Pod in the namespace of the Pod. If this is unset, then generating a ResourceClaim was not necessary. The pod.spec.resourceClaims entry can be ignored in this case. """
 
     def __init__(self, name: str = None, resource_claim_name: str = None):
         super().__init__(name=name, resource_claim_name=resource_claim_name)
@@ -5282,19 +5515,21 @@ class PodStatus(KubernetesObject):
     conditions: list[PodCondition]
     """ Current service state of pod. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions """
     container_statuses: list[ContainerStatus]
-    """ The list has one entry per container in the manifest. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-and-container-status """
+    """ Statuses of containers in this pod. Each container in the pod should have at most one status in this list, and all statuses should be for containers in the pod. However this is not enforced. If a status for a non-existent container is present in the list, or the list has duplicate names, the behavior of various Kubernetes components is not defined and those statuses might be ignored. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-and-container-status """
     ephemeral_container_statuses: list[ContainerStatus]
-    """ Status for any ephemeral containers that have run in this pod. """
+    """ Statuses for any ephemeral containers that have run in this pod. Each ephemeral container in the pod should have at most one status in this list, and all statuses should be for containers in the pod. However this is not enforced. If a status for a non-existent container is present in the list, or the list has duplicate names, the behavior of various Kubernetes components is not defined and those statuses might be ignored. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-and-container-status """
     host_ip: str
     """ hostIP holds the IP address of the host to which the pod is assigned. Empty if the pod has not started yet. A pod can be assigned to a node that has a problem in kubelet which in turns mean that HostIP will not be updated even if there is a node is assigned to pod """
     host_ips: list[HostIP]
     """ hostIPs holds the IP addresses allocated to the host. If this field is specified, the first entry must match the hostIP field. This list is empty if the pod has not started yet. A pod can be assigned to a node that has a problem in kubelet which in turns means that HostIPs will not be updated even if there is a node is assigned to this pod. """
     init_container_statuses: list[ContainerStatus]
-    """ The list has one entry per init container in the manifest. The most recent successful init container will have ready = true, the most recently started container will have startTime set. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-and-container-status """
+    """ Statuses of init containers in this pod. The most recent successful non-restartable init container will have ready = true, the most recently started container will have startTime set. Each init container in the pod should have at most one status in this list, and all statuses should be for containers in the pod. However this is not enforced. If a status for a non-existent container is present in the list, or the list has duplicate names, the behavior of various Kubernetes components is not defined and those statuses might be ignored. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-and-container-status """
     message: str
     """ A human readable message indicating details about why the pod is in this condition. """
     nominated_node_name: str
     """ nominatedNodeName is set only when this pod preempts other pods on the node, but it cannot be scheduled right away as preemption victims receive their graceful termination periods. This field does not guarantee that the pod will be scheduled on this node. Scheduler may decide to place the pod elsewhere if other nodes become available sooner. Scheduler may also decide to give the resources on this node to a higher priority pod that is created after preemption. As a result, this field may be different than PodSpec.nodeName when the pod is scheduled. """
+    observed_generation: int
+    """ If set, this represents the .metadata.generation that the pod status was set based upon. This is an alpha field. Enable PodObservedGenerationTracking to be able to use this field. """
     phase: str
     """
     The phase of a Pod is a simple, high-level summary of where the Pod is in its lifecycle. The conditions array, the reason and message fields, and the individual container status arrays contain more detail about the pod's status. There are five possible phase values:
@@ -5312,7 +5547,7 @@ class PodStatus(KubernetesObject):
     reason: str
     """ A brief CamelCase message indicating details about why the pod is in this state. e.g. 'Evicted' """
     resize: str
-    """ Status of resources resize desired for pod's containers. It is empty if no resources resize is pending. Any changes to container resources will automatically set this to "Proposed" """
+    """ Status of resources resize desired for pod's containers. It is empty if no resources resize is pending. Any changes to container resources will automatically set this to "Proposed" Deprecated: Resize status is moved to two pod conditions PodResizePending and PodResizeInProgress. PodResizePending will track states where the spec has been resized, but the Kubelet has not yet allocated the resources. PodResizeInProgress will track in-progress resizes, and should be present whenever allocated resources != acknowledged resources. """
     resource_claim_statuses: list[PodResourceClaimStatus]
     """ Status of resource claims. """
     start_time: meta.Time
@@ -5328,6 +5563,7 @@ class PodStatus(KubernetesObject):
         init_container_statuses: list[ContainerStatus] = None,
         message: str = None,
         nominated_node_name: str = None,
+        observed_generation: int = None,
         phase: str = None,
         pod_ip: str = None,
         pod_ips: list[PodIP] = None,
@@ -5346,6 +5582,7 @@ class PodStatus(KubernetesObject):
             init_container_statuses=init_container_statuses,
             message=message,
             nominated_node_name=nominated_node_name,
+            observed_generation=observed_generation,
             phase=phase,
             pod_ip=pod_ip,
             pod_ips=pod_ips,
@@ -5795,7 +6032,7 @@ class ServiceSpec(KubernetesObject):
     session_affinity_config: SessionAffinityConfig
     """ sessionAffinityConfig contains the configurations of session affinity. """
     traffic_distribution: str
-    """ TrafficDistribution offers a way to express preferences for how traffic is distributed to Service endpoints. Implementations can use this field as a hint, but are not required to guarantee strict adherence. If the field is not set, the implementation will apply its default routing strategy. If set to "PreferClose", implementations should prioritize endpoints that are topologically close (e.g., same zone). This is an alpha field and requires enabling ServiceTrafficDistribution feature. """
+    """ TrafficDistribution offers a way to express preferences for how traffic is distributed to Service endpoints. Implementations can use this field as a hint, but are not required to guarantee strict adherence. If the field is not set, the implementation will apply its default routing strategy. If set to "PreferClose", implementations should prioritize endpoints that are in the same zone. """
     type: str
     """ type determines how the Service is exposed. Defaults to ClusterIP. Valid options are ExternalName, ClusterIP, NodePort, and LoadBalancer. "ClusterIP" allocates a cluster-internal IP address for load-balancing to endpoints. Endpoints are determined by the selector or if that is not specified, by manual construction of an Endpoints object or EndpointSlice objects. If clusterIP is "None", no virtual IP is allocated and the endpoints are published as a set of endpoints rather than a virtual IP. "NodePort" builds on ClusterIP and allocates a port on every node which routes to the same endpoints as the clusterIP. "LoadBalancer" builds on NodePort and creates an external load-balancer (if supported in the current cloud) which routes to the same endpoints as the clusterIP. "ExternalName" aliases this service to the specified externalName. Several other fields do not apply to ExternalName services. More info: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types """
 
@@ -5882,7 +6119,7 @@ class ServiceAccount(KubernetesApiResource):
     metadata: meta.ObjectMeta
     """ Standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata """
     secrets: list[ObjectReference]
-    """ Secrets is a list of the secrets in the same namespace that pods running using this ServiceAccount are allowed to use. Pods are only limited to this list if this service account has a "kubernetes.io/enforce-mountable-secrets" annotation set to "true". This field should not be used to find auto-generated service account token secrets for use outside of pods. Instead, tokens can be requested directly using the TokenRequest API, or service account token secrets can be manually created. More info: https://kubernetes.io/docs/concepts/configuration/secret """
+    """ Secrets is a list of the secrets in the same namespace that pods running using this ServiceAccount are allowed to use. Pods are only limited to this list if this service account has a "kubernetes.io/enforce-mountable-secrets" annotation set to "true". The "kubernetes.io/enforce-mountable-secrets" annotation is deprecated since v1.32. Prefer separate namespaces to isolate access to mounted secrets. This field should not be used to find auto-generated service account token secrets for use outside of pods. Instead, tokens can be requested directly using the TokenRequest API, or service account token secrets can be manually created. More info: https://kubernetes.io/docs/concepts/configuration/secret """
 
     def __init__(
         self,

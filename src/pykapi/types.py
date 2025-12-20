@@ -84,9 +84,7 @@ class Property(t.NamedTuple):
         return hash((self.name, self.type, self.required))
 
     def __eq__(self, other):
-        return self.name == other.name \
-            and self.type == other.type \
-            and self.required == other.required
+        return self.name == other.name and self.type == other.type and self.required == other.required
 
     @property
     def snake_name(self):
@@ -105,10 +103,9 @@ class NamedProperty(t.NamedTuple):
 
     # exclude description from type equality
     def __eq__(self, other: t.Self):
-        return self.name == other.name \
-            and self.type == other.type \
-            and self.required == other.required \
-            and self.snake_name == other.snake_name
+        return (
+            self.name == other.name and self.type == other.type and self.required == other.required and self.snake_name == other.snake_name
+        )
 
 
 class ObjectType(ApiType):

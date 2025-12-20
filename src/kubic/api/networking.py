@@ -105,7 +105,7 @@ class ParentReference(KubernetesObject):
 
     __slots__ = ()
 
-    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_version_ = "networking.k8s.io/v1"
 
     _required_ = ["name", "resource"]
 
@@ -127,7 +127,7 @@ class IPAddressSpec(KubernetesObject):
 
     __slots__ = ()
 
-    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_version_ = "networking.k8s.io/v1"
 
     _required_ = ["parent_ref"]
 
@@ -143,7 +143,7 @@ class IPAddress(KubernetesApiResource):
 
     __slots__ = ()
 
-    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_version_ = "networking.k8s.io/v1"
     _api_group_ = "networking.k8s.io"
     _kind_ = "IPAddress"
     _scope_ = "namespace"
@@ -526,7 +526,7 @@ class ServiceCIDRSpec(KubernetesObject):
 
     __slots__ = ()
 
-    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_version_ = "networking.k8s.io/v1"
 
     cidrs: list[str]
     """ CIDRs defines the IP blocks in CIDR notation (e.g. "192.168.0.0/24" or "2001:db8::/64") from which to assign service cluster IPs. Max of two CIDRs is allowed, one of each IP family. This field is immutable. """
@@ -540,7 +540,7 @@ class ServiceCIDR(KubernetesApiResource):
 
     __slots__ = ()
 
-    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_version_ = "networking.k8s.io/v1"
     _api_group_ = "networking.k8s.io"
     _kind_ = "ServiceCIDR"
     _scope_ = "namespace"
@@ -559,7 +559,7 @@ class ServiceCIDRStatus(KubernetesObject):
 
     __slots__ = ()
 
-    _api_version_ = "networking.k8s.io/v1alpha1"
+    _api_version_ = "networking.k8s.io/v1"
 
     conditions: list[meta.Condition]
     """ conditions holds an array of metav1.Condition that describe the state of the ServiceCIDR. Current service state """

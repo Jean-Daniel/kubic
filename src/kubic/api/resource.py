@@ -2,91 +2,234 @@ from kubic import KubernetesApiResource, KubernetesObject
 from . import core, meta
 
 
-class NamedResourcesAllocationResult(KubernetesObject):
-    """NamedResourcesAllocationResult is used in AllocationResultModel."""
+class NetworkDeviceData(KubernetesObject):
+    """NetworkDeviceData provides network-related details for the allocated device. This information may be filled by drivers or other components to configure or identify the device within a network context."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    _required_ = ["name"]
+    hardware_address: str
+    """
+    HardwareAddress represents the hardware address (e.g. MAC Address) of the device's network interface.
+    
+    Must not be longer than 128 characters.
+    """
+    interface_name: str
+    """
+    InterfaceName specifies the name of the network interface associated with the allocated device. This might be the name of a physical or virtual network interface being configured in the pod.
+    
+    Must not be longer than 256 characters.
+    """
+    ips: list[str]
+    """
+    IPs lists the network addresses assigned to the device's network interface. This can include both IPv4 and IPv6 addresses. The IPs are in the CIDR notation, which includes both the address and the associated subnet mask. e.g.: "192.0.2.5/24" for IPv4 and "2001:db8::5/64" for IPv6.
+    
+    Must not contain more than 16 entries.
+    """
 
-    name: str
-    """ Name is the name of the selected resource instance. """
-
-    def __init__(self, name: str = None):
-        super().__init__(name=name)
-
-
-class DriverAllocationResult(KubernetesObject):
-    """DriverAllocationResult contains vendor parameters and the allocation result for one request."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    named_resources: NamedResourcesAllocationResult
-    """ NamedResources describes the allocation result when using the named resources model. """
-    vendor_request_parameters: core.RawExtension
-    """ VendorRequestParameters are the per-request configuration parameters from the time that the claim was allocated. """
-
-    def __init__(self, named_resources: NamedResourcesAllocationResult = None, vendor_request_parameters: core.RawExtension = None):
-        super().__init__(named_resources=named_resources, vendor_request_parameters=vendor_request_parameters)
+    def __init__(self, hardware_address: str = None, interface_name: str = None, ips: list[str] = None):
+        super().__init__(hardware_address=hardware_address, interface_name=interface_name, ips=ips)
 
 
-class StructuredResourceHandle(KubernetesObject):
-    """StructuredResourceHandle is the in-tree representation of the allocation result."""
+class AllocatedDeviceStatus(KubernetesObject):
+    """AllocatedDeviceStatus contains the status of an allocated device, if the driver chooses to report it. This may include driver-specific information."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    _required_ = ["results"]
+    _required_ = ["device", "driver", "pool"]
 
-    node_name: str
-    """ NodeName is the name of the node providing the necessary resources if the resources are local to a node. """
-    results: list[DriverAllocationResult]
-    """ Results lists all allocated driver resources. """
-    vendor_claim_parameters: core.RawExtension
-    """ VendorClaimParameters are the per-claim configuration parameters from the resource claim parameters at the time that the claim was allocated. """
-    vendor_class_parameters: core.RawExtension
-    """ VendorClassParameters are the per-claim configuration parameters from the resource class at the time that the claim was allocated. """
+    conditions: list[meta.Condition]
+    """
+    Conditions contains the latest observation of the device's state. If the device has been configured according to the class and claim config references, the `Ready` condition should be True.
+    
+    Must not contain more than 8 entries.
+    """
+    data: core.RawExtension
+    """
+    Data contains arbitrary driver-specific data.
+    
+    The length of the raw data must be smaller or equal to 10 Ki.
+    """
+    device: str
+    """ Device references one device instance via its name in the driver's resource pool. It must be a DNS label. """
+    driver: str
+    """
+    Driver specifies the name of the DRA driver whose kubelet plugin should be invoked to process the allocation once the claim is needed on a node.
+    
+    Must be a DNS subdomain and should end with a DNS domain owned by the vendor of the driver.
+    """
+    network_data: NetworkDeviceData
+    """ NetworkData contains network-related information specific to the device. """
+    pool: str
+    """
+    This name together with the driver name and the device name field identify which device was allocated (`<driver name>/<pool name>/<device name>`).
+    
+    Must not be longer than 253 characters and may contain one or more DNS sub-domains separated by slashes.
+    """
 
     def __init__(
         self,
-        node_name: str = None,
-        results: list[DriverAllocationResult] = None,
-        vendor_claim_parameters: core.RawExtension = None,
-        vendor_class_parameters: core.RawExtension = None,
+        conditions: list[meta.Condition] = None,
+        data: core.RawExtension = None,
+        device: str = None,
+        driver: str = None,
+        network_data: NetworkDeviceData = None,
+        pool: str = None,
     ):
-        super().__init__(
-            node_name=node_name,
-            results=results,
-            vendor_claim_parameters=vendor_claim_parameters,
-            vendor_class_parameters=vendor_class_parameters,
-        )
+        super().__init__(conditions=conditions, data=data, device=device, driver=driver, network_data=network_data, pool=pool)
 
 
-class ResourceHandle(KubernetesObject):
-    """ResourceHandle holds opaque resource data for processing by a specific kubelet plugin."""
+class OpaqueDeviceConfiguration(KubernetesObject):
+    """OpaqueDeviceConfiguration contains configuration parameters for a driver in a format defined by the driver vendor."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    data: str
+    _required_ = ["driver", "parameters"]
+
+    driver: str
     """
-    Data contains the opaque data associated with this ResourceHandle. It is set by the controller component of the resource driver whose name matches the DriverName set in the ResourceClaimStatus this ResourceHandle is embedded in. It is set at allocation time and is intended for processing by the kubelet plugin whose name matches the DriverName set in this ResourceHandle.
+    Driver is used to determine which kubelet plugin needs to be passed these configuration parameters.
     
-    The maximum size of this field is 16KiB. This may get increased in the future, but not reduced.
+    An admission policy provided by the driver developer could use this to decide whether it needs to validate them.
+    
+    Must be a DNS subdomain and should end with a DNS domain owned by the vendor of the driver.
     """
-    driver_name: str
-    """ DriverName specifies the name of the resource driver whose kubelet plugin should be invoked to process this ResourceHandle's data once it lands on a node. This may differ from the DriverName set in ResourceClaimStatus this ResourceHandle is embedded in. """
-    structured_data: StructuredResourceHandle
-    """ If StructuredData is set, then it needs to be used instead of Data. """
+    parameters: core.RawExtension
+    """
+    Parameters can contain arbitrary data. It is the responsibility of the driver developer to handle validation and versioning. Typically this includes self-identification and a version ("kind" + "apiVersion" for Kubernetes types), with conversion between different versions.
+    
+    The length of the raw data must be smaller or equal to 10 Ki.
+    """
 
-    def __init__(self, data: str = None, driver_name: str = None, structured_data: StructuredResourceHandle = None):
-        super().__init__(data=data, driver_name=driver_name, structured_data=structured_data)
+    def __init__(self, driver: str = None, parameters: core.RawExtension = None):
+        super().__init__(driver=driver, parameters=parameters)
+
+
+class DeviceAllocationConfiguration(KubernetesObject):
+    """DeviceAllocationConfiguration gets embedded in an AllocationResult."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["source"]
+
+    opaque: OpaqueDeviceConfiguration
+    """ Opaque provides driver-specific configuration parameters. """
+    requests: list[str]
+    """
+    Requests lists the names of requests where the configuration applies. If empty, its applies to all requests.
+    
+    References to subrequests must include the name of the main request and may include the subrequest using the format <main request>[/<subrequest>]. If just the main request is given, the configuration applies to all subrequests.
+    """
+    source: str
+    """ Source records whether the configuration comes from a class and thus is not something that a normal user would have been able to set or from a claim. """
+
+    def __init__(self, opaque: OpaqueDeviceConfiguration = None, requests: list[str] = None, source: str = None):
+        super().__init__(opaque=opaque, requests=requests, source=source)
+
+
+class DeviceToleration(KubernetesObject):
+    """The ResourceClaim this DeviceToleration is attached to tolerates any taint that matches the triple <key,value,effect> using the matching operator <operator>."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    effect: str
+    """ Effect indicates the taint effect to match. Empty means match all taint effects. When specified, allowed values are NoSchedule and NoExecute. """
+    key: str
+    """ Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys. Must be a label name. """
+    operator: str
+    """ Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a ResourceClaim can tolerate all taints of a particular category. """
+    toleration_seconds: int
+    """ TolerationSeconds represents the period of time the toleration (which must be of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default, it is not set, which means tolerate the taint forever (do not evict). Zero and negative values will be treated as 0 (evict immediately) by the system. If larger than zero, the time when the pod needs to be evicted is calculated as <time when taint was adedd> + <toleration seconds>. """
+    value: str
+    """ Value is the taint value the toleration matches to. If the operator is Exists, the value must be empty, otherwise just a regular string. Must be a label value. """
+
+    def __init__(self, effect: str = None, key: str = None, operator: str = None, toleration_seconds: int = None, value: str = None):
+        super().__init__(effect=effect, key=key, operator=operator, toleration_seconds=toleration_seconds, value=value)
+
+
+class DeviceRequestAllocationResult(KubernetesObject):
+    """DeviceRequestAllocationResult contains the allocation result for one request."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["device", "driver", "pool", "request"]
+
+    admin_access: bool
+    """
+    AdminAccess indicates that this device was allocated for administrative access. See the corresponding request field for a definition of mode.
+    
+    This is an alpha field and requires enabling the DRAAdminAccess feature gate. Admin access is disabled if this field is unset or set to false, otherwise it is enabled.
+    """
+    device: str
+    """ Device references one device instance via its name in the driver's resource pool. It must be a DNS label. """
+    driver: str
+    """
+    Driver specifies the name of the DRA driver whose kubelet plugin should be invoked to process the allocation once the claim is needed on a node.
+    
+    Must be a DNS subdomain and should end with a DNS domain owned by the vendor of the driver.
+    """
+    pool: str
+    """
+    This name together with the driver name and the device name field identify which device was allocated (`<driver name>/<pool name>/<device name>`).
+    
+    Must not be longer than 253 characters and may contain one or more DNS sub-domains separated by slashes.
+    """
+    request: str
+    """
+    Request is the name of the request in the claim which caused this device to be allocated. If it references a subrequest in the firstAvailable list on a DeviceRequest, this field must include both the name of the main request and the subrequest using the format <main request>/<subrequest>.
+    
+    Multiple devices may have been allocated per request.
+    """
+    tolerations: list[DeviceToleration]
+    """
+    A copy of all tolerations specified in the request at the time when the device got allocated.
+    
+    The maximum number of tolerations is 16.
+    
+    This is an alpha field and requires enabling the DRADeviceTaints feature gate.
+    """
+
+    def __init__(
+        self,
+        admin_access: bool = None,
+        device: str = None,
+        driver: str = None,
+        pool: str = None,
+        request: str = None,
+        tolerations: list[DeviceToleration] = None,
+    ):
+        super().__init__(admin_access=admin_access, device=device, driver=driver, pool=pool, request=request, tolerations=tolerations)
+
+
+class DeviceAllocationResult(KubernetesObject):
+    """DeviceAllocationResult is the result of allocating devices."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    config: list[DeviceAllocationConfiguration]
+    """
+    This field is a combination of all the claim and class configuration parameters. Drivers can distinguish between those based on a flag.
+    
+    This includes configuration parameters for drivers which have no allocated devices in the result because it is up to the drivers which configuration parameters they support. They can silently ignore unknown configuration parameters.
+    """
+    results: list[DeviceRequestAllocationResult]
+    """ Results lists all allocated devices. """
+
+    def __init__(self, config: list[DeviceAllocationConfiguration] = None, results: list[DeviceRequestAllocationResult] = None):
+        super().__init__(config=config, results=results)
 
 
 class AllocationResult(KubernetesObject):
@@ -94,350 +237,795 @@ class AllocationResult(KubernetesObject):
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    available_on_nodes: core.NodeSelector
-    """
-    This field will get set by the resource driver after it has allocated the resource to inform the scheduler where it can schedule Pods using the ResourceClaim.
-    
-    Setting this field is optional. If null, the resource is available everywhere.
-    """
-    resource_handles: list[ResourceHandle]
-    """
-    ResourceHandles contain the state associated with an allocation that should be maintained throughout the lifetime of a claim. Each ResourceHandle contains data that should be passed to a specific kubelet plugin once it lands on a node. This data is returned by the driver after a successful allocation and is opaque to Kubernetes. Driver documentation may explain to users how to interpret this data if needed.
-    
-    Setting this field is optional. It has a maximum size of 32 entries. If null (or empty), it is assumed this allocation will be processed by a single kubelet plugin with no ResourceHandle data attached. The name of the kubelet plugin invoked will match the DriverName set in the ResourceClaimStatus this AllocationResult is embedded in.
-    """
-    shareable: bool
-    """ Shareable determines whether the resource supports more than one consumer at a time. """
+    devices: DeviceAllocationResult
+    """ Devices is the result of allocating devices. """
+    node_selector: core.NodeSelector
+    """ NodeSelector defines where the allocated resources are available. If unset, they are available everywhere. """
 
-    def __init__(self, available_on_nodes: core.NodeSelector = None, resource_handles: list[ResourceHandle] = None, shareable: bool = None):
-        super().__init__(available_on_nodes=available_on_nodes, resource_handles=resource_handles, shareable=shareable)
+    def __init__(self, devices: DeviceAllocationResult = None, node_selector: core.NodeSelector = None):
+        super().__init__(devices=devices, node_selector=node_selector)
 
 
-class NamedResourcesRequest(KubernetesObject):
-    """NamedResourcesRequest is used in ResourceRequestModel."""
+class DeviceAttribute(KubernetesObject):
+    """DeviceAttribute must have exactly one field set."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    _required_ = ["selector"]
-
-    selector: str
-    """
-    Selector is a CEL expression which must evaluate to true if a resource instance is suitable. The language is as defined in https://kubernetes.io/docs/reference/using-api/cel/
-    
-    In addition, for each type NamedResourcesin AttributeValue there is a map that resolves to the corresponding value of the instance under evaluation. For example:
-    
-       attributes.quantity["a"].isGreaterThan(quantity("0")) &&
-       attributes.stringslice["b"].isSorted()
-    """
-
-    def __init__(self, selector: str = None):
-        super().__init__(selector=selector)
-
-
-class ResourceRequest(KubernetesObject):
-    """ResourceRequest is a request for resources from one particular driver."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    named_resources: NamedResourcesRequest
-    """ NamedResources describes a request for resources with the named resources model. """
-    vendor_parameters: core.RawExtension
-    """ VendorParameters are arbitrary setup parameters for the requested resource. They are ignored while allocating a claim. """
-
-    def __init__(self, named_resources: NamedResourcesRequest = None, vendor_parameters: core.RawExtension = None):
-        super().__init__(named_resources=named_resources, vendor_parameters=vendor_parameters)
-
-
-class DriverRequests(KubernetesObject):
-    """DriverRequests describes all resources that are needed from one particular driver."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    driver_name: str
-    """ DriverName is the name used by the DRA driver kubelet plugin. """
-    requests: list[ResourceRequest]
-    """ Requests describes all resources that are needed from the driver. """
-    vendor_parameters: core.RawExtension
-    """ VendorParameters are arbitrary setup parameters for all requests of the claim. They are ignored while allocating the claim. """
-
-    def __init__(self, driver_name: str = None, requests: list[ResourceRequest] = None, vendor_parameters: core.RawExtension = None):
-        super().__init__(driver_name=driver_name, requests=requests, vendor_parameters=vendor_parameters)
-
-
-class NamedResourcesIntSlice(KubernetesObject):
-    """NamedResourcesIntSlice contains a slice of 64-bit integers."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    _required_ = ["ints"]
-
-    ints: list[int]
-    """ Ints is the slice of 64-bit integers. """
-
-    def __init__(self, ints: list[int] = None):
-        super().__init__(ints=ints)
-
-
-class NamedResourcesStringSlice(KubernetesObject):
-    """NamedResourcesStringSlice contains a slice of strings."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    _required_ = ["strings"]
-
-    strings: list[str]
-    """ Strings is the slice of strings. """
-
-    def __init__(self, strings: list[str] = None):
-        super().__init__(strings=strings)
-
-
-class NamedResourcesAttribute(KubernetesObject):
-    """NamedResourcesAttribute is a combination of an attribute name and its value."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    _required_ = ["name"]
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
     bool: bool
     """ BoolValue is a true/false value. """
     int: int
-    """ IntValue is a 64-bit integer. """
-    int_slice: NamedResourcesIntSlice
-    """ IntSliceValue is an array of 64-bit integers. """
-    name: str
-    """ Name is unique identifier among all resource instances managed by the driver on the node. It must be a DNS subdomain. """
-    quantity: core.Quantity
-    """ QuantityValue is a quantity. """
+    """ IntValue is a number. """
     string: str
-    """ StringValue is a string. """
-    string_slice: NamedResourcesStringSlice
-    """ StringSliceValue is an array of strings. """
+    """ StringValue is a string. Must not be longer than 64 characters. """
     version: str
-    """ VersionValue is a semantic version according to semver.org spec 2.0.0. """
+    """ VersionValue is a semantic version according to semver.org spec 2.0.0. Must not be longer than 64 characters. """
+
+    def __init__(self, bool: bool = None, int: int = None, string: str = None, version: str = None):
+        super().__init__(bool=bool, int=int, string=string, version=version)
+
+
+class Counter(KubernetesObject):
+    """Counter describes a quantity associated with a device."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["value"]
+
+    value: core.Quantity
+    """ Value defines how much of a certain device counter is available. """
+
+    def __init__(self, value: core.Quantity = None):
+        super().__init__(value=value)
+
+
+class DeviceCounterConsumption(KubernetesObject):
+    """DeviceCounterConsumption defines a set of counters that a device will consume from a CounterSet."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["counter_set", "counters"]
+
+    counter_set: str
+    """ CounterSet defines the set from which the counters defined will be consumed. """
+    counters: dict[str, Counter]
+    """
+    Counters defines the Counter that will be consumed by the device.
+    
+    The maximum number counters in a device is 32. In addition, the maximum number of all counters in all devices is 1024 (for example, 64 devices with 16 counters each).
+    """
+
+    def __init__(self, counter_set: str = None, counters: dict[str, Counter] = None):
+        super().__init__(counter_set=counter_set, counters=counters)
+
+
+class DeviceTaint(KubernetesObject):
+    """The device this taint is attached to has the "effect" on any claim which does not tolerate the taint and, through the claim, to pods using the claim."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["effect", "key"]
+
+    effect: str
+    """ The effect of the taint on claims that do not tolerate the taint and through such claims on the pods using them. Valid effects are NoSchedule and NoExecute. PreferNoSchedule as used for nodes is not valid here. """
+    key: str
+    """ The taint key to be applied to a device. Must be a label name. """
+    time_added: meta.Time
+    """ TimeAdded represents the time at which the taint was added. Added automatically during create or update if not set. """
+    value: str
+    """ The taint value corresponding to the taint key. Must be a label value. """
+
+    def __init__(self, effect: str = None, key: str = None, time_added: meta.Time = None, value: str = None):
+        super().__init__(effect=effect, key=key, time_added=time_added, value=value)
+
+
+class BasicDevice(KubernetesObject):
+    """BasicDevice defines one device instance."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    all_nodes: bool
+    """
+    AllNodes indicates that all nodes have access to the device.
+    
+    Must only be set if Spec.PerDeviceNodeSelection is set to true. At most one of NodeName, NodeSelector and AllNodes can be set.
+    """
+    attributes: dict[str, DeviceAttribute]
+    """
+    Attributes defines the set of attributes for this device. The name of each attribute must be unique in that set.
+    
+    The maximum number of attributes and capacities combined is 32.
+    """
+    capacity: dict[str, core.Quantity]
+    """
+    Capacity defines the set of capacities for this device. The name of each capacity must be unique in that set.
+    
+    The maximum number of attributes and capacities combined is 32.
+    """
+    consumes_counters: list[DeviceCounterConsumption]
+    """
+    ConsumesCounters defines a list of references to sharedCounters and the set of counters that the device will consume from those counter sets.
+    
+    There can only be a single entry per counterSet.
+    
+    The total number of device counter consumption entries must be <= 32. In addition, the total number in the entire ResourceSlice must be <= 1024 (for example, 64 devices with 16 counters each).
+    """
+    node_name: str
+    """
+    NodeName identifies the node where the device is available.
+    
+    Must only be set if Spec.PerDeviceNodeSelection is set to true. At most one of NodeName, NodeSelector and AllNodes can be set.
+    """
+    node_selector: core.NodeSelector
+    """
+    NodeSelector defines the nodes where the device is available.
+    
+    Must only be set if Spec.PerDeviceNodeSelection is set to true. At most one of NodeName, NodeSelector and AllNodes can be set.
+    """
+    taints: list[DeviceTaint]
+    """
+    If specified, these are the driver-defined taints.
+    
+    The maximum number of taints is 4.
+    
+    This is an alpha field and requires enabling the DRADeviceTaints feature gate.
+    """
 
     def __init__(
         self,
-        bool: bool = None,
-        int: int = None,
-        int_slice: NamedResourcesIntSlice = None,
-        name: str = None,
-        quantity: core.Quantity = None,
-        string: str = None,
-        string_slice: NamedResourcesStringSlice = None,
-        version: str = None,
+        all_nodes: bool = None,
+        attributes: dict[str, DeviceAttribute] = None,
+        capacity: dict[str, core.Quantity] = None,
+        consumes_counters: list[DeviceCounterConsumption] = None,
+        node_name: str = None,
+        node_selector: core.NodeSelector = None,
+        taints: list[DeviceTaint] = None,
     ):
         super().__init__(
-            bool=bool, int=int, int_slice=int_slice, name=name, quantity=quantity, string=string, string_slice=string_slice, version=version
+            all_nodes=all_nodes,
+            attributes=attributes,
+            capacity=capacity,
+            consumes_counters=consumes_counters,
+            node_name=node_name,
+            node_selector=node_selector,
+            taints=taints,
         )
 
 
-class NamedResourcesFilter(KubernetesObject):
-    """NamedResourcesFilter is used in ResourceFilterModel."""
+class CELDeviceSelector(KubernetesObject):
+    """CELDeviceSelector contains a CEL expression for selecting a device."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    _required_ = ["selector"]
+    _required_ = ["expression"]
 
-    selector: str
+    expression: str
     """
-    Selector is a CEL expression which must evaluate to true if a resource instance is suitable. The language is as defined in https://kubernetes.io/docs/reference/using-api/cel/
+    Expression is a CEL expression which evaluates a single device. It must evaluate to true when the device under consideration satisfies the desired criteria, and false when it does not. Any other result is an error and causes allocation of devices to abort.
     
-    In addition, for each type NamedResourcesin AttributeValue there is a map that resolves to the corresponding value of the instance under evaluation. For example:
+    The expression's input is an object named "device", which carries the following properties:
+     - driver (string): the name of the driver which defines this device.
+     - attributes (map[string]object): the device's attributes, grouped by prefix
+       (e.g. device.attributes["dra.example.com"] evaluates to an object with all
+       of the attributes which were prefixed by "dra.example.com".
+     - capacity (map[string]object): the device's capacities, grouped by prefix.
     
-       attributes.quantity["a"].isGreaterThan(quantity("0")) &&
-       attributes.stringslice["b"].isSorted()
+    Example: Consider a device with driver="dra.example.com", which exposes two attributes named "model" and "ext.example.com/family" and which exposes one capacity named "modules". This input to this expression would have the following fields:
+    
+        device.driver
+        device.attributes["dra.example.com"].model
+        device.attributes["ext.example.com"].family
+        device.capacity["dra.example.com"].modules
+    
+    The device.driver field can be used to check for a specific driver, either as a high-level precondition (i.e. you only want to consider devices from this driver) or as part of a multi-clause expression that is meant to consider devices from different drivers.
+    
+    The value type of each attribute is defined by the device definition, and users who write these expressions must consult the documentation for their specific drivers. The value type of each capacity is Quantity.
+    
+    If an unknown prefix is used as a lookup in either device.attributes or device.capacity, an empty map will be returned. Any reference to an unknown field will cause an evaluation error and allocation to abort.
+    
+    A robust expression should check for the existence of attributes before referencing them.
+    
+    For ease of use, the cel.bind() function is enabled, and can be used to simplify expressions that access multiple attributes with the same domain. For example:
+    
+        cel.bind(dra, device.attributes["dra.example.com"], dra.someBool && dra.anotherBool)
+    
+    The length of the expression must be smaller or equal to 10 Ki. The cost of evaluating it is also limited based on the estimated number of logical steps.
     """
 
-    def __init__(self, selector: str = None):
-        super().__init__(selector=selector)
+    def __init__(self, expression: str = None):
+        super().__init__(expression=expression)
 
 
-class NamedResourcesInstance(KubernetesObject):
-    """NamedResourcesInstance represents one individual hardware instance that can be selected based on its attributes."""
+class CounterSet(KubernetesObject):
+    """
+    CounterSet defines a named set of counters that are available to be used by devices defined in the ResourceSlice.
+
+    The counters are not allocatable by themselves, but can be referenced by devices. When a device is allocated, the portion of counters it uses will no longer be available for use by other devices.
+    """
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["counters", "name"]
+
+    counters: dict[str, Counter]
+    """
+    Counters defines the counters that will be consumed by the device. The name of each counter must be unique in that set and must be a DNS label.
+    
+    To ensure this uniqueness, capacities defined by the vendor must be listed without the driver name as domain prefix in their name. All others must be listed with their domain prefix.
+    
+    The maximum number of counters is 32.
+    """
+    name: str
+    """ CounterSet is the name of the set from which the counters defined will be consumed. """
+
+    def __init__(self, counters: dict[str, Counter] = None, name: str = None):
+        super().__init__(counters=counters, name=name)
+
+
+class Device(KubernetesObject):
+    """Device represents one individual hardware instance that can be selected based on its attributes. Besides the name, exactly one field must be set."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
     _required_ = ["name"]
 
-    attributes: list[NamedResourcesAttribute]
-    """ Attributes defines the attributes of this resource instance. The name of each attribute must be unique. """
+    basic: BasicDevice
+    """ Basic defines one device instance. """
     name: str
-    """ Name is unique identifier among all resource instances managed by the driver on the node. It must be a DNS subdomain. """
+    """ Name is unique identifier among all devices managed by the driver in the pool. It must be a DNS label. """
 
-    def __init__(self, attributes: list[NamedResourcesAttribute] = None, name: str = None):
-        super().__init__(attributes=attributes, name=name)
-
-
-class NamedResourcesResources(KubernetesObject):
-    """NamedResourcesResources is used in ResourceModel."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    _required_ = ["instances"]
-
-    instances: list[NamedResourcesInstance]
-    """ The list of all individual resources instances currently available. """
-
-    def __init__(self, instances: list[NamedResourcesInstance] = None):
-        super().__init__(instances=instances)
+    def __init__(self, basic: BasicDevice = None, name: str = None):
+        super().__init__(basic=basic, name=name)
 
 
-class PodSchedulingContextSpec(KubernetesObject):
-    """PodSchedulingContextSpec describes where resources for the Pod are needed."""
+class DeviceCapacity(KubernetesObject):
+    """DeviceCapacity describes a quantity associated with a device."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1beta1"
 
-    potential_nodes: list[str]
+    _required_ = ["value"]
+
+    value: core.Quantity
+    """ Value defines how much of a certain device capacity is available. """
+
+    def __init__(self, value: core.Quantity = None):
+        super().__init__(value=value)
+
+
+class DeviceClaimConfiguration(KubernetesObject):
+    """DeviceClaimConfiguration is used for configuration parameters in DeviceClaim."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    opaque: OpaqueDeviceConfiguration
+    """ Opaque provides driver-specific configuration parameters. """
+    requests: list[str]
     """
-    PotentialNodes lists nodes where the Pod might be able to run.
+    Requests lists the names of requests where the configuration applies. If empty, it applies to all requests.
     
-    The size of this field is limited to 128. This is large enough for many clusters. Larger clusters may need more attempts to find a node that suits all pending resources. This may get increased in the future, but not reduced.
+    References to subrequests must include the name of the main request and may include the subrequest using the format <main request>[/<subrequest>]. If just the main request is given, the configuration applies to all subrequests.
     """
-    selected_node: str
-    """ SelectedNode is the node for which allocation of ResourceClaims that are referenced by the Pod and that use "WaitForFirstConsumer" allocation is to be attempted. """
 
-    def __init__(self, potential_nodes: list[str] = None, selected_node: str = None):
-        super().__init__(potential_nodes=potential_nodes, selected_node=selected_node)
+    def __init__(self, opaque: OpaqueDeviceConfiguration = None, requests: list[str] = None):
+        super().__init__(opaque=opaque, requests=requests)
 
 
-class PodSchedulingContext(KubernetesApiResource):
+class DeviceConstraint(KubernetesObject):
+    """DeviceConstraint must have exactly one field set besides Requests."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    match_attribute: str
     """
-    PodSchedulingContext objects hold information that is needed to schedule a Pod with ResourceClaims that use "WaitForFirstConsumer" allocation mode.
+    MatchAttribute requires that all devices in question have this attribute and that its type and value are the same across those devices.
+    
+    For example, if you specified "dra.example.com/numa" (a hypothetical example!), then only devices in the same NUMA node will be chosen. A device which does not have that attribute will not be chosen. All devices should use a value of the same type for this attribute because that is part of its specification, but if one device doesn't, then it also will not be chosen.
+    
+    Must include the domain qualifier.
+    """
+    requests: list[str]
+    """
+    Requests is a list of the one or more requests in this claim which must co-satisfy this constraint. If a request is fulfilled by multiple devices, then all of the devices must satisfy the constraint. If this is not specified, this constraint applies to all requests in this claim.
+    
+    References to subrequests must include the name of the main request and may include the subrequest using the format <main request>[/<subrequest>]. If just the main request is given, the constraint applies to all subrequests.
+    """
+
+    def __init__(self, match_attribute: str = None, requests: list[str] = None):
+        super().__init__(match_attribute=match_attribute, requests=requests)
+
+
+class DeviceSelector(KubernetesObject):
+    """DeviceSelector must have exactly one field set."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    cel: CELDeviceSelector
+    """ CEL contains a CEL expression for selecting a device. """
+
+    def __init__(self, cel: CELDeviceSelector = None):
+        super().__init__(cel=cel)
+
+
+class DeviceSubRequest(KubernetesObject):
+    """
+    DeviceSubRequest describes a request for device provided in the claim.spec.devices.requests[].firstAvailable array. Each is typically a request for a single resource like a device, but can also ask for several identical devices.
+
+    DeviceSubRequest is similar to Request, but doesn't expose the AdminAccess or FirstAvailable fields, as those can only be set on the top-level request. AdminAccess is not supported for requests with a prioritized list, and recursive FirstAvailable fields are not supported.
+    """
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["device_class_name", "name"]
+
+    allocation_mode: str
+    """
+    AllocationMode and its related fields define how devices are allocated to satisfy this request. Supported values are:
+    
+    - ExactCount: This request is for a specific number of devices.
+      This is the default. The exact number is provided in the
+      count field.
+    
+    - All: This request is for all of the matching devices in a pool.
+      Allocation will fail if some devices are already allocated,
+      unless adminAccess is requested.
+    
+    If AllocationMode is not specified, the default mode is ExactCount. If the mode is ExactCount and count is not specified, the default count is one. Any other requests must specify this field.
+    
+    More modes may get added in the future. Clients must refuse to handle requests with unknown modes.
+    """
+    count: int
+    """ Count is used only when the count mode is "ExactCount". Must be greater than zero. If AllocationMode is ExactCount and this field is not specified, the default is one. """
+    device_class_name: str
+    """
+    DeviceClassName references a specific DeviceClass, which can define additional configuration and selectors to be inherited by this subrequest.
+    
+    A class is required. Which classes are available depends on the cluster.
+    
+    Administrators may use this to restrict which devices may get requested by only installing classes with selectors for permitted devices. If users are free to request anything without restrictions, then administrators can create an empty DeviceClass for users to reference.
+    """
+    name: str
+    """
+    Name can be used to reference this subrequest in the list of constraints or the list of configurations for the claim. References must use the format <main request>/<subrequest>.
+    
+    Must be a DNS label.
+    """
+    selectors: list[DeviceSelector]
+    """ Selectors define criteria which must be satisfied by a specific device in order for that device to be considered for this request. All selectors must be satisfied for a device to be considered. """
+    tolerations: list[DeviceToleration]
+    """
+    If specified, the request's tolerations.
+    
+    Tolerations for NoSchedule are required to allocate a device which has a taint with that effect. The same applies to NoExecute.
+    
+    In addition, should any of the allocated devices get tainted with NoExecute after allocation and that effect is not tolerated, then all pods consuming the ResourceClaim get deleted to evict them. The scheduler will not let new pods reserve the claim while it has these tainted devices. Once all pods are evicted, the claim will get deallocated.
+    
+    The maximum number of tolerations is 16.
+    
+    This is an alpha field and requires enabling the DRADeviceTaints feature gate.
+    """
+
+    def __init__(
+        self,
+        allocation_mode: str = None,
+        count: int = None,
+        device_class_name: str = None,
+        name: str = None,
+        selectors: list[DeviceSelector] = None,
+        tolerations: list[DeviceToleration] = None,
+    ):
+        super().__init__(
+            allocation_mode=allocation_mode,
+            count=count,
+            device_class_name=device_class_name,
+            name=name,
+            selectors=selectors,
+            tolerations=tolerations,
+        )
+
+
+class DeviceRequest(KubernetesObject):
+    """DeviceRequest is a request for devices required for a claim. This is typically a request for a single resource like a device, but can also ask for several identical devices."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["name"]
+
+    admin_access: bool
+    """
+    AdminAccess indicates that this is a claim for administrative access to the device(s). Claims with AdminAccess are expected to be used for monitoring or other management services for a device.  They ignore all ordinary claims to the device with respect to access modes and any resource allocations.
+    
+    This field can only be set when deviceClassName is set and no subrequests are specified in the firstAvailable list.
+    
+    This is an alpha field and requires enabling the DRAAdminAccess feature gate. Admin access is disabled if this field is unset or set to false, otherwise it is enabled.
+    """
+    allocation_mode: str
+    """
+    AllocationMode and its related fields define how devices are allocated to satisfy this request. Supported values are:
+    
+    - ExactCount: This request is for a specific number of devices.
+      This is the default. The exact number is provided in the
+      count field.
+    
+    - All: This request is for all of the matching devices in a pool.
+      At least one device must exist on the node for the allocation to succeed.
+      Allocation will fail if some devices are already allocated,
+      unless adminAccess is requested.
+    
+    If AllocationMode is not specified, the default mode is ExactCount. If the mode is ExactCount and count is not specified, the default count is one. Any other requests must specify this field.
+    
+    This field can only be set when deviceClassName is set and no subrequests are specified in the firstAvailable list.
+    
+    More modes may get added in the future. Clients must refuse to handle requests with unknown modes.
+    """
+    count: int
+    """
+    Count is used only when the count mode is "ExactCount". Must be greater than zero. If AllocationMode is ExactCount and this field is not specified, the default is one.
+    
+    This field can only be set when deviceClassName is set and no subrequests are specified in the firstAvailable list.
+    """
+    device_class_name: str
+    """
+    DeviceClassName references a specific DeviceClass, which can define additional configuration and selectors to be inherited by this request.
+    
+    A class is required if no subrequests are specified in the firstAvailable list and no class can be set if subrequests are specified in the firstAvailable list. Which classes are available depends on the cluster.
+    
+    Administrators may use this to restrict which devices may get requested by only installing classes with selectors for permitted devices. If users are free to request anything without restrictions, then administrators can create an empty DeviceClass for users to reference.
+    """
+    first_available: list[DeviceSubRequest]
+    """
+    FirstAvailable contains subrequests, of which exactly one will be satisfied by the scheduler to satisfy this request. It tries to satisfy them in the order in which they are listed here. So if there are two entries in the list, the scheduler will only check the second one if it determines that the first one cannot be used.
+    
+    This field may only be set in the entries of DeviceClaim.Requests.
+    
+    DRA does not yet implement scoring, so the scheduler will select the first set of devices that satisfies all the requests in the claim. And if the requirements can be satisfied on more than one node, other scheduling features will determine which node is chosen. This means that the set of devices allocated to a claim might not be the optimal set available to the cluster. Scoring will be implemented later.
+    """
+    name: str
+    """
+    Name can be used to reference this request in a pod.spec.containers[].resources.claims entry and in a constraint of the claim.
+    
+    Must be a DNS label.
+    """
+    selectors: list[DeviceSelector]
+    """
+    Selectors define criteria which must be satisfied by a specific device in order for that device to be considered for this request. All selectors must be satisfied for a device to be considered.
+    
+    This field can only be set when deviceClassName is set and no subrequests are specified in the firstAvailable list.
+    """
+    tolerations: list[DeviceToleration]
+    """
+    If specified, the request's tolerations.
+    
+    Tolerations for NoSchedule are required to allocate a device which has a taint with that effect. The same applies to NoExecute.
+    
+    In addition, should any of the allocated devices get tainted with NoExecute after allocation and that effect is not tolerated, then all pods consuming the ResourceClaim get deleted to evict them. The scheduler will not let new pods reserve the claim while it has these tainted devices. Once all pods are evicted, the claim will get deallocated.
+    
+    The maximum number of tolerations is 16.
+    
+    This field can only be set when deviceClassName is set and no subrequests are specified in the firstAvailable list.
+    
+    This is an alpha field and requires enabling the DRADeviceTaints feature gate.
+    """
+
+    def __init__(
+        self,
+        admin_access: bool = None,
+        allocation_mode: str = None,
+        count: int = None,
+        device_class_name: str = None,
+        first_available: list[DeviceSubRequest] = None,
+        name: str = None,
+        selectors: list[DeviceSelector] = None,
+        tolerations: list[DeviceToleration] = None,
+    ):
+        super().__init__(
+            admin_access=admin_access,
+            allocation_mode=allocation_mode,
+            count=count,
+            device_class_name=device_class_name,
+            first_available=first_available,
+            name=name,
+            selectors=selectors,
+            tolerations=tolerations,
+        )
+
+
+class DeviceClaim(KubernetesObject):
+    """DeviceClaim defines how to request devices with a ResourceClaim."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    config: list[DeviceClaimConfiguration]
+    """ This field holds configuration for multiple potential drivers which could satisfy requests in this claim. It is ignored while allocating the claim. """
+    constraints: list[DeviceConstraint]
+    """ These constraints must be satisfied by the set of devices that get allocated for the claim. """
+    requests: list[DeviceRequest]
+    """ Requests represent individual requests for distinct devices which must all be satisfied. If empty, nothing needs to be allocated. """
+
+    def __init__(
+        self,
+        config: list[DeviceClaimConfiguration] = None,
+        constraints: list[DeviceConstraint] = None,
+        requests: list[DeviceRequest] = None,
+    ):
+        super().__init__(config=config, constraints=constraints, requests=requests)
+
+
+class DeviceClassConfiguration(KubernetesObject):
+    """DeviceClassConfiguration is used in DeviceClass."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    opaque: OpaqueDeviceConfiguration
+    """ Opaque provides driver-specific configuration parameters. """
+
+    def __init__(self, opaque: OpaqueDeviceConfiguration = None):
+        super().__init__(opaque=opaque)
+
+
+class DeviceClassSpec(KubernetesObject):
+    """DeviceClassSpec is used in a [DeviceClass] to define what can be allocated and how to configure it."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    config: list[DeviceClassConfiguration]
+    """
+    Config defines configuration parameters that apply to each device that is claimed via this class. Some classses may potentially be satisfied by multiple drivers, so each instance of a vendor configuration applies to exactly one driver.
+    
+    They are passed to the driver, but are not considered while allocating the claim.
+    """
+    selectors: list[DeviceSelector]
+    """ Each selector must be satisfied by a device which is claimed via this class. """
+
+    def __init__(self, config: list[DeviceClassConfiguration] = None, selectors: list[DeviceSelector] = None):
+        super().__init__(config=config, selectors=selectors)
+
+
+class DeviceClass(KubernetesApiResource):
+    """
+    DeviceClass is a vendor- or admin-provided resource that contains device configuration and selectors. It can be referenced in the device requests of a claim to apply these presets. Cluster scoped.
 
     This is an alpha type and requires enabling the DynamicResourceAllocation feature gate.
     """
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
     _api_group_ = "resource.k8s.io"
-    _kind_ = "PodSchedulingContext"
+    _kind_ = "DeviceClass"
     _scope_ = "namespace"
 
     _required_ = ["spec"]
 
     metadata: meta.ObjectMeta
     """ Standard object metadata """
-    spec: PodSchedulingContextSpec
-    """ Spec describes where resources for the Pod are needed. """
+    spec: DeviceClassSpec
+    """
+    Spec defines what can be allocated and how to configure it.
+    
+    This is mutable. Consumers have to be prepared for classes changing at any time, either because they get updated or replaced. Claim allocations are done once based on whatever was set in classes at the time of allocation.
+    
+    Changing the spec automatically increments the metadata.generation number.
+    """
 
-    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: PodSchedulingContextSpec = None):
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: DeviceClassSpec = None):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
-class ResourceClaimSchedulingStatus(KubernetesObject):
-    """ResourceClaimSchedulingStatus contains information about one particular ResourceClaim with "WaitForFirstConsumer" allocation mode."""
+class DeviceTaintSelector(KubernetesObject):
+    """DeviceTaintSelector defines which device(s) a DeviceTaintRule applies to. The empty selector matches all devices. Without a selector, no devices are matched."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    name: str
-    """ Name matches the pod.spec.resourceClaims[*].Name field. """
-    unsuitable_nodes: list[str]
+    device: str
     """
-    UnsuitableNodes lists nodes that the ResourceClaim cannot be allocated for.
+    If device is set, only devices with that name are selected. This field corresponds to slice.spec.devices[].name.
     
-    The size of this field is limited to 128, the same as for PodSchedulingSpec.PotentialNodes. This may get increased in the future, but not reduced.
+    Setting also driver and pool may be required to avoid ambiguity, but is not required.
+    """
+    device_class_name: str
+    """ If DeviceClassName is set, the selectors defined there must be satisfied by a device to be selected. This field corresponds to class.metadata.name. """
+    driver: str
+    """ If driver is set, only devices from that driver are selected. This fields corresponds to slice.spec.driver. """
+    pool: str
+    """
+    If pool is set, only devices in that pool are selected.
+    
+    Also setting the driver name may be useful to avoid ambiguity when different drivers use the same pool name, but this is not required because selecting pools from different drivers may also be useful, for example when drivers with node-local devices use the node name as their pool name.
+    """
+    selectors: list[DeviceSelector]
+    """ Selectors contains the same selection criteria as a ResourceClaim. Currently, CEL expressions are supported. All of these selectors must be satisfied. """
+
+    def __init__(
+        self,
+        device: str = None,
+        device_class_name: str = None,
+        driver: str = None,
+        pool: str = None,
+        selectors: list[DeviceSelector] = None,
+    ):
+        super().__init__(device=device, device_class_name=device_class_name, driver=driver, pool=pool, selectors=selectors)
+
+
+class DeviceTaintRuleSpec(KubernetesObject):
+    """DeviceTaintRuleSpec specifies the selector and one taint."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["taint"]
+
+    device_selector: DeviceTaintSelector
+    """ DeviceSelector defines which device(s) the taint is applied to. All selector criteria must be satified for a device to match. The empty selector matches all devices. Without a selector, no devices are matches. """
+    taint: DeviceTaint
+    """ The taint that gets applied to matching devices. """
+
+    def __init__(self, device_selector: DeviceTaintSelector = None, taint: DeviceTaint = None):
+        super().__init__(device_selector=device_selector, taint=taint)
+
+
+class DeviceTaintRule(KubernetesApiResource):
+    """DeviceTaintRule adds one taint to all devices which match the selector. This has the same effect as if the taint was specified directly in the ResourceSlice by the DRA driver."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+    _api_group_ = "resource.k8s.io"
+    _kind_ = "DeviceTaintRule"
+    _scope_ = "namespace"
+
+    _required_ = ["spec"]
+
+    metadata: meta.ObjectMeta
+    """ Standard object metadata """
+    spec: DeviceTaintRuleSpec
+    """
+    Spec specifies the selector and one taint.
+    
+    Changing the spec automatically increments the metadata.generation number.
     """
 
-    def __init__(self, name: str = None, unsuitable_nodes: list[str] = None):
-        super().__init__(name=name, unsuitable_nodes=unsuitable_nodes)
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: DeviceTaintRuleSpec = None):
+        super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
-class PodSchedulingContextStatus(KubernetesObject):
-    """PodSchedulingContextStatus describes where resources for the Pod can be allocated."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    resource_claims: list[ResourceClaimSchedulingStatus]
-    """ ResourceClaims describes resource availability for each pod.spec.resourceClaim entry where the corresponding ResourceClaim uses "WaitForFirstConsumer" allocation mode. """
-
-    def __init__(self, resource_claims: list[ResourceClaimSchedulingStatus] = None):
-        super().__init__(resource_claims=resource_claims)
-
-
-class ResourceClaimParametersReference(KubernetesObject):
-    """ResourceClaimParametersReference contains enough information to let you locate the parameters for a ResourceClaim. The object must be in the same namespace as the ResourceClaim."""
+class ExactDeviceRequest(KubernetesObject):
+    """ExactDeviceRequest is a request for one or more identical devices."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1beta2"
 
-    _required_ = ["kind", "name"]
+    _required_ = ["device_class_name"]
 
-    api_group: str
-    """ APIGroup is the group for the resource being referenced. It is empty for the core API. This matches the group in the APIVersion that is used when creating the resources. """
-    kind: str
-    """ Kind is the type of resource being referenced. This is the same value as in the parameter object's metadata, for example "ConfigMap". """
-    name: str
-    """ Name is the name of resource being referenced. """
+    admin_access: bool
+    """
+    AdminAccess indicates that this is a claim for administrative access to the device(s). Claims with AdminAccess are expected to be used for monitoring or other management services for a device.  They ignore all ordinary claims to the device with respect to access modes and any resource allocations.
+    
+    This is an alpha field and requires enabling the DRAAdminAccess feature gate. Admin access is disabled if this field is unset or set to false, otherwise it is enabled.
+    """
+    allocation_mode: str
+    """
+    AllocationMode and its related fields define how devices are allocated to satisfy this request. Supported values are:
+    
+    - ExactCount: This request is for a specific number of devices.
+      This is the default. The exact number is provided in the
+      count field.
+    
+    - All: This request is for all of the matching devices in a pool.
+      At least one device must exist on the node for the allocation to succeed.
+      Allocation will fail if some devices are already allocated,
+      unless adminAccess is requested.
+    
+    If AllocationMode is not specified, the default mode is ExactCount. If the mode is ExactCount and count is not specified, the default count is one. Any other requests must specify this field.
+    
+    More modes may get added in the future. Clients must refuse to handle requests with unknown modes.
+    """
+    count: int
+    """ Count is used only when the count mode is "ExactCount". Must be greater than zero. If AllocationMode is ExactCount and this field is not specified, the default is one. """
+    device_class_name: str
+    """
+    DeviceClassName references a specific DeviceClass, which can define additional configuration and selectors to be inherited by this request.
+    
+    A DeviceClassName is required.
+    
+    Administrators may use this to restrict which devices may get requested by only installing classes with selectors for permitted devices. If users are free to request anything without restrictions, then administrators can create an empty DeviceClass for users to reference.
+    """
+    selectors: list[DeviceSelector]
+    """ Selectors define criteria which must be satisfied by a specific device in order for that device to be considered for this request. All selectors must be satisfied for a device to be considered. """
+    tolerations: list[DeviceToleration]
+    """
+    If specified, the request's tolerations.
+    
+    Tolerations for NoSchedule are required to allocate a device which has a taint with that effect. The same applies to NoExecute.
+    
+    In addition, should any of the allocated devices get tainted with NoExecute after allocation and that effect is not tolerated, then all pods consuming the ResourceClaim get deleted to evict them. The scheduler will not let new pods reserve the claim while it has these tainted devices. Once all pods are evicted, the claim will get deallocated.
+    
+    The maximum number of tolerations is 16.
+    
+    This is an alpha field and requires enabling the DRADeviceTaints feature gate.
+    """
 
-    def __init__(self, api_group: str = None, kind: str = None, name: str = None):
-        super().__init__(api_group=api_group, kind=kind, name=name)
+    def __init__(
+        self,
+        admin_access: bool = None,
+        allocation_mode: str = None,
+        count: int = None,
+        device_class_name: str = None,
+        selectors: list[DeviceSelector] = None,
+        tolerations: list[DeviceToleration] = None,
+    ):
+        super().__init__(
+            admin_access=admin_access,
+            allocation_mode=allocation_mode,
+            count=count,
+            device_class_name=device_class_name,
+            selectors=selectors,
+            tolerations=tolerations,
+        )
 
 
 class ResourceClaimSpec(KubernetesObject):
-    """ResourceClaimSpec defines how a resource is to be allocated."""
+    """ResourceClaimSpec defines what is being requested in a ResourceClaim and how to configure it."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    _required_ = ["resource_class_name"]
+    devices: DeviceClaim
+    """ Devices defines how to request devices. """
 
-    allocation_mode: str
-    """ Allocation can start immediately or when a Pod wants to use the resource. "WaitForFirstConsumer" is the default. """
-    parameters_ref: ResourceClaimParametersReference
-    """
-    ParametersRef references a separate object with arbitrary parameters that will be used by the driver when allocating a resource for the claim.
-    
-    The object must be in the same namespace as the ResourceClaim.
-    """
-    resource_class_name: str
-    """ ResourceClassName references the driver and additional parameters via the name of a ResourceClass that was created as part of the driver deployment. """
-
-    def __init__(
-        self, allocation_mode: str = None, parameters_ref: ResourceClaimParametersReference = None, resource_class_name: str = None
-    ):
-        super().__init__(allocation_mode=allocation_mode, parameters_ref=parameters_ref, resource_class_name=resource_class_name)
+    def __init__(self, devices: DeviceClaim = None):
+        super().__init__(devices=devices)
 
 
 class ResourceClaim(KubernetesApiResource):
     """
-    ResourceClaim describes which resources are needed by a resource consumer. Its status tracks whether the resource has been allocated and what the resulting attributes are.
+    ResourceClaim describes a request for access to resources in the cluster, for use by workloads. For example, if a workload needs an accelerator device with specific properties, this is how that request is expressed. The status stanza tracks whether this claim has been satisfied and what specific resources have been allocated.
 
     This is an alpha type and requires enabling the DynamicResourceAllocation feature gate.
     """
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
     _api_group_ = "resource.k8s.io"
     _kind_ = "ResourceClaim"
     _scope_ = "namespace"
@@ -447,7 +1035,7 @@ class ResourceClaim(KubernetesApiResource):
     metadata: meta.ObjectMeta
     """ Standard object metadata """
     spec: ResourceClaimSpec
-    """ Spec describes the desired attributes of a resource that then needs to be allocated. It can only be set once when creating the ResourceClaim. """
+    """ Spec describes what is being requested and how to configure it. The spec is immutable. """
 
     def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ResourceClaimSpec = None):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
@@ -458,7 +1046,7 @@ class ResourceClaimConsumerReference(KubernetesObject):
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
     _required_ = ["name", "resource", "uid"]
 
@@ -475,79 +1063,35 @@ class ResourceClaimConsumerReference(KubernetesObject):
         super().__init__(api_group=api_group, name=name, resource=resource, uid=uid)
 
 
-class ResourceClaimParameters(KubernetesApiResource):
-    """ResourceClaimParameters defines resource requests for a ResourceClaim in an in-tree format understood by Kubernetes."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-    _api_group_ = "resource.k8s.io"
-    _kind_ = "ResourceClaimParameters"
-    _scope_ = "namespace"
-
-    driver_requests: list[DriverRequests]
-    """
-    DriverRequests describes all resources that are needed for the allocated claim. A single claim may use resources coming from different drivers. For each driver, this array has at most one entry which then may have one or more per-driver requests.
-    
-    May be empty, in which case the claim can always be allocated.
-    """
-    generated_from: ResourceClaimParametersReference
-    """ If this object was created from some other resource, then this links back to that resource. This field is used to find the in-tree representation of the claim parameters when the parameter reference of the claim refers to some unknown type. """
-    metadata: meta.ObjectMeta
-    """ Standard object metadata """
-    shareable: bool
-    """ Shareable indicates whether the allocated claim is meant to be shareable by multiple consumers at the same time. """
-
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        driver_requests: list[DriverRequests] = None,
-        generated_from: ResourceClaimParametersReference = None,
-        metadata: meta.ObjectMeta = None,
-        shareable: bool = None,
-    ):
-        super().__init__(
-            name, namespace, driver_requests=driver_requests, generated_from=generated_from, metadata=metadata, shareable=shareable
-        )
-
-
 class ResourceClaimStatus(KubernetesObject):
-    """ResourceClaimStatus tracks whether the resource has been allocated and what the resulting attributes are."""
+    """ResourceClaimStatus tracks whether the resource has been allocated and what the result of that was."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
     allocation: AllocationResult
-    """ Allocation is set by the resource driver once a resource or set of resources has been allocated successfully. If this is not specified, the resources have not been allocated yet. """
-    deallocation_requested: bool
-    """
-    DeallocationRequested indicates that a ResourceClaim is to be deallocated.
-    
-    The driver then must deallocate this claim and reset the field together with clearing the Allocation field.
-    
-    While DeallocationRequested is set, no new consumers may be added to ReservedFor.
-    """
-    driver_name: str
-    """ DriverName is a copy of the driver name from the ResourceClass at the time when allocation started. """
+    """ Allocation is set once the claim has been allocated successfully. """
+    devices: list[AllocatedDeviceStatus]
+    """ Devices contains the status of each device allocated for this claim, as reported by the driver. This can include driver-specific information. Entries are owned by their respective drivers. """
     reserved_for: list[ResourceClaimConsumerReference]
     """
-    ReservedFor indicates which entities are currently allowed to use the claim. A Pod which references a ResourceClaim which is not reserved for that Pod will not be started.
+    ReservedFor indicates which entities are currently allowed to use the claim. A Pod which references a ResourceClaim which is not reserved for that Pod will not be started. A claim that is in use or might be in use because it has been reserved must not get deallocated.
     
-    There can be at most 32 such reservations. This may get increased in the future, but not reduced.
+    In a cluster with multiple scheduler instances, two pods might get scheduled concurrently by different schedulers. When they reference the same ResourceClaim which already has reached its maximum number of consumers, only one pod can be scheduled.
+    
+    Both schedulers try to add their pod to the claim.status.reservedFor field, but only the update that reaches the API server first gets stored. The other one fails with an error and the scheduler which issued it knows that it must put the pod back into the queue, waiting for the ResourceClaim to become usable again.
+    
+    There can be at most 256 such reservations. This may get increased in the future, but not reduced.
     """
 
     def __init__(
         self,
         allocation: AllocationResult = None,
-        deallocation_requested: bool = None,
-        driver_name: str = None,
+        devices: list[AllocatedDeviceStatus] = None,
         reserved_for: list[ResourceClaimConsumerReference] = None,
     ):
-        super().__init__(
-            allocation=allocation, deallocation_requested=deallocation_requested, driver_name=driver_name, reserved_for=reserved_for
-        )
+        super().__init__(allocation=allocation, devices=devices, reserved_for=reserved_for)
 
 
 class ResourceClaimTemplateSpec(KubernetesObject):
@@ -555,12 +1099,12 @@ class ResourceClaimTemplateSpec(KubernetesObject):
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
     _required_ = ["spec"]
 
     metadata: meta.ObjectMeta
-    """ ObjectMeta may contain labels and annotations that will be copied into the PVC when creating it. No other fields are allowed and will be rejected during validation. """
+    """ ObjectMeta may contain labels and annotations that will be copied into the ResourceClaim when creating it. No other fields are allowed and will be rejected during validation. """
     spec: ResourceClaimSpec
     """ Spec for the ResourceClaim. The entire content is copied unchanged into the ResourceClaim that gets created from this template. The same fields as in a ResourceClaim are also valid here. """
 
@@ -569,11 +1113,15 @@ class ResourceClaimTemplateSpec(KubernetesObject):
 
 
 class ResourceClaimTemplate(KubernetesApiResource):
-    """ResourceClaimTemplate is used to produce ResourceClaim objects."""
+    """
+    ResourceClaimTemplate is used to produce ResourceClaim objects.
+
+    This is an alpha type and requires enabling the DynamicResourceAllocation feature gate.
+    """
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
     _api_group_ = "resource.k8s.io"
     _kind_ = "ResourceClaimTemplate"
     _scope_ = "namespace"
@@ -593,181 +1141,153 @@ class ResourceClaimTemplate(KubernetesApiResource):
         super().__init__(name, namespace, metadata=metadata, spec=spec)
 
 
-class ResourceClassParametersReference(KubernetesObject):
-    """ResourceClassParametersReference contains enough information to let you locate the parameters for a ResourceClass."""
+class ResourcePool(KubernetesObject):
+    """ResourcePool describes the pool that ResourceSlices belong to."""
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
 
-    _required_ = ["kind", "name"]
+    _required_ = ["generation", "name", "resource_slice_count"]
 
-    api_group: str
-    """ APIGroup is the group for the resource being referenced. It is empty for the core API. This matches the group in the APIVersion that is used when creating the resources. """
-    kind: str
-    """ Kind is the type of resource being referenced. This is the same value as in the parameter object's metadata. """
-    name: str
-    """ Name is the name of resource being referenced. """
-    namespace: str
-    """ Namespace that contains the referenced resource. Must be empty for cluster-scoped resources and non-empty for namespaced resources. """
-
-    def __init__(self, api_group: str = None, kind: str = None, name: str = None, namespace: str = None):
-        super().__init__(api_group=api_group, kind=kind, name=name, namespace=namespace)
-
-
-class ResourceClass(KubernetesApiResource):
+    generation: int
     """
-    ResourceClass is used by administrators to influence how resources are allocated.
+    Generation tracks the change in a pool over time. Whenever a driver changes something about one or more of the resources in a pool, it must change the generation in all ResourceSlices which are part of that pool. Consumers of ResourceSlices should only consider resources from the pool with the highest generation number. The generation may be reset by drivers, which should be fine for consumers, assuming that all ResourceSlices in a pool are updated to match or deleted.
+    
+    Combined with ResourceSliceCount, this mechanism enables consumers to detect pools which are comprised of multiple ResourceSlices and are in an incomplete state.
+    """
+    name: str
+    """
+    Name is used to identify the pool. For node-local devices, this is often the node name, but this is not required.
+    
+    It must not be longer than 253 characters and must consist of one or more DNS sub-domains separated by slashes. This field is immutable.
+    """
+    resource_slice_count: int
+    """
+    ResourceSliceCount is the total number of ResourceSlices in the pool at this generation number. Must be greater than zero.
+    
+    Consumers can use this to check whether they have seen all ResourceSlices belonging to the same pool.
+    """
+
+    def __init__(self, generation: int = None, name: str = None, resource_slice_count: int = None):
+        super().__init__(generation=generation, name=name, resource_slice_count=resource_slice_count)
+
+
+class ResourceSliceSpec(KubernetesObject):
+    """ResourceSliceSpec contains the information published by the driver in one ResourceSlice."""
+
+    __slots__ = ()
+
+    _api_version_ = "resource.k8s.io/v1alpha3"
+
+    _required_ = ["driver", "pool"]
+
+    all_nodes: bool
+    """
+    AllNodes indicates that all nodes have access to the resources in the pool.
+    
+    Exactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must be set.
+    """
+    devices: list[Device]
+    """
+    Devices lists some or all of the devices in this pool.
+    
+    Must not have more than 128 entries.
+    """
+    driver: str
+    """
+    Driver identifies the DRA driver providing the capacity information. A field selector can be used to list only ResourceSlice objects with a certain driver name.
+    
+    Must be a DNS subdomain and should end with a DNS domain owned by the vendor of the driver. This field is immutable.
+    """
+    node_name: str
+    """
+    NodeName identifies the node which provides the resources in this pool. A field selector can be used to list only ResourceSlice objects belonging to a certain node.
+    
+    This field can be used to limit access from nodes to ResourceSlices with the same node name. It also indicates to autoscalers that adding new nodes of the same type as some old node might also make new resources available.
+    
+    Exactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must be set. This field is immutable.
+    """
+    node_selector: core.NodeSelector
+    """
+    NodeSelector defines which nodes have access to the resources in the pool, when that pool is not limited to a single node.
+    
+    Must use exactly one term.
+    
+    Exactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must be set.
+    """
+    per_device_node_selection: bool
+    """
+    PerDeviceNodeSelection defines whether the access from nodes to resources in the pool is set on the ResourceSlice level or on each device. If it is set to true, every device defined the ResourceSlice must specify this individually.
+    
+    Exactly one of NodeName, NodeSelector, AllNodes, and PerDeviceNodeSelection must be set.
+    """
+    pool: ResourcePool
+    """ Pool describes the pool that this ResourceSlice belongs to. """
+    shared_counters: list[CounterSet]
+    """
+    SharedCounters defines a list of counter sets, each of which has a name and a list of counters available.
+    
+    The names of the SharedCounters must be unique in the ResourceSlice.
+    
+    The maximum number of SharedCounters is 32.
+    """
+
+    def __init__(
+        self,
+        all_nodes: bool = None,
+        devices: list[Device] = None,
+        driver: str = None,
+        node_name: str = None,
+        node_selector: core.NodeSelector = None,
+        per_device_node_selection: bool = None,
+        pool: ResourcePool = None,
+        shared_counters: list[CounterSet] = None,
+    ):
+        super().__init__(
+            all_nodes=all_nodes,
+            devices=devices,
+            driver=driver,
+            node_name=node_name,
+            node_selector=node_selector,
+            per_device_node_selection=per_device_node_selection,
+            pool=pool,
+            shared_counters=shared_counters,
+        )
+
+
+class ResourceSlice(KubernetesApiResource):
+    """
+    ResourceSlice represents one or more resources in a pool of similar resources, managed by a common driver. A pool may span more than one ResourceSlice, and exactly how many ResourceSlices comprise a pool is determined by the driver.
+
+    At the moment, the only supported resources are devices with attributes and capacities. Each device in a given pool, regardless of how many ResourceSlices, must have a unique name. The ResourceSlice in which a device gets published may change over time. The unique identifier for a device is the tuple <driver name>, <pool name>, <device name>.
+
+    Whenever a driver needs to update a pool, it increments the pool.Spec.Pool.Generation number and updates all ResourceSlices with that new number and new resource definitions. A consumer must only use ResourceSlices with the highest generation number and ignore all others.
+
+    When allocating all resources in a pool matching certain criteria or when looking for the best solution among several different alternatives, a consumer should check the number of ResourceSlices in a pool (included in each ResourceSlice) to determine whether its view of a pool is complete and if not, should wait until the driver has completed updating the pool.
+
+    For resources that are not local to a node, the node name is not set. Instead, the driver may use a node selector to specify where the devices are available.
 
     This is an alpha type and requires enabling the DynamicResourceAllocation feature gate.
     """
 
     __slots__ = ()
 
-    _api_version_ = "resource.k8s.io/v1alpha2"
-    _api_group_ = "resource.k8s.io"
-    _kind_ = "ResourceClass"
-    _scope_ = "namespace"
-
-    _required_ = ["driver_name"]
-
-    driver_name: str
-    """
-    DriverName defines the name of the dynamic resource driver that is used for allocation of a ResourceClaim that uses this class.
-    
-    Resource drivers have a unique name in forward domain order (acme.example.com).
-    """
-    metadata: meta.ObjectMeta
-    """ Standard object metadata """
-    parameters_ref: ResourceClassParametersReference
-    """ ParametersRef references an arbitrary separate object that may hold parameters that will be used by the driver when allocating a resource that uses this class. A dynamic resource driver can distinguish between parameters stored here and and those stored in ResourceClaimSpec. """
-    structured_parameters: bool
-    """ If and only if allocation of claims using this class is handled via structured parameters, then StructuredParameters must be set to true. """
-    suitable_nodes: core.NodeSelector
-    """
-    Only nodes matching the selector will be considered by the scheduler when trying to find a Node that fits a Pod when that Pod uses a ResourceClaim that has not been allocated yet.
-    
-    Setting this field is optional. If null, all nodes are candidates.
-    """
-
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        driver_name: str = None,
-        metadata: meta.ObjectMeta = None,
-        parameters_ref: ResourceClassParametersReference = None,
-        structured_parameters: bool = None,
-        suitable_nodes: core.NodeSelector = None,
-    ):
-        super().__init__(
-            name,
-            namespace,
-            driver_name=driver_name,
-            metadata=metadata,
-            parameters_ref=parameters_ref,
-            structured_parameters=structured_parameters,
-            suitable_nodes=suitable_nodes,
-        )
-
-
-class ResourceFilter(KubernetesObject):
-    """ResourceFilter is a filter for resources from one particular driver."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    driver_name: str
-    """ DriverName is the name used by the DRA driver kubelet plugin. """
-    named_resources: NamedResourcesFilter
-    """ NamedResources describes a resource filter using the named resources model. """
-
-    def __init__(self, driver_name: str = None, named_resources: NamedResourcesFilter = None):
-        super().__init__(driver_name=driver_name, named_resources=named_resources)
-
-
-class VendorParameters(KubernetesObject):
-    """VendorParameters are opaque parameters for one particular driver."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-
-    driver_name: str
-    """ DriverName is the name used by the DRA driver kubelet plugin. """
-    parameters: core.RawExtension
-    """ Parameters can be arbitrary setup parameters. They are ignored while allocating a claim. """
-
-    def __init__(self, driver_name: str = None, parameters: core.RawExtension = None):
-        super().__init__(driver_name=driver_name, parameters=parameters)
-
-
-class ResourceClassParameters(KubernetesApiResource):
-    """ResourceClassParameters defines resource requests for a ResourceClass in an in-tree format understood by Kubernetes."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
-    _api_group_ = "resource.k8s.io"
-    _kind_ = "ResourceClassParameters"
-    _scope_ = "namespace"
-
-    filters: list[ResourceFilter]
-    """ Filters describes additional contraints that must be met when using the class. """
-    generated_from: ResourceClassParametersReference
-    """ If this object was created from some other resource, then this links back to that resource. This field is used to find the in-tree representation of the class parameters when the parameter reference of the class refers to some unknown type. """
-    metadata: meta.ObjectMeta
-    """ Standard object metadata """
-    vendor_parameters: list[VendorParameters]
-    """ VendorParameters are arbitrary setup parameters for all claims using this class. They are ignored while allocating the claim. There must not be more than one entry per driver. """
-
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        filters: list[ResourceFilter] = None,
-        generated_from: ResourceClassParametersReference = None,
-        metadata: meta.ObjectMeta = None,
-        vendor_parameters: list[VendorParameters] = None,
-    ):
-        super().__init__(
-            name, namespace, filters=filters, generated_from=generated_from, metadata=metadata, vendor_parameters=vendor_parameters
-        )
-
-
-class ResourceSlice(KubernetesApiResource):
-    """ResourceSlice provides information about available resources on individual nodes."""
-
-    __slots__ = ()
-
-    _api_version_ = "resource.k8s.io/v1alpha2"
+    _api_version_ = "resource.k8s.io/v1alpha3"
     _api_group_ = "resource.k8s.io"
     _kind_ = "ResourceSlice"
     _scope_ = "namespace"
 
-    _required_ = ["driver_name"]
+    _required_ = ["spec"]
 
-    driver_name: str
-    """ DriverName identifies the DRA driver providing the capacity information. A field selector can be used to list only ResourceSlice objects with a certain driver name. """
     metadata: meta.ObjectMeta
     """ Standard object metadata """
-    named_resources: NamedResourcesResources
-    """ NamedResources describes available resources using the named resources model. """
-    node_name: str
+    spec: ResourceSliceSpec
     """
-    NodeName identifies the node which provides the resources if they are local to a node.
+    Contains the information published by the driver.
     
-    A field selector can be used to list only ResourceSlice objects with a certain node name.
+    Changing the spec automatically increments the metadata.generation number.
     """
 
-    def __init__(
-        self,
-        name: str,
-        namespace: str = None,
-        driver_name: str = None,
-        metadata: meta.ObjectMeta = None,
-        named_resources: NamedResourcesResources = None,
-        node_name: str = None,
-    ):
-        super().__init__(name, namespace, driver_name=driver_name, metadata=metadata, named_resources=named_resources, node_name=node_name)
+    def __init__(self, name: str, namespace: str = None, metadata: meta.ObjectMeta = None, spec: ResourceSliceSpec = None):
+        super().__init__(name, namespace, metadata=metadata, spec=spec)

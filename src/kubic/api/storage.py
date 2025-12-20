@@ -41,6 +41,14 @@ class CSIDriverSpec(KubernetesObject):
     
     Defaults to ReadWriteOnceWithFSType, which will examine each volume to determine if Kubernetes should modify ownership and permissions of the volume. With the default policy the defined fsGroup will only be applied if a fstype is defined and the volume's access mode contains ReadWriteOnce.
     """
+    node_allocatable_update_period_seconds: int
+    """
+    nodeAllocatableUpdatePeriodSeconds specifies the interval between periodic updates of the CSINode allocatable capacity for this driver. When set, both periodic updates and updates triggered by capacity-related failures are enabled. If not set, no updates occur (neither periodic nor upon detecting capacity-related failures), and the allocatable.count remains static. The minimum allowed value for this field is 10 seconds.
+    
+    This is an alpha feature and requires the MutableCSINodeAllocatableCount feature gate to be enabled.
+    
+    This field is mutable.
+    """
     pod_info_on_mount: bool
     """
     podInfoOnMount indicates this CSI volume driver requires additional pod information (like podName, podUID, etc.) during mount operations, if set to true. If set to false, pod information will not be passed on mount. Default is false.
@@ -107,6 +115,7 @@ class CSIDriverSpec(KubernetesObject):
         self,
         attach_required: bool = None,
         fs_group_policy: str = None,
+        node_allocatable_update_period_seconds: int = None,
         pod_info_on_mount: bool = None,
         requires_republish: bool = None,
         se_linux_mount: bool = None,
@@ -117,6 +126,7 @@ class CSIDriverSpec(KubernetesObject):
         super().__init__(
             attach_required=attach_required,
             fs_group_policy=fs_group_policy,
+            node_allocatable_update_period_seconds=node_allocatable_update_period_seconds,
             pod_info_on_mount=pod_info_on_mount,
             requires_republish=requires_republish,
             se_linux_mount=se_linux_mount,
@@ -355,7 +365,7 @@ class StorageClass(KubernetesApiResource):
 
 
 class VolumeAttachmentSource(KubernetesObject):
-    """VolumeAttachmentSource represents a volume that should be attached. Right now only PersistenVolumes can be attached via external attacher, in future we may allow also inline volumes in pods. Exactly one member can be set."""
+    """VolumeAttachmentSource represents a volume that should be attached. Right now only PersistentVolumes can be attached via external attacher, in the future we may allow also inline volumes in pods. Exactly one member can be set."""
 
     __slots__ = ()
 
@@ -422,13 +432,19 @@ class VolumeError(KubernetesObject):
 
     _api_version_ = "storage.k8s.io/v1"
 
+    error_code: int
+    """
+    errorCode is a numeric gRPC code representing the error encountered during Attach or Detach operations.
+    
+    This is an optional, alpha field that requires the MutableCSINodeAllocatableCount feature gate being enabled to be set.
+    """
     message: str
     """ message represents the error encountered during Attach or Detach operation. This string may be logged, so it should not contain sensitive information. """
     time: meta.Time
     """ time represents the time the error was encountered. """
 
-    def __init__(self, message: str = None, time: meta.Time = None):
-        super().__init__(message=message, time=time)
+    def __init__(self, error_code: int = None, message: str = None, time: meta.Time = None):
+        super().__init__(error_code=error_code, message=message, time=time)
 
 
 class VolumeAttachmentStatus(KubernetesObject):

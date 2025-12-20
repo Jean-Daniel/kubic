@@ -36,23 +36,24 @@ CUSTOM_TYPES = [
     TypeAlias(
         QualifiedName("JSON", "apiextensions.k8s.io", "v1"),
         'bool | int | float | str | list["JSON"] | dict[str, "JSON"] | None',
-        description="Represents any valid JSON value."),
-
+        description="Represents any valid JSON value.",
+    ),
     # Cannot use '|' for unions with type forward declaration.
     TypeAlias(
         QualifiedName("JSONSchemaPropsOrBool", "apiextensions.k8s.io", "v1"),
         't.Union["JSONSchemaProps", bool]',
-        description="Represents JSONSchemaProps or a boolean value. Defaults to true for the boolean property."),
-
+        description="Represents JSONSchemaProps or a boolean value. Defaults to true for the boolean property.",
+    ),
     TypeAlias(
         QualifiedName("JSONSchemaPropsOrArray", "apiextensions.k8s.io", "v1"),
         't.Union["JSONSchemaProps", list["JSONSchemaProps"]]',
-        description="Represents a value that can either be a JSONSchemaProps or an array of JSONSchemaProps. Mainly here for serialization purposes."),
-
+        description="Represents a value that can either be a JSONSchemaProps or an array of JSONSchemaProps. Mainly here for serialization purposes.",
+    ),
     TypeAlias(
         QualifiedName("JSONSchemaPropsOrStringArray", "apiextensions.k8s.io", "v1"),
         't.Union["JSONSchemaProps", list[str]]',
-        description="Represents a JSONSchemaProps or a string array."),
+        description="Represents a JSONSchemaProps or a string array.",
+    ),
 ]
 
 
@@ -184,9 +185,9 @@ class ApiParser(Parser):
                 if not group and fqn.group in ("core", "meta"):
                     group = fqn.group
                 assert fqn.group == group, f"extract group '{fqn.group}' does not match type declared group '{gvk[0]['group']}': {ref}"
-                assert (
-                        fqn.version == gvk[0]["version"]
-                ), f"extract version {fqn.version} does not match type declared version {gvk[0]['version']}"
+                assert fqn.version == gvk[0]["version"], (
+                    f"extract version {fqn.version} does not match type declared version {gvk[0]['version']}"
+                )
 
                 properties = schema["properties"]
                 # Trying to detect and skip Resource List
@@ -216,9 +217,7 @@ def import_api_types(schema: str, annotations: dict, *names) -> list[ApiGroup]:
     if annotations is None:
         # Default API Annotations
         annotations = {
-            "meta.v1.ObjectMeta": {
-                "managedFields": None
-            },
+            "meta.v1.ObjectMeta": {"managedFields": None},
             "meta.v1.APIGroup": {
                 # name conflicts with KubernetesApiResource.name constructor field
                 "name": {"snake_name": "group_name"}
@@ -227,9 +226,7 @@ def import_api_types(schema: str, annotations: dict, *names) -> list[ApiGroup]:
                 # This is core.RawExtension, but it creates a circular dependency
                 "object": "object"
             },
-            "apiextensions.k8s.io.v1.CustomResourceValidation": {
-                "openAPIV3Schema": {"snake_name": "openapi_v3_schema"}
-            }
+            "apiextensions.k8s.io.v1.CustomResourceValidation": {"openAPIV3Schema": {"snake_name": "openapi_v3_schema"}},
         }
 
     parser = ApiParser(schema, annotations)

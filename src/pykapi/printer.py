@@ -12,7 +12,8 @@ from .types import (
     ObjectType,
     TypeAlias,
     ApiResourceType,
-    AnonymousType, ResourceType,
+    AnonymousType,
+    ResourceType,
 )
 
 

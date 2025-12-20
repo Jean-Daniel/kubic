@@ -50,10 +50,7 @@ def import_k8s_api(args):
             with args.annotations.open("rb") as f:
                 annotations = yaml.load(f, CSafeLoader)
 
-        groups = import_api_types(
-            schema,
-            annotations
-        )
+        groups = import_api_types(schema, annotations)
 
         print_groups(groups, args.output, docstrings=args.docstrings)
     finally:
@@ -144,7 +141,6 @@ def read_crds(paths: list[pathlib.Path], crds: list):
 
 
 class AnnotationFactory:
-
     def __init__(self, dir_path: pathlib.Path):
         self.dir = dir_path
         self.cached = {}
@@ -213,7 +209,7 @@ def import_custom_resources(args):
 
             if not api_groups:
                 for api in client.ApisApi().get_api_versions().groups:
-                    group, _, _ = api.preferred_version.group_version.rpartition('/')
+                    group, _, _ = api.preferred_version.group_version.rpartition("/")
                     api_groups[group] = sorted(version.version for version in api.versions)
             v = api_groups.get(crd)
             if not v:
@@ -227,7 +223,7 @@ def import_custom_resources(args):
                 for rsrc in response.resources:
                     # - Skip already fetched (in case a CRD is declared in more than one version)
                     # - Names containing slash are usually status resource (ciliumnode/status…)
-                    if '/' in rsrc.name or rsrc.name in fetched:
+                    if "/" in rsrc.name or rsrc.name in fetched:
                         continue
                     fetched.add(rsrc.name)
                     crd_schema = v1.read_custom_resource_definition(f"{rsrc.name}.{crd}")
@@ -280,7 +276,7 @@ def main():
 
     schema = subparsers.add_parser("schema")
     schema.add_argument("--version", type=str, required=True)
-    schema.add_argument("-o", "--output", type=argparse.FileType('w', encoding='UTF-8'), default="-")
+    schema.add_argument("-o", "--output", type=argparse.FileType("w", encoding="UTF-8"), default="-")
 
     args = parser.parse_args()
     if args.action == "api":

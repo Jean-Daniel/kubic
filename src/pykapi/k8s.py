@@ -159,12 +159,17 @@ def type_name_from_property_name(name: str, is_plural: bool):
         return name.upper()
 
     # Unfortunately, it is possible
-    if '_' in name:
+    if "_" in name:
         name = snake_to_camel(name)
 
     # egress for instance
     low_name = name.lower()
-    if is_plural and name.endswith("s") and not name.endswith("ss") and not any(low_name.endswith(excluded) for excluded in PLURALS_EXCEPTION):
+    if (
+        is_plural
+        and name.endswith("s")
+        and not name.endswith("ss")
+        and not any(low_name.endswith(excluded) for excluded in PLURALS_EXCEPTION)
+    ):
         name = name.removesuffix("s")
         # just in case
         if len(name) <= 3:
@@ -179,5 +184,5 @@ def type_name_from_property_name(name: str, is_plural: bool):
 
     for ac in ACRONYMES:
         if name.startswith(ac):
-            return ac.upper() + name[len(ac):]
+            return ac.upper() + name[len(ac) :]
     return name[0].upper() + name[1:]

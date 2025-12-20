@@ -301,6 +301,8 @@ class DeleteOptions(KubernetesApiResource):
     """ When present, indicates that modifications should not be persisted. An invalid or unrecognized dryRun directive will result in an error response and no further processing of the request. Valid values are: - All: all dry run stages will be processed """
     grace_period_seconds: int
     """ The duration in seconds before the object should be deleted. Value must be non-negative integer. The value zero indicates delete immediately. If this value is nil, the default grace period for the specified type will be used. Defaults to a per object value if not specified. zero means delete immediately. """
+    ignore_store_read_error_with_cluster_breaking_potential: bool
+    """ if set to true, it will trigger an unsafe deletion of the resource in case the normal deletion flow fails with a corrupt object error. A resource is considered corrupt if it can not be retrieved from the underlying storage successfully because of a) its data can not be transformed e.g. decryption failure, or b) it fails to decode into an object. NOTE: unsafe deletion ignores finalizer constraints, skips precondition checks, and removes the object from the storage. WARNING: This may potentially break the cluster if the workload associated with the resource being unsafe-deleted relies on normal deletion flow. Use only if you REALLY know what you are doing. The default value is false, and the user must opt in to enable it """
     orphan_dependents: bool
     """ Deprecated: please use the PropagationPolicy, this field will be deprecated in 1.7. Should the dependent objects be orphaned. If true/false, the "orphan" finalizer will be added to/removed from the object's finalizers list. Either this field or PropagationPolicy may be set, but not both. """
     preconditions: Preconditions
@@ -314,6 +316,7 @@ class DeleteOptions(KubernetesApiResource):
         namespace: str = None,
         dry_run: list[str] = None,
         grace_period_seconds: int = None,
+        ignore_store_read_error_with_cluster_breaking_potential: bool = None,
         orphan_dependents: bool = None,
         preconditions: Preconditions = None,
         propagation_policy: str = None,
@@ -323,10 +326,31 @@ class DeleteOptions(KubernetesApiResource):
             namespace,
             dry_run=dry_run,
             grace_period_seconds=grace_period_seconds,
+            ignore_store_read_error_with_cluster_breaking_potential=ignore_store_read_error_with_cluster_breaking_potential,
             orphan_dependents=orphan_dependents,
             preconditions=preconditions,
             propagation_policy=propagation_policy,
         )
+
+
+class FieldSelectorRequirement(KubernetesObject):
+    """FieldSelectorRequirement is a selector that contains values, a key, and an operator that relates the key and values."""
+
+    __slots__ = ()
+
+    _api_version_ = "meta/v1"
+
+    _required_ = ["key", "operator"]
+
+    key: str
+    """ key is the field selector key that the requirement applies to. """
+    operator: str
+    """ operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. The list of operators may grow in the future. """
+    values: list[str]
+    """ values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. """
+
+    def __init__(self, key: str = None, operator: str = None, values: list[str] = None):
+        super().__init__(key=key, operator=operator, values=values)
 
 
 FieldsV1: t.TypeAlias = dict[str, t.Any]

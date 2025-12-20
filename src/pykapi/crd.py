@@ -106,9 +106,9 @@ def is_key_selector(properties: dict) -> bool:
         return False
 
     return (
-            properties["key"].get("type") == "string"
-            and properties["name"].get("type") == "string"
-            and properties["optional"].get("type") == "boolean"
+        properties["key"].get("type") == "string"
+        and properties["name"].get("type") == "string"
+        and properties["optional"].get("type") == "boolean"
     )
 
 
@@ -126,49 +126,111 @@ def is_secret_ref(properties: dict) -> bool:
     if "name" not in properties or "namespace" not in properties:
         return False
 
-    return (
-            properties["name"].get("type") == "string"
-            and properties["namespace"].get("type") == "string"
-    )
+    return properties["name"].get("type") == "string" and properties["namespace"].get("type") == "string"
 
 
 # loosy matching of common types based on field names only.
 BUILTIN_TYPE_MAPPING: dict[str, tuple[str, set[str]]] = {
     "affinity": ("io.k8s.api.core.v1.Affinity", {"nodeAffinity", "podAffinity", "podAntiAffinity"}),
     # containers: "resizePolicy",
-    "containers": ("io.k8s.api.core.v1.Container", {"args", "command", "env", "envFrom", "image", "imagePullPolicy",
-                                                    "lifecycle", "livenessProbe", "name", "ports", "readinessProbe",
-                                                    "resources", "securityContext", "startupProbe",
-                                                    "stdin", "stdinOnce", "terminationMessagePath", "terminationMessagePolicy",
-                                                    "tty", "volumeDevices", "volumeMounts", "workingDir"}),
+    "containers": (
+        "io.k8s.api.core.v1.Container",
+        {
+            "args",
+            "command",
+            "env",
+            "envFrom",
+            "image",
+            "imagePullPolicy",
+            "lifecycle",
+            "livenessProbe",
+            "name",
+            "ports",
+            "readinessProbe",
+            "resources",
+            "securityContext",
+            "startupProbe",
+            "stdin",
+            "stdinOnce",
+            "terminationMessagePath",
+            "terminationMessagePolicy",
+            "tty",
+            "volumeDevices",
+            "volumeMounts",
+            "workingDir",
+        },
+    ),
     "env": ("io.k8s.api.core.v1.EnvVar", {"name", "value", "valueFrom"}),
     "imagePullSecrets": ("io.k8s.api.core.v1.LocalObjectReference", {"name"}),
     "matchExpressions": ("io.k8s.api.core.v1.NodeSelectorRequirement", {"key", "operator", "values"}),
     # resources: "claims"
     "resources": ("io.k8s.api.core.v1.ResourceRequirements", {"limits", "requests"}),
-    "securityContext": ("io.k8s.api.core.v1.PodSecurityContext",
-                        {"fsGroup", "fsGroupChangePolicy", "runAsGroup", "runAsNonRoot", "runAsUser",
-                         "seLinuxOptions", "seccompProfile", "supplementalGroups", "sysctls", "windowsOptions"}),
+    "securityContext": (
+        "io.k8s.api.core.v1.PodSecurityContext",
+        {
+            "fsGroup",
+            "fsGroupChangePolicy",
+            "runAsGroup",
+            "runAsNonRoot",
+            "runAsUser",
+            "seLinuxOptions",
+            "seccompProfile",
+            "supplementalGroups",
+            "sysctls",
+            "windowsOptions",
+        },
+    ),
     "tolerations": ("io.k8s.api.core.v1.Toleration", {"effect", "key", "operator", "tolerationSeconds", "value"}),
     # topologySpreadConstraints: "matchLabelKeys", "nodeAffinityPolicy", "nodeTaintsPolicy"
-    "topologySpreadConstraints": ("io.k8s.api.core.v1.TopologySpreadConstraint",
-                                  {"labelSelector", "maxSkew", "minDomains", "topologyKey", "whenUnsatisfiable"}),
-    "volumeMounts": ("io.k8s.api.core.v1.VolumeMount", {"mountPath", "mountPropagation", "name", "readOnly",
-                                                        "subPath", "subPathExpr"}),
-    "volumes": ("io.k8s.api.core.v1.Volume", {
-        "awsElasticBlockStore", "azureDisk", "azureFile", "cephfs", "cinder", "configMap", "csi",
-        "downwardAPI", "emptyDir", "ephemeral", "fc", "flexVolume", "flocker", "gcePersistentDisk",
-        "gitRepo", "glusterfs", "hostPath", "iscsi", "name", "nfs", "persistentVolumeClaim",
-        "photonPersistentDisk", "portworxVolume", "projected", "quobyte", "rbd", "scaleIO",
-        "secret", "storageos", "vsphereVolume", }),
+    "topologySpreadConstraints": (
+        "io.k8s.api.core.v1.TopologySpreadConstraint",
+        {"labelSelector", "maxSkew", "minDomains", "topologyKey", "whenUnsatisfiable"},
+    ),
+    "volumeMounts": ("io.k8s.api.core.v1.VolumeMount", {"mountPath", "mountPropagation", "name", "readOnly", "subPath", "subPathExpr"}),
+    "volumes": (
+        "io.k8s.api.core.v1.Volume",
+        {
+            "awsElasticBlockStore",
+            "azureDisk",
+            "azureFile",
+            "cephfs",
+            "cinder",
+            "configMap",
+            "csi",
+            "downwardAPI",
+            "emptyDir",
+            "ephemeral",
+            "fc",
+            "flexVolume",
+            "flocker",
+            "gcePersistentDisk",
+            "gitRepo",
+            "glusterfs",
+            "hostPath",
+            "iscsi",
+            "name",
+            "nfs",
+            "persistentVolumeClaim",
+            "photonPersistentDisk",
+            "portworxVolume",
+            "projected",
+            "quobyte",
+            "rbd",
+            "scaleIO",
+            "secret",
+            "storageos",
+            "vsphereVolume",
+        },
+    ),
 }
 BUILTIN_TYPE_MAPPING["initContainers"] = BUILTIN_TYPE_MAPPING["containers"]
 
 
 def is_volume_claim_spec(properties: dict):
-    return all(ty in properties for ty in
-               {"accessModes", "dataSource", "dataSourceRef", "resources", "selector",
-                "storageClassName", "volumeMode", "volumeName"})
+    return all(
+        ty in properties
+        for ty in {"accessModes", "dataSource", "dataSourceRef", "resources", "selector", "storageClassName", "volumeMode", "volumeName"}
+    )
 
 
 def is_volume_claim_template(properties: dict):
@@ -183,9 +245,21 @@ def is_volume_claim_template(properties: dict):
 
 
 def is_probe(properties: dict):
-    return all(ty in properties for ty in
-               {"exec", "failureThreshold", "grpc", "httpGet", "initialDelaySeconds", "periodSeconds",
-                "successThreshold", "tcpSocket", "terminationGracePeriodSeconds", "timeoutSeconds"})
+    return all(
+        ty in properties
+        for ty in {
+            "exec",
+            "failureThreshold",
+            "grpc",
+            "httpGet",
+            "initialDelaySeconds",
+            "periodSeconds",
+            "successThreshold",
+            "tcpSocket",
+            "terminationGracePeriodSeconds",
+            "timeoutSeconds",
+        }
+    )
 
 
 # Trying to infer custom type
