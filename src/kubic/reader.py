@@ -5,7 +5,7 @@ import typing as t
 from importlib.machinery import ModuleSpec
 from types import ModuleType
 
-from . import KubernetesObject, KubernetesApiResource, _TypedList
+from . import KubernetesApiResource, KubernetesObject, _TypedList
 
 R = t.TypeVar("R", bound=KubernetesApiResource)
 
@@ -100,10 +100,10 @@ KubernetesApiResourceTy = t.TypeVar("KubernetesApiResourceTy", bound=KubernetesA
 
 
 def resolve_api_resource(api_version: str, kind: str) -> t.Type[R] | None:
-    group, sep, _ = api_version.partition('/')
+    group, sep, _ = api_version.partition("/")
     # special case for 'v1' -> means 'core/v1' and core is empty group
     if not sep:
-        group = ''
+        group = ""
     return _rsrc_index.get(_ObjID(group, kind.lower()))
 
 

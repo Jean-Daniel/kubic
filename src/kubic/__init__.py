@@ -126,11 +126,12 @@ def _create_generic_type(hint):
 
 
 class KubernetesObject(dict, metaclass=_K8SResourceMeta):
-    __slots__ = ()
+    __slots__ = ("__dirty",)
     _field_names_ = {}
 
     def __init__(self, **kwargs):
         super().__init__()
+        self.__dirty = False
         for key, value in kwargs.items():
             if value is not None:
                 setattr(self, key, value)
@@ -180,6 +181,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         except AttributeError:
             pass
 
+        self.__dirty = True
         # kubernetes does not uses the concept of null value.
         # So instead of setting to None, remove the entry.
         if value is None:
