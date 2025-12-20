@@ -2,12 +2,16 @@ import typing as t
 import unittest
 from collections.abc import MutableSequence
 
+import yaml
+
 import kubic.api
 import kubic.crds
 from kubic import KubernetesApiResource, KubernetesObject
+from kubic.api import apps
 from kubic.api.apps import Deployment
 from kubic.api.meta import ObjectMeta
 from kubic.reader import create_api_resource, register_modules
+from kubic.writer import KubernetesObjectDumper
 
 
 class LeaveType(KubernetesObject):
@@ -65,10 +69,10 @@ class ResourceTest(unittest.TestCase):
         obj = SpecialProperty()
 
         # assert does not raise on access internal property
-        hints = obj.__annotations__
+        _ = obj.__annotations__
         with self.assertRaises(AttributeError):
             # make sure base class are properly defined to avoid creation of __dict__ (using __slots__)
-            hints = obj.__dict__
+            _ = obj.__dict__
 
     def test_get(self):
         obj = BaseType()
@@ -153,7 +157,7 @@ class ResourceTest(unittest.TestCase):
     def test_validation(self):
         base = BaseType()
         with self.assertRaises(AttributeError):
-            a = base.unknown
+            _ = base.unknown
 
         with self.assertRaises(AttributeError):
             base.spec.unknown = ""
@@ -232,3 +236,24 @@ class LoaderTest(unittest.TestCase):
         self.assertEqual("com.xenonium", CustomResource.group)
         self.assertEqual("com.xenonium/v1", CustomResource.api_version)
         self.assertTrue(CustomResource.namespaced)
+
+
+class WriterTest(unittest.TestCase):
+    def test_writer(self):
+        rsrc = apps.Deployment(name="myapp", namespace="default")
+        rsrc.metadata.labels["foo"] = "bar"
+
+        _ = rsrc.metadata.annotations
+        rsrc.spec.paused = True
+        _ = rsrc.spec.template
+        rsrc.spec.selector = {}
+
+        value = yaml.dump(rsrc, Dumper=KubernetesObjectDumper, sort_keys=True)
+        data = yaml.load(value, yaml.CSafeLoader)
+
+        self.assertEqual(data["metadata"]["labels"]["foo"], "bar")
+        self.assertNotIn("annotations", data["metadata"])
+
+        self.assertNotIn("template", data["spec"])
+        self.assertIn("selector", data["spec"])
+        self.assertTrue(data["spec"]["paused"])

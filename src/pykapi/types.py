@@ -171,7 +171,7 @@ class AnonymousType(ObjectType):
         return self.parent.fqn.name + self._basename
 
     def __eq__(self, other):
-        return type(self) == type(other) and self.name == other.name and super().__eq__(other)
+        return type(self) is type(other) and self.name == other.name and super().__eq__(other)
 
     def __str__(self):
         return self.name

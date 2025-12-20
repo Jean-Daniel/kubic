@@ -39,7 +39,7 @@ def camel_to_snake(name: str) -> str:
     return "".join("_" + i.lower() if i.isupper() else i for i in name)
 
 
-R = t.TypeVar("R", bound="K8SResource")
+R = t.TypeVar("R", bound="KubernetesObject")
 
 
 class _TypedList(list):
@@ -106,6 +106,10 @@ class _TypedList(list):
         return self
 
 
+# RawDict is used to define if a dict has been implicitly created by __get__ access, or explicitly set by the user.
+class RawDict(dict): ...
+
+
 def _create_generic_type(hint):
     origin = _get_generic_origin(hint)
     if not origin or origin is t.Union:
@@ -120,7 +124,7 @@ def _create_generic_type(hint):
 
     if origin is dict:
         # assumes all parameters are base types
-        return dict()
+        return RawDict()
 
     return None
 
@@ -146,6 +150,9 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         return super().__contains__(camel_name)
 
     def __getattr__(self, item):
+        if item == "__dirty":
+            return self.__dirty
+
         # check if this is a managed field.
         hint = self._item_hint(item)
         # convert the python field name into kubernetes name
@@ -253,6 +260,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         setattr(self, key, value)
 
     def update(self, values: dict = None, **kwargs):
+        self.__dirty = True
         if values:
             # assume iterable of pairs if not a dict
             items = values.items() if isinstance(values, Mapping) else values
