@@ -110,6 +110,9 @@ class _TypedList(list):
 class RawDict(dict): ...
 
 
+class RawList(list): ...
+
+
 def _create_generic_type(hint):
     origin = _get_generic_origin(hint)
     if not origin or origin is t.Union:
@@ -120,7 +123,7 @@ def _create_generic_type(hint):
             param = hint.__args__[0]
             if not _is_generic_type(param) and issubclass(param, KubernetesObject):
                 return _TypedList(param)
-        return list()
+        return RawList()
 
     if origin is dict:
         # assumes all parameters are base types

@@ -265,3 +265,17 @@ class WriterTest(unittest.TestCase):
         self.assertIn("matchLabels", data["spec"]["selector"])
         self.assertEqual(1, len(data["spec"]["selector"]["matchExpressions"]))
         self.assertTrue(data["spec"]["paused"])
+
+    def test_writer_access(self):
+        rsrc = apps.Deployment(name="myapp", namespace="default")
+        rsrc.spec.replicas = 1
+        if not rsrc.spec.selector.match_labels or rsrc.spec.selector.match_expressions:
+            pass
+
+        rsrc.metadata.finalizers.append("final")
+
+        value = yaml.dump(rsrc, Dumper=KubernetesObjectDumper, sort_keys=True)
+        data = yaml.load(value, yaml.CSafeLoader)
+
+        self.assertNotIn("selector", data["spec"])
+        self.assertIn("finalizers", data["metadata"])
