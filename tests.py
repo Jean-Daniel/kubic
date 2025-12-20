@@ -8,8 +8,8 @@ import kubic.api
 import kubic.crds
 from kubic import KubernetesApiResource, KubernetesObject
 from kubic.api import apps
-from kubic.api.apps import Deployment
-from kubic.api.meta import ObjectMeta
+from kubic.api.apps import Deployment, DeploymentStrategy
+from kubic.api.meta import LabelSelectorRequirement, ObjectMeta
 from kubic.reader import create_api_resource, register_modules
 from kubic.writer import KubernetesObjectDumper
 
@@ -248,7 +248,9 @@ class WriterTest(unittest.TestCase):
         rsrc.spec.template.spec.hostname = "example.com"
         _ = rsrc.spec.template.metadata.annotations
         rsrc.spec.template.metadata.labels["foo"] = "bar"
-        rsrc.spec.selector = {}
+        rsrc.spec.selector.match_labels = {}
+        rsrc.spec.selector.match_expressions = [LabelSelectorRequirement()]
+        rsrc.spec.strategy = DeploymentStrategy()
 
         value = yaml.dump(rsrc, Dumper=KubernetesObjectDumper, sort_keys=True)
         data = yaml.load(value, yaml.CSafeLoader)
@@ -259,5 +261,7 @@ class WriterTest(unittest.TestCase):
 
         self.assertNotIn("annotations", data["spec"]["template"]["metadata"])
         self.assertEqual(data["spec"]["template"]["metadata"]["labels"]["foo"], "bar")
-        self.assertIn("selector", data["spec"])
+        self.assertIn("strategy", data["spec"])
+        self.assertIn("matchLabels", data["spec"]["selector"])
+        self.assertEqual(1, len(data["spec"]["selector"]["matchExpressions"]))
         self.assertTrue(data["spec"]["paused"])

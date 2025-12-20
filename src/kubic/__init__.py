@@ -135,7 +135,8 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
 
     def __init__(self, **kwargs):
         super().__init__()
-        self.__dirty = False
+        # defaults to True, to not have to handle all case where the objet is created by the API user.
+        self.__dirty = True
         for key, value in kwargs.items():
             if value is not None:
                 setattr(self, key, value)
@@ -174,10 +175,14 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
 
         # workaround broken PersistentVolumeClaim used as subresource.
         if issubclass(hint, KubernetesApiResource):
-            self[camel_name] = value = hint(name="")
+            value = hint(name="")
+            value.__dirty = False
+            self[camel_name] = value
         # handle resource instances
         elif issubclass(hint, KubernetesObject):
-            self[camel_name] = value = hint()
+            value = hint()
+            value.__dirty = False
+            self[camel_name] = value
 
         return value
 
