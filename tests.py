@@ -245,7 +245,8 @@ class WriterTest(unittest.TestCase):
 
         _ = rsrc.metadata.annotations
         rsrc.spec.paused = True
-        _ = rsrc.spec.template
+        rsrc.spec.template.spec.hostname = "example.com"
+        _ = rsrc.spec.template.metadata.annotations
         rsrc.spec.selector = {}
 
         value = yaml.dump(rsrc, Dumper=KubernetesObjectDumper, sort_keys=True)
@@ -253,7 +254,8 @@ class WriterTest(unittest.TestCase):
 
         self.assertEqual(data["metadata"]["labels"]["foo"], "bar")
         self.assertNotIn("annotations", data["metadata"])
+        self.assertIn("template", data["spec"])
 
-        self.assertNotIn("template", data["spec"])
+        self.assertNotIn("metadata", data["spec"]["template"])
         self.assertIn("selector", data["spec"])
         self.assertTrue(data["spec"]["paused"])
