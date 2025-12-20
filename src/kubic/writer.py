@@ -62,6 +62,9 @@ def _is_dirty(rsrc: object):
         for v in rsrc.values():
             if _is_dirty(v):
                 return True
+    elif isinstance(rsrc, RawDict):
+        if len(rsrc) > 0:
+            return True
     elif isinstance(rsrc, list):
         for v in rsrc:
             if _is_dirty(v):
