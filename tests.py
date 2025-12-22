@@ -273,9 +273,15 @@ class WriterTest(unittest.TestCase):
             pass
 
         rsrc.metadata.finalizers.append("final")
+        rsrc.spec.template.spec.containers += {}
+        _ = rsrc.spec.template.spec.containers[0].ports
+        rsrc.spec.template.spec.containers[0].env_from = []
+
 
         value = yaml.dump(rsrc, Dumper=KubernetesObjectDumper, sort_keys=True)
         data = yaml.load(value, yaml.CSafeLoader)
 
         self.assertNotIn("selector", data["spec"])
         self.assertIn("finalizers", data["metadata"])
+        self.assertNotIn("ports", data["spec"]["template"]["spec"]["containers"][0])
+        self.assertIn("envFrom", data["spec"]["template"]["spec"]["containers"][0])

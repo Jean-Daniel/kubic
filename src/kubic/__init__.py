@@ -43,13 +43,18 @@ R = t.TypeVar("R", bound="KubernetesObject")
 
 
 class _TypedList(list):
-    __slots__ = ("type",)
+    __slots__ = ("type", "__dirty")
 
-    def __init__(self, ty: t.Type[R], values: Iterable | None = None):
+    def __init__(self, ty: t.Type[R], dirty: bool, values: Iterable | None = None):
         super().__init__()
         self.type: t.Type[R] = ty
+        self.__dirty = dirty
         if values:
             self.extend(values)
+
+    @property
+    def is_dirty(self):
+        return self.__dirty
 
     def _cast(self, obj):
         if isinstance(obj, self.type):
@@ -86,7 +91,7 @@ class _TypedList(list):
             super().__setitem__(key, self._cast(value))
 
     def __add__(self, other: list):
-        result = _TypedList(self.type)
+        result = _TypedList(self.type, True)
         result.extend(self)
         result.extend(other)
         return result
@@ -122,7 +127,8 @@ def _create_generic_type(hint):
         if hint.__args__:
             param = hint.__args__[0]
             if not _is_generic_type(param) and issubclass(param, KubernetesObject):
-                return _TypedList(param)
+                lst = _TypedList(param, False)
+                return lst
         return RawList()
 
     if origin is dict:
@@ -209,7 +215,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
             if (origin is list) and hint.__args__:
                 param = hint.__args__[0]
                 if issubclass(param, KubernetesObject):
-                    value = _TypedList(param, value)
+                    value = _TypedList(param, True, value)
         elif issubclass(hint, KubernetesObject) and not isinstance(value, hint):
             # assume this is a dict and convert it into object
             value = hint.from_dict(value)
