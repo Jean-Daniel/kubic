@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kubic"
-version = "3.1.5"
+version = "3.2.0"
 requires-python = ">=3.12"
 description = "Kubernetes API wrapper"
 keywords = ["kubernetes"]

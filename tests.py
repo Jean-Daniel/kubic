@@ -11,7 +11,6 @@ from kubic.api import apps
 from kubic.api.apps import Deployment, DeploymentStrategy
 from kubic.api.meta import LabelSelectorRequirement, ObjectMeta
 from kubic.reader import create_api_resource, register_modules
-from kubic.writer import KubernetesObjectDumper
 
 
 class LeaveType(KubernetesObject):
@@ -252,7 +251,7 @@ class WriterTest(unittest.TestCase):
         rsrc.spec.selector.match_expressions = [LabelSelectorRequirement()]
         rsrc.spec.strategy = DeploymentStrategy()
 
-        value = yaml.dump(rsrc, Dumper=KubernetesObjectDumper, sort_keys=True)
+        value = yaml.dump(rsrc, Dumper=yaml.CSafeDumper, sort_keys=True)
         data = yaml.load(value, yaml.CSafeLoader)
 
         self.assertEqual(data["metadata"]["labels"]["foo"], "bar")
@@ -277,8 +276,7 @@ class WriterTest(unittest.TestCase):
         _ = rsrc.spec.template.spec.containers[0].ports
         rsrc.spec.template.spec.containers[0].env_from = []
 
-
-        value = yaml.dump(rsrc, Dumper=KubernetesObjectDumper, sort_keys=True)
+        value = yaml.dump(rsrc, Dumper=yaml.CSafeDumper, sort_keys=True)
         data = yaml.load(value, yaml.CSafeLoader)
 
         self.assertNotIn("selector", data["spec"])
