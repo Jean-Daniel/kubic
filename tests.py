@@ -128,7 +128,7 @@ class ResourceTest(unittest.TestCase):
         obj |= {"spec": {"value": "hello"}}
         self.assertEqual(obj.spec.value, "hello")
 
-        obj.spec.update(leave={"value": "world"}, leaves=[{"value": 42}])
+        obj.spec.update({"leave": {"value": "world"}, "leaves": [{"value": 42}]})
         self.assertEqual(obj.spec.leave.value, "world")
         self.assertEqual(obj.spec.leaves[0].value, 42)
         self.assertEqual(obj, obj.update({}))
@@ -229,6 +229,21 @@ class LoaderTest(unittest.TestCase):
         self.assertEqual("apps/v3", rsrc.api_version)
         self.assertEqual("Deployment", rsrc.kind)
         self.assertEqual("apps", rsrc.group)
+
+    def test_create_relaxed(self):
+        spec = {"apiVersion": "apps/v1", "kind": "Deployment", "spec": {"extra": "bar"}, "metadata": {"name": "myobject"}, "status": {}}
+        self.assertRaises(AttributeError, create_api_resource, [spec])
+        rsrc = create_api_resource(spec, strict=False)
+        # The extra value is not accessible, but should still be serialized
+        value = yaml.dump(rsrc, Dumper=yaml.CSafeDumper, sort_keys=True)
+        data = yaml.load(value, yaml.CSafeLoader)
+        self.assertEqual(data["spec"]["extra"], "bar")
+
+    def test_create_generic(self):
+        spec = {"apiVersion": "apps/v1", "kind": "Deployment", "spec": {"extra": "bar"}, "metadata": {"name": "myobject"}, "status": {}}
+        self.assertRaises(AttributeError, create_api_resource, [spec])
+        rsrc = create_api_resource(spec, resolve=False)
+        self.assertEqual(rsrc.spec["extra"], "bar")
 
     def test_metaclass(self):
         self.assertEqual("CustomResource", CustomResource.kind)

@@ -107,7 +107,7 @@ def resolve_api_resource(api_version: str, kind: str) -> t.Type[R] | None:
     return _rsrc_index.get(_ObjID(group, kind.lower()))
 
 
-def create_api_resource(obj: dict) -> KubernetesApiResourceTy:
+def create_api_resource(obj: dict, strict: bool = True, resolve: bool = True) -> KubernetesApiResourceTy:
     if isinstance(obj, KubernetesApiResource):
         return obj
 
@@ -116,7 +116,7 @@ def create_api_resource(obj: dict) -> KubernetesApiResourceTy:
     if not api_version or not kind:
         raise ValueError("K8S resource must have 'apiVersion' and 'kind'")
 
-    rsrc = resolve_api_resource(api_version, kind)
+    rsrc = resolve_api_resource(api_version, kind) if resolve else None
     # in case of version discrepancy, fallback to AnyApiResource
     if not rsrc or rsrc.api_version != api_version:
         # assuming that object that contains items instead of spec is a ResourceList (ConfigMapList, …)
@@ -124,4 +124,4 @@ def create_api_resource(obj: dict) -> KubernetesApiResourceTy:
         if items:
             return AnyResourceList(api_version, kind, "", items=[create_api_resource(item) for item in items])
         return AnyApiResource(api_version, kind, "").update(obj)
-    return rsrc("").update(obj)
+    return rsrc("").update(obj, strict=strict)

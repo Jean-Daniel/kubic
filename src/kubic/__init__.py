@@ -251,7 +251,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
             self._attribute_error(key)
         return hint
 
-    def _update(self, key, value):
+    def _update(self, key: str, value, strict: bool):
         # Dict accepts keys in both python syntax and using the kubernetes case
         # it also accepts keyword properties with or without the trailing '_'.
         factory = self._hints_().get(key)
@@ -260,13 +260,17 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
             factory = self._hints_().get(snake_name)
             if factory:
                 key = snake_name
-            else:
+            elif strict:
                 self._attribute_error(key)
+            else:
+                # raw value
+                super().__setitem__(key, value)
+                return
 
         if not _is_generic_type(factory):
             if issubclass(factory, KubernetesObject):
                 # merge recursively
-                getattr(self, key).update(value)
+                getattr(self, key).update(value, strict=strict)
                 return
             elif issubclass(factory, dict):
                 # merge recursively
@@ -275,17 +279,13 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         # else set the value
         setattr(self, key, value)
 
-    def update(self, values: dict = None, **kwargs):
+    def update(self, values: dict = None, /, strict: bool = True):
         self.__dirty = True
         if values:
             # assume iterable of pairs if not a dict
             items = values.items() if isinstance(values, Mapping) else values
             for key, value in items:
-                self._update(key, value)
-
-        if kwargs:
-            for key, value in kwargs.items():
-                self._update(key, value)
+                self._update(key, value, strict)
 
         return self
 
@@ -388,7 +388,7 @@ class KubernetesApiResource(KubernetesObject, metaclass=_K8SApiResourceMeta):
         return getattr(type(self), "_scope_", None) == "namespace"
 
     # Special case to be able to pass a whole object dict and don't have to worry about ignored fields
-    def _update(self, key, value):
+    def _update(self, key, value, strict):
         if key == "api_version" or key == "apiVersion":
             if value.lower() != self.api_version.lower():
                 raise AttributeError(f"apiVersion is a read-only attribute ({self.api_version} ≠ {value})")
@@ -406,7 +406,7 @@ class KubernetesApiResource(KubernetesObject, metaclass=_K8SApiResourceMeta):
             value = dict(value)
             del value["managedFields"]
 
-        return super()._update(key, value)
+        return super()._update(key, value, strict)
 
 
 # ================================================
