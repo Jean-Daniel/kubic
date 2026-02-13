@@ -1,0 +1,105 @@
+module: envoy
+
+patches:
+  Container:
+    securityContext: "io.k8s.api.core.v1.SecurityContext"
+
+  EnvoyDaemonSet:
+    strategy: "io.k8s.api.apps.v1.DaemonSetUpdateStrategy"
+
+  EnvoyDeployment:
+    strategy: "io.k8s.api.apps.v1.DeploymentStrategy"
+
+  APIKeyAuth:
+    credentialRefs: { type_name: "SecretObjectReference" }
+
+  BackendTLS:
+    clientCertificateRef: { type_name: "SecretObjectReference" }
+
+  BackendSpecTLS:
+    caCertificateRefs: { type_name: "LocalTargetRef" }
+    clientCertificateRef: { type_name: "SecretObjectReference" }
+
+  BasicAuth:
+    users: { type_name: "SecretObjectReference" }
+
+  ClientValidation:
+    crl: { type_name: "CrlContext" }
+    caCertificateRefs: { type_name: "SecretObjectReference" }
+
+  CredentialInjection:
+    credential: { type_name: "InjectedCredential" }
+
+  CrlContext:
+    refs: { type_name: "SecretObjectReference" }
+
+  DirectResponse:
+    body: { type_name: "ResponseBody" }
+    header: { type_name: "HeaderModifier" }
+
+  EnvoyPatchPolicySpec:
+    targetRef: { type_name: "LocalTargetRef" }
+
+  GlobalRateLimit:
+    rules: { type_name: "RateLimitRule" }
+
+  LUA:
+    valueRef: { type_name: "LocalTargetRef" }
+
+  LocalJWKS:
+    valueRef: { type_name: "LocalTargetRef" }
+
+  LocalRateLimit:
+    rules: { type_name: "RateLimitRule" }
+
+  Headers:
+    earlyRequestHeaders: { type_name: "HeaderModifier" }
+    lateResponseHeaders: { type_name: "HeaderModifier" }
+
+  HeaderModifier:
+    add: { type_name: "HeaderValue" }
+    set: { type_name: "HeaderValue" }
+
+  HTTPWasmCodeSource:
+    tls: { type_name: "HTTPWasmCodeSourceTLS" }
+
+  HTTPWasmCodeSourceTLS:
+    caCertificateRef: { type_name: "SecretObjectReference" }
+
+  ImageWasmCodeSource:
+    pullSecretRef: { type_name: "SecretObjectReference" }
+
+  InjectedCredential:
+    valueRef: { type_name: "SecretObjectReference" }
+
+  Metrics:
+    matches: { type_name: "Match" }
+
+  OIDC:
+    clientIDRef: { type_name: "SecretObjectReference" }
+    clientSecret: { type_name: "SecretObjectReference" }
+
+  RateLimit:
+    global: { type_name: "GlobalRateLimit" }
+    local: { type_name: "LocalRateLimit" }
+
+  ResponseBody:
+    valueRef: { type_name: "LocalTargetRef" }
+
+  ResponseOverrideResponse:
+    body: { type_name: "ResponseBody" }
+    header: { type_name: "HeaderModifier" }
+
+  SecurityPolicySpec:
+    cors: "gateway.networking.k8s.io.v1.Cors"
+    oidc: { type_name: "OIDC" }
+
+  Wasm:
+    code: { type_name: "WasmCodeSource" }
+
+  WasmCodeSource:
+    http: { type_name: "HTTPWasmCodeSource" }
+    image: { type_name: "ImageWasmCodeSource" }
+
+  WasmCodeSourceTLSConfig:
+    caCertificateRef: { type_name: "SecretObjectReference" }

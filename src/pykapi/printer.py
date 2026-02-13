@@ -1,26 +1,34 @@
+import pathlib
 import sys
 import typing as t
+from collections import defaultdict
+
+from kubic import (
+    camel_to_snake as naive_camel_to_snake,
+)
 
 # noinspection PyProtectedMember
 from kubic import (
     snake_to_camel as naive_snake_to_camel,
-    camel_to_snake as naive_camel_to_snake,
 )
+
+from .annotations import AnnotationProvider
 from .k8s import module_for_group
 from .parser import ApiGroup
 from .types import (
-    ObjectType,
-    TypeAlias,
-    ApiResourceType,
     AnonymousType,
+    ApiResourceType,
+    ObjectType,
     ResourceType,
+    TypeAlias,
 )
 
 
 class TypePrinter:
-    def __init__(self, api_module: str = ".", docstrings: bool = False):
+    def __init__(self, api_module: str, docstrings: bool, annotations: AnnotationProvider | None):
         self.api_module = api_module
         self.docstrings = docstrings
+        self.annotations = annotations
 
     def print_group(self, group: ApiGroup, output: str):
         if output == "-":
@@ -48,9 +56,21 @@ class TypePrinter:
             stream.write("\n")
 
         if group.refs:
-            stream.write(f"from {self.api_module} import ")
-            stream.write(", ".join(sorted(module_for_group(g) for g in group.refs)))
-            stream.write("\n\n")
+            roots = defaultdict(list)
+            for g in group.refs:
+                root, module = self.module_for_group(g)
+                roots[root].append(module)
+            for root, modules in roots.items():
+                stream.write(f"from {root} import ")
+                stream.write(", ".join(sorted(modules)))
+                stream.write("\n\n")
+
+    def module_for_group(self, group: str):
+        if '.' in group:
+            a = self.annotations(group)
+            if a:
+                return ".", a.get("module", group.partition('.')[0])
+        return self.api_module, module_for_group(group)
 
     def print_types(self, group: ApiGroup, stream: t.TextIO):
         for ty in group.types:

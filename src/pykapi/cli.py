@@ -11,9 +11,10 @@ from tempfile import mktemp
 from urllib.request import urlretrieve
 
 import yaml
-from kubernetes import config, client
+from kubernetes import client, config
 from yaml import CSafeLoader
 
+from .annotations import AnnotationProvider
 from .api import import_api_types
 from .crd import import_crds
 from .k8s import QualifiedName
@@ -52,14 +53,14 @@ def import_k8s_api(args):
 
         groups = import_api_types(schema, annotations)
 
-        print_groups(groups, args.output, docstrings=args.docstrings)
+        print_groups(groups, args.output, api_module=".", docstrings=args.docstrings, annotations=None)
     finally:
         if tmp:
             os.remove(tmp)
 
 
-def print_groups(groups: list[ApiGroup], output: str, api_module: str = ".", docstrings: bool = False):
-    printer = TypePrinter(api_module=api_module, docstrings=docstrings)
+def print_groups(groups: list[ApiGroup], output: str, api_module: str, docstrings: bool, annotations: AnnotationProvider | None):
+    printer = TypePrinter(api_module=api_module, docstrings=docstrings, annotations=annotations)
     for group in groups:
         filename = output
         if filename != "-":
@@ -140,33 +141,6 @@ def read_crds(paths: list[pathlib.Path], crds: list):
                         logger.warning("skipping non CRD file: %s", path)
 
 
-class AnnotationFactory:
-    def __init__(self, dir_path: pathlib.Path):
-        self.dir = dir_path
-        self.cached = {}
-
-    def __call__(self, group: str) -> dict:
-        if group in self.cached:
-            return self.cached[group]
-
-        filename = group + ".yaml"
-
-        # lookup in annotations dirs first
-        annotations = None
-        if self.dir:
-            try:
-                with self.dir.joinpath(filename).open("rb") as f:
-                    annotations = yaml.load(f, yaml.CSafeLoader)
-            except FileNotFoundError:
-                pass
-
-        if annotations is None:
-            annotations = {}
-
-        self.cached[group] = annotations
-        return annotations
-
-
 def _sanitize_crd(crd: dict) -> dict:
     crd.pop("status", None)
     crd["metadata"].pop("annotations", None)
@@ -239,10 +213,10 @@ def import_custom_resources(args):
     crds = []
     try:
         read_crds(files, crds)
-        annotations = AnnotationFactory(args.annotations)
+        annotations = AnnotationProvider(args.annotations)
         groups = import_crds(crds, annotations)
 
-        print_groups(groups, args.output, api_module=args.api_module, docstrings=args.docstrings)
+        print_groups(groups, args.output, api_module=args.api_module, docstrings=args.docstrings, annotations=annotations)
     finally:
         # cleanup temp files
         for tmp in tmpfiles:

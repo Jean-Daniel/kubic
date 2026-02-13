@@ -3,9 +3,11 @@ from collections import defaultdict
 from collections.abc import Callable
 
 from pykapi.k8s import module_for_group
+
+from .annotations import AnnotationProvider
 from .k8s import QualifiedName
-from .parser import Parser, ApiGroup
-from .types import ApiResourceType, ObjectType, AnonymousType, Type, ApiType, ApiTypeRef
+from .parser import ApiGroup, Parser
+from .types import AnonymousType, ApiResourceType, ApiType, ApiTypeRef, ObjectType, Type
 
 
 class CRDGroup(ApiGroup):
@@ -304,9 +306,6 @@ def infer_k8s_type(prop_name: str, schema: dict) -> ApiTypeRef | None:
     #     podAffinity: "io.k8s.api.core.v1.PodAffinity"
     #     podAntiAffinity: "io.k8s.api.core.v1.PodAntiAffinity"
     return None
-
-
-AnnotationProvider: t.TypeAlias = Callable[[str], dict]
 
 
 def import_crds(crds: list[tuple[QualifiedName, dict]], annotations: AnnotationProvider) -> list[ApiGroup]:

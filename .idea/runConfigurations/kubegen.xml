@@ -13,8 +13,9 @@
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
+    <option name="RUN_TOOL" value="" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/kubegen.py" />
-    <option name="PARAMETERS" value="crd --docstrings --annotations annotations --api_module &quot;..api&quot; -o output schemas/crds/01-gateway.yml" />
+    <option name="PARAMETERS" value="crd --docstrings --annotations annotations --api_module &quot;..api&quot; -o output schemas/crds/01-envoy.yml" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

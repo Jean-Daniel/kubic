@@ -92,7 +92,8 @@ class QualifiedName(t.NamedTuple):
                     return QualifiedName("IntOrString", "core", "v1")
                 elif name == "io.k8s.apimachinery.pkg.version.Info":
                     return QualifiedName("Info", "core", "v1")
-
+                else:
+                    group = parts[0]
             assert group is not None, f"unknown group {parts[0]} / {parts[2]}: {name}"
             return QualifiedName(parts[2], group, parts[1])
 
@@ -100,7 +101,7 @@ class QualifiedName(t.NamedTuple):
 
 
 # FIXME: should find a way to inject annotations
-MODULE_NAMES = {"operator.victoriametrics.com": "victoriametrics"}
+# MODULE_NAMES = {"operator.victoriametrics.com": "victoriametrics"}
 
 
 def module_for_group(group) -> str:

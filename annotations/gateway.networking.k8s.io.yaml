@@ -1,0 +1,30 @@
+patches:
+  RequestHeaderModifier:
+    add: { type_name: RequestHeader }
+    set: { type_name: RequestHeader }
+
+  Rule:
+    matches: { type_name: Match }
+
+  BackendLBPolicySpec:
+    targetRefs: { type_name: TargetRef }
+
+  Filter:
+    extensionRef: { type_name: TargetRef }
+
+  Filter2:
+    extensionRef: { type_name: TargetRef }
+
+  FrontendValidation:
+    caCertificateRefs: { type_name: ClusterTargetRef }
+
+  GatewayClassSpec:
+    parametersRef: { type_name: ClusterTargetRef }
+
+  Infrastructure:
+    parametersRef: { type_name: TargetRef }
+
+  Validation:
+    caCertificateRefs: { type_name: TargetRef }
+
+

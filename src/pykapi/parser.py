@@ -187,14 +187,14 @@ class ApiGroup:
             dependencies.extend(types)
             types = dependencies
 
-        self.types = reversed(types)
+        self.types = list(reversed(types))
 
     def add_imports_for_type(self, ty):
         if isinstance(ty, ApiType):
             if ty in self:
                 if isinstance(ty, ObjectType):
                     self._base_types.add(ty.kubic_type)
-                elif sys.version_info >= (3, 10) and isinstance(ty, TypeAlias):
+                elif isinstance(ty, TypeAlias):
                     self.use_typing = True
             elif ty.group:
                 self._refs.add(ty.group)
