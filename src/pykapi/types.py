@@ -45,7 +45,9 @@ class ApiType:
         return self.version
 
     def __eq__(self, other):
-        return self.name == other.name if other else False
+        if not isinstance(other, ApiType):
+            return False
+        return self.name == other.name
 
     def __str__(self):
         return self.name
