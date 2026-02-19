@@ -108,9 +108,9 @@ def is_key_selector(properties: dict) -> bool:
         return False
 
     return (
-        properties["key"].get("type") == "string"
-        and properties["name"].get("type") == "string"
-        and properties["optional"].get("type") == "boolean"
+            properties["key"].get("type") == "string"
+            and properties["name"].get("type") == "string"
+            and properties["optional"].get("type") == "boolean"
     )
 
 
@@ -119,6 +119,20 @@ def is_local_object_reference(properties: dict) -> bool:
         return False
 
     return "name" in properties
+
+
+def is_typed_object_reference(properties: dict) -> bool:
+    if len(properties) != 4:
+        return False
+
+    return "namespace" in properties and "api_group" in properties and "kind" in properties and "name" in properties
+
+
+def is_typed_local_object_reference(properties: dict) -> bool:
+    if len(properties) != 3:
+        return False
+
+    return "api_group" in properties and "kind" in properties and "name" in properties
 
 
 def is_secret_ref(properties: dict) -> bool:
@@ -288,6 +302,12 @@ def infer_k8s_type(prop_name: str, schema: dict) -> ApiTypeRef | None:
     if is_local_object_reference(properties):
         if any(kw in low_name for kw in ["secret", "reference"]):
             return ApiTypeRef(QualifiedName("LocalObjectReference", "core", "v1"))
+
+    if is_typed_object_reference(properties):
+        return ApiTypeRef(QualifiedName("TypedObjectReference", "core", "v1"))
+
+    if is_typed_local_object_reference(properties):
+        return ApiTypeRef(QualifiedName("TypedLocalObjectReference", "core", "v1"))
 
     if low_name.endswith("probe") and is_probe(properties):
         return ApiTypeRef(QualifiedName("Probe", "core", "v1"))

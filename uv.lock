@@ -108,7 +108,7 @@ wheels = [
 
 [[package]]
 name = "kubic"
-version = "3.4.1"
+version = "3.4.2"
 source = { editable = "." }
 dependencies = [
     { name = "kubernetes" },
