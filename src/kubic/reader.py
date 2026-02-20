@@ -79,7 +79,8 @@ def _register_any(object_meta):
 
 
 def register_module(module: ModuleType):
-    for name, cls in inspect.getmembers(module):
+    members = inspect.getmembers(module)
+    for name, cls in members:
         if not inspect.isclass(cls):
             continue
         if hasattr(cls, "_kind_"):
@@ -118,10 +119,19 @@ def create_api_resource(obj: dict, strict: bool = True, resolve: bool = True) ->
 
     rsrc = resolve_api_resource(api_version, kind) if resolve else None
     # in case of version discrepancy, fallback to AnyApiResource
-    if not rsrc or rsrc.api_version != api_version:
+    if not rsrc:
         # assuming that object that contains items instead of spec is a ResourceList (ConfigMapList, …)
         items = obj.get("items", None)
         if items:
             return AnyResourceList(api_version, kind, "", items=[create_api_resource(item) for item in items])
         return AnyApiResource(api_version, kind, "").update(obj)
-    return rsrc("").update(obj, strict=strict)
+    try:
+        if rsrc.api_version != api_version:
+            obj = dict(obj)
+            obj["apiVersion"] = rsrc.api_version
+        return rsrc("").update(obj, strict=strict)
+    except AttributeError:
+        # If version mismatch, maybe we are trying to use an old field -> default to AnyApiResource
+        if rsrc.api_version != api_version:
+            return AnyApiResource(api_version, kind, "").update(obj)
+        raise
