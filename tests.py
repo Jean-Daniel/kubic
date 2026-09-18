@@ -230,6 +230,7 @@ class LoaderTest(unittest.TestCase):
         # self.assertEqual("apps/v3", rsrc.api_version)
         self.assertEqual("Deployment", rsrc.kind)
         self.assertEqual("apps", rsrc.group)
+        self.assertTrue("spec" in rsrc)
 
     def test_create_relaxed(self):
         spec = {"apiVersion": "apps/v1", "kind": "Deployment", "spec": {"extra": "bar"}, "metadata": {"name": "myobject"}, "status": {}}

@@ -45,18 +45,18 @@ R = t.TypeVar("R", bound="KubernetesObject")
 
 
 class _TypedList(list):
-    __slots__ = ("type", "__dirty")
+    __slots__ = ("type", "_dirty")
 
     def __init__(self, ty: t.Type[R], dirty: bool, values: Iterable | None = None):
         super().__init__()
         self.type: t.Type[R] = ty
-        self.__dirty = dirty
+        self._dirty = dirty
         if values:
             self.extend(values)
 
     @property
     def is_dirty(self):
-        return self.__dirty
+        return self._dirty
 
     def _cast(self, obj):
         if isinstance(obj, self.type):
@@ -140,30 +140,33 @@ def _create_generic_type(hint):
     return None
 
 
-class KubernetesObject(dict, metaclass=_K8SResourceMeta):
-    __slots__ = ("__dirty",)
+class KubernetesObject(metaclass=_K8SResourceMeta):
+    __slots__ = (
+        "_fields",
+        "_dirty",
+    )
     _field_names_ = {}
 
     def __init__(self, **kwargs):
-        super().__init__()
+        self._fields = {}
         # defaults to True, to not have to handle all case where the objet is created by the API user.
-        self.__dirty = True
+        self._dirty = True
         for key, value in kwargs.items():
             if value is not None:
                 setattr(self, key, value)
 
     def __contains__(self, item):
-        if super().__contains__(item):
+        if self._fields.__contains__(item):
             return True
         # check if this is a managed field.
         self._item_hint(item)
         # convert the python field name into kubernetes name
         camel_name = self._field_names_.get(item) or snake_to_camel(item)
-        return super().__contains__(camel_name)
+        return self._fields.__contains__(camel_name)
 
-    def __getattr__(self, item):
-        if item == "__dirty":
-            return self.__dirty
+    def __getattr__(self, item: str):
+        if item.startswith("_"):
+            return self.__getattribute__(item)
 
         # check if this is a managed field.
         hint = self._item_hint(item)
@@ -171,7 +174,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         camel_name = self._field_names_.get(item) or snake_to_camel(item)
         # fetch the stored value
         try:
-            return self[camel_name]
+            return self._fields[camel_name]
         except KeyError:
             # value not set yet
             pass
@@ -181,34 +184,32 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         if _is_generic_type(hint):
             value = _create_generic_type(hint)
             if value is not None:
-                self[camel_name] = value
+                self._fields[camel_name] = value
             return value
 
         # workaround broken PersistentVolumeClaim used as subresource.
         if issubclass(hint, KubernetesApiResource):
             value = hint(name="")
-            value.__dirty = False
-            self[camel_name] = value
+            value._dirty = False
+            self._fields[camel_name] = value
         # handle resource instances
         elif issubclass(hint, KubernetesObject):
             value = hint()
-            value.__dirty = False
-            self[camel_name] = value
+            value._dirty = False
+            self._fields[camel_name] = value
 
         return value
 
-    def __setattr__(self, key, value):
-        try:
-            # do not interfere with existing attributes
-            return super().__setattr__(key, value)
-        except AttributeError:
-            pass
-
-        self.__dirty = True
+    def __setattr__(self, key: str, value):
+        if key.startswith("_"):
+            super().__setattr__(key, value)
+            return None
+        self._dirty = True
         # kubernetes does not uses the concept of null value.
         # So instead of setting to None, remove the entry.
         if value is None:
-            return self.__delattr__(key)
+            self.__delattr__(key)
+            return None
 
         hint = self._item_hint(key)  # check key validity
 
@@ -226,14 +227,20 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
             pass
 
         camel_name = self._field_names_.get(key) or snake_to_camel(key)
-        self[camel_name] = value
+        self._fields[camel_name] = value
         return None
 
     def __delattr__(self, item):
         self._item_hint(item)  # check key validity
 
         camel_name = self._field_names_.get(item) or snake_to_camel(item)
-        super().pop(camel_name, None)
+        self._fields.pop(camel_name, None)
+
+    def __getitem__(self, item):
+        return self._fields[item]
+
+    def __setitem__(self, key, value):
+        self._fields[key] = value
 
     def __dir__(self):
         return dir(type(self)) + list(self._hints_().keys())
@@ -264,7 +271,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
                 self._attribute_error(key)
             else:
                 # raw value
-                super().__setitem__(key, value)
+                self._fields[key] = value
                 return
 
         if not _is_generic_type(factory):
@@ -280,7 +287,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         setattr(self, key, value)
 
     def update(self, values: dict = None, /, strict: bool = True):
-        self.__dirty = True
+        self._dirty = True
         if values:
             # assume iterable of pairs if not a dict
             items = values.items() if isinstance(values, Mapping) else values
@@ -292,7 +299,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
     def __or__(self, other):
         # copy self, bypassing type checking
         copy = type(self)()
-        dict.update(copy, self)
+        copy._fields = dict(self._fields)
         # merge with other
         copy.update(other)
         return copy
@@ -307,7 +314,7 @@ class KubernetesObject(dict, metaclass=_K8SResourceMeta):
         )
 
     @classmethod
-    def from_dict(cls, values: dict):
+    def from_dict(cls, values: dict | None):
         if values is None:
             return None
 
@@ -429,7 +436,7 @@ def represent_k8s_object(dumper, obj: KubernetesObject):
     if dumper.alias_key is not None:
         dumper.represented_objects[dumper.alias_key] = node
     best_style = True
-    mapping = obj.items()
+    mapping = obj._fields.items()
     if dumper.sort_keys:
         try:
             mapping = sorted(mapping)
@@ -468,9 +475,9 @@ def represent_k8s_object(dumper, obj: KubernetesObject):
 
 def _is_dirty(rsrc: object):
     if isinstance(rsrc, KubernetesObject):
-        if rsrc.__dirty:
+        if rsrc._dirty:
             return True
-        for v in rsrc.values():
+        for v in rsrc._fields.values():
             if _is_dirty(v):
                 return True
     elif isinstance(rsrc, _TypedList):
