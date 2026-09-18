@@ -286,11 +286,16 @@ class KubernetesObject(metaclass=_K8SResourceMeta):
         # else set the value
         setattr(self, key, value)
 
-    def update(self, values: dict = None, /, strict: bool = True):
+    def update(self, values: "dict | KubernetesObject | None" = None, /, strict: bool = True):
         self._dirty = True
         if values:
             # assume iterable of pairs if not a dict
-            items = values.items() if isinstance(values, Mapping) else values
+            if isinstance(values, Mapping):
+                items = values.items()
+            elif isinstance(values, KubernetesObject):
+                items = values._fields.items()
+            else:
+                items = values
             for key, value in items:
                 self._update(key, value, strict)
 
