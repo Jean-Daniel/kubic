@@ -42,8 +42,8 @@ def _register_any(object_meta):
             self._kind_ = kind
 
             super().__init__(name, namespace)
-            self.spec = {}
-            self.spec.update(kwargs)
+            # Do not try to do self.spec = {} here as it would access the class member instead.
+            self.update({"spec": kwargs})
 
         # Cannot guess unknown resource scope
         @property
