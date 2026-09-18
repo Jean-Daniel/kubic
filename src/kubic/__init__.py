@@ -236,6 +236,9 @@ class KubernetesObject(metaclass=_K8SResourceMeta):
         camel_name = self._field_names_.get(item) or snake_to_camel(item)
         self._fields.pop(camel_name, None)
 
+    def __bool__(self):
+        return bool(self._fields)
+
     def __getitem__(self, item):
         return self._fields[item]
 
