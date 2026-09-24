@@ -1,6 +1,6 @@
 import typing as t
 import unittest
-from collections.abc import Mapping, MutableSequence
+from collections.abc import Mapping, MutableMapping, MutableSequence
 
 import yaml
 from annotationlib import get_annotations
@@ -81,6 +81,7 @@ class ResourceTest(unittest.TestCase):
     def test_mapping(self):
         obj = SpecialProperty()
         self.assertIsInstance(obj, Mapping)
+        self.assertIsInstance(obj, MutableMapping)
 
     def test_get(self):
         obj = BaseType()

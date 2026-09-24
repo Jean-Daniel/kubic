@@ -246,6 +246,9 @@ class KubernetesObject(metaclass=_K8SResourceMeta):
     def __setitem__(self, key, value):
         self._fields[key] = value
 
+    def __delitem__(self, key):
+        del self._fields[key]
+
     def __dir__(self):
         return dir(type(self)) + list(self._hints_().keys())
 
@@ -330,7 +333,7 @@ class KubernetesObject(metaclass=_K8SResourceMeta):
         return cls().update(values)
 
 
-abc.Mapping.register(KubernetesObject)
+abc.MutableMapping.register(KubernetesObject)
 
 
 # Wrapper to properly handle types.UnionType which is not a generic type but should behave like one
