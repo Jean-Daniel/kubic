@@ -78,6 +78,20 @@ class ResourceTest(unittest.TestCase):
             # make sure base class are properly defined to avoid creation of __dict__ (using __slots__)
             _ = obj.__dict__
 
+    def test_eq(self):
+        obj1 = SpecialProperty()
+        obj1.load_urls = "hello"
+        obj1.my_property = 1
+
+        obj2 = SpecialProperty()
+        obj2.load_urls = "hello"
+        obj2.my_property = 1
+
+        self.assertEqual(obj1, obj2)
+        
+        obj2.my_property = 2
+        self.assertNotEqual(obj1, obj2)
+
     def test_mapping(self):
         obj = SpecialProperty()
         self.assertIsInstance(obj, Mapping)

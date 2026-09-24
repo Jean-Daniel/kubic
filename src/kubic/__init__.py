@@ -156,6 +156,12 @@ class KubernetesObject(metaclass=_K8SResourceMeta):
             if value is not None:
                 setattr(self, key, value)
 
+    def __eq__(self, value: object, /) -> bool:
+        if type(value) is not type(self):
+            return False
+
+        return self._fields == value._fields
+
     def __contains__(self, item):
         if self._fields.__contains__(item):
             return True
