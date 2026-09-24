@@ -1,8 +1,9 @@
 import typing as t
 import unittest
-from collections.abc import MutableSequence
+from collections.abc import Mapping, MutableSequence
 
 import yaml
+from annotationlib import get_annotations
 
 import kubic.api
 import kubic.crds
@@ -34,6 +35,10 @@ class BaseType(KubernetesObject):
 
 
 class SpecialProperty(KubernetesObject):
+    """
+    Special Property Class
+    """
+
     __slots__ = ()
 
     from_: str
@@ -44,7 +49,7 @@ class SpecialProperty(KubernetesObject):
     # values from a dictionary to convert camelCase names
     # into snake names. Only names that can be naively converted to
     # snake case are generated.
-    _revfield_names_ = {"from": "from_", "loadURLs": "load_urls"}
+    _revfield_names_: t.ClassVar[dict[str, str]] = {"from": "from_", "loadURLs": "load_urls"}
 
 
 class CustomResource(KubernetesApiResource):
@@ -68,10 +73,14 @@ class ResourceTest(unittest.TestCase):
         obj = SpecialProperty()
 
         # assert does not raise on access internal property
-        _ = obj.__annotations__
+        _ = obj.__module__
         with self.assertRaises(AttributeError):
             # make sure base class are properly defined to avoid creation of __dict__ (using __slots__)
             _ = obj.__dict__
+
+    def test_mapping(self):
+        obj = SpecialProperty()
+        self.assertIsInstance(obj, Mapping)
 
     def test_get(self):
         obj = BaseType()

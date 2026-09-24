@@ -1,9 +1,10 @@
 import types
 import typing as t
+from collections import abc
 from collections.abc import Iterable, Mapping
 from functools import cache
 
-__all__ = ["KubernetesObject", "KubernetesApiResource"]
+__all__ = ["KubernetesApiResource", "KubernetesObject"]
 
 import yaml
 
@@ -45,11 +46,11 @@ R = t.TypeVar("R", bound="KubernetesObject")
 
 
 class _TypedList(list):
-    __slots__ = ("type", "_dirty")
+    __slots__ = ("_dirty", "type")
 
-    def __init__(self, ty: t.Type[R], dirty: bool, values: Iterable | None = None):
+    def __init__(self, ty: type[R], dirty: bool, values: Iterable | None = None):
         super().__init__()
-        self.type: t.Type[R] = ty
+        self.type: type[R] = ty
         self._dirty = dirty
         if values:
             self.extend(values)
@@ -203,13 +204,13 @@ class KubernetesObject(metaclass=_K8SResourceMeta):
     def __setattr__(self, key: str, value):
         if key.startswith("_"):
             super().__setattr__(key, value)
-            return None
+            return
         self._dirty = True
         # kubernetes does not uses the concept of null value.
         # So instead of setting to None, remove the entry.
         if value is None:
             self.__delattr__(key)
-            return None
+            return
 
         hint = self._item_hint(key)  # check key validity
 
@@ -228,7 +229,7 @@ class KubernetesObject(metaclass=_K8SResourceMeta):
 
         camel_name = self._field_names_.get(key) or snake_to_camel(key)
         self._fields[camel_name] = value
-        return None
+        return
 
     def __delattr__(self, item):
         self._item_hint(item)  # check key validity
@@ -289,14 +290,14 @@ class KubernetesObject(metaclass=_K8SResourceMeta):
         # else set the value
         setattr(self, key, value)
 
-    def update(self, values: "dict | KubernetesObject | None" = None, /, strict: bool = True):
+    def update(self, values: "dict | KubernetesObject | None" = None, /, strict: bool = True) -> t.Self:
         self._dirty = True
         if values:
             # assume iterable of pairs if not a dict
-            if isinstance(values, Mapping):
-                items = values.items()
-            elif isinstance(values, KubernetesObject):
+            if isinstance(values, KubernetesObject):
                 items = values._fields.items()
+            elif isinstance(values, Mapping):
+                items = values.items()
             else:
                 items = values
             for key, value in items:
@@ -329,14 +330,17 @@ class KubernetesObject(metaclass=_K8SResourceMeta):
         return cls().update(values)
 
 
+abc.Mapping.register(KubernetesObject)
+
+
 # Wrapper to properly handle types.UnionType which is not a generic type but should behave like one
-def _get_generic_origin(ty: t.Type) -> t.Type | None:
+def _get_generic_origin(ty: type | types.UnionType) -> type | None:
     if isinstance(ty, types.UnionType):
         return None
     return getattr(ty, "__origin__")
 
 
-def _is_generic_type(ty: t.Type) -> bool:
+def _is_generic_type(ty: type) -> bool:
     return isinstance(ty, types.UnionType) or hasattr(ty, "__origin__")
 
 

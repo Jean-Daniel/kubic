@@ -7,12 +7,12 @@ from types import ModuleType
 
 from . import KubernetesApiResource, KubernetesObject, _TypedList
 
-R = t.TypeVar("R", bound=KubernetesApiResource)
+R: t.TypeVar = t.TypeVar("R", bound=KubernetesApiResource)
 
 # noinspection PyTypeChecker
-AnyApiResource: t.Type[R] = None
+AnyApiResource: type[R] = None
 # noinspection PyTypeChecker
-AnyResourceList: t.Type[R] = None
+AnyResourceList: type[R] = None
 
 
 class _ObjID(t.NamedTuple):
@@ -20,7 +20,7 @@ class _ObjID(t.NamedTuple):
     kind: str
 
 
-_rsrc_index: dict[_ObjID, t.Type] = {}
+_rsrc_index: dict[_ObjID, type] = {}
 
 
 # Must be called before trying to use the reader API.
@@ -31,12 +31,12 @@ def _register_any(object_meta):
     assert not AnyApiResource and not AnyResourceList
 
     class _AnyApiResource(KubernetesApiResource):
-        __slots__ = ("_api_version_", "_api_group_", "_kind_")
+        __slots__ = ("_api_group_", "_api_version_", "_kind_")
 
         spec: dict[str, t.Any]
         metadata: object_meta
 
-        def __init__(self, version: str, kind: str, name: str, namespace: str = None, **kwargs):
+        def __init__(self, version: str, kind: str, name: str, namespace: str | None = None, **kwargs):
             self._api_version_ = version
             self._api_group_, _, _ = version.rpartition("/")
             self._kind_ = kind
@@ -56,24 +56,26 @@ def _register_any(object_meta):
     AnyApiResource = _AnyApiResource
 
     class _AnyResourceList(KubernetesApiResource):
-        __slots__ = ("_api_version_", "_api_group_", "_kind_")
+        __slots__ = ("_api_group_", "_api_version_", "_kind_")
 
-        _revfield_names_ = {
+        _revfield_names_: t.ClassVar[dict[str, str]] = {
             "items": "items_",
         }
 
         items_: list
         metadata: object_meta
 
-        def __init__(self, version: str, kind: str, name: str, namespace: str = None, items: list[KubernetesApiResource] = None):
+        def __init__(
+            self, version: str, kind: str, name: str, namespace: str | None = None, items: list[KubernetesApiResource] | None = None
+        ):
             self._api_version_ = version
             self._api_group_, _, _ = version.rpartition("/")
             self._kind_ = kind
             super().__init__(name, namespace)
             if items and isinstance(items[0], KubernetesObject):
-                self.items_ = _TypedList(type(items[0]), items)
+                self.items_ = _TypedList(type(items[0]), False, values=items)
             else:
-                self.items_ = list(items)
+                self.items_ = list(items) if items else []
 
     AnyResourceList = _AnyResourceList
 
@@ -97,10 +99,10 @@ def register_modules(spec: ModuleSpec):
         register_module(mod)
 
 
-KubernetesApiResourceTy = t.TypeVar("KubernetesApiResourceTy", bound=KubernetesApiResource)
+KubernetesApiResourceTy: t.TypeVar = t.TypeVar("KubernetesApiResourceTy", bound=KubernetesApiResource)
 
 
-def resolve_api_resource(api_version: str, kind: str) -> t.Type[R] | None:
+def resolve_api_resource(api_version: str, kind: str) -> type[R] | None:
     group, sep, _ = api_version.partition("/")
     # special case for 'v1' -> means 'core/v1' and core is empty group
     if not sep:
@@ -108,7 +110,7 @@ def resolve_api_resource(api_version: str, kind: str) -> t.Type[R] | None:
     return _rsrc_index.get(_ObjID(group, kind.lower()))
 
 
-def create_api_resource(obj: dict, strict: bool = True, resolve: bool = True) -> KubernetesApiResourceTy:
+def create_api_resource(obj: dict, strict: bool = True, resolve: bool = True) -> type[KubernetesApiResourceTy]:
     if isinstance(obj, KubernetesApiResource):
         return obj
 
